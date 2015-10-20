@@ -2,19 +2,38 @@
   (:use midje.sweet)
   (:use [push.interpreter]))
 
-;; initialization
+;; initialization with make-interpreter
 
-;; default behavior
+;; program
 
-(fact "a new Interpreter will have the core stack types"
-  (keys (:stacks (make-interpreter))) => (contains :boolean)
-  (keys (:stacks (make-interpreter))) => (contains :char)
-  (keys (:stacks (make-interpreter))) => (contains :code)
-  (keys (:stacks (make-interpreter))) => (contains :exec)
-  (keys (:stacks (make-interpreter))) => (contains :float)
-  (keys (:stacks (make-interpreter))) => (contains :input)
-  (keys (:stacks (make-interpreter))) => (contains :integer)
-  (keys (:stacks (make-interpreter))) => (contains :string)
+(fact "a new Interpreter will have a program"
+  (:program (make-interpreter)) => []
   )
 
-;; not core: :tag, :genome, :return, :print, :puck
+(fact "a program can be passed into make-interpreter"
+  (:program (make-interpreter [1 2 3])) => [1 2 3]
+  )
+
+;; stacks
+
+(fact "the core stack types are defined"
+  (keys core-stacks) =>  (contains [:boolean
+                                    :char
+                                    :code
+                                    :exec 
+                                    :float 
+                                    :input 
+                                    :integer 
+                                    :string] :in-any-order))
+
+;; non-core but standard library core types: :tag, :genome, :return, :print, :puck, etc
+
+(fact "a new Interpreter will have all the core stacks"
+  (keys (:stacks (make-interpreter))) => (keys core-stacks)
+  )
+
+(fact "make-interpreter can be passed a hashmap of populated stacks to merge into the core"
+  (:integer (:stacks (make-interpreter [] {}))) => '()
+  (:integer (:stacks (make-interpreter [] {:integer '(7 6 5)}))) => '(7 6 5)
+  (:foo (:stacks (make-interpreter [] {:foo '(7 6 5)}))) => '(7 6 5)
+  )

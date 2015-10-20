@@ -1,19 +1,21 @@
 (ns push.interpreter)
 
 
-(defrecord Interpreter [stacks])
+(defrecord Interpreter [program stacks])
 
+(def core-stacks {:boolean '()
+                  :char '()
+                  :code '()
+                  :input '()
+                  :integer '() 
+                  :exec '()
+                  :float '()
+                  :string '()
+                  })
 
 (defn make-interpreter
   "creates a new Interpreter record"
-  []
-  (->Interpreter {
-    :boolean '()
-    :char '()
-    :code '()
-    :input '()
-    :integer '() 
-    :exec '()
-    :float '()
-    :string '()
-  }))
+  ([] (make-interpreter []))
+  ([program] (->Interpreter program core-stacks))
+  ([program stacks] (->Interpreter program (merge core-stacks stacks)))
+  )
