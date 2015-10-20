@@ -26,3 +26,43 @@
   ([program] (->Interpreter program core-stacks))
   ([program stacks] (->Interpreter program (merge core-stacks stacks)))
   )
+
+
+(defn push-item
+  "Takes an Interpreter, a keyword (naming a stack) and a Clojure expression, and returns the Interpreter with the item pushed onto the specified stack. If the stack doesn't already exist, it is created."
+  [interpreter stack item]
+  (let [old-stack (get-in interpreter [:stacks stack])]
+    (assoc-in interpreter [:stacks stack] (conj old-stack item))
+  ))
+
+
+(defn get-stack
+  "A convenience function which returns the named stack from the interpreter"
+  [stack interpreter]
+  (get-in interpreter [:stacks stack]))
+
+
+(defn boolean?
+  "a checker that returns true if the argument is the literal `true` or the literal `false`"
+  [item]
+  (or (false? item) (true? item)))
+
+
+(defn route-item
+  "Takes an Interpreter and an item, and sends the item to the correct stack (if any). Throws an exception if the Clojure expression is not recognized explicitly as a Push literal."
+  [interpreter item]
+  (cond
+    (integer? item) (push-item interpreter :integer item)
+    (boolean? item) (push-item interpreter :boolean item)
+    (char? item) (push-item interpreter :char item)
+    (float? item) (push-item interpreter :float item)
+    (string? item) (push-item interpreter :string item)
+    :else (throw
+      (Exception. (str "Push Parsing Error: Cannot interpret '" item "' as a Push item.")))
+  ))
+
+
+(defn process-expression
+  "takes an Interpreter and any Clojure item, and 'executes' the item within the Interpreter, as if it had been taken from the :exec stack: a literal is processed and sent to the router, an instruction is looked up in the registry, and so forth"
+  [interpreter expression]
+  (route-item interpreter expression))
