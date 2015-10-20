@@ -1,4 +1,4 @@
-# PushInClojure
+# Push in Clojure
 
 A clean, tested, maintainable Push interpreter written in Clojure.
 
