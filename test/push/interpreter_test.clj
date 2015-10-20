@@ -81,6 +81,11 @@
     '(false 1 2 3))
 
 
+(fact "push-item will create a stack if told to"
+  (get-stack :foo (
+    push-item (make-interpreter) :foo [1 :weird :thing])) => '([1 :weird :thing]))
+
+
 ;; route-item
 
 
