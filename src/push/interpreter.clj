@@ -60,16 +60,14 @@
   "Takes an Interpreter, a keyword (naming a stack) and a Clojure expression, and returns the Interpreter with the item pushed onto the specified stack. If the stack doesn't already exist, it is created."
   [interpreter stack item]
   (let [old-stack (get-in interpreter [:stacks stack])]
-    (assoc-in interpreter [:stacks stack] (conj old-stack item))
-  ))
+    (assoc-in interpreter [:stacks stack] (conj old-stack item))))
 
 
 (defn load-items
   "Takes an Interpreter, a stack name, and a seq, and conj'es each item onto the named stack of the interpreter (using Clojure's `into` transducer). Used primarily for loading code onto the :exec stack."
   [interpreter stack item-list]
   (let [old-stack (get-in interpreter [:stacks stack])]
-    (assoc-in interpreter [:stacks stack] (into old-stack (reverse item-list))))
-  )
+    (assoc-in interpreter [:stacks stack] (into old-stack (reverse item-list)))))
 
 
 (defn get-stack
@@ -90,11 +88,11 @@
   (contains? (:instructions interpreter) token))
 
 
-
 (defn handle-item
   "Takes an Interpreter and an item, and either recognizes and invokes a keyword registered in that Interpreter as an instruction, or sends the item to the correct stack (if it exists). Throws an exception if the Clojure expression is not recognized explicitly as a registered instruction or some other kind of Push literal."
   [interpreter item]
   (cond
+    (instruction? interpreter item) (execute-instruction interpreter item)
     (integer? item) (push-item interpreter :integer item)
     (boolean? item) (push-item interpreter :boolean item)
     (char? item) (push-item interpreter :char item)

@@ -40,7 +40,9 @@
 (fact "make-interpreter can be passed a hashmap of populated stacks to merge into the core"
   (get-stack :integer (make-interpreter)) => '()
   (get-stack :integer (make-interpreter :stacks {:integer '(7 6 5)})) => '(7 6 5)
-  (get-stack :foo (make-interpreter :stacks {:foo '(7 6 5)})) => '(7 6 5))
+  (get-stack :foo (make-interpreter :stacks {:foo '(7 6 5)})) => '(7 6 5)
+  (get-stack :integer (make-interpreter :stacks {:foo '(7 6 5)})) => '()
+  (get-stack :foo (make-interpreter)) => nil)
 
 
 ;; instructions
@@ -52,8 +54,7 @@
   (:token (make-instruction :foo)) => :foo
   (:needs (make-instruction :foo)) => {}
   (:makes (make-instruction :foo)) => {}
-  (:function (make-instruction :foo)) => identity
-  )
+  (:function (make-instruction :foo)) => identity)
 
 
 (fact "make-instruction accepts a :needs argument"
@@ -76,15 +77,13 @@
   (let [foo (make-instruction :foo)]
     (keys (:instructions 
       (register-instruction (make-interpreter) foo))) => '(:foo)
-    (:foo (:instructions (register-instruction (make-interpreter) foo))) => foo
-  ))
+    (:foo (:instructions (register-instruction (make-interpreter) foo))) => foo))
 
 
 (fact "register-instruction throws an exception if a token is reassigned (because that's what Clojush does)"
   (let [foo (make-instruction :foo)]
     (register-instruction (register-instruction (make-interpreter) foo) foo) =>
-      (throws Exception "Push Instruction Redefined:':foo'")
-  ))
+      (throws Exception "Push Instruction Redefined:':foo'")))
 
 
 (fact "execute-instruction applies the named instruction to the Interpreter itself"
@@ -94,8 +93,8 @@
           (register-instruction (make-interpreter) foo) bar)]
     (keys (:instructions he-knows-foo)) => (just :foo :bar)
     (execute-instruction he-knows-foo :foo) => 99
-    (execute-instruction he-knows-foo :bar) => he-knows-foo
-  ))
+    (execute-instruction he-knows-foo :bar) => he-knows-foo))
+
 
 ;; utilities and helpers
 
@@ -127,7 +126,6 @@
        he-knows-foo (make-interpreter :instructions registry)]
    (instruction? he-knows-foo :foo) => true
    (instruction? he-knows-foo :bar) => false))
-
 
 
 ;; dealing with stack items
@@ -205,10 +203,23 @@
   (get-stack :exec (handle-item (make-interpreter) '(1 2 3))) => '(1 2 3)
   (get-stack :exec (handle-item (make-interpreter) '(1 (2) (3)))) => '(1 (2) (3))
   (get-stack :exec (handle-item (make-interpreter) '(1 () ()))) => '(1 () ())
-  (get-stack :exec (handle-item (make-interpreter) '())) => '()
-  )
+  (get-stack :exec (handle-item (make-interpreter) '())) => '())
 
-; (fact "handle-item executes instructions that are registered")
+
+(fact "handle-item will execute a registered instruction"
+ (let [foo (make-instruction :foo :function (fn [a] 761))
+       registry {:foo foo}
+       he-knows-foo (make-interpreter :instructions registry)]
+   (handle-item he-knows-foo :foo) => 761 ;; an intentionally surprising result
+   ))
+
+
+(fact "handle-item will not execute an unregistered instruction"
+ (let [foo (make-instruction :foo :function (fn [a] 761))
+       registry {:foo foo}
+       he-knows-foo (make-interpreter :instructions registry)]
+   (handle-item he-knows-foo :bar) => (throws #"Push Parsing Error:")))
+
 
 ;; step-interpreter
 
