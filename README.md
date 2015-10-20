@@ -1,6 +1,6 @@
 # Push in Clojure
 
-This is a clean, fully tested, extensible and maintainable reimplementation of the Push interpreter, central to [Lee Spector's Clojush](https://github.com/lspector/Clojush) project. The intention in starting from scratch is to fully document the actual behavior of Push, separate concerns that are confounded in the original project, and a better serve user base seeking to reuse and extend the language for their domain-specific projects.
+This is a clean, fully tested, extensible and maintainable reimplementation of the Push interpreter, central to [Lee Spector's Clojush](https://github.com/lspector/Clojush) project. The intention in starting from scratch is to fully document the actual behavior of Push, separate concerns that are confounded in the original project, and to better serve the user base seeking to reuse and extend the language for their domain-specific projects.
 
 The project uses [Midje](https://github.com/marick/Midje/) and Clojure 1.7.
 
@@ -10,6 +10,7 @@ The project uses [Midje](https://github.com/marick/Midje/) and Clojure 1.7.
   - implement an `Interpreter` as a Clojure record
   - implement `make-interpreter` constructor with core types
   - "router" structure for handling literals
+  - `step` and `run` functions
   - basic `:integer` instructions
   - basic `:boolean` instructions
   - handle `:input` values
@@ -42,7 +43,7 @@ run again.
 
 ## How to contribute
 
-- Make sure any new features you add thoroughly tested before submitting pull requests. "Thoroughly tested" means there should be human-readable, understandable unit and acceptance tests for all functionality. I'd suggest you have a separate shell session running at all times with `lein midje :autotest` checking your changes constantly.
+- Make sure any new features you add are _thoroughly tested_ before submitting pull requests. "Thoroughly tested" means there should be human-readable, understandable unit and acceptance tests for all functionality, and that every test in the entire project passes despite the changes you've made. I'd suggest you have a separate shell session running at all times with `lein midje :autotest` checking your changes constantly.
 - Do not add features that aren't present in the original Clojush project
 - Avoid duplicating code
 - Do not add features involved in Genetic Programming, such as representations of "genomes" or "search operators"
