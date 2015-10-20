@@ -19,14 +19,12 @@
 
 (defn make-interpreter
   "creates a new Interpreter record
-  If no arguments are given, the Interpreter has an empty :program and only the core :stacks;
-  if a program is given, that is stored;
-  if a hashmap of stack values is given, that is merged onto the core empty stacks;
-  the :instructions registry defaults to an empty map, or is used as received."
-  ([] (make-interpreter [] {}))
-  ([program] (->Interpreter program core-stacks {}))
-  ([program stacks] (->Interpreter program (merge core-stacks stacks) {}))
-  )
+  With no arguments, it has an empty :program, the :stacks include core types and are empty, and no :instructions are registered. Any of these can be specified by key."
+  [& {:keys [program stacks instructions]
+      :or {program []
+           stacks core-stacks
+           instructions {}}}]
+  (->Interpreter program (merge core-stacks stacks) instructions))
 
 
 (defrecord Instruction [token needs makes function])

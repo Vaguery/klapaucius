@@ -12,7 +12,7 @@
 
 
 (fact "a program can be passed into make-interpreter"
-  (:program (make-interpreter [1 2 3])) => [1 2 3])
+  (:program (make-interpreter :program [1 2 3])) => [1 2 3])
 
 
 (fact "a new Interpreter will have an :instructions map"
@@ -40,16 +40,16 @@
 
 
 (fact "make-interpreter can be passed a hashmap of populated stacks to merge into the core"
-  (get-stack :integer (make-interpreter [] {})) => '()
-  (get-stack :integer (make-interpreter [] {:integer '(7 6 5)})) => '(7 6 5)
-  (get-stack :foo (make-interpreter [] {:foo '(7 6 5)})) => '(7 6 5))
+  (get-stack :integer (make-interpreter)) => '()
+  (get-stack :integer (make-interpreter :stacks {:integer '(7 6 5)})) => '(7 6 5)
+  (get-stack :foo (make-interpreter :stacks {:foo '(7 6 5)})) => '(7 6 5))
 
 
 ;; utilities and helpers
 
 
 (fact "get-stack is a convenience function for reading the named stack"
-  (get-stack :boolean (make-interpreter [] {:boolean '(false true)})) =>
+  (get-stack :boolean (make-interpreter :stacks {:boolean '(false true)})) =>
     '(false true))
 
 
@@ -74,13 +74,13 @@
 
 (fact "push-item pushes the specified item to the stack, returning the updated Interpreter"
   (get-stack :integer (push-item (make-interpreter) :integer 9)) => '(9)
-  (get-stack :integer (push-item (make-interpreter [] {:integer '(1 2 3)}) :integer 9)) =>
-    '(9 1 2 3))
+  (get-stack :integer (push-item 
+    (make-interpreter :stacks {:integer '(1 2 3)}) :integer 9)) => '(9 1 2 3))
 
 
 (fact "push-item does not do type-checking"
   (get-stack :integer (
-    push-item (make-interpreter [] {:integer '(1 2 3)}) :integer false)) =>
+    push-item (make-interpreter :stacks {:integer '(1 2 3)}) :integer false)) =>
     '(false 1 2 3))
 
 
@@ -101,7 +101,8 @@
 (fact "handle-item sends integers to :integer"
   (get-stack :integer (handle-item (make-interpreter) 8)) => '(8)
   (get-stack :integer (handle-item (make-interpreter) -8)) => '(-8)
-  (get-stack :integer (handle-item (make-interpreter [] {:integer '(1)}) -8)) => '(-8 1))
+  (get-stack :integer (handle-item (make-interpreter :stacks {:integer '(1)}) -8)) =>
+    '(-8 1))
 
 
 ; (fact "handle-item handles integer overflow")
@@ -110,7 +111,8 @@
 (fact "handle-item sends floats to :float"
   (get-stack :float (handle-item (make-interpreter) 8.0)) => '(8.0)
   (get-stack :float (handle-item (make-interpreter) -8.0)) => '(-8.0)
-  (get-stack :float (handle-item (make-interpreter [] {:float '(1.0)}) -8.0)) => '(-8.0 1.0))
+  (get-stack :float (handle-item (make-interpreter :stacks {:float '(1.0)}) -8.0)) =>
+    '(-8.0 1.0))
 
 
 ; (fact "handle-item handles float overflow")
@@ -120,19 +122,21 @@
 (fact "handle-item sends booleans to :boolean"
   (get-stack :boolean (handle-item (make-interpreter) false)) => '(false)
   (get-stack :boolean (handle-item (make-interpreter) true)) => '(true)
-  (get-stack :boolean (handle-item (make-interpreter [] {:boolean '(false)}) true)) => '(true false))
+  (get-stack :boolean (handle-item (make-interpreter :stacks {:boolean '(false)}) true)) =>
+    '(true false))
 
 
 (fact "handle-item sends characters to :char"
   (get-stack :char (handle-item (make-interpreter) \J)) => '(\J)
   (get-stack :char (handle-item (make-interpreter) \o)) => '(\o)
-  (get-stack :char (handle-item (make-interpreter [] {:char '(\Y)}) \e)) => '(\e \Y))
+  (get-stack :char (handle-item (make-interpreter :stacks {:char '(\Y)}) \e)) =>
+    '(\e \Y))
 
 
 (fact "handle-item sends strings to :string"
   (get-stack :string (handle-item (make-interpreter) "foo")) => '("foo")
   (get-stack :string (handle-item (make-interpreter) "")) => '("")
-  (get-stack :string (handle-item (make-interpreter [] {:string '("bar")}) "baz")) =>
+  (get-stack :string (handle-item (make-interpreter :stacks {:string '("bar")}) "baz")) =>
     '("baz" "bar"))
 
 
@@ -168,7 +172,7 @@
   ))
 
 
-(fact "register-instruction throws an exception if a token is reassigned (backwards compatability)"
+(fact "register-instruction throws an exception if a token is reassigned (because that's what Clojush does)"
   (let [foo (make-instruction :foo)]
     (register-instruction (register-instruction (make-interpreter) foo) foo) =>
       (throws Exception "Push Instruction Redefined:':foo'")
