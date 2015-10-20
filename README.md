@@ -11,6 +11,7 @@ The project uses [Midje](https://github.com/marick/Midje/) and Clojure 1.7.
   - implement `make-interpreter` constructor with core types
   - "router" structure for handling literals
   - `step` and `run` functions
+  - new "register instruction" function(s)
   - basic `:integer` instructions
   - basic `:boolean` instructions
   - handle `:input` values
