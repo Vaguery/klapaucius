@@ -50,6 +50,12 @@
       (assoc-in interpreter [:instructions (:token instruction)] instruction))))
 
 
+(defn execute-instruction
+  "Takes an Intergreter and a token, and executes the registered Instruction using the Interpreter as the (only) argument."
+  [interpreter token]
+  ( (:function (get-in interpreter [:instructions token])) interpreter ))
+
+
 (defn push-item
   "Takes an Interpreter, a keyword (naming a stack) and a Clojure expression, and returns the Interpreter with the item pushed onto the specified stack. If the stack doesn't already exist, it is created."
   [interpreter stack item]

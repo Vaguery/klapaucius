@@ -87,7 +87,15 @@
   ))
 
 
-; (fact "execute-instruction applies the named instruction to the Interpreter itself")
+(fact "execute-instruction applies the named instruction to the Interpreter itself"
+  (let [foo (make-instruction :foo :function (fn [a] 99))
+        bar (make-instruction :bar)
+        he-knows-foo (register-instruction
+          (register-instruction (make-interpreter) foo) bar)]
+    (keys (:instructions he-knows-foo)) => (just :foo :bar)
+    (execute-instruction he-knows-foo :foo) => 99
+    (execute-instruction he-knows-foo :bar) => he-knows-foo
+  ))
 
 ;; utilities and helpers
 
