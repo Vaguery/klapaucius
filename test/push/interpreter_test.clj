@@ -133,6 +133,14 @@
     '("baz" "bar"))
 
 
+(fact "route-item 'unwraps' quoted lists onto :exec"
+  (get-stack :exec (route-item (make-interpreter) '(1 2 3))) => '(1 2 3)
+  (get-stack :exec (route-item (make-interpreter) '(1 (2) (3)))) => '(1 (2) (3))
+  (get-stack :exec (route-item (make-interpreter) '(1 () ()))) => '(1 () ())
+  (get-stack :exec (route-item (make-interpreter) '())) => '()
+  )
+
+
 ;; process-expression
 
 

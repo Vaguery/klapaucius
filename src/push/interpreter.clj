@@ -36,6 +36,14 @@
   ))
 
 
+(defn load-items
+  "Takes an Interpreter, a stack name, and a seq, and conj'es each item onto the named stack of the interpreter (using Clojure's `into` transducer). Used primarily for loading code onto the :exec stack."
+  [interpreter stack item-list]
+  (let [old-stack (get-in interpreter [:stacks stack])]
+    (assoc-in interpreter [:stacks stack] (into old-stack (reverse item-list))))
+  )
+
+
 (defn get-stack
   "A convenience function which returns the named stack from the interpreter"
   [stack interpreter]
@@ -57,6 +65,7 @@
     (char? item) (push-item interpreter :char item)
     (float? item) (push-item interpreter :float item)
     (string? item) (push-item interpreter :string item)
+    (list? item) (load-items interpreter :exec item)
     :else (throw
       (Exception. (str "Push Parsing Error: Cannot interpret '" item "' as a Push item.")))
   ))
