@@ -1,7 +1,7 @@
 (ns push.interpreter)
 
 
-(defrecord Interpreter [program stacks])
+(defrecord Interpreter [program stacks instructions])
 
 
 (def core-stacks
@@ -19,13 +19,37 @@
 
 (defn make-interpreter
   "creates a new Interpreter record
-  If no arguments are given, the Interpreter has an empty :program and ony core :stacks;
-  if a program is given, it is stored;
-  if a hashmap of stack values is given, that is merged onto the core empty stacks."
-  ([] (make-interpreter []))
-  ([program] (->Interpreter program core-stacks))
-  ([program stacks] (->Interpreter program (merge core-stacks stacks)))
+  If no arguments are given, the Interpreter has an empty :program and only the core :stacks;
+  if a program is given, that is stored;
+  if a hashmap of stack values is given, that is merged onto the core empty stacks;
+  the :instructions registry defaults to an empty map, or is used as received."
+  ([] (make-interpreter [] {}))
+  ([program] (->Interpreter program core-stacks {}))
+  ([program stacks] (->Interpreter program (merge core-stacks stacks) {}))
   )
+
+
+(defrecord Instruction [token needs makes function])
+
+
+(defn make-instruction
+  "creates a new Instruction record instance"
+  [token & {
+    :keys [needs makes function] 
+    :or { needs {}
+          makes {}
+          function identity}}]
+  (->Instruction token needs makes function))
+
+
+(defn register-instruction
+  "Takes an Interpreter and an Instruction, and attempts to add the Instruction to the :instructions map of the Interpreter, keyed by its :token."
+  [interpreter instruction]
+  (let [token (:token instruction)
+        registry (:instructions interpreter)]
+    (if (contains? registry token)
+      (throw (Exception. (str "Push Instruction Redefined:'" token "'")))
+      (assoc-in interpreter [:instructions (:token instruction)] instruction))))
 
 
 (defn push-item
@@ -71,7 +95,3 @@
   ))
 
 
-(defn process-expression
-  "takes an Interpreter and any Clojure item, and 'executes' the item within the Interpreter, as if it had been taken from the :exec stack: a literal is processed and sent to the router, an instruction is looked up in the registry, and so forth"
-  [interpreter expression]
-  (handle-item interpreter expression))

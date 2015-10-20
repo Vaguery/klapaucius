@@ -15,6 +15,9 @@
   (:program (make-interpreter [1 2 3])) => [1 2 3])
 
 
+(fact "a new Interpreter will have an :instructions map"
+  (:instructions (make-interpreter)) => {})
+
 ;; stacks
 
 
@@ -141,13 +144,35 @@
   )
 
 
-;; process-expression
+;; instructions
+
+;; make-instruction
 
 
-(fact "process-expression 'interprets' a specified Clojure expression in the interpreter"
-  (let [dumb-interpreter (make-interpreter)]
-    (get-stack :integer (process-expression dumb-interpreter 8)) => '(8)
-    ))
+(fact "creates a new Instruction record with default values"
+  (:token (make-instruction :foo)) => :foo
+  (:needs (make-instruction :foo)) => {}
+  (:makes (make-instruction :foo)) => {}
+  (:function (make-instruction :foo)) => identity
+  )
+
+
+;; register-instruction
+
+
+(fact "register-instruction adds an Instruction to the registry in a specified Interpreter"
+  (let [foo (make-instruction :foo)]
+    (keys (:instructions 
+      (register-instruction (make-interpreter) foo))) => '(:foo)
+    (:foo (:instructions (register-instruction (make-interpreter) foo))) => foo
+  ))
+
+
+(fact "register-instruction throws an exception if a token is reassigned (backwards compatability)"
+  (let [foo (make-instruction :foo)]
+    (register-instruction (register-instruction (make-interpreter) foo) foo) =>
+      (throws Exception "Push Instruction Redefined:':foo'")
+  ))
 
 
 ;; step-interpreter
