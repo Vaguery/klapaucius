@@ -56,8 +56,8 @@
   (or (false? item) (true? item)))
 
 
-(defn route-item
-  "Takes an Interpreter and an item, and sends the item to the correct stack (if any). Throws an exception if the Clojure expression is not recognized explicitly as a Push literal."
+(defn handle-item
+  "Takes an Interpreter and an item, and either recognizes and invokes a keyword registered in that Interpreter as an instruction, or sends the item to the correct stack (if it exists). Throws an exception if the Clojure expression is not recognized explicitly as a registered instruction or some other kind of Push literal."
   [interpreter item]
   (cond
     (integer? item) (push-item interpreter :integer item)
@@ -74,4 +74,4 @@
 (defn process-expression
   "takes an Interpreter and any Clojure item, and 'executes' the item within the Interpreter, as if it had been taken from the :exec stack: a literal is processed and sent to the router, an instruction is looked up in the registry, and so forth"
   [interpreter expression]
-  (route-item interpreter expression))
+  (handle-item interpreter expression))
