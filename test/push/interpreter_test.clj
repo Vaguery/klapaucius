@@ -18,8 +18,6 @@
 (fact "a new Interpreter will have an :instructions map"
   (:instructions (make-interpreter)) => {})
 
-;; stacks
-
 
 (fact "the core stack types are defined"
   (keys core-stacks) =>  (contains [:boolean
@@ -45,6 +43,52 @@
   (get-stack :foo (make-interpreter :stacks {:foo '(7 6 5)})) => '(7 6 5))
 
 
+;; instructions
+
+;; make-instruction
+
+
+(fact "make-instruction creates a new Instruction record with default values"
+  (:token (make-instruction :foo)) => :foo
+  (:needs (make-instruction :foo)) => {}
+  (:makes (make-instruction :foo)) => {}
+  (:function (make-instruction :foo)) => identity
+  )
+
+
+(fact "make-instruction accepts a :needs argument"
+  (:needs (make-instruction :foo :needs {:integer 2})) => {:integer 2})
+
+
+(fact "make-instruction accepts a :makes argument"
+  (:makes (make-instruction :foo :makes {:boolean 3})) => {:boolean 3})
+
+
+(fact "make-instruction accepts a :function argument"
+  (let [fake_fn 88123]
+     (:function (make-instruction :foo :function fake_fn)) => fake_fn))
+
+
+;; register-instruction
+
+
+(fact "register-instruction adds an Instruction to the registry in a specified Interpreter"
+  (let [foo (make-instruction :foo)]
+    (keys (:instructions 
+      (register-instruction (make-interpreter) foo))) => '(:foo)
+    (:foo (:instructions (register-instruction (make-interpreter) foo))) => foo
+  ))
+
+
+(fact "register-instruction throws an exception if a token is reassigned (because that's what Clojush does)"
+  (let [foo (make-instruction :foo)]
+    (register-instruction (register-instruction (make-interpreter) foo) foo) =>
+      (throws Exception "Push Instruction Redefined:':foo'")
+  ))
+
+
+; (fact "execute-instruction applies the named instruction to the Interpreter itself")
+
 ;; utilities and helpers
 
 
@@ -67,6 +111,15 @@
   (boolean? false) => true
   (boolean? nil) => false
   (boolean? '()) => false)
+
+
+(fact "instruction? checks that an item is a registered Instruction in a given Interpreter"
+ (let [foo (make-instruction :foo)
+       registry {:foo foo}
+       he-knows-foo (make-interpreter :instructions registry)]
+   (instruction? he-knows-foo :foo) => true
+   (instruction? he-knows-foo :bar) => false))
+
 
 
 ;; dealing with stack items
@@ -147,37 +200,7 @@
   (get-stack :exec (handle-item (make-interpreter) '())) => '()
   )
 
-
-;; instructions
-
-;; make-instruction
-
-
-(fact "creates a new Instruction record with default values"
-  (:token (make-instruction :foo)) => :foo
-  (:needs (make-instruction :foo)) => {}
-  (:makes (make-instruction :foo)) => {}
-  (:function (make-instruction :foo)) => identity
-  )
-
-
-;; register-instruction
-
-
-(fact "register-instruction adds an Instruction to the registry in a specified Interpreter"
-  (let [foo (make-instruction :foo)]
-    (keys (:instructions 
-      (register-instruction (make-interpreter) foo))) => '(:foo)
-    (:foo (:instructions (register-instruction (make-interpreter) foo))) => foo
-  ))
-
-
-(fact "register-instruction throws an exception if a token is reassigned (because that's what Clojush does)"
-  (let [foo (make-instruction :foo)]
-    (register-instruction (register-instruction (make-interpreter) foo) foo) =>
-      (throws Exception "Push Instruction Redefined:':foo'")
-  ))
-
+; (fact "handle-item executes instructions that are registered")
 
 ;; step-interpreter
 

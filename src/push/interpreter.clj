@@ -78,6 +78,13 @@
   (or (false? item) (true? item)))
 
 
+(defn instruction?
+  "takes an Interpreter and a keyword, and returns true if the keyword is a key of the :instructions registry in that Interpreter instance"
+  [interpreter token]
+  (contains? (:instructions interpreter) token))
+
+
+
 (defn handle-item
   "Takes an Interpreter and an item, and either recognizes and invokes a keyword registered in that Interpreter as an instruction, or sends the item to the correct stack (if it exists). Throws an exception if the Clojure expression is not recognized explicitly as a registered instruction or some other kind of Push literal."
   [interpreter item]
