@@ -66,3 +66,11 @@
     (record-nth-as float1 :float (mod int1 (count-of :float)))
     (send-to :float float1)]
     )
+
+
+(def-pushinstruction
+  exec-noop
+  :doc "Does nothing."
+  :tags [:core]
+  ;; everything else is default behavior
+  )
