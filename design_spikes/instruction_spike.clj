@@ -28,5 +28,41 @@
 :float_yankdup [
   #(consume-as % int1 :integer)
   #(record-nth-as % float1 :float (mod int1 (count-of :float)))
-  #(send-to % :float record-nth-as)]
+  #(send-to % :float float1)]
 }
+
+
+;; the more complete instruction creator would be something like
+
+(def-pushinstruction
+  integer-add
+  :doc "adds two :integers"
+  :needs {:integer 2}
+  :makes {:integer 1}
+  :tags [:arithmetic :core]
+    (consume-as int1 :integer)
+    (consume-as int2 :integer)
+    (send-to :integer (+ int1 int2))
+    )
+
+
+(def-pushinstruction
+  boolean-flush
+  :doc "empties the :boolean stack"
+  :needs {:boolean 0}
+  :tags [:combinator :core]
+  :transaction
+    (discard-stack :boolean)
+    )
+
+
+(def-pushinstruction
+  float-yankdup
+  :doc "Takes an :integer, and copies the indicated nth item (modulo the :float stack size) on the :float stack to the top; so if the :integer is 12 and the :float stack has 5 items, the (mod 12 5) item is copied to the top as a new 6th item."
+  :needs {:integer 1 :float 1}
+  :tags [:core :combinator]
+  :transaction
+    (consume-as int1 :integer)
+    (record-nth-as float1 :float (mod int1 (count-of :float)))
+    (send-to :float float1)]
+    )
