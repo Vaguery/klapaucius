@@ -36,7 +36,7 @@
     :keys [needs makes function] 
     :or { needs {}
           makes {}
-          function identity}}]
+          function identity }}]
   (->Instruction token needs makes function))
 
 
@@ -50,14 +50,41 @@
       (assoc-in interpreter [:instructions (:token instruction)] instruction))))
 
 
-(defn execute-instruction
-  "Takes an Intergreter and a token, and executes the registered Instruction using the Interpreter as the (only) argument."
+(defn contains-at-least?
+  "Takes an interpreter, a stack name, and a count; returns true if the named stack exists, and has at least that many items on it"
+  [interpreter stack limit]
+  (let [that-stack (get-in interpreter [:stacks stack])]
+    (and 
+      (<= limit (count that-stack))
+      (some? that-stack))))
+
+
+(defn ready-for-instruction?
+  "Takes an Interpreter (with registered instructions) and a keyword instruction token, and returns true if the number of items on the stacks meets or exceeds all the specified :needs for that instruction. Returns false if the instruction is not registered."
   [interpreter token]
-  ( (:function (get-in interpreter [:instructions token])) interpreter ))
+  (let [needs (get-in interpreter [:instructions token :needs])
+        recognized (contains? (:instructions interpreter) token)]
+    (and
+      recognized
+      (reduce-kv
+        (fn [truth k v] (and truth (contains-at-least? interpreter k v)))
+        true
+        needs))))
+
+
+(defn execute-instruction
+  "Takes an Intergreter and a token, and executes the registered Instruction using the Interpreter as the (only) argument. Raises an exception if the token is not registered."
+  [interpreter token]
+  (let [unrecognized (not (contains? (:instructions interpreter) token))
+        ready (ready-for-instruction? interpreter token)]
+  (cond
+    unrecognized (throw (Exception. (str "Unknown Push instruction:'" token "'")))
+    ready  ((:function (get-in interpreter [:instructions token])) interpreter)
+    :else interpreter)))
 
 
 (defn push-item
-  "Takes an Interpreter, a keyword (naming a stack) and a Clojure expression, and returns the Interpreter with the item pushed onto the specified stack. If the stack doesn't already exist, it is created."
+  "Takes an Interpreter, a stack name and a Clojure expression, and returns the Interpreter with the item pushed onto the specified stack. If the stack doesn't already exist, it is created."
   [interpreter stack item]
   (let [old-stack (get-in interpreter [:stacks stack])]
     (assoc-in interpreter [:stacks stack] (conj old-stack item))))
@@ -72,7 +99,13 @@
 
 (defn get-stack
   "A convenience function which returns the named stack from the interpreter"
-  [stack interpreter]
+  [interpreter stack]
+  (get-in interpreter [:stacks stack]))
+
+
+(defn set-stack
+  "A convenience function which replaces the named stack with the indicated list"
+  [interpreter stack new-value]
   (get-in interpreter [:stacks stack]))
 
 
