@@ -168,6 +168,11 @@
   (get-stack (make-interpreter) :integer) => '())
 
 
+(fact "set-stack replaces a stack completely"
+  (get-stack (set-stack (make-interpreter) :integer '(1 2 3)) :integer) => '(1 2 3)
+  )
+
+
 (fact "boolean? checks that an item is specifically one of the LITERALS true or false"
   (boolean? 8) => false
   (boolean? true) => true

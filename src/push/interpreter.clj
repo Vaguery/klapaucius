@@ -106,7 +106,7 @@
 (defn set-stack
   "A convenience function which replaces the named stack with the indicated list"
   [interpreter stack new-value]
-  (get-in interpreter [:stacks stack]))
+  (assoc-in interpreter [:stacks stack] new-value))
 
 
 (defn boolean?
