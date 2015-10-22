@@ -113,6 +113,14 @@
 ;; but that might be much harder to read :/
 
 
+;; a simpler version yet (using an invisible stack inside the Interpreter itself, maybe?):
+;; (grab :integer)
+;; (grab :integer)
+;; (place :integer #(+ %1 %2))
+
+
+
+
 ; (def-pushinstruction
 ;   integer-add
 ;   :doc "adds two :integers"
