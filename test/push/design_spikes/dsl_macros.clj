@@ -178,6 +178,7 @@
 ;; (place :integer #(- (my :int2) (my :int1)))
 
 
+;; counting arguments
 
 ; (def-pushinstruction
 ;   integer-add
