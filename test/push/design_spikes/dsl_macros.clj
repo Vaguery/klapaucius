@@ -64,13 +64,6 @@
 (def six-ints (make-interpreter :stacks {:integer '(6 5 4 3 2 1)}))
 
 
-(defrecord PushDslState [interpreter locals])
-
-
-(defn make-PushDslState
-  "creates a PushDslState record"
-  ([interpreter] (make-PushDslState interpreter {}))
-  ([interpreter locals] (->PushDslState interpreter locals)))
 
 
 (defn store-local
