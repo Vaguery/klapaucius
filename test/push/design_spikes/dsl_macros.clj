@@ -31,6 +31,8 @@
 ; - `consume-stack [stackname :as local]`
 ;    save the entire stack into `local` and clear it
 ;    raise an Exception if it's undefined
+; - `remember [args fn :as local]
+;    save the result of applying `fn` to the named `args` under key `local`
 ; - `remember [stackname :as local]`
 ;    store top item from `stackname` under key `local`
 ;    raise an Exception if it's empty or undefined
@@ -40,14 +42,21 @@
 ; - `remember-stack [stackname :as local]`
 ;    save the entire stack to the `local`
 ;    raise an Exception if it's undefined
-; - `place [stackname item]`
-;    push the item to the named stack
+; - `place [stackname args fn]`
+;    push the results of applying `fn` to the named `args` to the named stack
 ;    raise an Exception if it's undefined
 ; - `replace-stack [stackname new-stack]`
 ;    replace the indicated stack with a new list
 ;    raise an exception if it's undefined
-; - `calculate [fn :as local]
-;    save the result of `fn` under key `local`
+
+
+; restrictions are your friend:
+; every time a `consume` appears, we know one more item is needed from that stack
+; every time `consume-stack` or `count-of` appears, we know we need that type
+; every time `remember stackname :as` happens, we know we need at least 1 item
+; etc ... 
+; In other words, the :needs can be inferred for each instruction from its DSL definition
+
 
 ;; And I THINK that supports all defined Push instructions I've ever seen....
 
@@ -104,6 +113,18 @@
     (:locals (clear-locals foo)) => nil))
 
 
+(defn recall
+  [interpreter k]
+  (get-in interpreter [:locals k]))
+
+
+(fact "recall retrieves a named item from :locals of its interpreter"
+  (let [foo (store-local (make-interpreter) :foo 8)]
+  (recall foo :foo) => 8))
+
+;;
+
+
 (defn consume
   [interpreter stack & {:keys [as]}]
   (let [old-stack (get-stack interpreter stack)]
@@ -134,17 +155,35 @@
 
 
 (defn place
-  [interpreter stack args function]
-  (let [result (apply function (map (:locals interpreter) args))]
+  [interpreter stack function]
+  (let [result (apply function [interpreter])]
     (push-item interpreter stack result)))
 
 
-(fact "`place` will apply the specified inline function to the dslstate locals named"
+(fact "`place` will apply the specified inline function to the interpreter"
   (let [integer-added (-> six-ints
                         (consume :integer :as :int1)
                         (consume :integer :as :int2)
-                        (place :integer [:int1 :int2] #(+ %1 %2)))]
-  (get-stack integer-added :integer) => '(11 4 3 2 1))) ;; 
+                        (place :integer #(+ (recall % :int1) (recall % :int2))))]
+  (get-stack integer-added :integer) => '(11 4 3 2 1)))
+
+
+(fact "`place` pays attention the argument order"
+  (let [integer-subtracted (-> six-ints
+                        (consume :integer :as :int1)
+                        (consume :integer :as :int2)
+                        (place :integer #(- (recall % :int1) (recall % :int2))))]
+  (get-stack integer-subtracted :integer) => '(1 4 3 2 1)) 
+  (let [integer-subtracted (-> six-ints
+                        (consume :integer :as :int1)
+                        (consume :integer :as :int2)
+                        (place :integer #(- (recall % :int2) (recall % :int1))))]
+  (get-stack integer-subtracted :integer) => '(-1 4 3 2 1)))
+
+
+;; this would be nicer if it was 
+;; (place :integer #(- (my :int2) (my :int1)))
+
 
 
 ; (def-pushinstruction
@@ -177,9 +216,9 @@
 ;   :transaction
 ;     (consume :integer :as :int1)
 ;     (count-of :float :as :how-many)
-;     ????? this one's not so obvious yet
-;     (remember :float :at (mod int1 ) :as :float1)
-;     (place :float float1)]
+;     (calculate [:how-many :int1] #(mod %1 %2) :as :which)
+;     (remember :float :at :which :as :float1)
+;     (place :float (recall :float1))]
 ;     )
 
 
