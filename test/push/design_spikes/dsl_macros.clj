@@ -42,8 +42,8 @@
 ; - `remember-stack [stackname :as local]`
 ;    save the entire stack to the `local`
 ;    raise an Exception if it's undefined
-; - `place [stackname args fn]`
-;    push the results of applying `fn` to the named `args` to the named stack
+; - `place [stackname args kwd]`
+;    push the local `kwd` on the named stack
 ;    raise an Exception if it's undefined
 ; - `replace-stack [stackname new-stack]`
 ;    replace the indicated stack with a new list
@@ -64,118 +64,85 @@
 (def six-ints (make-interpreter :stacks {:integer '(6 5 4 3 2 1)}))
 
 
-
-
 (defn store-local
-  "adds a local kv pair to an Interpreter's :local map"
-  [interpreter k v]
-  (if (nil? (:locals interpreter))
-    (assoc interpreter :locals {k v})
-    (assoc-in interpreter [:locals k] v)))
+  "stores a local kv pair"
+  [[interpreter locals] k v]
+  (into [] (list interpreter (assoc locals k v))))
 
 
-(fact "store-local creates a :locals store if needed"
-  (:locals (make-interpreter)) => nil
-  (:locals (store-local (make-interpreter) :foo 8)) => {:foo 8})
-
-
-(fact "store-local amends an existing :locals store"
-  (let [foo (store-local (make-interpreter) :foo 8)]
-  (:locals (store-local foo :bar 9)) => {:foo 8, :bar 9}))
+(fact "store-local saves thing to the locals hashmap"
+  (second (store-local [(make-interpreter) {}] :foo 8)) => {:foo 8}
+  (let [foo (store-local [(make-interpreter) {}] :foo 8)]
+    (second (store-local foo :bar 9)) => {:foo 8, :bar 9}))
 
 
 (fact "store-local can overwrite an existing :locals value"
-  (let [foo (store-local (make-interpreter) :foo 8)]
-  (:locals (store-local foo :foo 999)) => {:foo 999}))
-
-
-(defn clear-locals
-  "deletes the :locals key from an Interpreter"
-  [interpreter]
-  (dissoc interpreter :locals))
-
-
-(fact "clear-locals returns a thing that's still an Interpreter"
-  (class (clear-locals (make-interpreter))) => push.interpreter.Interpreter
-  (let [foo (store-local (make-interpreter) :foo 8)]
-    (class (clear-locals foo)) => push.interpreter.Interpreter))
-
-
-(fact "clear-locals also does what it's supposed to do"
-  (let [foo (store-local (make-interpreter) :foo 8)]
-    (:locals (clear-locals foo)) => nil))
-
-
-(defn recall
-  [interpreter k]
-  (get-in interpreter [:locals k]))
-
-
-(fact "recall retrieves a named item from :locals of its interpreter"
-  (let [foo (store-local (make-interpreter) :foo 8)]
-  (recall foo :foo) => 8))
-
-;;
+  (let [foo (store-local [(make-interpreter) {}] :foo 8)]
+    (second (store-local foo :foo 999)) => {:foo 999}))
 
 
 (defn consume
-  [interpreter stack & {:keys [as]}]
+  [[interpreter locals] stack & {:keys [as]}]
   (let [old-stack (get-stack interpreter stack)]
-    (if (empty? old-stack)
-      (throw (Exception. (str "Push DSL Error: " stack " is empty")))
-      (store-local
-        (set-stack interpreter stack (pop old-stack))
-          as
-          (first old-stack)))
-      ))
+    (cond (empty? old-stack)
+            (throw (Exception. (str "Push DSL Error: " stack " is empty")))
+          (nil? as)
+            [(set-stack interpreter stack (pop old-stack)) locals]
+          :else
+            (store-local
+              [(set-stack interpreter stack (pop old-stack)) locals]
+              as
+              (first old-stack)))))
 
 
-(fact "consume returns an :interpreter with new locals"
-  (:locals (consume six-ints :integer :as :int1)) => {:int1 6}
-  (get-stack (consume six-ints :integer :as :int1) :integer) => '(5 4 3 2 1))
+(defn get-stack-from-dslblob ;; convenience for testing only
+  [[interpreter locals] stackname]
+  (get-stack interpreter stackname))
+
+
+(fact "consume"
+  (second (consume [six-ints {}] :integer :as :int1)) => {:int1 6}
+  (get-stack-from-dslblob
+    (consume [six-ints {}] :integer :as :int1)
+    :integer) => '(5 4 3 2 1))
 
 
 (fact "consume throws an exception if the stack is empty"
-  (:locals (consume six-ints :boolean :as :nope)) => (throws #"Push DSL Error:"))
+  (consume [six-ints {}] :boolean :as :nope) => (throws #"Push DSL Error:"))
 
 
 (fact "consume can be thread-firsted"
-  (let [two-popped (->  six-ints
+  (let [two-popped (->  [six-ints {}]
                         (consume :integer :as :int1)
                         (consume :integer :as :int2))]
-    (:locals two-popped) => {:int1 6, :int2 5}
-    (get-stack two-popped :integer) => '(4 3 2 1)))
+    (second two-popped) => {:int1 6, :int2 5}
+    (get-stack-from-dslblob two-popped :integer) => '(4 3 2 1)))
+
+
+(fact "consume with no :as argument just throws the thing away"
+  (let [two-popped (->  [six-ints {}]
+                        (consume :integer)
+                        (consume :integer :as :int2))]
+    (second two-popped) => {:int2 5}
+    (get-stack-from-dslblob two-popped :integer) => '(4 3 2 1)))
+
 
 
 (defn place
-  [interpreter stack function]
-  (let [result (apply function [interpreter])]
-    (push-item interpreter stack result)))
+  "pushes a named local onto a given stack"
+  [[interpreter locals] stack kwd]
+  (let [item (kwd locals)
+        updated (push-item interpreter stack item)]
+  (into [] (list updated locals))))
 
 
-(fact "`place` will apply the specified inline function to the interpreter"
-  (let [integer-added (-> six-ints
+(fact "`place` will push the saved local value to the indicated stack in the interpreter"
+  (let [integer-added (-> [six-ints {}]
                         (consume :integer :as :int1)
                         (consume :integer :as :int2)
-                        (place :integer #(+ (recall % :int1) (recall % :int2))))]
-  (get-stack integer-added :integer) => '(11 4 3 2 1)))
+                        (place :boolean :int1))]      
+    (get-stack-from-dslblob integer-added :boolean) => '(6)))
 
-
-(fact "`place` pays attention the argument order"
-  (let [integer-subtracted (-> six-ints
-                        (consume :integer :as :int1)
-                        (consume :integer :as :int2)
-                        (place :integer #(- (recall % :int1) (recall % :int2))))]
-  (get-stack integer-subtracted :integer) => '(1 4 3 2 1)) 
-  (let [integer-subtracted (-> six-ints
-                        (consume :integer :as :int1)
-                        (consume :integer :as :int2)
-                        (place :integer #(- (recall % :int2) (recall % :int1))))]
-  (get-stack integer-subtracted :integer) => '(-1 4 3 2 1)))
-
-
-;; this would be nicer if it was 
-;; (place :integer #(- (my :int2) (my :int1)))
 
 
 ;; counting arguments
