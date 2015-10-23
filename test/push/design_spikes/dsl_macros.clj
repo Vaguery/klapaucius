@@ -11,40 +11,51 @@
 
 ;; The DSL for Push instructions could be a series of simple steps.
 ;; Everything would be assumed to happen inside one interpreter, and the interpreter
-;; (and some store of local scratch vars) would be passed step-to-step.
+;; (and some store of scratch vars) would be passed step-to-step.
 ;;
 ; - `count-of [stackname :as local]`
 ;    store the number of items in `stackname` under key `local`
 ;    raise an Exception if the stack doesn't exist
-; - `consume [stackname]`
+
+; + `consume [stackname]`
 ;    pop an item (and discard it) from `stackname`
 ;    raise an Exception if it's empty or undefined
-; - `consume [stackname :as local]`
+
+; + `consume [stackname :as local]`
 ;    pop an item from `stackname` and store under key `local`
 ;    raise an Exception if it's empty or undefined
+
 ; - `consume [stackname :at where :as local]`
 ;    delete an item from `stackname` at position `where` and store under key `local`
 ;    raise an Exception if it's empty or undefined
+
 ; - `consume-stack [stackname]`
 ;    clear the named stack
 ;    raise an Exception if it's undefined
+
 ; - `consume-stack [stackname :as local]`
 ;    save the entire stack into `local` and clear it
 ;    raise an Exception if it's undefined
-; - `remember [args fn :as local]
+
+; + `remember [args fn :as local]
 ;    save the result of applying `fn` to the named `args` under key `local`
+
 ; - `remember [stackname :as local]`
 ;    store top item from `stackname` under key `local`
 ;    raise an Exception if it's empty or undefined
+
 ; - `remember [stackname :at where :as local]`
 ;    store item in `stackname` at position `where` under key `local`
 ;    raise an Exception if it's empty or undefined
+
 ; - `remember-stack [stackname :as local]`
 ;    save the entire stack to the `local`
 ;    raise an Exception if it's undefined
+
 ; - `place [stackname args kwd]`
 ;    push the local `kwd` on the named stack
 ;    raise an Exception if it's undefined
+
 ; - `replace-stack [stackname new-stack]`
 ;    replace the indicated stack with a new list
 ;    raise an exception if it's undefined
@@ -67,7 +78,8 @@
 (defn store-local
   "stores a local kv pair"
   [[interpreter locals] k v]
-  (into [] (list interpreter (assoc locals k v))))
+  (vector interpreter (assoc locals k v)))
+
 
 
 (fact "store-local saves thing to the locals hashmap"
@@ -138,14 +150,63 @@
 
 (fact "`place` will push the saved local value to the indicated stack in the interpreter"
   (let [integer-added (-> [six-ints {}]
-                        (consume :integer :as :int1)
-                        (consume :integer :as :int2)
-                        (place :boolean :int1))]      
+                          (consume :integer :as :int1)
+                          (consume :integer :as :int2)
+                          (place :boolean :int1))]      
     (get-stack-from-dslblob integer-added :boolean) => '(6)))
 
 
+(defn remember-calc
+  [[interpreter locals] args function & {:keys [as]}]
+  (if (nil? as)
+    (vector interpreter locals)
+    (let [result (apply function (map locals args))]
+      (vector interpreter (assoc locals as result)))))
 
-;; counting arguments
+
+(fact "remember-calc stores the result of a calculation in a named local"
+  (let [integer-added (-> [six-ints {}]
+                          (consume :integer :as :int1)
+                          (consume :integer :as :int2)
+                          (remember-calc [:int1 :int2] #(+ %1 %2) :as :sum))]
+  (second integer-added) => {:int1 6, :int2 5, :sum 11}))
+
+
+(fact "remember-calc has no effect if :as is not specified"
+  (let [integer-added (-> [six-ints {}]
+                        (consume :integer :as :int1)
+                        (consume :integer :as :int2)
+                        (remember-calc [:int1 :int2] #(+ %1 %2)))]
+  (second integer-added) => {:int1 6, :int2 5}))
+
+
+;; check for nil :as key
+
+
+(defn remember-top
+  [[interpreter locals] stackname & {:keys [as]}]
+  (if (nil? as)
+    (vector interpreter locals)
+    (let [result (first (get-stack interpreter stackname))]
+      (into [] (list interpreter (assoc locals as result))))))
+
+
+(fact "remember-top stores the top item of a named stack"
+  (let [integer-added (-> [six-ints {}]
+                          (consume :integer :as :int1)
+                          (consume :integer :as :int2)
+                          (remember-top :integer :as :third))]
+  (second integer-added) => {:int1 6, :int2 5, :third 4}))
+
+
+(fact "remember-top has no effect if :as is not specified"
+  (let [integer-added (-> [six-ints {}]
+                        (consume :integer :as :int1)
+                        (consume :integer :as :int2)
+                        (remember-top :integer))]
+  (second integer-added) => {:int1 6, :int2 5}))
+
+
 
 ; (def-pushinstruction
 ;   integer-add
