@@ -56,8 +56,9 @@
 ;    push the local `kwd` on the named stack
 ;    raise an Exception if it's undefined
 
-; - `replace-stack [stackname new-stack]`
-;    replace the indicated stack with a new list
+; + `replace-stack [stackname kwd]`
+;    replace the indicated stack with the local variable
+;    if it's a list, replace the stack; if it's not a list, make it the only item
 ;    raise an exception if it's undefined
 
 
@@ -249,6 +250,28 @@
                         (consume :integer :as :int2)
                         (remember-stack :integer))]
   (second integer-munged) => {:int1 6, :int2 5}))
+
+
+(defn replace-stack
+  [[interpreter scratch] stackname kwd]
+  (let [new-val (kwd scratch)
+        new-stack (if (list? new-val) new-val (list new-val))
+        result (set-stack interpreter stackname new-stack)]
+      (vector result scratch)))
+
+
+(fact "replace-stack replaces the entire stack with the named value from scratch"
+  (let [totally-made-up (-> [six-ints {}]
+                            (remember-calc [] #(list 1 2 3 5 8) :as :fibs)
+                            (replace-stack :integer :fibs))]
+  (get-stack-from-dslblob totally-made-up :integer) => '(1 2 3 5 8)))
+
+
+(fact "replace-stack replaces the entire stack with the item in a list"
+  (let [integer-munged (-> [six-ints {}]
+                          (consume :integer :as :int1)
+                          (replace-stack :integer :int1))]
+  (get-stack-from-dslblob integer-munged :integer) => '(6)))
 
 
 ; (def-pushinstruction
