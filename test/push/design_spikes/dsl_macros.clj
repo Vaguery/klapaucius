@@ -213,6 +213,17 @@
   (second integer-munged) => {:int1 6, :int2 5, :third 3}))  ;; 4 *3* 2 1
 
 
+(fact "remember-nth stores the nth item of a named stack MODULO its actual length"
+  (let [integer-munged (->  [six-ints {}]
+                            (remember-nth :integer :at 99 :as :99th )
+                            (remember-nth :integer :at -8 :as :minus8th))]
+  (second integer-munged) => {:99th 3, :minus8th 2}
+  (get-stack-from-dslblob integer-munged :integer) => '(6 5 4 3 2 1)
+  (mod 99 6) => 3   ;; 6 5 4 *3* 2 1
+  (mod -8 6) => 4)) ;; 6 5 4 3 *2* 1
+
+
+
 (fact "remember-nth has no effect if :as is not specified"
   (let [integer-munged (-> [six-ints {}]
                         (consume :integer :as :int1)
