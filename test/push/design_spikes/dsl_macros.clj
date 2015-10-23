@@ -48,11 +48,11 @@
 ;    store item in `stackname` at position `where` under key `local`
 ;    raise an Exception if it's empty or undefined
 
-; - `remember-stack [stackname :as local]`
+; + `remember-stack [stackname :as local]`
 ;    save the entire stack to the `local`
 ;    raise an Exception if it's undefined
 
-; - `place [stackname args kwd]`
+; + `place [stackname args kwd]`
 ;    push the local `kwd` on the named stack
 ;    raise an Exception if it's undefined
 
@@ -65,40 +65,40 @@
 (def six-ints (make-interpreter :stacks {:integer '(6 5 4 3 2 1)}))
 
 
-(defn store-local
-  "stores a local kv pair"
-  [[interpreter locals] k v]
-  (vector interpreter (assoc locals k v)))
+
+(defn store-scratch
+  "stores a scratch kv pair; convenience function for DSL"
+  [[interpreter scratch] k v]
+  (vector interpreter (assoc scratch k v)))
 
 
+(fact "store-scratch saves thing to the scratch hashmap"
+  (second (store-scratch [(make-interpreter) {}] :foo 8)) => {:foo 8}
+  (let [foo (store-scratch [(make-interpreter) {}] :foo 8)]
+    (second (store-scratch foo :bar 9)) => {:foo 8, :bar 9}))
 
-(fact "store-local saves thing to the locals hashmap"
-  (second (store-local [(make-interpreter) {}] :foo 8)) => {:foo 8}
-  (let [foo (store-local [(make-interpreter) {}] :foo 8)]
-    (second (store-local foo :bar 9)) => {:foo 8, :bar 9}))
 
-
-(fact "store-local can overwrite an existing :locals value"
-  (let [foo (store-local [(make-interpreter) {}] :foo 8)]
-    (second (store-local foo :foo 999)) => {:foo 999}))
+(fact "store-scratch can overwrite an existing :scratch value"
+  (let [foo (store-scratch [(make-interpreter) {}] :foo 8)]
+    (second (store-scratch foo :foo 999)) => {:foo 999}))
 
 
 (defn consume
-  [[interpreter locals] stack & {:keys [as]}]
+  [[interpreter scratch] stack & {:keys [as]}]
   (let [old-stack (get-stack interpreter stack)]
     (cond (empty? old-stack)
             (throw (Exception. (str "Push DSL Error: " stack " is empty")))
           (nil? as)
-            [(set-stack interpreter stack (pop old-stack)) locals]
+            [(set-stack interpreter stack (pop old-stack)) scratch]
           :else
-            (store-local
-              [(set-stack interpreter stack (pop old-stack)) locals]
+            (store-scratch
+              [(set-stack interpreter stack (pop old-stack)) scratch]
               as
               (first old-stack)))))
 
 
 (defn get-stack-from-dslblob ;; convenience for testing only
-  [[interpreter locals] stackname]
+  [[interpreter scratch] stackname]
   (get-stack interpreter stackname))
 
 
@@ -131,14 +131,14 @@
 
 
 (defn place
-  "pushes a named local onto a given stack"
-  [[interpreter locals] stack kwd]
-  (let [item (kwd locals)
+  "pushes a named scratch value onto a given stack"
+  [[interpreter scratch] stack kwd]
+  (let [item (kwd scratch)
         updated (push-item interpreter stack item)]
-  (into [] (list updated locals))))
+  (vector updated scratch)))
 
 
-(fact "`place` will push the saved local value to the indicated stack in the interpreter"
+(fact "`place` will push the saved scratch value to the indicated stack in the interpreter"
   (let [integer-added (-> [six-ints {}]
                           (consume :integer :as :int1)
                           (consume :integer :as :int2)
@@ -147,14 +147,14 @@
 
 
 (defn remember-calc
-  [[interpreter locals] args function & {:keys [as]}]
+  [[interpreter scratch] args function & {:keys [as]}]
   (if (nil? as)
-    (vector interpreter locals)
-    (let [result (apply function (map locals args))]
-      (vector interpreter (assoc locals as result)))))
+    (vector interpreter scratch)
+    (let [result (apply function (map scratch args))]
+      (vector interpreter (assoc scratch as result)))))
 
 
-(fact "remember-calc stores the result of a calculation in a named local"
+(fact "remember-calc stores the result of a calculation in a named scratch"
   (let [integer-added (-> [six-ints {}]
                           (consume :integer :as :int1)
                           (consume :integer :as :int2)
@@ -171,11 +171,11 @@
 
 
 (defn remember-top
-  [[interpreter locals] stackname & {:keys [as]}]
+  [[interpreter scratch] stackname & {:keys [as]}]
   (if (nil? as)
-    (vector interpreter locals)
+    (vector interpreter scratch)
     (let [result (first (get-stack interpreter stackname))]
-      (into [] (list interpreter (assoc locals as result))))))
+      (vector interpreter (assoc scratch as result)))))
 
 
 (fact "remember-top stores the top item of a named stack"
@@ -195,13 +195,13 @@
 
 
 (defn remember-nth
-  [[interpreter locals] stackname & {:keys [as at]}]
+  [[interpreter scratch] stackname & {:keys [as at]}]
   (if (nil? as)
-    (vector interpreter locals)
+    (vector interpreter scratch)
     (let [stack (get-stack interpreter stackname) 
           which (mod (or at 0) (count stack))
           result (nth stack which)]
-      (into [] (list interpreter (assoc locals as result))))))
+      (vector interpreter (assoc scratch as result)))))
 
 
 (fact "remember-nth stores the nth item of a named stack"
@@ -229,11 +229,11 @@
 
 
 (defn remember-stack
-  [[interpreter locals] stackname & {:keys [as at]}]
+  [[interpreter scratch] stackname & {:keys [as at]}]
   (if (nil? as)
-    (vector interpreter locals)
+    (vector interpreter scratch)
     (let [stack (get-stack interpreter stackname)]
-      (into [] (list interpreter (assoc locals as stack))))))
+      (vector interpreter (assoc scratch as stack)))))
 
 (fact "remember-stack stores the stack specified in the :as variable"
   (let [integer-munged (-> [six-ints {}]
