@@ -13,15 +13,15 @@
 ;; Everything would be assumed to happen inside one interpreter, and the interpreter
 ;; (and some store of scratch vars) would be passed step-to-step.
 ;;
-; - `count-of [stackname :as local]`
+; + `count-of [stackname :as local]`
 ;    store the number of items in `stackname` under key `local`
 ;    raise an Exception if the stack doesn't exist
 
-; + `consume [stackname]`
+; + `consume-top-of [stackname]`
 ;    pop an item (and discard it) from `stackname`
 ;    raise an Exception if it's empty or undefined
 
-; + `consume [stackname :as local]`
+; + `consume-top-of [stackname :as local]`
 ;    pop an item from `stackname` and store under key `local`
 ;    raise an Exception if it's empty or undefined
 
@@ -65,12 +65,13 @@
 ;    save a list of all active instructions in the named local
 
 ; - `inputs [:as kwd]`
-;    save a list of all known inputs in the namedlocal
+;    save a list of all known inputs in the named local
+
+; - `counter [:as kwd]`
+;    save the current interpreter counter in the named local
 
 
 (def six-ints (make-interpreter :stacks {:integer '(6 5 4 3 2 1)}))
-
-
 
 (defn store-scratch
   "stores a scratch kv pair; convenience function for DSL"
@@ -89,7 +90,7 @@
     (second (store-scratch foo :foo 999)) => {:foo 999}))
 
 
-(defn consume
+(defn consume-top-of
   [[interpreter scratch] stack & {:keys [as]}]
   (let [old-stack (get-stack interpreter stack)]
     (cond (empty? old-stack)
@@ -108,29 +109,29 @@
   (get-stack interpreter stackname))
 
 
-(fact "consume"
-  (second (consume [six-ints {}] :integer :as :int1)) => {:int1 6}
+(fact "consume-top-of"
+  (second (consume-top-of [six-ints {}] :integer :as :int1)) => {:int1 6}
   (get-stack-from-dslblob
-    (consume [six-ints {}] :integer :as :int1)
+    (consume-top-of [six-ints {}] :integer :as :int1)
     :integer) => '(5 4 3 2 1))
 
 
-(fact "consume throws an exception if the stack is empty"
-  (consume [six-ints {}] :boolean :as :nope) => (throws #"Push DSL Error:"))
+(fact "consume-top-of throws an exception if the stack is empty"
+  (consume-top-of [six-ints {}] :boolean :as :nope) => (throws #"Push DSL Error:"))
 
 
-(fact "consume can be thread-firsted"
+(fact "consume-top-of can be thread-firsted"
   (let [two-popped (->  [six-ints {}]
-                        (consume :integer :as :int1)
-                        (consume :integer :as :int2))]
+                        (consume-top-of :integer :as :int1)
+                        (consume-top-of :integer :as :int2))]
     (second two-popped) => {:int1 6, :int2 5}
     (get-stack-from-dslblob two-popped :integer) => '(4 3 2 1)))
 
 
-(fact "consume with no :as argument just throws the thing away"
+(fact "consume-top-of with no :as argument just throws the thing away"
   (let [two-popped (->  [six-ints {}]
-                        (consume :integer)
-                        (consume :integer :as :int2))]
+                        (consume-top-of :integer)
+                        (consume-top-of :integer :as :int2))]
     (second two-popped) => {:int2 5}
     (get-stack-from-dslblob two-popped :integer) => '(4 3 2 1)))
 
@@ -146,8 +147,8 @@
 
 (fact "`place` will push the saved scratch value to the indicated stack in the interpreter"
   (let [integer-added (-> [six-ints {}]
-                          (consume :integer :as :int1)
-                          (consume :integer :as :int2)
+                          (consume-top-of :integer :as :int1)
+                          (consume-top-of :integer :as :int2)
                           (place :boolean :int1))]      
     (get-stack-from-dslblob integer-added :boolean) => '(6)))
 
@@ -162,16 +163,16 @@
 
 (fact "remember-calc stores the result of a calculation in a named scratch"
   (let [integer-added (-> [six-ints {}]
-                          (consume :integer :as :int1)
-                          (consume :integer :as :int2)
+                          (consume-top-of :integer :as :int1)
+                          (consume-top-of :integer :as :int2)
                           (remember-calc [:int1 :int2] #(+ %1 %2) :as :sum))]
   (second integer-added) => {:int1 6, :int2 5, :sum 11}))
 
 
 (fact "remember-calc has no effect if :as is not specified"
   (let [integer-added (-> [six-ints {}]
-                        (consume :integer :as :int1)
-                        (consume :integer :as :int2)
+                        (consume-top-of :integer :as :int1)
+                        (consume-top-of :integer :as :int2)
                         (remember-calc [:int1 :int2] #(+ %1 %2)))]
   (second integer-added) => {:int1 6, :int2 5}))
 
@@ -186,16 +187,16 @@
 
 (fact "remember-top stores the top item of a named stack"
   (let [integer-munged (-> [six-ints {}]
-                          (consume :integer :as :int1)
-                          (consume :integer :as :int2)
+                          (consume-top-of :integer :as :int1)
+                          (consume-top-of :integer :as :int2)
                           (remember-top :integer :as :third))]
   (second integer-munged) => {:int1 6, :int2 5, :third 4}))
 
 
 (fact "remember-top has no effect if :as is not specified"
   (let [integer-munged (-> [six-ints {}]
-                        (consume :integer :as :int1)
-                        (consume :integer :as :int2)
+                        (consume-top-of :integer :as :int1)
+                        (consume-top-of :integer :as :int2)
                         (remember-top :integer))]
   (second integer-munged) => {:int1 6, :int2 5}))
 
@@ -212,8 +213,8 @@
 
 (fact "remember-nth stores the nth item of a named stack"
   (let [integer-munged (-> [six-ints {}]
-                          (consume :integer :as :int1)
-                          (consume :integer :as :int2)
+                          (consume-top-of :integer :as :int1)
+                          (consume-top-of :integer :as :int2)
                           (remember-nth :integer :as :third :at 1))]
   (second integer-munged) => {:int1 6, :int2 5, :third 3}))  ;; 4 *3* 2 1
 
@@ -231,16 +232,16 @@
 
 (fact "remember-nth has no effect if :as is not specified"
   (let [integer-munged (-> [six-ints {}]
-                        (consume :integer :as :int1)
-                        (consume :integer :as :int2)
+                        (consume-top-of :integer :as :int1)
+                        (consume-top-of :integer :as :int2)
                         (remember-nth :integer))]
   (second integer-munged) => {:int1 6, :int2 5}))
 
 
 (fact "remember-nth acts like remember-top if :at is not specified"
   (let [integer-munged (-> [six-ints {}]
-                        (consume :integer :as :int1)
-                        (consume :integer :as :int2)
+                        (consume-top-of :integer :as :int1)
+                        (consume-top-of :integer :as :int2)
                         (remember-nth :integer :as :adsa))]
   (second integer-munged) => {:int1 6, :int2 5, :adsa 4}))
 
@@ -254,16 +255,16 @@
 
 (fact "remember-stack stores the stack specified in the :as variable"
   (let [integer-munged (-> [six-ints {}]
-                          (consume :integer :as :int1)
-                          (consume :integer :as :int2)
+                          (consume-top-of :integer :as :int1)
+                          (consume-top-of :integer :as :int2)
                           (remember-stack :integer :as :rest))]
   (second integer-munged) => {:int1 6, :int2 5, :rest '(4 3 2 1)}))
 
 
 (fact "remember-stack has no effect if :as is not specified"
   (let [integer-munged (-> [six-ints {}]
-                        (consume :integer :as :int1)
-                        (consume :integer :as :int2)
+                        (consume-top-of :integer :as :int1)
+                        (consume-top-of :integer :as :int2)
                         (remember-stack :integer))]
   (second integer-munged) => {:int1 6, :int2 5}))
 
@@ -285,9 +286,53 @@
 
 (fact "replace-stack replaces the entire stack with the item in a list"
   (let [integer-munged (-> [six-ints {}]
-                          (consume :integer :as :int1)
+                          (consume-top-of :integer :as :int1)
                           (replace-stack :integer :int1))]
   (get-stack-from-dslblob integer-munged :integer) => '(6)))
+
+
+(defn count-of
+  [[interpreter scratch] stackname & {:keys [as]}]
+  (if (nil? as)
+    (vector interpreter scratch)
+    (let [howmany (count (get-stack interpreter stackname))]
+      (vector interpreter (assoc scratch as howmany)))))
+
+(fact "count-of saves the size of the named stack"
+  (let [tester (-> [six-ints {}]
+                   (count-of :integer :as :ints))]
+    (second tester) => {:ints 6}))
+
+(fact "count-of does nothing if no local is specified"
+  (let [tester (-> [six-ints {}]
+                   (count-of :integer))]
+    (second tester) => {}))
+
+
+(defn consume-stack
+  [[interpreter scratch] stack & {:keys [as]}]
+  (let [old-stack (get-stack interpreter stack)]
+    (cond (nil? as)
+            [(set-stack interpreter stack (list)) scratch]
+          :else
+            (store-scratch
+              [(set-stack interpreter stack (list)) scratch]
+              as
+              old-stack))))
+
+(fact "consume-stack"
+  (second (consume-stack [six-ints {}] :integer :as :ints)) => {:ints '(6 5 4 3 2 1)}
+  (get-stack-from-dslblob
+    (consume-stack [six-ints {}] :integer :as :int1)
+    :integer) => '())
+
+
+(fact "consume-stack with no :as argument just throws the thing away"
+  (let [gone (->  [six-ints {}]
+                  (consume-stack :integer))]
+    (second gone) => {}
+    (get-stack-from-dslblob gone :integer) => '()))
+
 
 
 ; (def-pushinstruction
@@ -296,7 +341,7 @@
 ;   :needs {:integer 2}
 ;   :makes {:integer 1}
 ;   :tags [:arithmetic :core]
-;     (consume :integer :as :int1)
+;     (consume-top-of :integer :as :int1)
 ;     (consume :integer :as :int2)
 ;     (remember-calc [:int1 :int2] %(+ %1 %2) as :sum)
 ;     (place :integer :sum)
