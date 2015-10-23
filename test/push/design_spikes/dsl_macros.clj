@@ -25,15 +25,15 @@
 ;    pop an item from `stackname` and store under key `local`
 ;    raise an Exception if it's empty or undefined
 
-; - `consume [stackname :at where :as local]`
+; - `consume-nth [stackname :at where :as local]`
 ;    delete an item from `stackname` at position `where` and store under key `local`
 ;    raise an Exception if it's empty or undefined
 
-; - `consume-stack [stackname]`
+; + `consume-stack [stackname]`
 ;    clear the named stack
 ;    raise an Exception if it's undefined
 
-; - `consume-stack [stackname :as local]`
+; + `consume-stack [stackname :as local]`
 ;    save the entire stack into `local` and clear it
 ;    raise an Exception if it's undefined
 
@@ -205,8 +205,11 @@
   [[interpreter scratch] stackname & {:keys [as at]}]
   (if (nil? as)
     (vector interpreter scratch)
-    (let [stack (get-stack interpreter stackname) 
-          which (mod (or at 0) (count stack))
+    (let [stack (get-stack interpreter stackname)
+          idx (if (keyword? at)
+                    (at scratch)
+                    (or at 0))
+          which (mod idx (count stack))
           result (nth stack which)]
       (vector interpreter (assoc scratch as result)))))
 
@@ -244,6 +247,14 @@
                         (consume-top-of :integer :as :int2)
                         (remember-nth :integer :as :adsa))]
   (second integer-munged) => {:int1 6, :int2 5, :adsa 4}))
+
+
+(fact "remember-nth will use a scratch item for its index if one is given"
+  (let [integer-munged (-> [six-ints {}]
+                        (remember-nth :integer :at 2 :as :int1) ;; 4
+                        (remember-nth :integer :at :int1 :as :maybe2))]
+  (second integer-munged) => {:int1 4, :maybe2 2}))
+
 
 
 (defn remember-stack
@@ -334,47 +345,72 @@
     (get-stack-from-dslblob gone :integer) => '()))
 
 
+;;; LET'S MAKE AN INSTRUCTION FROM THIS CRAP
 
-; (def-pushinstruction
-;   integer-add
-;   :doc "adds two :integers"
-;   :needs {:integer 2}
-;   :makes {:integer 1}
-;   :tags [:arithmetic :core]
-;     (consume-top-of :integer :as :int1)
-;     (consume :integer :as :int2)
-;     (remember-calc [:int1 :int2] %(+ %1 %2) as :sum)
-;     (place :integer :sum)
-;     )
+;; first let's take a transaction and make it into a real function
 
+(defmacro
+  def-pushdsl
+  [& transactions]
+  (let [interpreter (gensym 'interpreter)]
+    `(fn [~interpreter] 
+      (first (-> [~interpreter {}] ~@transactions)))))
 
-; (def-pushinstruction
-;   boolean-flush
-;   :doc "empties the :boolean stack"
-;   :needs {:boolean 0}
-;   :tags [:combinator :core]
-;   :transaction
-;     (consume-stack :boolean)
-;     )
+(fact "that works maybe"
+  (fn?
+    (macroexpand-1
+      (def-pushdsl
+        (remember-calc [] #(list 1 2 3 5 8) :as :fibs)
+        (replace-stack :integer :fibs)))) => true)
 
+;; integer_add
 
-; (def-pushinstruction
-;   float-yankdup
-;   :doc "Takes an :integer, and copies the indicated nth item (modulo the :float stack size) on the :float stack to the top; so if the :integer is 12 and the :float stack has 5 items, the (mod 12 5) item is copied to the top as a new 6th item."
-;   :needs {:integer 1 :float 1}
-;   :tags [:core :combinator]
-;   :transaction
-;     (consume :integer :as :int1)
-;     (count-of :float :as :how-many)
-;     (calculate [:how-many :int1] #(mod %1 %2) :as :which)
-;     (remember :float :at :which :as :float1)
-;     (place :float (recall :float1))]
-;     )
+(def int-adder 
+  (def-pushdsl
+    (consume-top-of :integer :as :int1)
+    (consume-top-of :integer :as :int2)
+    (remember-calc [:int1 :int2] #(+ %1 %2) :as :sum)
+    (place :integer :sum)))
+
+(fact "that int-adder thing actually does the thing"
+  (get-stack (int-adder six-ints) :integer) => '(11 4 3 2 1))
 
 
-; (def-pushinstruction
-;   exec-noop
-;   :doc "Does nothing."
-;   :tags [:core]
-;   ;; everything else is default behavior
-;   )
+;; boolean_flush
+
+(def bool-flusher 
+  (def-pushdsl
+    (consume-stack :boolean)))
+
+(fact "that bool-flusher thing actually does the thing"
+  (get-stack
+    (bool-flusher (make-interpreter :stacks {:boolean '(false true false)}))
+    :boolean) => '())
+
+;; float_yankdup 
+
+(def float-yankduper 
+  (def-pushdsl
+    (consume-top-of :integer :as :index)
+    (count-of :float :as :how-many)
+    (remember-calc [:index :how-many] #(mod %1 %2) :as :which)
+    (remember-nth :float :at :which :as :dup-me)
+    (place :float :dup-me)
+    ))
+
+(fact "that float-yankduper thing actually does the thing"
+  (get-stack
+    (float-yankduper
+      (make-interpreter :stacks {:float '(1.1 2.2 3.3) :integer '(4)}))
+      :float) => '(2.2 1.1 2.2 3.3))
+
+
+;; exec-noop
+
+(def exec-noop 
+  (def-pushdsl))
+
+(def boring (make-interpreter))
+
+(fact "that noop thing actually does not one thing"
+  (exec-noop boring) => boring)
