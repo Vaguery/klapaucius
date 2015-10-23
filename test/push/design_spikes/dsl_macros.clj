@@ -61,6 +61,11 @@
 ;    if it's a list, replace the stack; if it's not a list, make it the only item
 ;    raise an exception if it's undefined
 
+; - `instructions [:as kwd]`
+;    save a list of all active instructions in the named local
+
+; - `inputs [:as kwd]`
+;    save a list of all known inputs in the namedlocal
 
 
 (def six-ints (make-interpreter :stacks {:integer '(6 5 4 3 2 1)}))
@@ -293,7 +298,8 @@
 ;   :tags [:arithmetic :core]
 ;     (consume :integer :as :int1)
 ;     (consume :integer :as :int2)
-;     (place :integer [:int1 :int2] %(+ %1 %2))
+;     (remember-calc [:int1 :int2] %(+ %1 %2) as :sum)
+;     (place :integer :sum)
 ;     )
 
 
