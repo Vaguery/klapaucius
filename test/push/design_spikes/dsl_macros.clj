@@ -37,14 +37,14 @@
 ;    save the entire stack into `local` and clear it
 ;    raise an Exception if it's undefined
 
-; + `remember [args fn :as local]
+; + `remember-calc [args fn :as local]
 ;    save the result of applying `fn` to the named `args` under key `local`
 
-; - `remember [stackname :as local]`
+; + `remember-top [stackname :as local]`
 ;    store top item from `stackname` under key `local`
 ;    raise an Exception if it's empty or undefined
 
-; - `remember [stackname :at where :as local]`
+; + `remember-nth [stackname :at where :as local]`
 ;    store item in `stackname` at position `where` under key `local`
 ;    raise an Exception if it's empty or undefined
 
@@ -60,16 +60,6 @@
 ;    replace the indicated stack with a new list
 ;    raise an exception if it's undefined
 
-
-; restrictions are your friend:
-; every time a `consume` appears, we know one more item is needed from that stack
-; every time `consume-stack` or `count-of` appears, we know we need that type
-; every time `remember stackname :as` happens, we know we need at least 1 item
-; etc ... 
-; In other words, the :needs can be inferred for each instruction from its DSL definition
-
-
-;; And I THINK that supports all defined Push instructions I've ever seen....
 
 
 (def six-ints (make-interpreter :stacks {:integer '(6 5 4 3 2 1)}))
@@ -180,9 +170,6 @@
   (second integer-added) => {:int1 6, :int2 5}))
 
 
-;; check for nil :as key
-
-
 (defn remember-top
   [[interpreter locals] stackname & {:keys [as]}]
   (if (nil? as)
@@ -192,20 +179,76 @@
 
 
 (fact "remember-top stores the top item of a named stack"
-  (let [integer-added (-> [six-ints {}]
+  (let [integer-munged (-> [six-ints {}]
                           (consume :integer :as :int1)
                           (consume :integer :as :int2)
                           (remember-top :integer :as :third))]
-  (second integer-added) => {:int1 6, :int2 5, :third 4}))
+  (second integer-munged) => {:int1 6, :int2 5, :third 4}))
 
 
 (fact "remember-top has no effect if :as is not specified"
-  (let [integer-added (-> [six-ints {}]
+  (let [integer-munged (-> [six-ints {}]
                         (consume :integer :as :int1)
                         (consume :integer :as :int2)
                         (remember-top :integer))]
-  (second integer-added) => {:int1 6, :int2 5}))
+  (second integer-munged) => {:int1 6, :int2 5}))
 
+
+(defn remember-nth
+  [[interpreter locals] stackname & {:keys [as at]}]
+  (if (nil? as)
+    (vector interpreter locals)
+    (let [stack (get-stack interpreter stackname) 
+          which (mod (or at 0) (count stack))
+          result (nth stack which)]
+      (into [] (list interpreter (assoc locals as result))))))
+
+
+(fact "remember-nth stores the nth item of a named stack"
+  (let [integer-munged (-> [six-ints {}]
+                          (consume :integer :as :int1)
+                          (consume :integer :as :int2)
+                          (remember-nth :integer :as :third :at 1))]
+  (second integer-munged) => {:int1 6, :int2 5, :third 3}))  ;; 4 *3* 2 1
+
+
+(fact "remember-nth has no effect if :as is not specified"
+  (let [integer-munged (-> [six-ints {}]
+                        (consume :integer :as :int1)
+                        (consume :integer :as :int2)
+                        (remember-nth :integer))]
+  (second integer-munged) => {:int1 6, :int2 5}))
+
+
+(fact "remember-nth acts like remember-top if :at is not specified"
+  (let [integer-munged (-> [six-ints {}]
+                        (consume :integer :as :int1)
+                        (consume :integer :as :int2)
+                        (remember-nth :integer :as :adsa))]
+  (second integer-munged) => {:int1 6, :int2 5, :adsa 4}))
+
+
+(defn remember-stack
+  [[interpreter locals] stackname & {:keys [as at]}]
+  (if (nil? as)
+    (vector interpreter locals)
+    (let [stack (get-stack interpreter stackname)]
+      (into [] (list interpreter (assoc locals as stack))))))
+
+(fact "remember-stack stores the stack specified in the :as variable"
+  (let [integer-munged (-> [six-ints {}]
+                          (consume :integer :as :int1)
+                          (consume :integer :as :int2)
+                          (remember-stack :integer :as :rest))]
+  (second integer-munged) => {:int1 6, :int2 5, :rest '(4 3 2 1)}))
+
+
+(fact "remember-stack has no effect if :as is not specified"
+  (let [integer-munged (-> [six-ints {}]
+                        (consume :integer :as :int1)
+                        (consume :integer :as :int2)
+                        (remember-stack :integer))]
+  (second integer-munged) => {:int1 6, :int2 5}))
 
 
 ; (def-pushinstruction
