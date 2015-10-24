@@ -349,12 +349,16 @@
 
 ;; first let's take a transaction and make it into a real function
 
+
+
 (defmacro
   def-pushdsl
   [& transactions]
-  (let [interpreter (gensym 'interpreter)]
+  (let [interpreter (gensym 'interpreter)
+       words &form]
+    (do 
     `(fn [~interpreter] 
-      (first (-> [~interpreter {}] ~@transactions)))))
+      (first (-> [~interpreter {}] ~@transactions))))))
 
 (fact "that works maybe"
   (fn?
@@ -484,3 +488,67 @@
   (get-stack (code-do*range not-iterating) :code) => '(:nope)
   (get-stack (code-do*range not-iterating) :exec) => 
     '(() :qux))
+
+;; collect the needs while we have the transaction
+
+(defn needs-of
+  [step]
+  (let [cmd (first step)]
+    (condp = cmd
+      'consume-nth {(second step) 1}
+      'consume-stack {(second step) 0}
+      'consume-top-of {(second step) 1}
+      'count-of {(second step) 0}
+      'place {(second step) 0}
+      'remember-nth {(second step) 1}
+      'remember-stack {(second step) 0}
+      'remember-top {(second step) 1}
+      'replace-stack {(second step) 0}
+      nil
+      )))
+
+
+(defn count-needs
+  [transaction]
+  (apply (partial merge-with +)
+    (remove nil? (map needs-of transaction)))
+  )
+
+; : foo, bar, baz, qux, quux, corge, grault, garply, waldo, fred, plugh, xyzzy, thud
+(fact "returns a combined of all the needs of all the DSL steps it sees"
+  (count-needs
+    '(
+      (consume-nth :foo :at 5 :as :ugh)
+      (consume-stack :bar )
+      (consume-top-of :baz)
+      (consume-top-of :qux :as :int1)
+      (count-of :quux)
+      (place :corge :ugh)
+      (remember-calc [] #(8) :as :ugh)
+      (remember-nth :grault :as ugh :at 6)
+      (remember-stack :garply :as :ugh)
+      (remember-top :waldo :as :ugh)
+      (replace-stack :fred :ugh)
+      )
+    ) => {:bar 0, :baz 1, :corge 0, :foo 1, :fred 0, :garply 0, :grault 1, :quux 0, :qux 1, :waldo 1}
+
+  (count-needs
+    '(
+      (consume-nth :foo)     ; +1
+      (consume-stack :foo )  ; +0
+      (consume-top-of :foo)  ; +1
+      (consume-nth :foo)     ; +1
+      (remember-nth :foo :as ugh :at 6) ; +1
+
+      (consume-top-of :bar)  ; +1
+      (count-of :bar)        ; +0
+      (consume-nth :bar)     ; +1
+      (remember-stack :bar :as :ugh)    ; +0
+
+      (place :baz :ugh)      ; +0
+      (remember-top :baz :as :ugh)      ; +1
+
+      (replace-stack :fred :ugh)        ; +0
+      )
+    ) => {:foo 4, :bar 2, :baz 1,  :fred 0}
+  )
