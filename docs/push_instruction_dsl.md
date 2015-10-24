@@ -73,20 +73,20 @@ Note that none of the `scratch` information exists at the start of the transacti
     
     pop an item from `stackname` and store under key `local`; raise an Exception if `stackname` is empty or undefined
 
-- `consume-nth`
-  - `consume-nth [stackname :at where :as local]`
+- `consume-nth-of`
+  - `consume-nth-of [stackname :at where :as local]`
     
     remove the item in position `where` from the named stack, and store it in scratch variable `local`; if `where` is an integer literal, the index of the item removed is `(mod where (count stackname))`; if `where` is a keyword, the value is obtained from the scratch storage; if the scratch value is not an integer (including `nil`), an Exception is raised 
     
-  - `consume-nth [stackname :at where]`
+  - `consume-nth-of [stackname :at where]`
     
     remove the item in position `where` from the named stack (and don't store it); if `where` is an integer literal, the index of the item removed is `(mod where (count stackname))`; if `where` is a keyword, the value is obtained from the scratch storage; if the scratch value is not an integer (including `nil`), an Exception is raised
 
-  - `consume-nth [stackname :as local]`
+  - `consume-nth-of [stackname :as local]`
     
     remove the item at the top of the named stack, and store it in scratch variable `local`
 
-  - `consume-nth [stackname]`
+  - `consume-nth-of [stackname]`
   
     remove the item at the top of the named stack and throw it away
 
