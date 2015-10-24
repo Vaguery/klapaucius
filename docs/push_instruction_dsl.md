@@ -67,7 +67,7 @@ Note that none of the `scratch` information exists at the start of the transacti
   stores the number of items in stack `stackname` in scratch variable `local` (a keyword)
 
 - [ ] `consume-top-of`
-  - [ ]`consume-top-of [stackname]`
+  - [ ] `consume-top-of [stackname]`
     
     pop an item (and discard it) from `stackname`
   - [ ] `consume-top-of [stackname :as local]`
