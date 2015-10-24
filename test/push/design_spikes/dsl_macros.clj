@@ -52,7 +52,7 @@
 ;    save the entire stack to the `local`
 ;    raise an Exception if it's undefined
 
-; + `place [stackname args kwd]`
+; + `put-onto [stackname kwd]`
 ;    push the local `kwd` on the named stack
 ;    raise an Exception if it's undefined
 
@@ -137,7 +137,7 @@
 
 
 
-(defn place
+(defn put-onto
   "pushes a named scratch value onto a given stack"
   [[interpreter scratch] stack kwd]
   (let [item (kwd scratch)
@@ -145,11 +145,11 @@
   (vector updated scratch)))
 
 
-(fact "`place` will push the saved scratch value to the indicated stack in the interpreter"
+(fact "`put-onto` will push the saved scratch value to the indicated stack in the interpreter"
   (let [integer-added (-> [six-ints {}]
                           (consume-top-of :integer :as :int1)
                           (consume-top-of :integer :as :int2)
-                          (place :boolean :int1))]      
+                          (put-onto :boolean :int1))]      
     (get-stack-from-dslblob integer-added :boolean) => '(6)))
 
 
@@ -374,7 +374,7 @@
     (consume-top-of :integer :as :int1)
     (consume-top-of :integer :as :int2)
     (calculate [:int1 :int2] #(+ %1 %2) :as :sum)
-    (place :integer :sum)))
+    (put-onto :integer :sum)))
 
 (fact "that int-adder thing actually does the thing"
   (get-stack (int-adder six-ints) :integer) => '(11 4 3 2 1))
@@ -399,7 +399,7 @@
     (count-of :float :as :how-many)
     (calculate [:index :how-many] #(mod %1 %2) :as :which)
     (remember-nth :float :at :which :as :dup-me)
-    (place :float :dup-me)
+    (put-onto :float :dup-me)
     ))
 
 (fact "that float-yankduper thing actually does the thing"
@@ -465,7 +465,7 @@
       #(if (zero? %1)
           (list)
           (list %2 %3 :code_quote %4 :code_do*range)) :as :continuation)
-    (place :exec :continuation)
+    (put-onto :exec :continuation)
     ))
 
 
@@ -503,7 +503,7 @@
       'consume-stack {(second step) 0}
       'consume-top-of {(second step) 1}
       'count-of {(second step) 0}
-      'place {(second step) 0}
+      'put-onto {(second step) 0}
       'remember-nth {(second step) 1}
       'remember-stack {(second step) 0}
       'remember-top {(second step) 1}
@@ -526,7 +526,7 @@
       (consume-top-of :baz)
       (consume-top-of :qux :as :int1)
       (count-of :quux)
-      (place :corge :ugh)
+      (put-onto :corge :ugh)
       (calculate [] #(8) :as :ugh)
       (remember-nth :grault :as ugh :at 6)
       (remember-stack :garply :as :ugh)
@@ -548,7 +548,7 @@
       (consume-nth :bar)     ; +1
       (remember-stack :bar :as :ugh)    ; +0
 
-      (place :baz :ugh)      ; +0
+      (put-onto :baz :ugh)      ; +0
       (remember-top :baz :as :ugh)      ; +1
 
       (replace-stack :fred :ugh)        ; +0
@@ -568,5 +568,5 @@
       #(if (zero? %1)
           (list)
           (list %2 %3 :code_quote %4 :code_do*range)) :as :continuation)
-    (place :exec :continuation)
+    (put-onto :exec :continuation)
   )) => {:code 1, :exec 0, :integer 2})
