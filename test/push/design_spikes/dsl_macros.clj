@@ -414,3 +414,73 @@
 
 (fact "that noop thing actually does not one thing"
   (exec-noop boring) => boring)
+
+;; code-do*range
+;
+; (define-registered 
+;   code_do*range
+;   ^{:stack-types [:code :exec :integer]}
+;   (fn [state]
+;     (if (not (or (empty? (:code state))
+;                  (empty? (rest (:integer state)))))
+;       (let [to-do (first (:code state))
+;             current-index (first (rest (:integer state)))
+;             destination-index (first (:integer state))
+;             args-popped (pop-item :integer
+;                                   (pop-item :integer
+;                                             (pop-item :code state)))
+;             increment (cond (< current-index destination-index) 1
+;                             (> current-index destination-index) -1
+;                             true 0)
+;             continuation (if (zero? increment)
+;                            args-popped
+;                            (push-item (list (+' current-index increment)
+;                                             destination-index
+;                                             'code_quote
+;                                             to-do
+;                                             'code_do*range)
+;                                       :exec
+;                                       args-popped))]
+;         (push-item to-do :exec (push-item current-index :integer continuation)))
+;       state)))
+
+
+
+(def code-do*range 
+  (def-pushdsl
+    (consume-top-of :code :as :to-do)
+    (consume-top-of :integer :as :current-index)
+    (consume-top-of :integer :as :destination-index)
+    (remember-calc [:destination-index :current-index] #(compare %1 %2) :as :direction)
+    (remember-calc [:current-index :direction] #(+ %1 %2) :as :new-index)
+    (remember-calc
+      [:direction :new-index :destination-index :to-do]
+      #(if (zero? %1)
+          (list)
+          (list %2 %3 :code_quote %4 :code_do*range)) :as :continuation)
+    (place :exec :continuation)
+    ))
+
+
+(def will-iterate (make-interpreter
+              :stacks {:integer '(-1 3 5 7) 
+                       :code '( (:foo :bar :baz) :nope)
+                       :exec '(:qux)}))
+
+(fact "that code-do*range thing actually does all kinds of shit"
+  (get-stack (code-do*range will-iterate) :integer) => '(5 7)
+  (get-stack (code-do*range will-iterate) :code) => '(:nope)
+  (get-stack (code-do*range will-iterate) :exec) => 
+    '((0 3 :code_quote (:foo :bar :baz) :code_do*range) :qux))
+
+
+(def not-iterating (make-interpreter
+              :stacks {:integer '(3 3 5 7) 
+                       :code '( (:foo :bar :baz) :nope)
+                       :exec '(:qux)}))
+
+(fact "that code-do*range thing actually does all kinds of shit"
+  (get-stack (code-do*range not-iterating) :integer) => '(5 7)
+  (get-stack (code-do*range not-iterating) :code) => '(:nope)
+  (get-stack (code-do*range not-iterating) :exec) => 
+    '(() :qux))
