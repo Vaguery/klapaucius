@@ -109,6 +109,12 @@
   (assoc-in interpreter [:stacks stack] new-value))
 
 
+(defn clear-stack
+  "Empties the named stack."
+  [interpreter stack]
+  (assoc-in interpreter [:stacks stack] (list)))
+
+
 (defn boolean?
   "a checker that returns true if the argument is the literal `true` or the literal `false`"
   [item]
