@@ -37,7 +37,7 @@
 ;    save the entire stack into `local` and clear it
 ;    raise an Exception if it's undefined
 
-; + `remember-calc [args fn :as local]
+; + `calculate [args fn :as local]
 ;    save the result of applying `fn` to the named `args` under key `local`
 
 ; + `remember-top [stackname :as local]`
@@ -153,7 +153,7 @@
     (get-stack-from-dslblob integer-added :boolean) => '(6)))
 
 
-(defn remember-calc
+(defn calculate
   [[interpreter scratch] args function & {:keys [as]}]
   (if (nil? as)
     (vector interpreter scratch)
@@ -161,19 +161,19 @@
       (vector interpreter (assoc scratch as result)))))
 
 
-(fact "remember-calc stores the result of a calculation in a named scratch"
+(fact "calculate stores the result of a calculation in a named scratch"
   (let [integer-added (-> [six-ints {}]
                           (consume-top-of :integer :as :int1)
                           (consume-top-of :integer :as :int2)
-                          (remember-calc [:int1 :int2] #(+ %1 %2) :as :sum))]
+                          (calculate [:int1 :int2] #(+ %1 %2) :as :sum))]
   (second integer-added) => {:int1 6, :int2 5, :sum 11}))
 
 
-(fact "remember-calc has no effect if :as is not specified"
+(fact "calculate has no effect if :as is not specified"
   (let [integer-added (-> [six-ints {}]
                         (consume-top-of :integer :as :int1)
                         (consume-top-of :integer :as :int2)
-                        (remember-calc [:int1 :int2] #(+ %1 %2)))]
+                        (calculate [:int1 :int2] #(+ %1 %2)))]
   (second integer-added) => {:int1 6, :int2 5}))
 
 
@@ -290,7 +290,7 @@
 
 (fact "replace-stack replaces the entire stack with the named value from scratch"
   (let [totally-made-up (-> [six-ints {}]
-                            (remember-calc [] #(list 1 2 3 5 8) :as :fibs)
+                            (calculate [] #(list 1 2 3 5 8) :as :fibs)
                             (replace-stack :integer :fibs))]
   (get-stack-from-dslblob totally-made-up :integer) => '(1 2 3 5 8)))
 
@@ -364,7 +364,7 @@
   (fn?
     (macroexpand-1
       (def-pushdsl
-        (remember-calc [] #(list 1 2 3 5 8) :as :fibs)
+        (calculate [] #(list 1 2 3 5 8) :as :fibs)
         (replace-stack :integer :fibs)))) => true)
 
 ;; integer_add
@@ -373,7 +373,7 @@
   (def-pushdsl
     (consume-top-of :integer :as :int1)
     (consume-top-of :integer :as :int2)
-    (remember-calc [:int1 :int2] #(+ %1 %2) :as :sum)
+    (calculate [:int1 :int2] #(+ %1 %2) :as :sum)
     (place :integer :sum)))
 
 (fact "that int-adder thing actually does the thing"
@@ -397,7 +397,7 @@
   (def-pushdsl
     (consume-top-of :integer :as :index)
     (count-of :float :as :how-many)
-    (remember-calc [:index :how-many] #(mod %1 %2) :as :which)
+    (calculate [:index :how-many] #(mod %1 %2) :as :which)
     (remember-nth :float :at :which :as :dup-me)
     (place :float :dup-me)
     ))
@@ -419,6 +419,9 @@
 (fact "that noop thing actually does not one thing"
   (exec-noop boring) => boring)
 
+
+;; current CLojush code:
+;
 ;; code-do*range
 ;
 ; (define-registered 
@@ -455,9 +458,9 @@
     (consume-top-of :code :as :to-do)
     (consume-top-of :integer :as :current-index)
     (consume-top-of :integer :as :destination-index)
-    (remember-calc [:destination-index :current-index] #(compare %1 %2) :as :direction)
-    (remember-calc [:current-index :direction] #(+ %1 %2) :as :new-index)
-    (remember-calc
+    (calculate [:destination-index :current-index] #(compare %1 %2) :as :direction)
+    (calculate [:current-index :direction] #(+ %1 %2) :as :new-index)
+    (calculate
       [:direction :new-index :destination-index :to-do]
       #(if (zero? %1)
           (list)
@@ -491,7 +494,8 @@
 
 ;; collect the needs while we have the transaction
 
-(defn needs-of
+
+(defn needs-of-dsl-step
   [step]
   (let [cmd (first step)]
     (condp = cmd
@@ -511,10 +515,9 @@
 (defn count-needs
   [transaction]
   (apply (partial merge-with +)
-    (remove nil? (map needs-of transaction)))
+    (remove nil? (map needs-of-dsl-step transaction)))
   )
 
-; : foo, bar, baz, qux, quux, corge, grault, garply, waldo, fred, plugh, xyzzy, thud
 (fact "returns a combined of all the needs of all the DSL steps it sees"
   (count-needs
     '(
@@ -524,7 +527,7 @@
       (consume-top-of :qux :as :int1)
       (count-of :quux)
       (place :corge :ugh)
-      (remember-calc [] #(8) :as :ugh)
+      (calculate [] #(8) :as :ugh)
       (remember-nth :grault :as ugh :at 6)
       (remember-stack :garply :as :ugh)
       (remember-top :waldo :as :ugh)
@@ -552,3 +555,18 @@
       )
     ) => {:foo 4, :bar 2, :baz 1,  :fred 0}
   )
+
+(fact "count-needs works on the instructions I've sketched"
+  (count-needs 
+    '((consume-top-of :code :as :to-do)
+    (consume-top-of :integer :as :current-index)
+    (consume-top-of :integer :as :destination-index)
+    (calculate [:destination-index :current-index] #(compare %1 %2) :as :direction)
+    (calculate [:current-index :direction] #(+ %1 %2) :as :new-index)
+    (calculate
+      [:direction :new-index :destination-index :to-do]
+      #(if (zero? %1)
+          (list)
+          (list %2 %3 :code_quote %4 :code_do*range)) :as :continuation)
+    (place :exec :continuation)
+  )) => {:code 1, :exec 0, :integer 2})
