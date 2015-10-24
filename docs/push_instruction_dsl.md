@@ -63,6 +63,7 @@ Note that none of the `scratch` information exists at the start of the transacti
 ## DSL instructions
 
 - [x] `count-of [stackname :as local]`
+
   stores the number of items in stack `stackname` in scratch variable `local` (a keyword)
 
 - [ ] `consume-top-of`
