@@ -12,7 +12,7 @@
 ;; The DSL for Push instructions could be a series of simple steps.
 ;; Everything would be assumed to happen inside one interpreter, and the interpreter
 ;; (and some store of scratch vars) would be passed step-to-step.
-;;
+
 ; + `count-of [stackname :as local]`
 ;    store the number of items in `stackname` under key `local`
 ;    raise an Exception if the stack doesn't exist
@@ -62,13 +62,25 @@
 ;    raise an exception if it's undefined
 
 ; - `instructions [:as kwd]`
-;    save a list of all active instructions in the named local
+;    save a list of all registered instructions in the named local
 
 ; - `inputs [:as kwd]`
-;    save a list of all known inputs in the named local
+;    save a list of all registered inputs in the named local
 
 ; - `counter [:as kwd]`
-;    save the current interpreter counter in the named local
+;    save the current interpreter counter value in the named local
+
+
+
+;; Possible simplifications (this is JUST A SKETCH remember)
+;;
+;; (consume-all-of % 
+;;   :integer :foo :boolean :bar :integer :baz :float :qux)
+;;
+;; (place-all-of %
+;;   :integer :foo :boolean :bar :integer :baz :float :qux)
+
+
 
 
 (def six-ints (make-interpreter :stacks {:integer '(6 5 4 3 2 1)}))
