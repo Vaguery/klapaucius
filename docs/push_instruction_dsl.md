@@ -62,45 +62,45 @@ Note that none of the `scratch` information exists at the start of the transacti
 
 ## DSL instructions
 
-- `count-of [stackname :as local]`
+- [x] `count-of [stackname :as local]`
   stores the number of items in stack `stackname` in scratch variable `local` (a keyword)
 
-- `consume-top-of`
-  - `consume-top-of [stackname]`
+- [ ] `consume-top-of`
+  - [ ]`consume-top-of [stackname]`
     
     pop an item (and discard it) from `stackname`
-  - `consume-top-of [stackname :as local]`
+  - [ ] `consume-top-of [stackname :as local]`
     
     pop an item from `stackname` and store under key `local`; raise an Exception if `stackname` is empty or undefined
 
-- `consume-nth-of`
-  - `consume-nth-of [stackname :at where :as local]`
+- [ ] `consume-nth-of`
+  - [ ] `consume-nth-of [stackname :at where :as local]`
     
     remove the item in position `where` from the named stack, and store it in scratch variable `local`; if `where` is an integer literal, the index of the item removed is `(mod where (count stackname))`; if `where` is a keyword, the value is obtained from the scratch storage; if the scratch value is not an integer (including `nil`), an Exception is raised 
     
-  - `consume-nth-of [stackname :at where]`
+  - [ ] `consume-nth-of [stackname :at where]`
     
     remove the item in position `where` from the named stack (and don't store it); if `where` is an integer literal, the index of the item removed is `(mod where (count stackname))`; if `where` is a keyword, the value is obtained from the scratch storage; if the scratch value is not an integer (including `nil`), an Exception is raised
 
-  - `consume-nth-of [stackname :as local]`
+  - [ ] `consume-nth-of [stackname :as local]`
     
     remove the item at the top of the named stack, and store it in scratch variable `local`
 
-  - `consume-nth-of [stackname]`
+  - [ ] `consume-nth-of [stackname]`
   
     remove the item at the top of the named stack and throw it away
 
-- `consume-stack`
-  - `consume-stack [stackname :as local]`
+- [ ] `consume-stack`
+  - [ ] `consume-stack [stackname :as local]`
   
     save the entire named stack into `local` and clear it in the `Interpreter`
 
-  - `consume-stack [stackname]`
+  - [ ] `consume-stack [stackname]`
 
     empty the named stack in the `Interpreter`
 
 
-- `calculate [args fn :as local]`
+- [ ] `calculate [args fn :as local]`
   
   `args` is a vector of keywords, referring to scratch variables
 
@@ -108,39 +108,39 @@ Note that none of the `scratch` information exists at the start of the transacti
 
   The result of invoking `fn` on `args` is saved into scratch variable `local`
 
-- `remember-top-of [stackname :as local]`
+- [ ] `remember-top-of [stackname :as local]`
 
   store the top item from `stackname` under key `local`
 
-- `remember-nth-of`
-  - `remember-nth-of [stackname :at where :as local]`
+- [ ] `remember-nth-of`
+  - [ ] `remember-nth-of [stackname :at where :as local]`
     
     store item in `stackname` at position `where` under key `local`
-  - `remember-nth-of [stackname :as local]`
+  - [ ] `remember-nth-of [stackname :as local]`
     
     store top item in `stackname` under key `local` (same as `remember-top-of`)
 
-- `remember-stack [stackname :as local]`
+- [ ] `remember-stack [stackname :as local]`
 
   save the entire stack to scratch variable `local`
 
-- `put-onto [stackname local]`
+- [ ] `put-onto [stackname local]`
 
   push the scratch value `local` onto the top of the named stack
 
-- `replace-stack [stackname local]`
+- [ ] `replace-stack [stackname local]`
   
   replace the indicated stack with the scratch variable `local`; if its value is a list, replace the entire stack with that list; if the value is not a list, then replace the stack with a new one containing only that value
 
-- `instructions [:as local]`
+- [ ] `instructions [:as local]`
 
   save a list of all registered instructions in `local`
 
-- `inputs [:as local]`
+- [ ] `inputs [:as local]`
 
   save a list of all registered inputs in `local`
 
-- `counter [:as local]`
+- [ ] `counter [:as local]`
   
   save the current interpreter counter value in `local`
 

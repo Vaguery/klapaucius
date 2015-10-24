@@ -29,3 +29,5 @@
   (let [afew (make-interpreter :stacks {:integer '(1 2 3)})]
     (second (count-of [afew {}] :integer)) => {}
     (first (count-of [afew {}] :integer)) => afew))
+
+;; 
