@@ -582,3 +582,4 @@
           (list %2 %3 :code_quote %4 :code_do*range)) :as :continuation)
     (put-onto :exec :continuation)
   )) => {:code 1, :exec 0, :integer 2})
+
