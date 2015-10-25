@@ -17,7 +17,6 @@
 ;; count-of
 
 
-
 (fact "`count-of` saves the number of items on the named stack in the specified local"
   (get-local-from-dslblob :foo (count-of [nada {}] :integer :as :foo)) => 0
   (get-local-from-dslblob :foo (count-of [afew {}] :integer :as :foo)) => 3
@@ -106,6 +105,7 @@
 
 
 ;; `consume-stack [stackname]` (throws it away)
+
 
 (fact "`consume-stack` discards the entire stack with no :as argument"
   (get-stack-from-dslblob :integer (consume-stack [afew {}] :integer)) =>

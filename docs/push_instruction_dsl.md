@@ -111,7 +111,7 @@ Note that none of the `scratch` information exists at the start of the transacti
 
 - [ ] `remember-top-of [stackname :as local]`
 
-  store the top item from `stackname` under key `local`
+  store the top item from `stackname` under key `local` (without removing it from the stack)
 
 - [ ] `remember-nth-of`
   - [ ] `remember-nth-of [stackname :at where :as local]`

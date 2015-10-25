@@ -15,6 +15,7 @@
         stackname
         " stackname registered."))))
 
+
 (defn count-of
   "Takes an PushDSL blob, a stackname (keyword) and a scratch variable (keyword) in which to store the count.
 
@@ -41,7 +42,6 @@
         " is empty."))))
 
 
-
 (defn consume-top-of
   "Takes an PushDSL blob, a stackname (keyword) and a scratch variable (keyword) in which to store the top value from that stack. If no scratch variable is specified, it simply deletes the top item.
 
@@ -51,16 +51,15 @@
   [ [interpreter scratch] stackname & {:keys [as]}]
   (if-let [old-stack (get-stack interpreter stackname)]
     (if-let [top-item (first old-stack)]
-      (if (some? as)
+      (if (nil? as)
         (vector
           (set-stack interpreter stackname (rest old-stack))
-          (assoc scratch as top-item))
+          scratch)
         (vector
           (set-stack interpreter stackname (rest old-stack))
-          scratch))
+          (assoc scratch as top-item)))
       (throw-empty-stack-exception stackname))
-    (throw-unknown-stack-exception stackname))
-  )
+    (throw-unknown-stack-exception stackname)))
 
 
 (defn delete-nth
@@ -79,8 +78,7 @@
     - the stack doesn't exist"
   [[interpreter scratch] stackname & {:keys [as]}]
   (if-let [old-stack (get-stack interpreter stackname)]
-    (if (some? as)
-      (vector (clear-stack interpreter stackname) (assoc scratch as old-stack))
-      (vector (clear-stack interpreter stackname) scratch))
-    (throw-unknown-stack-exception stackname)
-    ))
+    (if (nil? as)
+      (vector (clear-stack interpreter stackname) scratch)
+      (vector (clear-stack interpreter stackname) (assoc scratch as old-stack)))
+    (throw-unknown-stack-exception stackname)))
