@@ -75,18 +75,18 @@
 
 
 (fact "`delete-nth` returns a collection with the nth item removed"
-  (delete-nth '(0 1 2 3 4 5) 3) => '(0 1 2 4 5)
-  (delete-nth '(0 1 2 3 4 5) 0) => '(1 2 3 4 5)
-  (delete-nth '(0 1 2 3 4 5) 5) => '(0 1 2 3 4))
+  (#'delete-nth '(0 1 2 3 4 5) 3) => '(0 1 2 4 5)
+  (#'delete-nth '(0 1 2 3 4 5) 0) => '(1 2 3 4 5)
+  (#'delete-nth '(0 1 2 3 4 5) 5) => '(0 1 2 3 4))
 
 
 (fact "`delete-nth` throws an Exception when the list is empty"
-  (delete-nth '() 3) => (throws #"Assert"))
+  (#'delete-nth '() 3) => (throws #"Assert"))
 
 
 (fact "`delete-nth` throws an Exception when the index is out of range"
-  (delete-nth '(0 1 2 3 4 5) -99) => (throws #"Assert")
-  (delete-nth '(0 1 2 3 4 5) 99) => (throws #"Assert"))
+  (#'delete-nth '(0 1 2 3 4 5) -99) => (throws #"Assert")
+  (#'delete-nth '(0 1 2 3 4 5) 99) => (throws #"Assert"))
 
 
 ;; `consume-stack [stackname :as local]`
@@ -129,17 +129,18 @@
 ;; `index-from-scratch-ref [key hashmap]`
 
 (fact "index-from-scratch-ref returns an integer if one is stored"
-  (index-from-scratch-ref :foo {:foo 8}) => 8)
+  (#'index-from-scratch-ref :foo {:foo 8}) => 8)
 
 
 (fact "index-from-scratch-ref throws up if the stored value isn't an integer"
-  (index-from-scratch-ref :foo {:foo false}) => 
+  (#'index-from-scratch-ref :foo {:foo false}) => 
     (throws #":foo is not an integer"))
 
 
 (fact "index-from-scratch-ref throws up if the key is not present"
-  (index-from-scratch-ref :bar {:foo 2}) => 
+  (#'index-from-scratch-ref :bar {:foo 2}) => 
     (throws #":bar is not an integer"))
+
 
 ;; `delete-nth-of [stackname :at where]`
 

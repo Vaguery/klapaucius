@@ -6,7 +6,7 @@
 
 ;; utilities
 
-(defn delete-nth
+(defn- delete-nth
   "Removes an indexed item from a seq; raises an Exception if the seq
   is empty."
   [coll idx]
@@ -16,7 +16,7 @@
   (concat (take idx coll) (drop 1 (drop idx coll))))
 
 
-(defn throw-empty-stack-exception
+(defn- throw-empty-stack-exception
   [stackname]
   (throw (Exception. (str 
                         "Push DSL runtime error: stack "
@@ -24,7 +24,7 @@
                         " is empty."))))
 
 
-(defn throw-invalid-index-exception
+(defn- throw-invalid-index-exception
   [k]
   (throw (Exception. (str 
                         "Push DSL argument error: " 
@@ -32,14 +32,14 @@
                         " is not an integer"))))
 
 
-(defn throw-missing-key-exception
+(defn- throw-missing-key-exception
   [k]
   (throw  (Exception. (str 
                          "Push DSL argument error: missing key: " 
                          k))))
 
 
-(defn throw-unknown-stack-exception
+(defn- throw-unknown-stack-exception
   [stackname]
   (throw (Exception. (str 
                         "Push DSL argument error: no "
@@ -62,7 +62,7 @@
     (throw-unknown-stack-exception stackname)))
 
 
-(defn index-from-scratch-ref
+(defn- index-from-scratch-ref
   "Takes a keyword and a scratch hashmap. If an integer is stored
   under that key in the hashmap, it's returned. Otherwise raises an
   exception."
@@ -73,7 +73,7 @@
       (throw-invalid-index-exception k))))
 
 
-(defn valid-DSL-index
+(defn- valid-DSL-index
   "Takes an item (presumably part of a DSL function requiring an :at
   index) and a hashmap, and returns an integer index value, or an
   integer from the hashmap if a keyword. Blows up informatively if
