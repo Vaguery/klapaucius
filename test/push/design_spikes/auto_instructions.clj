@@ -37,5 +37,5 @@
       (map (fn [[k v]] [(make-setter n k v) (make-getter n k v)]) (:signature newtype))))))
 
 
-(fact "all-s-n-gs does the thing"
+(fact "all-setters-n-getters does the thing"
   (all-setters-n-getters rgba) => '("rgba_get_alpha" "rgba_get_blue" "rgba_get_green" "rgba_get_red" "rgba_set_alpha_from_float" "rgba_set_blue_from_integer" "rgba_set_green_from_integer" "rgba_set_red_from_integer"))

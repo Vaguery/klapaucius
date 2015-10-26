@@ -62,88 +62,131 @@ Note that none of the `scratch` information exists at the start of the transacti
 
 ## DSL instructions
 
-- [x] `count-of [stackname :as local]`
-
-  stores the number of items in stack `stackname` in scratch variable `local` (a keyword)
-
-- [X] `consume-top-of`
-  - [X] `consume-top-of [stackname]`
-    
-    pop an item (and discard it) from `stackname`; raise an Exception if `stackname` is empty or undefined
-  - [X] `consume-top-of [stackname :as local]`
-    
-    pop an item from `stackname` and store under key `local`; raise an Exception if `stackname` is empty or undefined
-
-- [ ] `consume-nth-of`
-  - [ ] `consume-nth-of [stackname :at where :as local]`
-    
-    remove the item in position `where` from the named stack, and store it in scratch variable `local`; if `where` is an integer literal, the index of the item removed is `(mod where (count stackname))`; if `where` is a keyword, the value is obtained from the scratch storage; if the scratch value is not an integer (including `nil`), an Exception is raised 
-    
-  - [ ] `consume-nth-of [stackname :at where]`
-    
-    remove the item in position `where` from the named stack (and don't store it); if `where` is an integer literal, the index of the item removed is `(mod where (count stackname))`; if `where` is a keyword, the value is obtained from the scratch storage; if the scratch value is not an integer (including `nil`), an Exception is raised
-
-  - [ ] `consume-nth-of [stackname :as local]`
-    
-    remove the item at the top of the named stack, and store it in scratch variable `local`
-
-  - [ ] `consume-nth-of [stackname]`
-  
-    remove the item at the top of the named stack and throw it away
-
-- [X] `consume-stack`
-  - [X] `consume-stack [stackname :as local]`
-  
-    save the entire named stack into `local` and clear it in the `Interpreter`
-
-  - [X] `consume-stack [stackname]`
-
-    empty the named stack in the `Interpreter`
-
-
 - [ ] `calculate [args fn :as local]`
   
+  Example: `(calculate [:int1 :int2] #(+ %1 %2) :as :sum)`
+
   `args` is a vector of keywords, referring to scratch variables
 
-  `fn` is an arbitrary Clojure inline function which must refer to the arguments positionally (as in `(calculate [:int1 :int2] #(+ %1 %2) :as :sum)`); the function can refer to Clojure symbols defined outside the instruction, and can contain literals, but cannot refer have _arguments_ other than those provided
+  `fn` is an arbitrary Clojure inline function which _must_ refer to its arguments positionally as listed in the `args` vector; the function can of course invoke Clojure symbols defined outside the instruction, and can contain literals, but should not refer to any _arguments_ other than those listed in that vector.
 
-  The result of invoking `fn` on `args` is saved into scratch variable `local`
+  The result of invoking `fn` on `args` is saved into scratch variable `local`, overwriting any previous value.
+
+- [ ] `consume-top-of [stackname :as local]`
+
+  Example: `consume-top-of :float as :numerator`
+  
+  Pops an item from `stackname` and stores under key `local`. Raises an Exception if `stackname` is empty or undefined. Will overwrite any prior value stored in `local`.
+
+- [ ] `consume-nth-of [stackname :at where :as local]`
+
+  Example: `consume-nth-of :boolean :at 3 :as :bool3]`
+
+  Example: `consume-nth-of :boolean :at :middle :as :bool3]`
+  
+  Removes the item in position `where` from the named stack, and stores it in scratch variable `local`.
+
+  If `where` is an integer literal, then the index of the item removed is `(mod where (count stackname))`. If `where` is a keyword, then the index is obtained by looking it up in the scratch storage.
+
+  If the index (obtained via a local scratch value) is not an integer (including `nil`), an Exception is raised. If it is an integer, it is treated as before, and `mod`ded into the appropriate range.
+
+  The relative order of `:at` and `:as` arguments are not crucial, except for readability, but both must be present.
+    
+- [X] `consume-stack [stackname :as local]`
+
+  Example: `consume-stack :code as :old-code`
+
+  Saves the entire named stack into `local` and clears it in the `Interpreter`.
+
+- [x] `count-of [stackname :as local]`
+
+  Example: `count-of :float :as :float-size`
+
+  Stores the number of items in stack `stackname` in scratch variable `local`.
+
+- [ ] `delete-nth-of [stackname :at where]`
+  
+  Example: `delete-nth-of :integer :at -19`
+
+  Example: `delete-nth-of :integer :at :bad-number`
+
+  Removes the item in position `where` from the named stack without storing it.
+
+  If `where` is an integer literal, then the index of the item removed is `(mod where (count stackname))`. If `where` is a keyword, then the index is obtained by looking it up in the scratch storage.
+
+  If the index (obtained via a local scratch value) is not an integer (including `nil`), an Exception is raised. If it is an integer, it is treated as before, and `mod`ded into the appropriate range.
+
+- [ ] `delete-top-of [stackname]`
+  
+  Example: `delete-top-of :float`
+
+  Pop an item (and discards it) from `stackname`.
+
+  Raises an Exception if `stackname` is empty or undefined.
+
+- [ ] `delete-stack [stackname]`
+
+  Example: `delete-stack :vector_of_boolean`
+
+  Empty the named stack in the `Interpreter`.
+
+- [ ] `push-onto [stackname local]`
+
+  `push-onto :integer :sum`
+
+  Push the scratch value `local` onto the top of the indicated stack.
+
+- [ ] `remember-counter [:as local]`
+  
+  Example: `remember-counter :as :steps`
+
+  Saves the current interpreter counter value in `local`.
+
+- [ ] `remember-input-names [:as local]`
+
+  Example: `remember-input-names :as :all-variables`
+
+  Saves a list of all registered inputs pseudo-instructions (the keywords used to refer to them in code) in scratch variable `local`. Order of the list should be assumed to be arbitrary.
+
+- [ ] `remember-instructions [:as local]`
+
+  Example: `remember-instructions :as :registered`
+
+  Saves a list of the keywords used to refer to all registered `Instructions` in the running `Interpreter` in scratch variable `local`. Order of the list should be assumed to be arbitrary.
+
+- [ ] `remember-nth-of [stackname :at where :as local]`
+  
+  Example: `remember-nth-of :boolean :at 7 :as :seventh`
+
+  Example: `remember-nth-of :boolean :at :best-one :as :best-val`
+
+  Copies the item in position `where` into the scratch variable `local`.
+
+  If `where` is an integer literal, then the index of the item removed is `(mod where (count stackname))`. If `where` is a keyword, then the index is obtained by looking it up in the scratch storage.
+
+  If the index (obtained via a local scratch value) is not an integer (including `nil`), an Exception is raised. If it is an integer, it is treated as before, and `mod`ded into the appropriate range.
+
+  The relative order of `:at` and `:as` arguments are not crucial, except for readability, but both must be present.
 
 - [ ] `remember-top-of [stackname :as local]`
 
-  store the top item from `stackname` under key `local` (without removing it from the stack)
+  Example: `remember-top-of :exec :as :next-item`
 
-- [ ] `remember-nth-of`
-  - [ ] `remember-nth-of [stackname :at where :as local]`
-    
-    store item in `stackname` at position `where` under key `local`
-  - [ ] `remember-nth-of [stackname :as local]`
-    
-    store top item in `stackname` under key `local` (same as `remember-top-of`)
+  Copies the top item from `stackname` into scratch variable `local` without removing it from the stack.
 
 - [ ] `remember-stack [stackname :as local]`
 
-  save the entire stack to scratch variable `local`
+  Example: `remember-stack :float :as :unsorted`
 
-- [ ] `put-onto [stackname local]`
-
-  push the scratch value `local` onto the top of the named stack
+  Saves a copy of the entire list `stackname` into scratch variable `local`. Does not clear the stack.
 
 - [ ] `replace-stack [stackname local]`
   
-  replace the indicated stack with the scratch variable `local`; if its value is a list, replace the entire stack with that list; if the value is not a list, then replace the stack with a new one containing only that value
+  Example: `replace-stack :integer :converted-floats`
 
-- [ ] `instructions [:as local]`
+  Replace the indicated stack with the contents of the scratch variable `local`.
 
-  save a list of all registered instructions in `local`
-
-- [ ] `inputs [:as local]`
-
-  save a list of all registered inputs in `local`
-
-- [ ] `counter [:as local]`
-  
-  save the current interpreter counter value in `local`
+  If the stored value is `nil`, empty the stack; if it is a list, _replace_ the stack with that list; if it is not a list, replace the stack with a new list _containing only that one value_. For example, if the stored value is `'(1 2 3)` then the new stack will be `'(1 2 3)`; if the stored value is `[1 2 3[`, the new stack will be `'([1 2 3])`.
 
 
 ### Possible future extensions
