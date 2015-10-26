@@ -72,12 +72,6 @@ Note that none of the `scratch` information exists at the start of the transacti
 
   The result of invoking `fn` on `args` is saved into scratch variable `local`, overwriting any previous value.
 
-- [ ] `consume-top-of [stackname :as local]`
-
-  Example: `consume-top-of :float as :numerator`
-  
-  Pops an item from `stackname` and stores under key `local`. Raises an Exception if `stackname` is empty or undefined. Will overwrite any prior value stored in `local`.
-
 - [ ] `consume-nth-of [stackname :at where :as local]`
 
   Example: `consume-nth-of :boolean :at 3 :as :bool3]`
@@ -98,7 +92,13 @@ Note that none of the `scratch` information exists at the start of the transacti
 
   Saves the entire named stack into `local` and clears it in the `Interpreter`.
 
-- [x] `count-of [stackname :as local]`
+- [X] `consume-top-of [stackname :as local]`
+
+  Example: `consume-top-of :float as :numerator`
+  
+  Pops an item from `stackname` and stores under key `local`. Raises an Exception if `stackname` is empty or undefined. Will overwrite any prior value stored in `local`.
+
+- [X] `count-of [stackname :as local]`
 
   Example: `count-of :float :as :float-size`
 
@@ -124,7 +124,7 @@ Note that none of the `scratch` information exists at the start of the transacti
 
   Raises an Exception if `stackname` is empty or undefined.
 
-- [ ] `delete-stack [stackname]`
+- [X] `delete-stack [stackname]`
 
   Example: `delete-stack :vector_of_boolean`
 

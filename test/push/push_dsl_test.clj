@@ -113,8 +113,6 @@
     (throws #"Push DSL argument error: missing key"))
 
 
-
-
 ;; `delete-stack [stackname]`
 
 
@@ -122,3 +120,8 @@
   (get-stack-from-dslblob :integer
     (delete-stack [afew {}] :integer)) => '()
   (second (delete-stack [afew {}] :integer)) => {})
+
+
+(fact "`delete-stack` raises an exception if the stack doesn't exist"
+  (delete-stack [afew {}] :quux :as :foo) =>
+    (throws #"Push DSL argument error: no :quux stackname registered"))
