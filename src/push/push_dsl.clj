@@ -46,6 +46,46 @@
                         stackname
                         " stackname registered."))))
 
+
+(defn- get-nth-of
+  "Abstract function invoked by all the X-nth-of DSL functions.
+  Takes a PushDSL blob, a stackname, an :at index (integer or keyword)
+  (but no :as keyword), and returns the index and the item at that
+  index, raising any argument exceptions it finds."
+  [[interpreter scratch] stackname & {:keys [at]}]
+  (if-let [old-stack (get-stack interpreter stackname)]
+    (if (empty? old-stack)
+      (throw-empty-stack-exception stackname)
+      (let [idx (valid-DSL-index at scratch)
+            which (mod idx (count old-stack))]
+        [which old-stack]))
+    (throw-unknown-stack-exception stackname)))
+
+
+(defn index-from-scratch-ref
+  "Takes a keyword and a scratch hashmap. If an integer is stored
+  under that key in the hashmap, it's returned. Otherwise raises an
+  exception."
+  [k locals]
+  (let [stored (k locals)]
+    (if (integer? stored)
+      stored
+      (throw-invalid-index-exception k))))
+
+
+(defn valid-DSL-index
+  "Takes an item (presumably part of a DSL function requiring an :at
+  index) and a hashmap, and returns an integer index value, or an
+  integer from the hashmap if a keyword. Blows up informatively if
+  neither of those is possible."
+  [item scratch]
+  (cond
+    (integer? item) item
+    (keyword? item) (index-from-scratch-ref item scratch)
+    (nil? item) (throw-missing-key-exception :at)
+    :else (throw-invalid-index-exception item)))
+
+
 ;; DSL instructions
 
 (defn consume-stack
@@ -99,30 +139,6 @@
     (throw-missing-key-exception :as)))
 
 
-(defn index-from-scratch-ref
-  "Takes a keyword and a scratch hashmap. If an integer is stored
-  under that key in the hashmap, it's returned. Otherwise raises an
-  exception."
-  [k locals]
-  (let [stored (k locals)]
-    (if (integer? stored)
-      stored
-      (throw-invalid-index-exception k))))
-
-
-(defn valid-DSL-index
-  "Takes an item (presumably part of a DSL function requiring an :at
-  index) and a hashmap, and returns an integer index value, or an
-  integer from the hashmap if a keyword. Blows up informatively if
-  neither of those is possible."
-  [item scratch]
-  (cond
-    (integer? item) item
-    (keyword? item) (index-from-scratch-ref item scratch)
-    (nil? item) (throw-missing-key-exception :at)
-    :else (throw-invalid-index-exception item)))
-
-
 (defn consume-nth-of
   "Takes a PushDSL blob, a stackname (keyword), an index argument (an
   integer or a keyword), and a scratch key (also a keyword), copies
@@ -137,17 +153,14 @@
   - the :at argument is not a keyword or integer
   - the scratch value passed as a reference is not an integer"
   [[interpreter scratch] stackname & {:keys [as at]}]
-  (if-let [old-stack (get-stack interpreter stackname)]
-    (if (empty? old-stack)
-      (throw-empty-stack-exception stackname)
-      (if (nil? as)
-        (throw-missing-key-exception :as)
-        (let [idx (valid-DSL-index at scratch)
-              which (mod idx (count old-stack))
-              new-stack (delete-nth old-stack which)]
-          [(set-stack interpreter stackname new-stack)
-           (assoc scratch as (nth old-stack which))])))
-    (throw-unknown-stack-exception stackname)))
+  (let [[idx old-stack]
+          (get-nth-of [interpreter scratch] stackname :at at)]
+    (if (nil? as)
+      (throw-missing-key-exception :as)
+      (let [new-stack (delete-nth old-stack idx)
+            saved-item (nth old-stack idx)]
+        [(set-stack interpreter stackname new-stack)
+         (assoc scratch as saved-item)]))))
 
 
 (defn delete-nth-of
@@ -163,15 +176,11 @@
     - the stack is empty
     - no index is given
     - the index is a :keyword that doesn't point to an integer"
-  [[interpreter scratch] stackname & {:keys [at]}]
-  (if-let [old-stack (get-stack interpreter stackname)]
-    (if (empty? old-stack)
-      (throw-empty-stack-exception stackname)
-      (let [idx (valid-DSL-index at scratch)
-            which (mod idx (count old-stack))]
-        [(set-stack interpreter stackname (delete-nth old-stack which))
-        scratch]))
-    (throw-unknown-stack-exception stackname)))
+  [[interpreter scratch] stackname & {:keys [as at]}]
+  (let [[idx old-stack]
+          (get-nth-of [interpreter scratch] stackname :at at)]
+    (let [new-stack (delete-nth old-stack idx)]
+      [(set-stack interpreter stackname new-stack) scratch])))
 
 
 (defn delete-stack
@@ -270,15 +279,12 @@
   - the :at argument is not a keyword or integer
   - the scratch value passed as a reference is not an integer"
   [[interpreter scratch] stackname & {:keys [as at]}]
-  (if-let [old-stack (get-stack interpreter stackname)]
-    (if (empty? old-stack)
-      (throw-empty-stack-exception stackname)
-      (if (nil? as)
-        (throw-missing-key-exception :as)
-        (let [idx (valid-DSL-index at scratch)
-              which (mod idx (count old-stack))]
-          [interpreter (assoc scratch as (nth old-stack which))])))
-    (throw-unknown-stack-exception stackname)))
+  (let [[idx old-stack]
+          (get-nth-of [interpreter scratch] stackname :at at)]
+    (if (nil? as)
+      (throw-missing-key-exception :as)
+      (let [saved-item (nth old-stack idx)]
+        [interpreter (assoc scratch as saved-item)]))))
 
 
 (defn save-top-of

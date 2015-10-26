@@ -379,3 +379,38 @@
 (fact "`consume-nth-of` throws up if you forget the :at argument"
   (consume-nth-of [afew {}] :integer :as :foo) =>
     (throws #"missing key: :at"))
+
+
+;; `get-nth-of [stackname :at where]` (shared functionality)
+
+
+(fact "given an integer index, `get-nth-of` returns the index and the item in the named stack"
+  (#'get-nth-of [afew {}] :integer :at 1) => [1 '(1 2 3)])
+
+
+(fact "`get-nth-of works for out of bounds numeric indices"
+  (#'get-nth-of [afew {}] :integer :at -1) => [2 '(1 2 3)]
+  (#'get-nth-of [afew {}] :integer :at 10) => [1 '(1 2 3)])
+
+
+(fact "given a keyword index, `get-nth-of` returns the index and the item in the named stack"
+  (#'get-nth-of [afew {:foo 1}] :integer :at :foo) => [1 '(1 2 3)])
+
+
+(fact "`get-nth-of works for out of bounds keyword indices"
+  (#'get-nth-of [afew {:foo -1}] :integer :at :foo) => [2 '(1 2 3)]
+  (#'get-nth-of [afew {:foo 10}] :integer :at :foo) => [1 '(1 2 3)])
+
+
+(fact "`get-nth-of` throws up if you ask for an undefined stack"
+  (#'get-nth-of [afew {}] :grault :at 2) => (throws #"no :grault stack"))
+
+
+(fact "`get-nth-of` throws up if the keyword index doesn't point to an integer"
+  (#'get-nth-of [afew {:foo false}] :integer :at :foo) => (throws #":foo is not an integer")
+  (#'get-nth-of [afew {}] :integer :at :foo) => (throws #":foo is not an integer"))
+
+
+(fact "`get-nth-of` throws up if you refer to an empty stack"
+  (#'get-nth-of [afew {}] :boolean :at 6) => (throws #"stack :boolean is empty"))
+
