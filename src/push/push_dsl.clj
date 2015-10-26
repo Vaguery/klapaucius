@@ -47,6 +47,13 @@
                         " stackname registered."))))
 
 
+(defn- throw-function-argument-exception
+  [args]
+  (throw (Exception. (str 
+                        "Push DSL argument error: '"
+                        args
+                        "' can't be parsed as vector."))))
+
 (defn- get-nth-of
   "Abstract function invoked by all the X-nth-of DSL functions.
   Takes a PushDSL blob, a stackname, an :at index (integer or keyword)
@@ -304,3 +311,24 @@
         (throw-missing-key-exception :as))
       (throw-empty-stack-exception stackname))
     (throw-unknown-stack-exception stackname)))
+
+
+(defn calculate
+  "Takes a PushDSL blob, a vector of keywords referring to scratch
+  item keys, a function over _those keys_ (using positional notation),
+  and an :as keyword in which to store the result of the function.
+
+  Exceptions when:
+  - [args] is not a vector
+  - no :as argument is present
+  - the wrong number of arguments are provided
+  - (does not check for nil arguments)"
+  [[interpreter scratch] args fxn & {:keys [as]}]
+  (let [locals (map scratch args)
+        result (if (vector? args)
+                  (apply fxn locals)
+                  (throw-function-argument-exception args))]
+    (if (nil? as)
+      (throw-missing-key-exception :as)
+      [interpreter (assoc scratch as result)])))
+

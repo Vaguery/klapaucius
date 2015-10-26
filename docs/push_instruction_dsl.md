@@ -62,7 +62,7 @@ Note that none of the `scratch` information exists at the start of the transacti
 
 ## DSL instructions
 
-- [ ] `calculate [args fn :as local]`
+- [X] `calculate [args fn :as local]`
   
   Example: `(calculate [:int1 :int2] #(+ %1 %2) :as :sum)`
 
