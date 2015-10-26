@@ -218,11 +218,29 @@
 
   Exceptions when:
   - the stack doesn't exist
-  - when no :as argument is present"
+  - no :as argument is present"
   [[interpreter scratch] stackname & {:keys [as]}]
   (if-let [old-stack (get-stack interpreter stackname)]
     (if (some? as)
       [interpreter (assoc scratch as old-stack)]
       (throw-missing-key-exception :as))
-    (throw-unknown-stack-exception stackname)
-  ))
+    (throw-unknown-stack-exception stackname)))
+
+
+(defn save-top-of
+  "Takes a PushDSL blob, a stackname (keyword) and a scratch key (also
+  keyword), and copies the top item from that stack into the scratch
+  variable (without deleting it).
+
+  Exceptions when:
+  - the stack doesn't exist
+  - no :as argument is present
+  - the stack is empty"
+  [[interpreter scratch] stackname & {:keys [as]}]
+  (if-let [old-stack (get-stack interpreter stackname)]
+    (if-let [top-item (first old-stack)]
+      (if (some? as)
+        [interpreter (assoc scratch as top-item)]
+        (throw-missing-key-exception :as))
+      (throw-empty-stack-exception stackname))
+    (throw-unknown-stack-exception stackname)))

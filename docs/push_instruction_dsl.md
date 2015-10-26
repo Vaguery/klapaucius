@@ -168,7 +168,7 @@ Note that none of the `scratch` information exists at the start of the transacti
 
   The relative order of `:at` and `:as` arguments are not crucial, except for readability, but both must be present.
 
-- [ ] `save-top-of [stackname :as local]`
+- [X] `save-top-of [stackname :as local]`
 
   Example: `save-top-of :exec :as :next-item`
 

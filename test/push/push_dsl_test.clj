@@ -241,6 +241,35 @@
     (throws #"Push DSL argument error: no :grault"))
 
 
-(fact "`save-stack` throws up if you ask forget the :as argument"
+(fact "`save-stack` throws up if you leave out the :as argument"
   (save-stack [afew {}] :integer ) =>
+    (throws #"Push DSL argument error: missing key: :as"))
+
+
+;; `save-top-of [stackname :as local]`
+
+(fact "`save-top-of` puts the top item on the named stack into a scratch variable (without deleting it)"
+  (get-stack-from-dslblob :integer
+    (save-top-of [afew {}] :integer :as :bar)) => '(1 2 3)
+  (get-local-from-dslblob :bar
+    (save-top-of [afew {}] :integer :as :bar)) => 1)
+
+
+(fact "`save-top-of` overwrites the scratch variable if asked to"
+  (get-local-from-dslblob :foo
+    (save-top-of [afew {:foo false}] :integer :as :foo)) => 1)
+
+
+(fact "`save-top-of` throws up if you ask for an undefined stack"
+  (save-top-of [afew {}] :grault :as :foo) =>
+    (throws #"Push DSL argument error: no :grault"))
+
+
+(fact "`save-top-of` throws up if you try to pop an empty stack"
+  (save-top-of [afew {}] :boolean :as :foo) =>
+    (throws #"Push DSL runtime error: stack :boolean is empty"))
+
+
+(fact "`save-top-of` throws up if you forget the :as argument"
+  (save-top-of [afew {}] :integer) =>
     (throws #"Push DSL argument error: missing key: :as"))
