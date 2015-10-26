@@ -28,9 +28,8 @@
     (throws #"Push DSL argument error: no "))
 
 
-(fact "`count-of` has no effect if the scratch variable isn't specified"
-  (second (count-of [afew {}] :integer)) => {}
-  (first (count-of [afew {}] :integer)) => afew)
+(fact "`count-of` throws an Exception when no local is specified"
+  (count-of [afew {}] :integer) => (throws #"Push DSL argument error: missing key"))
 
 
 ;; `delete-top-of [stackname]`
@@ -123,5 +122,57 @@
 
 
 (fact "`delete-stack` raises an exception if the stack doesn't exist"
-  (delete-stack [afew {}] :quux :as :foo) =>
+  (delete-stack [afew {}] :quux) =>
     (throws #"Push DSL argument error: no :quux stackname registered"))
+
+
+;; `index-from-scratch-ref [key hashmap]`
+
+(fact "index-from-scratch-ref returns an integer if one is stored"
+  (index-from-scratch-ref :foo {:foo 8}) => 8)
+
+
+(fact "index-from-scratch-ref throws up if the stored value isn't an integer"
+  (index-from-scratch-ref :foo {:foo false}) => 
+    (throws #"Push DSL argument error: :foo is not an integer"))
+
+
+(fact "index-from-scratch-ref throws up if the key is not present"
+  (index-from-scratch-ref :bar {:foo 2}) => 
+    (throws #"Push DSL argument error: :bar is not an integer"))
+
+;; `delete-nth-of [stackname :at where]`
+
+
+(fact "`delete-nth-of` discards the indicated item given an integer location"
+  (get-stack-from-dslblob :integer
+    (delete-nth-of [afew {}] :integer :at 1)) => '(1 3))
+
+
+(fact "`delete-nth-of` picks the index as `(mod where stacklength)`"
+  (get-stack-from-dslblob :integer
+    (delete-nth-of [afew {}] :integer :at -2)) => '(1 3)
+  (get-stack-from-dslblob :integer
+    (delete-nth-of [afew {}] :integer :at -3)) => '(2 3))
+
+
+(fact "`delete-nth-of` discards the indicated item given scratch ref to integer"
+  (get-stack-from-dslblob :integer
+    (delete-nth-of [afew {:foo 1}] :integer :at :foo)) => '(1 3)
+  (get-stack-from-dslblob :integer
+    (delete-nth-of [afew {:foo -1}] :integer :at :foo)) => '(1 2)
+  (get-stack-from-dslblob :integer
+    (delete-nth-of [afew {:foo 3}] :integer :at :foo)) => '(2 3))
+
+
+(fact "`delete-nth-of` throws up given a scratch ref to non-integer"
+  (delete-nth-of [afew {:foo false}] :integer :at :foo) => 
+    (throws #"Push DSL argument error: :foo is not an integer")
+  (delete-nth-of [afew {:foo 1}] :integer :at :bar) => 
+    (throws #"Push DSL argument error: :bar is not an integer"))
+
+
+(fact "`delete-nth-of` throws up if no index is given"
+  (delete-nth-of [afew {:foo false}] :integer) => 
+    (throws #"Push DSL argument error: missing key"))
+

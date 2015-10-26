@@ -104,7 +104,7 @@ Note that none of the `scratch` information exists at the start of the transacti
 
   Stores the number of items in stack `stackname` in scratch variable `local`.
 
-- [ ] `delete-nth-of [stackname :at where]`
+- [X] `delete-nth-of [stackname :at where]`
   
   Example: `delete-nth-of :integer :at -19`
 
