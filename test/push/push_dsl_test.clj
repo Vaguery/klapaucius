@@ -297,6 +297,13 @@
     (save-nth-of [afew {:foo 2}] :integer :at :foo :as :bar)) => 3)
 
 
+(fact "`save-nth-of` works with an out-of-bounds index"
+  (get-local-from-dslblob :foo
+    (save-nth-of [afew {:foo false}] :integer :at 11 :as :foo)) => 3
+  (get-local-from-dslblob :foo
+    (save-nth-of [afew {:foo false}] :integer :at -1 :as :foo)) => 3)
+
+
 (fact "`save-nth-of` overwrites the scratch variable if asked to"
   (get-local-from-dslblob :foo
     (save-nth-of [afew {:foo false}] :integer :at 1 :as :foo)) => 2)
@@ -324,4 +331,51 @@
 
 (fact "`save-nth-of` throws up if you forget the :at argument"
   (save-nth-of [afew {}] :integer :as :foo) =>
+    (throws #"missing key: :at"))
+
+
+;; `consume-nth-of [stackname :at where :as local]`
+
+
+(fact "given an integer index, `consume-nth-of` puts the indicated item from the named stack into a scratch variable, deleting it"
+  (get-stack-from-dslblob :integer
+    (consume-nth-of [afew {}] :integer :at 1 :as :bar)) => '(1 3)
+  (get-local-from-dslblob :bar
+    (consume-nth-of [afew {}] :integer :at 1 :as :bar)) => 2)
+
+
+(fact "`consume-nth-of` works with an out-of-bounds index"
+  (get-local-from-dslblob :foo
+    (consume-nth-of [afew {:foo false}] :integer :at 11 :as :foo)) => 3
+  (get-local-from-dslblob :foo
+    (consume-nth-of [afew {:foo false}] :integer :at -1 :as :foo)) => 3)
+
+
+(fact "`consume-nth-of` overwrites the scratch variable if asked to"
+  (get-local-from-dslblob :foo
+    (consume-nth-of [afew {:foo false}] :integer :at 1 :as :foo)) => 2)
+
+
+(fact "`consume-nth-of` throws up if you ask for an undefined stack"
+  (consume-nth-of [afew {}] :grault :at 2 :as :foo) =>
+    (throws #"no :grault stack"))
+
+
+(fact "`consume-nth-of` throws up if the keyword index doesn't point to an integer"
+  (consume-nth-of [afew {:foo false}] :integer :at :foo :as :bar) =>
+    (throws #":foo is not an integer"))
+
+
+(fact "`consume-nth-of` throws up if you try to pop an empty stack"
+  (consume-nth-of [afew {}] :boolean :at 6 :as :foo) =>
+    (throws #"stack :boolean is empty"))
+
+
+(fact "`consume-nth-of` throws up if you forget the :as argument"
+  (consume-nth-of [afew {}] :integer :at 8) =>
+    (throws #"missing key: :as"))
+
+
+(fact "`consume-nth-of` throws up if you forget the :at argument"
+  (consume-nth-of [afew {}] :integer :as :foo) =>
     (throws #"missing key: :at"))

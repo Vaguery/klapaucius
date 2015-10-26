@@ -123,6 +123,33 @@
     :else (throw-invalid-index-exception item)))
 
 
+(defn consume-nth-of
+  "Takes a PushDSL blob, a stackname (keyword), an index argument (an
+  integer or a keyword), and a scratch key (also a keyword), copies
+  the indicated item from that stack into the scratch variable, and
+  deletes it from the stack.
+
+  Exceptions when:
+  - the stack doesn't exist
+  - the stack is empty
+  - no :as argument is present
+  - no :at argument is present
+  - the :at argument is not a keyword or integer
+  - the scratch value passed as a reference is not an integer"
+  [[interpreter scratch] stackname & {:keys [as at]}]
+  (if-let [old-stack (get-stack interpreter stackname)]
+    (if (empty? old-stack)
+      (throw-empty-stack-exception stackname)
+      (if (nil? as)
+        (throw-missing-key-exception :as)
+        (let [idx (valid-DSL-index at scratch)
+              which (mod idx (count old-stack))
+              new-stack (delete-nth old-stack which)]
+          [(set-stack interpreter stackname new-stack)
+           (assoc scratch as (nth old-stack which))])))
+    (throw-unknown-stack-exception stackname)))
+
+
 (defn delete-nth-of
   "Usage: `delete-nth-of [stackname :at where]`
 
@@ -241,7 +268,7 @@
   - no :as argument is present
   - no :at argument is present
   - the :at argument is not a keyword or integer
-  - the scratch value stored in a referenced index is not an integer"
+  - the scratch value passed as a reference is not an integer"
   [[interpreter scratch] stackname & {:keys [as at]}]
   (if-let [old-stack (get-stack interpreter stackname)]
     (if (empty? old-stack)

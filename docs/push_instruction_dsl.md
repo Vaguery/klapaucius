@@ -72,7 +72,7 @@ Note that none of the `scratch` information exists at the start of the transacti
 
   The result of invoking `fn` on `args` is saved into scratch variable `local`, overwriting any previous value.
 
-- [ ] `consume-nth-of [stackname :at where :as local]`
+- [X] `consume-nth-of [stackname :at where :as local]`
 
   Example: `consume-nth-of :boolean :at 3 :as :bool3]`
 
