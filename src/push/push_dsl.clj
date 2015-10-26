@@ -163,12 +163,30 @@
     Exceptions when:
     - the stack doesn't exist
     - the stack is empty"
-  [ [interpreter scratch] stackname]
+  [[interpreter scratch] stackname]
   (if-let [old-stack (get-stack interpreter stackname)]
     (if-let [top-item (first old-stack)]
       [(set-stack interpreter stackname (rest old-stack)) scratch]
       (throw-empty-stack-exception stackname))
     (throw-unknown-stack-exception stackname)))
 
+
+(defn replace-stack
+  "Takes a PushDSL blob, a stackname (keyword) and a scratch key (also
+  keyword), and replaces the named stack with the item stored in the
+  scratch variable. If the contents are a list, the stack is replaced
+  with the entire list; if nil, the stack is emptied; if a non-list
+  item the final stack will contain only that item.
+
+  Exceptions when:
+  - the stack doesn't exist"
+  [[interpreter scratch] stackname kwd]
+  (if (some? (get-stack interpreter stackname))
+    (let [replacement (kwd scratch)
+          new-stack (cond (nil? replacement) (list)
+                          (list? replacement) replacement
+                          :else (list replacement))]
+      [(set-stack interpreter stackname new-stack) scratch])
+    (throw-unknown-stack-exception stackname)))
 
 

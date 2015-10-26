@@ -176,3 +176,24 @@
   (delete-nth-of [afew {:foo false}] :integer) => 
     (throws #"Push DSL argument error: missing key"))
 
+
+;; `replace-stack [stackname local]`
+
+
+(fact "`replace-stack` takes sets the named stack to the value of the local if a list"
+  (get-stack-from-dslblob :integer
+    (replace-stack [afew {:foo '(4 5 6)}] :integer :foo)) => '(4 5 6))
+
+
+(fact "`replace-stack` empties a stack if the local is not defined"
+  (get-stack-from-dslblob :integer
+    (replace-stack [afew {}] :integer :foo)) => '())
+
+
+(fact "`replace-stack` replaces the stack with just the item in a list otherwise"
+  (get-stack-from-dslblob :integer
+    (replace-stack [afew {:foo false}] :integer :foo)) => '(false))
+
+
+(fact "`replace-stack` throws an Exception when the named stack doesn't exist"
+  (replace-stack [nada {:bar 1}] :foo :bar) => (throws #"Push DSL argument error: no "))
