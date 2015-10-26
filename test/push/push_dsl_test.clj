@@ -180,7 +180,7 @@
 ;; `replace-stack [stackname local]`
 
 
-(fact "`replace-stack` takes sets the named stack to the value of the local if a list"
+(fact "`replace-stack` sets the named stack to the value of the local if it is a list"
   (get-stack-from-dslblob :integer
     (replace-stack [afew {:foo '(4 5 6)}] :integer :foo)) => '(4 5 6))
 
@@ -220,3 +220,27 @@
 (fact "`push-onto` doesn't raise a fuss if the scratch variable is a list"
   (get-stack-from-dslblob :integer
     (push-onto [afew {:foo '(4 5 6)}] :integer :foo)) => '((4 5 6) 1 2 3))
+
+
+;; `save-stack [stackname :as local]`
+
+(fact "`save-stack` puts the entire named stack into a scratch variable (without deleting it)"
+  (get-stack-from-dslblob :integer
+    (save-stack [afew {}] :integer :as :bar)) => '(1 2 3)
+  (get-local-from-dslblob :bar
+    (save-stack [afew {}] :integer :as :bar)) => '(1 2 3))
+
+
+(fact "`save-stack` overwrites the scratch variable if asked to"
+  (get-local-from-dslblob :foo
+    (save-stack [afew {:foo false}] :integer :as :foo)) => '(1 2 3))
+
+
+(fact "`save-stack` throws up if you ask for an undefined stack"
+  (save-stack [afew {:foo 99}] :grault :as :foo) =>
+    (throws #"Push DSL argument error: no :grault"))
+
+
+(fact "`save-stack` throws up if you ask forget the :as argument"
+  (save-stack [afew {}] :integer ) =>
+    (throws #"Push DSL argument error: missing key: :as"))

@@ -174,7 +174,7 @@ Note that none of the `scratch` information exists at the start of the transacti
 
   Copies the top item from `stackname` into scratch variable `local` without removing it from the stack.
 
-- [ ] `save-stack [stackname :as local]`
+- [X] `save-stack [stackname :as local]`
 
   Example: `save-stack :float :as :unsorted`
 

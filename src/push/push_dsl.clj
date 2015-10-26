@@ -210,3 +210,19 @@
       [(set-stack interpreter stackname new-stack) scratch])
     (throw-unknown-stack-exception stackname)))
 
+
+(defn save-stack
+  "Takes a PushDSL blob, a stackname (keyword) and a scratch key (also
+  keyword), and copies that stack into the scratch variable (without
+  deleting it).
+
+  Exceptions when:
+  - the stack doesn't exist
+  - when no :as argument is present"
+  [[interpreter scratch] stackname & {:keys [as]}]
+  (if-let [old-stack (get-stack interpreter stackname)]
+    (if (some? as)
+      [interpreter (assoc scratch as old-stack)]
+      (throw-missing-key-exception :as))
+    (throw-unknown-stack-exception stackname)
+  ))
