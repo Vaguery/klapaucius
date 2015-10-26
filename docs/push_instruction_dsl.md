@@ -136,29 +136,29 @@ Note that none of the `scratch` information exists at the start of the transacti
 
   Push the scratch value `local` onto the top of the indicated stack.
 
-- [ ] `remember-counter [:as local]`
+- [ ] `save-counter [:as local]`
   
-  Example: `remember-counter :as :steps`
+  Example: `save-counter :as :steps`
 
   Saves the current interpreter counter value in `local`.
 
-- [ ] `remember-input-names [:as local]`
+- [ ] `save-input-names [:as local]`
 
-  Example: `remember-input-names :as :all-variables`
+  Example: `save-input-names :as :all-variables`
 
   Saves a list of all registered inputs pseudo-instructions (the keywords used to refer to them in code) in scratch variable `local`. Order of the list should be assumed to be arbitrary.
 
-- [ ] `remember-instructions [:as local]`
+- [ ] `save-instructions [:as local]`
 
-  Example: `remember-instructions :as :registered`
+  Example: `save-instructions :as :registered`
 
   Saves a list of the keywords used to refer to all registered `Instructions` in the running `Interpreter` in scratch variable `local`. Order of the list should be assumed to be arbitrary.
 
-- [ ] `remember-nth-of [stackname :at where :as local]`
+- [ ] `save-nth-of [stackname :at where :as local]`
   
-  Example: `remember-nth-of :boolean :at 7 :as :seventh`
+  Example: `save-nth-of :boolean :at 7 :as :seventh`
 
-  Example: `remember-nth-of :boolean :at :best-one :as :best-val`
+  Example: `save-nth-of :boolean :at :best-one :as :best-val`
 
   Copies the item in position `where` into the scratch variable `local`.
 
@@ -168,15 +168,15 @@ Note that none of the `scratch` information exists at the start of the transacti
 
   The relative order of `:at` and `:as` arguments are not crucial, except for readability, but both must be present.
 
-- [ ] `remember-top-of [stackname :as local]`
+- [ ] `save-top-of [stackname :as local]`
 
-  Example: `remember-top-of :exec :as :next-item`
+  Example: `save-top-of :exec :as :next-item`
 
   Copies the top item from `stackname` into scratch variable `local` without removing it from the stack.
 
-- [ ] `remember-stack [stackname :as local]`
+- [ ] `save-stack [stackname :as local]`
 
-  Example: `remember-stack :float :as :unsorted`
+  Example: `save-stack :float :as :unsorted`
 
   Saves a copy of the entire list `stackname` into scratch variable `local`. Does not clear the stack.
 
