@@ -33,7 +33,7 @@
   (first (count-of [afew {}] :integer)) => afew)
 
 
-;; `consume-top-of [stackname]`
+;; `delete-top-of [stackname]`
 
 
 (defn get-stack-from-dslblob
@@ -41,18 +41,17 @@
   (get-stack (first dslblob) stackname))
 
 
-(fact "`consume-top-of` deletes the top item of a stack with you don't tell it to save it"
-  (get-stack-from-dslblob :integer (consume-top-of [afew {}] :integer)) => '(2 3))
+(fact "`delete-top-of` deletes the top item of a stack"
+  (get-stack-from-dslblob :integer (delete-top-of [afew {}] :integer)) => '(2 3))
 
 
-(fact "`consume-top-of` raises an Exception if the stack doesn't exist"
-  (consume-top-of [afew {}] :stupid) =>
-    (throws #"Push DSL argument error: no "))
+(fact "`delete-top-of` raises an Exception if the stack doesn't exist"
+  (delete-top-of [afew {}] :stupid) => (throws #"Push DSL argument error: no "))
 
 
-(fact "`consume-top-of` raises an Exception if the stack is empty"
-(consume-top-of [nada {}] :integer) =>
-  (throws #"Push DSL runtime error: stack "))
+(fact "`delete-top-of` raises an Exception if the stack is empty"
+  (delete-top-of [nada {}] :integer) => 
+    (throws #"Push DSL runtime error: stack "))
 
 
 ;; `consume-top-of [stackname :as local]`
@@ -66,6 +65,11 @@
 
 (fact "`consume-top-of` overwrites locals that already exist"
   (get-local-from-dslblob :foo (consume-top-of [afew {:foo \f}] :integer :as :foo)) => 1)
+
+
+(fact "`consume-top-of` throws an exception when no local is given"
+  (consume-top-of [afew {:foo \f}] :integer) =>
+    (throws #"Push DSL argument error: missing key"))
 
 
 ;; delete-nth
@@ -104,10 +108,17 @@
     (throws #"Push DSL argument error: no :quux stackname registered"))
 
 
-;; `consume-stack [stackname]` (throws it away)
+(fact "`consume-stack` throws an Exception when no local is specified"
+  (consume-stack [afew {}] :integer) =>
+    (throws #"Push DSL argument error: missing key"))
 
 
-(fact "`consume-stack` discards the entire stack with no :as argument"
-  (get-stack-from-dslblob :integer (consume-stack [afew {}] :integer)) =>
-    '()
-  (second (consume-stack [afew {}] :integer)) => {})
+
+
+;; `delete-stack [stackname]`
+
+
+(fact "`delete-stack` discards the named stack"
+  (get-stack-from-dslblob :integer
+    (delete-stack [afew {}] :integer)) => '()
+  (second (delete-stack [afew {}] :integer)) => {})

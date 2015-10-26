@@ -17,7 +17,8 @@
 
 
 (defn count-of
-  "Takes an PushDSL blob, a stackname (keyword) and a scratch variable (keyword) in which to store the count.
+  "Takes an PushDSL blob, a stackname (keyword) and a scratch variable
+  (keyword) in which to store the count.
 
     Exceptions when:
     - the stack doesn't exist
@@ -27,9 +28,9 @@
   [[interpreter scratch] stackname & {:keys [as]}]
   (if-let [scratch-var as]
     (if-let [stack (get-stack interpreter stackname)]
-      (vector interpreter (assoc scratch scratch-var (count stack)))
+      [interpreter (assoc scratch scratch-var (count stack))]
       (throw-unknown-stack-exception stackname))
-    (vector interpreter scratch)))
+    [interpreter scratch]))
 
 
 (defn throw-empty-stack-exception
@@ -42,8 +43,31 @@
         " is empty."))))
 
 
+(defn delete-top-of
+  "Takes an PushDSL blob and a stackname (keyword); deletes the top
+  item of that stack.
+
+    Exceptions when:
+    - the stack doesn't exist
+    - the stack is empty"
+  [ [interpreter scratch] stackname]
+  (if-let [old-stack (get-stack interpreter stackname)]
+    (if-let [top-item (first old-stack)]
+      [(set-stack interpreter stackname (rest old-stack)) scratch]
+      (throw-empty-stack-exception stackname))
+    (throw-unknown-stack-exception stackname)))
+
+(defn throw-missing-key-exception
+  []
+  (throw 
+    (Exception. 
+      (str 
+        "Push DSL argument error: missing key"))))
+
+
 (defn consume-top-of
-  "Takes an PushDSL blob, a stackname (keyword) and a scratch variable (keyword) in which to store the top value from that stack. If no scratch variable is specified, it simply deletes the top item.
+  "Takes an PushDSL blob, a stackname (keyword) and a scratch variable
+  (keyword) in which to store the top value from that stack.
 
     Exceptions when:
     - the stack doesn't exist
@@ -52,18 +76,16 @@
   (if-let [old-stack (get-stack interpreter stackname)]
     (if-let [top-item (first old-stack)]
       (if (nil? as)
-        (vector
-          (set-stack interpreter stackname (rest old-stack))
-          scratch)
-        (vector
-          (set-stack interpreter stackname (rest old-stack))
-          (assoc scratch as top-item)))
+        (throw-missing-key-exception)
+        [(set-stack interpreter stackname (rest old-stack))
+          (assoc scratch as top-item)])
       (throw-empty-stack-exception stackname))
     (throw-unknown-stack-exception stackname)))
 
 
 (defn delete-nth
-  "Removes an indexed item from a seq; raises an Exception if the seq is empty."
+  "Removes an indexed item from a seq; raises an Exception if the seq
+  is empty."
   [coll idx]
   {:pre  [(seq coll)
           (not (neg? idx))
@@ -72,13 +94,29 @@
 
 
 (defn consume-stack
-  "Removes an entire named stack; if an `:as local` argument is given, it saves the stack in that scratch variable. If no local is given, it just deletes the stack.
+
+  "Removes an entire named stack; if an `:as local` argument is given,
+  it saves the stack in that scratch variable. If no local is given,
+  it just deletes the stack.
+
+  Exceptions when:
+  - the stack doesn't exist"
+  
+  [[interpreter scratch] stackname & {:keys [as]}]
+  (if-let [old-stack (get-stack interpreter stackname)]
+    (if (nil? as)
+      (throw-missing-key-exception)
+      [(clear-stack interpreter stackname)
+        (assoc scratch as old-stack)])
+    (throw-unknown-stack-exception stackname)))
+
+
+(defn delete-stack
+  "Removes an entire named stack.
 
   Exceptions when:
     - the stack doesn't exist"
   [[interpreter scratch] stackname & {:keys [as]}]
   (if-let [old-stack (get-stack interpreter stackname)]
-    (if (nil? as)
-      (vector (clear-stack interpreter stackname) scratch)
-      (vector (clear-stack interpreter stackname) (assoc scratch as old-stack)))
+    [(clear-stack interpreter stackname) scratch]
     (throw-unknown-stack-exception stackname)))
