@@ -197,3 +197,26 @@
 
 (fact "`replace-stack` throws an Exception when the named stack doesn't exist"
   (replace-stack [nada {:bar 1}] :foo :bar) => (throws #"Push DSL argument error: no "))
+
+
+;; `push-onto [stackname local]`
+
+
+(fact "`push-onto` places the indicated scratch item onto the named stack"
+  (get-stack-from-dslblob :integer
+    (push-onto [afew {:foo 99}] :integer :foo)) => '(99 1 2 3))
+
+
+(fact "`push-onto` throws up if the stack doesn't exist"
+  (push-onto [afew {:foo 99}] :grault :foo) =>
+    (throws #"Push DSL argument error: no :grault"))
+
+
+(fact "`push-onto` doesn't raise a fuss if the scratch variable isn't set"
+  (get-stack-from-dslblob :integer
+    (push-onto [afew {}] :integer :foo)) => '(1 2 3))
+
+
+(fact "`push-onto` doesn't raise a fuss if the scratch variable is a list"
+  (get-stack-from-dslblob :integer
+    (push-onto [afew {:foo '(4 5 6)}] :integer :foo)) => '((4 5 6) 1 2 3))

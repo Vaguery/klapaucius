@@ -179,7 +179,8 @@
   item the final stack will contain only that item.
 
   Exceptions when:
-  - the stack doesn't exist"
+  - the stack doesn't exist
+  - (does not warn when the keyword isn't defined)"
   [[interpreter scratch] stackname kwd]
   (if (some? (get-stack interpreter stackname))
     (let [replacement (kwd scratch)
@@ -189,4 +190,23 @@
       [(set-stack interpreter stackname new-stack) scratch])
     (throw-unknown-stack-exception stackname)))
 
+
+(defn push-onto
+  "Takes a PushDSL blob, a stackname (keyword) and a scratch key (also
+  keyword), and puts item stored in the scratch variable on top of the
+  named stack. If the scratch item is nil, there is no effect (and no
+  exception); if it is a list, that is pushed _as a single item_ onto
+  the stack (not concatenated). No type checking is used.
+
+  Exceptions when:
+  - the stack doesn't exist
+  - (does not warn when the keyword isn't defined)"
+  [[interpreter scratch] stackname kwd]
+  (if-let [old-stack (get-stack interpreter stackname)]
+    (let [new-item (kwd scratch)
+          new-stack (if (nil? new-item)
+                      old-stack 
+                      (conj old-stack new-item))]
+      [(set-stack interpreter stackname new-stack) scratch])
+    (throw-unknown-stack-exception stackname)))
 

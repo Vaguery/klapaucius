@@ -13,22 +13,22 @@
 
 (defn make-setter
   [newtype argument argtype]
-  (let [funcname (str (name newtype) "_set_" (name argument) "_from_" (name argtype))]
+  (let [funcname (str (name newtype) "-set-" (name argument) "-from-" (name argtype))]
     funcname
   ))
 
 (defn make-getter
   [newtype argument argtype]
-  (let [funcname (str (name newtype) "_get_" (name argument))]
+  (let [funcname (str (name newtype) "-get-" (name argument))]
     funcname
   ))
 
 
 (fact "make-setter makes a setter"
-  (make-setter :rgba :red :integer) => "rgba_set_red_from_integer")
+  (make-setter :rgba :red :integer) => "rgba-set-red-from-integer")
 
 (fact "make-getter makes a getter"
-  (make-getter :rgba :red :integer) => "rgba_get_red")
+  (make-getter :rgba :red :integer) => "rgba-get-red")
 
 (defn all-setters-n-getters
   [newtype]
@@ -37,5 +37,48 @@
       (map (fn [[k v]] [(make-setter n k v) (make-getter n k v)]) (:signature newtype))))))
 
 
-(fact "all-setters-n-getters does the thing"
-  (all-setters-n-getters rgba) => '("rgba_get_alpha" "rgba_get_blue" "rgba_get_green" "rgba_get_red" "rgba_set_alpha_from_float" "rgba_set_blue_from_integer" "rgba_set_green_from_integer" "rgba_set_red_from_integer"))
+(fact "all-setters-n-getters creates the power set of instruction names over get/set for the named atributes specified"
+  (all-setters-n-getters rgba) => 
+    '("rgba-get-alpha"
+      "rgba-get-blue"
+      "rgba-get-green"
+      "rgba-get-red"
+      "rgba-set-alpha-from-float"
+      "rgba-set-blue-from-integer"
+      "rgba-set-green-from-integer"
+      "rgba-set-red-from-integer"))
+
+
+(def rect { :typename :rect
+            :signature {:top :integer
+                        :left :integer 
+                        :height :integer
+                        :width :integer
+                        :color :rgba}})
+
+
+(fact "all-setters-n-getters still works"
+  (all-setters-n-getters rect) => 
+    '("rect-get-color"
+      "rect-get-height"
+      "rect-get-left"
+      "rect-get-top"
+      "rect-get-width"
+      "rect-set-color-from-rgba"
+      "rect-set-height-from-integer"
+      "rect-set-left-from-integer"
+      "rect-set-top-from-integer"
+      "rect-set-width-from-integer"))
+
+
+;; BUT NOTICE
+;  One could also contrive these so the presence of the :rgba type in the
+;  specification for :rect would -automatically- cascade to produce 
+;
+;  (make-rect int int int int rgba)
+;  (make-rect int int int int (make-rgba int int int float))
+;  (rect-set-red-in-color int)
+;  (rect-set-green-in-color int)
+;  (rect-set-blue-in-color int)
+;  (rect-set-float-in-color float)
+;  etc.

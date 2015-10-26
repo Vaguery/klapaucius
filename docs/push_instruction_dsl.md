@@ -130,7 +130,7 @@ Note that none of the `scratch` information exists at the start of the transacti
 
   Empty the named stack in the `Interpreter`.
 
-- [ ] `push-onto [stackname local]`
+- [X] `push-onto [stackname local]`
 
   `push-onto :integer :sum`
 
@@ -180,7 +180,7 @@ Note that none of the `scratch` information exists at the start of the transacti
 
   Saves a copy of the entire list `stackname` into scratch variable `local`. Does not clear the stack.
 
-- [ ] `replace-stack [stackname local]`
+- [X] `replace-stack [stackname local]`
   
   Example: `replace-stack :integer :converted-floats`
 
