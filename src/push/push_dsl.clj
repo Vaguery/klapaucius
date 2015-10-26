@@ -138,10 +138,12 @@
     - the index is a :keyword that doesn't point to an integer"
   [[interpreter scratch] stackname & {:keys [at]}]
   (if-let [old-stack (get-stack interpreter stackname)]
-    (let [idx (valid-DSL-index at scratch)
-          which (mod idx (count old-stack))]
-      [(set-stack interpreter stackname (delete-nth old-stack which))
-      scratch])
+    (if (empty? old-stack)
+      (throw-empty-stack-exception stackname)
+      (let [idx (valid-DSL-index at scratch)
+            which (mod idx (count old-stack))]
+        [(set-stack interpreter stackname (delete-nth old-stack which))
+        scratch]))
     (throw-unknown-stack-exception stackname)))
 
 
@@ -224,6 +226,31 @@
     (if (some? as)
       [interpreter (assoc scratch as old-stack)]
       (throw-missing-key-exception :as))
+    (throw-unknown-stack-exception stackname)))
+
+
+(defn save-nth-of
+  "Takes a PushDSL blob, a stackname (keyword), an index argument (an
+  integer or a keyword), and a scratch key (also a keyword), and
+  copies the indicated item from that stack into the scratch
+  variable (without deleting it).
+
+  Exceptions when:
+  - the stack doesn't exist
+  - the stack is empty
+  - no :as argument is present
+  - no :at argument is present
+  - the :at argument is not a keyword or integer
+  - the scratch value stored in a referenced index is not an integer"
+  [[interpreter scratch] stackname & {:keys [as at]}]
+  (if-let [old-stack (get-stack interpreter stackname)]
+    (if (empty? old-stack)
+      (throw-empty-stack-exception stackname)
+      (if (nil? as)
+        (throw-missing-key-exception :as)
+        (let [idx (valid-DSL-index at scratch)
+              which (mod idx (count old-stack))]
+          [interpreter (assoc scratch as (nth old-stack which))])))
     (throw-unknown-stack-exception stackname)))
 
 

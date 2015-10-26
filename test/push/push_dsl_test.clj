@@ -25,11 +25,11 @@
 
 (fact "`count-of` throws an Exception when the named stack doesn't exist"
   (count-of [nada {}] :foo :as :badidea) =>
-    (throws #"Push DSL argument error: no "))
+    (throws #"no :foo stack"))
 
 
 (fact "`count-of` throws an Exception when no local is specified"
-  (count-of [afew {}] :integer) => (throws #"Push DSL argument error: missing key"))
+  (count-of [afew {}] :integer) => (throws #"missing key: :as"))
 
 
 ;; `delete-top-of [stackname]`
@@ -45,12 +45,12 @@
 
 
 (fact "`delete-top-of` raises an Exception if the stack doesn't exist"
-  (delete-top-of [afew {}] :stupid) => (throws #"Push DSL argument error: no "))
+  (delete-top-of [afew {}] :stupid) => (throws #"no :stupid stack"))
 
 
 (fact "`delete-top-of` raises an Exception if the stack is empty"
   (delete-top-of [nada {}] :integer) => 
-    (throws #"Push DSL runtime error: stack "))
+    (throws #"stack :integer is empty"))
 
 
 ;; `consume-top-of [stackname :as local]`
@@ -68,7 +68,7 @@
 
 (fact "`consume-top-of` throws an exception when no local is given"
   (consume-top-of [afew {:foo \f}] :integer) =>
-    (throws #"Push DSL argument error: missing key"))
+    (throws #"missing key: :as"))
 
 
 ;; delete-nth
@@ -104,12 +104,12 @@
 
 (fact "`consume-stack` throws an exception when the stack isn't defined"
   (consume-stack [afew {}] :quux :as :foo) =>
-    (throws #"Push DSL argument error: no :quux stackname registered"))
+    (throws #"no :quux stack"))
 
 
 (fact "`consume-stack` throws an Exception when no local is specified"
   (consume-stack [afew {}] :integer) =>
-    (throws #"Push DSL argument error: missing key"))
+    (throws #"missing key: :as"))
 
 
 ;; `delete-stack [stackname]`
@@ -123,7 +123,7 @@
 
 (fact "`delete-stack` raises an exception if the stack doesn't exist"
   (delete-stack [afew {}] :quux) =>
-    (throws #"Push DSL argument error: no :quux stackname registered"))
+    (throws #"no :quux stack"))
 
 
 ;; `index-from-scratch-ref [key hashmap]`
@@ -134,12 +134,12 @@
 
 (fact "index-from-scratch-ref throws up if the stored value isn't an integer"
   (index-from-scratch-ref :foo {:foo false}) => 
-    (throws #"Push DSL argument error: :foo is not an integer"))
+    (throws #":foo is not an integer"))
 
 
 (fact "index-from-scratch-ref throws up if the key is not present"
   (index-from-scratch-ref :bar {:foo 2}) => 
-    (throws #"Push DSL argument error: :bar is not an integer"))
+    (throws #":bar is not an integer"))
 
 ;; `delete-nth-of [stackname :at where]`
 
@@ -167,14 +167,19 @@
 
 (fact "`delete-nth-of` throws up given a scratch ref to non-integer"
   (delete-nth-of [afew {:foo false}] :integer :at :foo) => 
-    (throws #"Push DSL argument error: :foo is not an integer")
+    (throws #":foo is not an integer")
   (delete-nth-of [afew {:foo 1}] :integer :at :bar) => 
-    (throws #"Push DSL argument error: :bar is not an integer"))
+    (throws #":bar is not an integer"))
 
 
 (fact "`delete-nth-of` throws up if no index is given"
   (delete-nth-of [afew {:foo false}] :integer) => 
-    (throws #"Push DSL argument error: missing key"))
+    (throws #"missing key: :at"))
+
+
+(fact "`delete-nth-of` throws up if the stack is empty"
+  (delete-nth-of [afew {}] :boolean :at 7) => 
+    (throws #"stack :boolean is empty"))
 
 
 ;; `replace-stack [stackname local]`
@@ -196,7 +201,7 @@
 
 
 (fact "`replace-stack` throws an Exception when the named stack doesn't exist"
-  (replace-stack [nada {:bar 1}] :foo :bar) => (throws #"Push DSL argument error: no "))
+  (replace-stack [nada {:bar 1}] :foo :bar) => (throws #"no :foo stack"))
 
 
 ;; `push-onto [stackname local]`
@@ -209,7 +214,7 @@
 
 (fact "`push-onto` throws up if the stack doesn't exist"
   (push-onto [afew {:foo 99}] :grault :foo) =>
-    (throws #"Push DSL argument error: no :grault"))
+    (throws #"no :grault stack"))
 
 
 (fact "`push-onto` doesn't raise a fuss if the scratch variable isn't set"
@@ -238,12 +243,12 @@
 
 (fact "`save-stack` throws up if you ask for an undefined stack"
   (save-stack [afew {:foo 99}] :grault :as :foo) =>
-    (throws #"Push DSL argument error: no :grault"))
+    (throws #"no :grault"))
 
 
 (fact "`save-stack` throws up if you leave out the :as argument"
   (save-stack [afew {}] :integer ) =>
-    (throws #"Push DSL argument error: missing key: :as"))
+    (throws #"missing key: :as"))
 
 
 ;; `save-top-of [stackname :as local]`
@@ -262,14 +267,61 @@
 
 (fact "`save-top-of` throws up if you ask for an undefined stack"
   (save-top-of [afew {}] :grault :as :foo) =>
-    (throws #"Push DSL argument error: no :grault"))
+    (throws #"no :grault stack"))
 
 
 (fact "`save-top-of` throws up if you try to pop an empty stack"
   (save-top-of [afew {}] :boolean :as :foo) =>
-    (throws #"Push DSL runtime error: stack :boolean is empty"))
+    (throws #"stack :boolean is empty"))
 
 
 (fact "`save-top-of` throws up if you forget the :as argument"
   (save-top-of [afew {}] :integer) =>
-    (throws #"Push DSL argument error: missing key: :as"))
+    (throws #"missing key: :as"))
+
+
+;; `save-nth-of [stackname :at where :as local]`
+
+
+(fact "given an integer index, `save-nth-of` puts the indicated item from the named stack into a scratch variable (without deleting it)"
+  (get-stack-from-dslblob :integer
+    (save-nth-of [afew {}] :integer :at 1 :as :bar)) => '(1 2 3)
+  (get-local-from-dslblob :bar
+    (save-nth-of [afew {}] :integer :at 1 :as :bar)) => 2)
+
+
+(fact "given an keyword index, `save-nth-of` puts the indicated item from the named stack into a scratch variable (without deleting it)"
+  (get-stack-from-dslblob :integer
+    (save-nth-of [afew {:foo 2}] :integer :at :foo :as :bar)) => '(1 2 3)
+  (get-local-from-dslblob :bar
+    (save-nth-of [afew {:foo 2}] :integer :at :foo :as :bar)) => 3)
+
+
+(fact "`save-nth-of` overwrites the scratch variable if asked to"
+  (get-local-from-dslblob :foo
+    (save-nth-of [afew {:foo false}] :integer :at 1 :as :foo)) => 2)
+
+
+(fact "`save-nth-of` throws up if you ask for an undefined stack"
+  (save-nth-of [afew {}] :grault :at 2 :as :foo) =>
+    (throws #"no :grault stack"))
+
+
+(fact "`save-nth-of` throws up if the keyword index doesn't point to an integer"
+  (save-nth-of [afew {:foo false}] :integer :at :foo :as :bar) =>
+    (throws #":foo is not an integer"))
+
+
+(fact "`save-nth-of` throws up if you try to pop an empty stack"
+  (save-nth-of [afew {}] :boolean :at 6 :as :foo) =>
+    (throws #"stack :boolean is empty"))
+
+
+(fact "`save-nth-of` throws up if you forget the :as argument"
+  (save-nth-of [afew {}] :integer :at 8) =>
+    (throws #"missing key: :as"))
+
+
+(fact "`save-nth-of` throws up if you forget the :at argument"
+  (save-nth-of [afew {}] :integer :as :foo) =>
+    (throws #"missing key: :at"))

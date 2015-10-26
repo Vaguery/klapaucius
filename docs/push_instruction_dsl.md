@@ -154,7 +154,7 @@ Note that none of the `scratch` information exists at the start of the transacti
 
   Saves a list of the keywords used to refer to all registered `Instructions` in the running `Interpreter` in scratch variable `local`. Order of the list should be assumed to be arbitrary.
 
-- [ ] `save-nth-of [stackname :at where :as local]`
+- [X] `save-nth-of [stackname :at where :as local]`
   
   Example: `save-nth-of :boolean :at 7 :as :seventh`
 
