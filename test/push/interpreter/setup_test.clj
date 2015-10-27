@@ -1,6 +1,7 @@
 (ns push.interpreter.setup-test
   (:use midje.sweet)
-  (:use [push.interpreter.core]))
+  (:require [push.instructions.instructions-core :as i])
+  (:use [push.interpreter.interpreter-core]))
 
 ;; initialization with make-interpreter
 
@@ -45,43 +46,19 @@
   (get-stack (make-interpreter) :foo ) => nil)
 
 
-;; instructions
-
-;; make-instruction
-
-
-(fact "make-instruction creates a new Instruction record with default values"
-  (:token (make-instruction :foo)) => :foo
-  (:needs (make-instruction :foo)) => {}
-  (:makes (make-instruction :foo)) => {}
-  (:function (make-instruction :foo)) => identity)
-
-
-(fact "make-instruction accepts a :needs argument"
-  (:needs (make-instruction :foo :needs {:integer 2})) => {:integer 2})
-
-
-(fact "make-instruction accepts a :makes argument"
-  (:makes (make-instruction :foo :makes {:boolean 3})) => {:boolean 3})
-
-
-(fact "make-instruction accepts a :function argument"
-  (let [fake_fn 88123]
-     (:function (make-instruction :foo :function fake_fn)) => fake_fn))
-
 
 ;; register-instruction
 
 
 (fact "register-instruction adds an Instruction to the registry in a specified Interpreter"
-  (let [foo (make-instruction :foo)]
+  (let [foo (i/make-instruction :foo)]
     (keys (:instructions 
       (register-instruction (make-interpreter) foo))) => '(:foo)
     (:foo (:instructions (register-instruction (make-interpreter) foo))) => foo))
 
 
 (fact "register-instruction throws an exception if a token is reassigned (because that's what Clojush does)"
-  (let [foo (make-instruction :foo)]
+  (let [foo (i/make-instruction :foo)]
     (register-instruction (register-instruction (make-interpreter) foo) foo) =>
       (throws Exception "Push Instruction Redefined:':foo'")))
 
@@ -107,7 +84,7 @@
 
 (fact "ready-for-instruction? returns false if the :needs of the specified instruction aren't met"
   (let [foo
-          (make-instruction :foo :needs {:integer 2})
+          (i/make-instruction :foo :needs {:integer 2})
         an-int
           (register-instruction (make-interpreter :stacks {:integer '(1)}) foo)
         many-ints
@@ -121,7 +98,7 @@
 
 (fact "ready-for-instruction? returns false if the named instruction is not registered"
   (let [foo
-          (make-instruction :foo :needs {:integer 2})
+          (i/make-instruction :foo :needs {:integer 2})
         an-int
           (register-instruction (make-interpreter :stacks {:integer '(1)}) foo)]
     (ready-for-instruction? an-int :bar) => false))
@@ -131,8 +108,8 @@
 
 
 (fact "execute-instruction applies the named instruction to the Interpreter itself"
-  (let [foo (make-instruction :foo :function (fn [a] 99))
-        bar (make-instruction :bar)
+  (let [foo (i/make-instruction :foo :transaction (fn [a] 99))
+        bar (i/make-instruction :bar)
         he-knows-foo (register-instruction
           (register-instruction (make-interpreter) foo) bar)]
     (keys (:instructions he-knows-foo)) => (just :foo :bar)
@@ -141,7 +118,7 @@
 
 
 (fact "execute-instruction will not change the Interpreter if the needs aren't met"
-  (let [foo (make-instruction :foo :needs {:integer 3} :function (fn [a] 99))
+  (let [foo (i/make-instruction :foo :needs {:integer 3} :transaction (fn [a] 99))
       he-knows-foo (register-instruction (make-interpreter) foo)]
     (execute-instruction he-knows-foo :foo) => he-knows-foo ;; not enough integers
     (execute-instruction
@@ -182,7 +159,7 @@
 
 
 (fact "instruction? checks that an item is a registered Instruction in a given Interpreter"
- (let [foo (make-instruction :foo)
+ (let [foo (i/make-instruction :foo)
        registry {:foo foo}
        he-knows-foo (make-interpreter :instructions registry)]
    (instruction? he-knows-foo :foo) => true
@@ -268,7 +245,7 @@
 
 
 (fact "handle-item will execute a registered instruction"
- (let [foo (make-instruction :foo :function (fn [a] 761))
+ (let [foo (i/make-instruction :foo :transaction (fn [a] 761))
        registry {:foo foo}
        he-knows-foo (make-interpreter :instructions registry)]
    (handle-item he-knows-foo :foo) => 761 ;; an intentionally surprising result
@@ -276,7 +253,7 @@
 
 
 (fact "handle-item will not execute an unregistered instruction"
- (let [foo (make-instruction :foo :function (fn [a] 761))
+ (let [foo (i/make-instruction :foo :transaction (fn [a] 761))
        registry {:foo foo}
        he-knows-foo (make-interpreter :instructions registry)]
    (handle-item he-knows-foo :bar) => (throws #"Push Parsing Error:")))

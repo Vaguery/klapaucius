@@ -1,6 +1,5 @@
 (ns push.instructions.dsl
-  (:use midje.sweet)
-  (:use [push.interpreter.core]))
+  (:require [push.interpreter.interpreter-core :as i]))
 
 ;; a "PushDSL blob" is just a vector with an interpreter and a hashmap
 
@@ -85,7 +84,7 @@
   (but no :as keyword), and returns the index and the item at that
   index, raising any argument exceptions it finds."
   [[interpreter scratch] stackname & {:keys [at]}]
-  (if-let [old-stack (get-stack interpreter stackname)]
+  (if-let [old-stack (i/get-stack interpreter stackname)]
     (if (empty? old-stack)
       (throw-empty-stack-exception stackname)
       (let [idx (valid-DSL-index at scratch)
@@ -106,10 +105,10 @@
   Exceptions when:
   - the stack doesn't exist"
   [[interpreter scratch] stackname & {:keys [as]}]
-  (if-let [old-stack (get-stack interpreter stackname)]
+  (if-let [old-stack (i/get-stack interpreter stackname)]
     (if (nil? as)
       (throw-missing-key-exception :as)
-      [(clear-stack interpreter stackname)
+      [(i/clear-stack interpreter stackname)
         (assoc scratch as old-stack)])
     (throw-unknown-stack-exception stackname)))
 
@@ -122,11 +121,11 @@
     - the stack doesn't exist
     - the stack is empty"
   [ [interpreter scratch] stackname & {:keys [as]}]
-  (if-let [old-stack (get-stack interpreter stackname)]
+  (if-let [old-stack (i/get-stack interpreter stackname)]
     (if-let [top-item (first old-stack)]
       (if (nil? as)
         (throw-missing-key-exception :as)
-        [(set-stack interpreter stackname (rest old-stack))
+        [(i/set-stack interpreter stackname (rest old-stack))
           (assoc scratch as top-item)])
       (throw-empty-stack-exception stackname))
     (throw-unknown-stack-exception stackname)))
@@ -143,7 +142,7 @@
     - the local is not specified (no :as argument)"
   [[interpreter scratch] stackname & {:keys [as]}]
   (if-let [scratch-var as]
-    (if-let [stack (get-stack interpreter stackname)]
+    (if-let [stack (i/get-stack interpreter stackname)]
       [interpreter (assoc scratch scratch-var (count stack))]
       (throw-unknown-stack-exception stackname))
     (throw-missing-key-exception :as)))
@@ -169,7 +168,7 @@
       (throw-missing-key-exception :as)
       (let [new-stack (delete-nth old-stack idx)
             saved-item (nth old-stack idx)]
-        [(set-stack interpreter stackname new-stack)
+        [(i/set-stack interpreter stackname new-stack)
          (assoc scratch as saved-item)]))))
 
 
@@ -190,7 +189,7 @@
   (let [[idx old-stack]
           (get-nth-of [interpreter scratch] stackname :at at)]
     (let [new-stack (delete-nth old-stack idx)]
-      [(set-stack interpreter stackname new-stack) scratch])))
+      [(i/set-stack interpreter stackname new-stack) scratch])))
 
 
 (defn delete-stack
@@ -199,8 +198,8 @@
   Exceptions when:
     - the stack doesn't exist"
   [[interpreter scratch] stackname]
-  (if-let [old-stack (get-stack interpreter stackname)]
-    [(clear-stack interpreter stackname) scratch]
+  (if-let [old-stack (i/get-stack interpreter stackname)]
+    [(i/clear-stack interpreter stackname) scratch]
     (throw-unknown-stack-exception stackname)))
 
 
@@ -212,9 +211,9 @@
     - the stack doesn't exist
     - the stack is empty"
   [[interpreter scratch] stackname]
-  (if-let [old-stack (get-stack interpreter stackname)]
+  (if-let [old-stack (i/get-stack interpreter stackname)]
     (if-let [top-item (first old-stack)]
-      [(set-stack interpreter stackname (rest old-stack)) scratch]
+      [(i/set-stack interpreter stackname (rest old-stack)) scratch]
       (throw-empty-stack-exception stackname))
     (throw-unknown-stack-exception stackname)))
 
@@ -230,12 +229,12 @@
   - the stack doesn't exist
   - (does not warn when the keyword isn't defined)"
   [[interpreter scratch] stackname kwd]
-  (if (some? (get-stack interpreter stackname))
+  (if (some? (i/get-stack interpreter stackname))
     (let [replacement (kwd scratch)
           new-stack (cond (nil? replacement) (list)
                           (list? replacement) replacement
                           :else (list replacement))]
-      [(set-stack interpreter stackname new-stack) scratch])
+      [(i/set-stack interpreter stackname new-stack) scratch])
     (throw-unknown-stack-exception stackname)))
 
 
@@ -250,12 +249,12 @@
   - the stack doesn't exist
   - (does not warn when the keyword isn't defined)"
   [[interpreter scratch] stackname kwd]
-  (if-let [old-stack (get-stack interpreter stackname)]
+  (if-let [old-stack (i/get-stack interpreter stackname)]
     (let [new-item (kwd scratch)
           new-stack (if (nil? new-item)
                       old-stack 
                       (conj old-stack new-item))]
-      [(set-stack interpreter stackname new-stack) scratch])
+      [(i/set-stack interpreter stackname new-stack) scratch])
     (throw-unknown-stack-exception stackname)))
 
 
@@ -268,7 +267,7 @@
   - the stack doesn't exist
   - no :as argument is present"
   [[interpreter scratch] stackname & {:keys [as]}]
-  (if-let [old-stack (get-stack interpreter stackname)]
+  (if-let [old-stack (i/get-stack interpreter stackname)]
     (if (some? as)
       [interpreter (assoc scratch as old-stack)]
       (throw-missing-key-exception :as))
@@ -307,7 +306,7 @@
   - no :as argument is present
   - the stack is empty"
   [[interpreter scratch] stackname & {:keys [as]}]
-  (if-let [old-stack (get-stack interpreter stackname)]
+  (if-let [old-stack (i/get-stack interpreter stackname)]
     (if-let [top-item (first old-stack)]
       (if (some? as)
         [interpreter (assoc scratch as top-item)]

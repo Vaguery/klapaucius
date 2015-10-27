@@ -1,4 +1,4 @@
-(ns push.interpreter.core)
+(ns push.interpreter.interpreter-core)
 
 
 (defrecord Interpreter [program stacks instructions])
@@ -26,18 +26,6 @@
            instructions {}}}]
   (->Interpreter program (merge core-stacks stacks) instructions))
 
-
-(defrecord Instruction [token needs makes function])
-
-
-(defn make-instruction
-  "creates a new Instruction record instance"
-  [token & {
-    :keys [needs makes function] 
-    :or { needs {}
-          makes {}
-          function identity }}]
-  (->Instruction token needs makes function))
 
 
 (defn register-instruction
@@ -73,13 +61,13 @@
 
 
 (defn execute-instruction
-  "Takes an Intergreter and a token, and executes the registered Instruction using the Interpreter as the (only) argument. Raises an exception if the token is not registered."
+  "Takes an Interpreter and a token, and executes the registered Instruction using the Interpreter as the (only) argument. Raises an exception if the token is not registered."
   [interpreter token]
   (let [unrecognized (not (contains? (:instructions interpreter) token))
         ready (ready-for-instruction? interpreter token)]
   (cond
     unrecognized (throw (Exception. (str "Unknown Push instruction:'" token "'")))
-    ready  ((:function (get-in interpreter [:instructions token])) interpreter)
+    ready  ((:transaction (get-in interpreter [:instructions token])) interpreter)
     :else interpreter)))
 
 
