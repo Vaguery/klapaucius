@@ -150,5 +150,24 @@
     (-> interpreter
         (clear-all-stacks)
         (assoc , :counter 0)
-        (load-items :exec (:program interpreter)))
-  )
+        (load-items :exec (:program interpreter))))
+
+
+(defn increment-counter
+  "takes an Interpreter and increments its :counter (without otherwise changing it)"
+  [interpreter]
+  (assoc interpreter :counter (inc (:counter interpreter))))
+
+
+(defn step
+  "Takes an Interpreter, pops one item off :exec, routes it to the router, increments the counter. If the :exec stack is empty, does nothing."
+  [interpreter]
+  (let [old-exec (get-stack interpreter :exec)]
+    (if (seq old-exec)
+      (let [next-item (first old-exec)
+            new-exec (pop old-exec)]
+        (-> interpreter
+            (increment-counter)
+            (set-stack :exec new-exec)
+            (handle-item next-item)))
+      interpreter)))

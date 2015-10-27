@@ -283,7 +283,9 @@
   (register-instruction
     (make-interpreter 
       :program [1.1 2.2 :intProductToFloat]
-      :stacks {:integer '(1 2 3)})
+      :counter 22
+      :stacks {:integer '(1 2 3)
+               :exec '(:intProductToFloat)})
     intProductToFloat))
 
 
@@ -298,7 +300,7 @@
 
 
 (fact "calling `reset-interpreter` loads the program onto :exec"
-  (get-stack knows-some-things :exec) => '()
+  (get-stack knows-some-things :exec) => '(:intProductToFloat)
   (get-stack (reset-interpreter knows-some-things) :exec) =>
     '(1.1 2.2 :intProductToFloat))
 
@@ -313,3 +315,31 @@
   (let [counted (assoc knows-some-things :counter 9912)]
     (:counter counted) => 9912
     (:counter (reset-interpreter counted)) => 0))
+
+
+;; increment-counter
+
+
+(fact "`increment-counter` increments the counter"
+  (:counter knows-some-things) => 22
+  (:counter (increment-counter knows-some-things)) => 23)
+
+
+;; step
+
+
+(fact "calling `step` consumes one item from the :exec stack (if any)"
+  (get-stack knows-some-things :exec) => '(:intProductToFloat)
+  (get-stack (step knows-some-things) :exec) => '())
+
+
+(fact "calling `step` increments the counter if something happens"
+  (:counter knows-some-things) => 22
+  (:counter (step knows-some-things)) => 23)
+
+
+(fact "calling `step` doesn't affect the counter if :exec is empty"
+  (:counter (make-interpreter)) => 0
+  (:counter (step (make-interpreter))) => 0
+  (:counter (step (clear-stack knows-some-things :exec))) => 22)
+
