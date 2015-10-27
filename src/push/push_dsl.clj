@@ -54,20 +54,6 @@
                         args
                         "' can't be parsed as vector."))))
 
-(defn- get-nth-of
-  "Abstract function invoked by all the X-nth-of DSL functions.
-  Takes a PushDSL blob, a stackname, an :at index (integer or keyword)
-  (but no :as keyword), and returns the index and the item at that
-  index, raising any argument exceptions it finds."
-  [[interpreter scratch] stackname & {:keys [at]}]
-  (if-let [old-stack (get-stack interpreter stackname)]
-    (if (empty? old-stack)
-      (throw-empty-stack-exception stackname)
-      (let [idx (valid-DSL-index at scratch)
-            which (mod idx (count old-stack))]
-        [which old-stack]))
-    (throw-unknown-stack-exception stackname)))
-
 
 (defn- index-from-scratch-ref
   "Takes a keyword and a scratch hashmap. If an integer is stored
@@ -91,6 +77,23 @@
     (keyword? item) (index-from-scratch-ref item scratch)
     (nil? item) (throw-missing-key-exception :at)
     :else (throw-invalid-index-exception item)))
+
+
+(defn- get-nth-of
+  "Abstract function invoked by all the X-nth-of DSL functions.
+  Takes a PushDSL blob, a stackname, an :at index (integer or keyword)
+  (but no :as keyword), and returns the index and the item at that
+  index, raising any argument exceptions it finds."
+  [[interpreter scratch] stackname & {:keys [at]}]
+  (if-let [old-stack (get-stack interpreter stackname)]
+    (if (empty? old-stack)
+      (throw-empty-stack-exception stackname)
+      (let [idx (valid-DSL-index at scratch)
+            which (mod idx (count old-stack))]
+        [which old-stack]))
+    (throw-unknown-stack-exception stackname)))
+
+
 
 
 ;; DSL instructions
