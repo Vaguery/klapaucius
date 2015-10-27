@@ -1,4 +1,4 @@
-(ns push.instructions.setup-test
+(ns push.instructions.instructions-setup-test
   (:use midje.sweet)
   (:use [push.instructions.instructions-core])
   (:use [push.instructions.dsl])

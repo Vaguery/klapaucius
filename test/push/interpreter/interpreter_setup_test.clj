@@ -1,6 +1,7 @@
-(ns push.interpreter.setup-test
+(ns push.interpreter.interpreter-setup-test
   (:use midje.sweet)
   (:require [push.instructions.instructions-core :as i])
+  (:use [push.instructions.dsl])
   (:use [push.interpreter.interpreter-core]))
 
 ;; initialization with make-interpreter
@@ -18,6 +19,14 @@
 
 (fact "a new Interpreter will have an :instructions map"
   (:instructions (make-interpreter)) => {})
+
+
+(fact "a new Interpreter will have a counter = 0"
+  (:counter (make-interpreter)) => 0)
+
+
+(fact "a counter value can be passed into make-interpreter"
+  (:counter (make-interpreter :counter 771)) => 771 )
 
 
 (fact "the core stack types are defined"
@@ -259,9 +268,48 @@
    (handle-item he-knows-foo :bar) => (throws #"Push Parsing Error:")))
 
 
-;; step-interpreter
+;; some fixtures:
 
 
-; (fact "stepping an interpreter with an integer on :exec moves it to :integer"
-;   (:integer (:stacks (make-interpreter))) => '()
-;   )
+(def intProductToFloat
+  (i/build-instruction intProductToFloat
+    (consume-top-of :integer :as :arg1)
+    (consume-top-of :integer :as :arg2)
+    (calculate [:arg1 :arg2] #(float (* %1 %2)) :as :p)
+    (push-onto :float :p)))
+
+
+(def knows-some-things
+  (register-instruction
+    (make-interpreter 
+      :program [1.1 2.2 :intProductToFloat]
+      :stacks {:integer '(1 2 3)})
+    intProductToFloat))
+
+
+;; clear-all-stacks
+
+
+(fact "`clear-all-stacks` empties every stack"
+  (:stacks (clear-all-stacks knows-some-things)) => core-stacks)
+
+
+;; reset-interpreter
+
+
+(fact "calling `reset-interpreter` loads the program onto :exec"
+  (get-stack knows-some-things :exec) => '()
+  (get-stack (reset-interpreter knows-some-things) :exec) =>
+    '(1.1 2.2 :intProductToFloat))
+
+
+(fact "calling `reset-interpreter` clears the other stacks"
+  (get-stack knows-some-things :integer) => '(1 2 3)
+  (:stacks (reset-interpreter knows-some-things)) => 
+    (merge core-stacks {:exec '(1.1 2.2 :intProductToFloat)}))
+
+
+(fact "`reset-interpreter` sets the counter to 0"
+  (let [counted (assoc knows-some-things :counter 9912)]
+    (:counter counted) => 9912
+    (:counter (reset-interpreter counted)) => 0))

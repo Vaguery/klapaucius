@@ -1,7 +1,7 @@
 (ns push.interpreter.interpreter-core)
 
 
-(defrecord Interpreter [program stacks instructions])
+(defrecord Interpreter [program stacks instructions counter])
 
 
 (def core-stacks
@@ -19,12 +19,15 @@
 
 (defn make-interpreter
   "creates a new Interpreter record
-  With no arguments, it has an empty :program, the :stacks include core types and are empty, and no :instructions are registered. Any of these can be specified by key."
-  [& {:keys [program stacks instructions]
+  With no arguments, it has an empty :program, the :stacks include core types and are empty, no :instructions are registered, and the counter is 0.
+
+  Any of these can be specified by key."
+  [& {:keys [program stacks instructions counter]
       :or {program []
            stacks core-stacks
-           instructions {}}}]
-  (->Interpreter program (merge core-stacks stacks) instructions))
+           instructions {}
+           counter 0}}]
+  (->Interpreter program (merge core-stacks stacks) instructions counter))
 
 
 
@@ -127,7 +130,25 @@
     (string? item) (push-item interpreter :string item)
     (list? item) (load-items interpreter :exec item)
     :else (throw
-      (Exception. (str "Push Parsing Error: Cannot interpret '" item "' as a Push item.")))
-  ))
+      (Exception. (str "Push Parsing Error: Cannot interpret '" item "' as a Push item.")))))
 
 
+(defn clear-all-stacks
+  "removes all items from all stacks in an Interpreter"
+  [interpreter]
+  (let [stacklist (keys (:stacks interpreter))]
+    (assoc interpreter :stacks (reduce #(assoc %1 %2 '()) {} stacklist))))
+
+
+
+(defn reset-interpreter
+  "takes an Interpreter instance and:
+  - sets the counter to 0
+  - clears all non-:exec stacks
+  - puts the program onto the :exec stack"
+  [interpreter]
+    (-> interpreter
+        (clear-all-stacks)
+        (assoc , :counter 0)
+        (load-items :exec (:program interpreter)))
+  )
