@@ -47,6 +47,14 @@
                         "Unknown Push instruction:'" token "'"))))
 
 
+(defn- throw-unknown-push-item-error
+  [item]
+  (throw (Exception. (str 
+                        "Push Parsing Error: Cannot interpret '"
+                        item
+                        "' as a Push item."))))
+
+
 (defn- add-instruction
   "Takes an Interpreter and an Instruction (record), and adds the
   instruction to the :instructions registry of the interpreter,
@@ -126,30 +134,37 @@
     :else interpreter)))
 
 
+(defn get-stack
+  "A convenience function which returns the named stack from the
+  interpreter"
+  [interpreter stack]
+  (get-in interpreter [:stacks stack]))
+
+
+(defn set-stack
+  "A convenience function which replaces the named stack with the
+  indicated list"
+  [interpreter stack new-value]
+  (assoc-in interpreter [:stacks stack] new-value))
+
+
 (defn push-item
-  "Takes an Interpreter, a stack name and a Clojure expression, and returns the Interpreter with the item pushed onto the specified stack. If the stack doesn't already exist, it is created."
+  "Takes an Interpreter, a stack name and a Clojure expression, and
+  returns the Interpreter with the item pushed onto the specified
+  stack. If the stack doesn't already exist, it is created."
   [interpreter stack item]
   (let [old-stack (get-in interpreter [:stacks stack])]
     (assoc-in interpreter [:stacks stack] (conj old-stack item))))
 
 
 (defn load-items
-  "Takes an Interpreter, a stack name, and a seq, and conj'es each item onto the named stack of the interpreter (using Clojure's `into` transducer). Used primarily for loading code onto the :exec stack."
-  [interpreter stack item-list]
-  (let [old-stack (get-in interpreter [:stacks stack])]
-    (assoc-in interpreter [:stacks stack] (into old-stack (reverse item-list)))))
-
-
-(defn get-stack
-  "A convenience function which returns the named stack from the interpreter"
-  [interpreter stack]
-  (get-in interpreter [:stacks stack]))
-
-
-(defn set-stack
-  "A convenience function which replaces the named stack with the indicated list"
-  [interpreter stack new-value]
-  (assoc-in interpreter [:stacks stack] new-value))
+  "Takes an Interpreter, a stack name, and a collection of items. Puts
+  all the items onto the named stack, one at time (probably reversing
+  them along the way."
+  [interpreter stackname item-list]
+  (let [old-stack (get-in interpreter [:stacks stackname])
+        new-stack (into old-stack (reverse item-list))]
+    (set-stack interpreter stackname new-stack)))
 
 
 (defn clear-stack
@@ -159,38 +174,44 @@
 
 
 (defn boolean?
-  "a checker that returns true if the argument is the literal `true` or the literal `false`"
+  "a checker that returns true if the argument is the literal `true`
+  or the literal `false`"
   [item]
   (or (false? item) (true? item)))
 
 
 (defn instruction?
-  "takes an Interpreter and a keyword, and returns true if the keyword is a key of the :instructions registry in that Interpreter instance"
+  "takes an Interpreter and a keyword, and returns true if the keyword
+  is a key of the :instructions registry in that Interpreter instance"
   [interpreter token]
   (contains? (:instructions interpreter) token))
 
 
 (defn handle-item
-  "Takes an Interpreter and an item, and either recognizes and invokes a keyword registered in that Interpreter as an instruction, or sends the item to the correct stack (if it exists). Throws an exception if the Clojure expression is not recognized explicitly as a registered instruction or some other kind of Push literal."
+  "Takes an Interpreter and an item, and either recognizes and invokes
+  a keyword registered in that Interpreter as an instruction, or sends
+  the item to the correct stack (if it exists). Throws an exception if
+  the Clojure expression is not recognized explicitly as a registered
+  instruction or some other kind of Push literal."
   [interpreter item]
   (cond
-    (instruction? interpreter item) (execute-instruction interpreter item)
+    (instruction? interpreter item)
+      (execute-instruction interpreter item)
     (integer? item) (push-item interpreter :integer item)
     (boolean? item) (push-item interpreter :boolean item)
     (char? item) (push-item interpreter :char item)
     (float? item) (push-item interpreter :float item)
     (string? item) (push-item interpreter :string item)
     (list? item) (load-items interpreter :exec item)
-    :else (throw
-      (Exception. (str "Push Parsing Error: Cannot interpret '" item "' as a Push item.")))))
+    :else (throw-unknown-push-item-error item)))
 
 
 (defn clear-all-stacks
   "removes all items from all stacks in an Interpreter"
   [interpreter]
   (let [stacklist (keys (:stacks interpreter))]
-    (assoc interpreter :stacks (reduce #(assoc %1 %2 '()) {} stacklist))))
-
+    (assoc interpreter :stacks
+      (reduce #(assoc %1 %2 '()) {} stacklist))))
 
 
 (defn reset-interpreter
@@ -206,13 +227,16 @@
 
 
 (defn increment-counter
-  "takes an Interpreter and increments its :counter (without otherwise changing it)"
+  "takes an Interpreter and increments its :counter (without otherwise
+  changing it)"
   [interpreter]
   (assoc interpreter :counter (inc (:counter interpreter))))
 
 
 (defn step
-  "Takes an Interpreter, pops one item off :exec, routes it to the router, increments the counter. If the :exec stack is empty, does nothing."
+  "Takes an Interpreter, pops one item off :exec, routes it to the
+  router, increments the counter. If the :exec stack is empty, does
+  nothing."
   [interpreter]
   (let [old-exec (get-stack interpreter :exec)]
     (if (seq old-exec)
