@@ -76,16 +76,18 @@
 
 
 (fact "contains-at-least? returns true if the count of the specified stack is >= the number"
-  (contains-at-least? (make-interpreter) :integer 0) => true
-  (contains-at-least? (make-interpreter) :integer 3) => false
-  (contains-at-least? (make-interpreter :stacks {:integer '(1 2 3)}) :integer 3) => true
-  (contains-at-least? (make-interpreter :stacks {:integer '(1 2 3)}) :integer 2) => true)
+  (let [abbr #'push.interpreter.interpreter-core/contains-at-least?]
+  (abbr (make-interpreter) :integer 0) => true
+  (abbr (make-interpreter) :integer 3) => false
+  (abbr (make-interpreter :stacks {:integer '(1 2 3)}) :integer 3) => true
+  (abbr (make-interpreter :stacks {:integer '(1 2 3)}) :integer 2) => true))
 
 
 (fact "contains-at-least? returns false if the named stack isn't present"
-  (contains-at-least? (make-interpreter) :foo 0) => false
-  (contains-at-least? (make-interpreter) :boolean 0) => true ;; core stack, always present
-  )
+  (let [abbr #'push.interpreter.interpreter-core/contains-at-least?]
+
+  (abbr (make-interpreter) :foo 0) => false
+  (abbr (make-interpreter) :boolean 0) => true))
 
 
 ;; ready-for-instruction?
@@ -101,7 +103,8 @@
     (count (get-stack an-int :integer)) => 1
     (ready-for-instruction? an-int :foo) => false
     (count (get-stack many-ints :integer )) => 4
-    (contains-at-least? many-ints :integer 2) => true
+    (#'push.interpreter.interpreter-core/contains-at-least?
+        many-ints :integer 2) => true
     (ready-for-instruction? many-ints :foo) => true))
 
 

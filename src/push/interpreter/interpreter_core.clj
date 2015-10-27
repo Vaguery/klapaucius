@@ -41,7 +41,16 @@
                         "'"))))
 
 
+(defn- throw-unknown-instruction-error
+  [token]
+  (throw (Exception. (str 
+                        "Unknown Push instruction:'" token "'"))))
+
+
 (defn- add-instruction
+  "Takes an Interpreter and an Instruction (record), and adds the
+  instruction to the :instructions registry of the interpreter,
+  without checking for prior definitions."
   [interpreter instruction]
   (assoc-in
     interpreter
@@ -61,8 +70,9 @@
       (add-instruction interpreter instruction)))
 
 
-(defn contains-at-least?
-  "Takes an interpreter, a stack name, and a count; returns true if the named stack exists, and has at least that many items on it"
+(defn- contains-at-least?
+  "Takes an interpreter, a stack name, and a count; returns true if
+  the named stack exists, and has at least that many items on it"
   [interpreter stack limit]
   (let [that-stack (get-in interpreter [:stacks stack])]
     (and 
@@ -70,27 +80,49 @@
       (some? that-stack))))
 
 
-(defn ready-for-instruction?
-  "Takes an Interpreter (with registered instructions) and a keyword instruction token, and returns true if the number of items on the stacks meets or exceeds all the specified :needs for that instruction. Returns false if the instruction is not registered."
+(defn- recognizes-instruction?
+  "Takes an Interpreter and an instruction token, and returns true if
+  the token is registered."
   [interpreter token]
-  (let [needs (get-in interpreter [:instructions token :needs])
-        recognized (contains? (:instructions interpreter) token)]
+  (contains? (:instructions interpreter) token))
+
+
+(defn ready-for-instruction?
+  "Takes an Interpreter (with registered instructions) and a keyword
+  instruction token, and returns true if the number of items on the
+  stacks meets or exceeds all the specified :needs for that
+  instruction. Returns false if the instruction is not registered."
+  [interpreter token]
+  (let [needs (get-in interpreter [:instructions token :needs])]
     (and
-      recognized
+      (recognizes-instruction? interpreter token)
       (reduce-kv
-        (fn [truth k v] (and truth (contains-at-least? interpreter k v)))
+        (fn [truth k v]
+          (and truth (contains-at-least? interpreter k v)))
         true
         needs))))
 
 
-(defn execute-instruction
-  "Takes an Interpreter and a token, and executes the registered Instruction using the Interpreter as the (only) argument. Raises an exception if the token is not registered."
+(defn- get-instruction
   [interpreter token]
-  (let [unrecognized (not (contains? (:instructions interpreter) token))
+  (get-in interpreter [:instructions token]))
+
+
+(defn- apply-instruction
+  [interpreter token]
+  ((:transaction (get-instruction interpreter token)) interpreter))
+
+
+(defn execute-instruction
+  "Takes an Interpreter and a token, and executes the registered
+  Instruction using the Interpreter as the (only) argument. Raises an
+  exception if the token is not registered."
+  [interpreter token]
+  (let [unrecognized (not (recognizes-instruction? interpreter token))
         ready (ready-for-instruction? interpreter token)]
   (cond
-    unrecognized (throw (Exception. (str "Unknown Push instruction:'" token "'")))
-    ready  ((:transaction (get-in interpreter [:instructions token])) interpreter)
+    unrecognized (throw-unknown-instruction-error token)
+    ready (apply-instruction interpreter token)
     :else interpreter)))
 
 
