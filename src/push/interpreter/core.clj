@@ -1,4 +1,4 @@
-(ns push.interpreter)
+(ns push.interpreter.core)
 
 
 (defrecord Interpreter [program stacks instructions])

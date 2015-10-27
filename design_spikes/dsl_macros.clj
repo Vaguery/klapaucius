@@ -91,13 +91,13 @@
   (vector interpreter (assoc scratch k v)))
 
 
-(fact "store-scratch saves thing to the scratch hashmap"
+(fact :spike "store-scratch saves thing to the scratch hashmap"
   (second (store-scratch [(make-interpreter) {}] :foo 8)) => {:foo 8}
   (let [foo (store-scratch [(make-interpreter) {}] :foo 8)]
     (second (store-scratch foo :bar 9)) => {:foo 8, :bar 9}))
 
 
-(fact "store-scratch can overwrite an existing :scratch value"
+(fact :spike "store-scratch can overwrite an existing :scratch value"
   (let [foo (store-scratch [(make-interpreter) {}] :foo 8)]
     (second (store-scratch foo :foo 999)) => {:foo 999}))
 
@@ -121,18 +121,18 @@
   (get-stack interpreter stackname))
 
 
-(fact "consume-top-of"
+(fact :spike "consume-top-of"
   (second (consume-top-of [six-ints {}] :integer :as :int1)) => {:int1 6}
   (get-stack-from-dslblob
     (consume-top-of [six-ints {}] :integer :as :int1)
     :integer) => '(5 4 3 2 1))
 
 
-(fact "consume-top-of throws an exception if the stack is empty"
+(fact :spike "consume-top-of throws an exception if the stack is empty"
   (consume-top-of [six-ints {}] :boolean :as :nope) => (throws #"Push DSL Error:"))
 
 
-(fact "consume-top-of can be thread-firsted"
+(fact :spike "consume-top-of can be thread-firsted"
   (let [two-popped (->  [six-ints {}]
                         (consume-top-of :integer :as :int1)
                         (consume-top-of :integer :as :int2))]
@@ -140,7 +140,7 @@
     (get-stack-from-dslblob two-popped :integer) => '(4 3 2 1)))
 
 
-(fact "consume-top-of with no :as argument just throws the thing away"
+(fact :spike "consume-top-of with no :as argument just throws the thing away"
   (let [two-popped (->  [six-ints {}]
                         (consume-top-of :integer)
                         (consume-top-of :integer :as :int2))]
@@ -157,7 +157,7 @@
   (vector updated scratch)))
 
 
-(fact "`put-onto` will push the saved scratch value to the indicated stack in the interpreter"
+(fact :spike "`put-onto` will push the saved scratch value to the indicated stack in the interpreter"
   (let [integer-added (-> [six-ints {}]
                           (consume-top-of :integer :as :int1)
                           (consume-top-of :integer :as :int2)
@@ -173,7 +173,7 @@
       (vector interpreter (assoc scratch as result)))))
 
 
-(fact "calculate stores the result of a calculation in a named scratch"
+(fact :spike "calculate stores the result of a calculation in a named scratch"
   (let [integer-added (-> [six-ints {}]
                           (consume-top-of :integer :as :int1)
                           (consume-top-of :integer :as :int2)
@@ -181,7 +181,7 @@
   (second integer-added) => {:int1 6, :int2 5, :sum 11}))
 
 
-(fact "calculate has no effect if :as is not specified"
+(fact :spike "calculate has no effect if :as is not specified"
   (let [integer-added (-> [six-ints {}]
                         (consume-top-of :integer :as :int1)
                         (consume-top-of :integer :as :int2)
@@ -197,7 +197,7 @@
       (vector interpreter (assoc scratch as result)))))
 
 
-(fact "remember-top stores the top item of a named stack"
+(fact :spike "remember-top stores the top item of a named stack"
   (let [integer-munged (-> [six-ints {}]
                           (consume-top-of :integer :as :int1)
                           (consume-top-of :integer :as :int2)
@@ -205,7 +205,7 @@
   (second integer-munged) => {:int1 6, :int2 5, :third 4}))
 
 
-(fact "remember-top has no effect if :as is not specified"
+(fact :spike "remember-top has no effect if :as is not specified"
   (let [integer-munged (-> [six-ints {}]
                         (consume-top-of :integer :as :int1)
                         (consume-top-of :integer :as :int2)
@@ -226,7 +226,7 @@
       (vector interpreter (assoc scratch as result)))))
 
 
-(fact "remember-nth stores the nth item of a named stack"
+(fact :spike "remember-nth stores the nth item of a named stack"
   (let [integer-munged (-> [six-ints {}]
                           (consume-top-of :integer :as :int1)
                           (consume-top-of :integer :as :int2)
@@ -234,7 +234,7 @@
   (second integer-munged) => {:int1 6, :int2 5, :third 3}))  ;; 4 *3* 2 1
 
 
-(fact "remember-nth stores the nth item of a named stack MODULO its actual length"
+(fact :spike "remember-nth stores the nth item of a named stack MODULO its actual length"
   (let [integer-munged (->  [six-ints {}]
                             (remember-nth :integer :at 99 :as :99th )
                             (remember-nth :integer :at -8 :as :minus8th))]
@@ -245,7 +245,7 @@
 
 
 
-(fact "remember-nth has no effect if :as is not specified"
+(fact :spike "remember-nth has no effect if :as is not specified"
   (let [integer-munged (-> [six-ints {}]
                         (consume-top-of :integer :as :int1)
                         (consume-top-of :integer :as :int2)
@@ -253,7 +253,7 @@
   (second integer-munged) => {:int1 6, :int2 5}))
 
 
-(fact "remember-nth acts like remember-top if :at is not specified"
+(fact :spike "remember-nth acts like remember-top if :at is not specified"
   (let [integer-munged (-> [six-ints {}]
                         (consume-top-of :integer :as :int1)
                         (consume-top-of :integer :as :int2)
@@ -261,7 +261,7 @@
   (second integer-munged) => {:int1 6, :int2 5, :adsa 4}))
 
 
-(fact "remember-nth will use a scratch item for its index if one is given"
+(fact :spike "remember-nth will use a scratch item for its index if one is given"
   (let [integer-munged (-> [six-ints {}]
                         (remember-nth :integer :at 2 :as :int1) ;; 4
                         (remember-nth :integer :at :int1 :as :maybe2))]
@@ -276,7 +276,7 @@
     (let [stack (get-stack interpreter stackname)]
       (vector interpreter (assoc scratch as stack)))))
 
-(fact "remember-stack stores the stack specified in the :as variable"
+(fact :spike "remember-stack stores the stack specified in the :as variable"
   (let [integer-munged (-> [six-ints {}]
                           (consume-top-of :integer :as :int1)
                           (consume-top-of :integer :as :int2)
@@ -284,7 +284,7 @@
   (second integer-munged) => {:int1 6, :int2 5, :rest '(4 3 2 1)}))
 
 
-(fact "remember-stack has no effect if :as is not specified"
+(fact :spike "remember-stack has no effect if :as is not specified"
   (let [integer-munged (-> [six-ints {}]
                         (consume-top-of :integer :as :int1)
                         (consume-top-of :integer :as :int2)
@@ -300,14 +300,14 @@
       (vector result scratch)))
 
 
-(fact "replace-stack replaces the entire stack with the named value from scratch"
+(fact :spike "replace-stack replaces the entire stack with the named value from scratch"
   (let [totally-made-up (-> [six-ints {}]
                             (calculate [] #(list 1 2 3 5 8) :as :fibs)
                             (replace-stack :integer :fibs))]
   (get-stack-from-dslblob totally-made-up :integer) => '(1 2 3 5 8)))
 
 
-(fact "replace-stack replaces the entire stack with the item in a list"
+(fact :spike "replace-stack replaces the entire stack with the item in a list"
   (let [integer-munged (-> [six-ints {}]
                           (consume-top-of :integer :as :int1)
                           (replace-stack :integer :int1))]
@@ -321,12 +321,12 @@
     (let [howmany (count (get-stack interpreter stackname))]
       (vector interpreter (assoc scratch as howmany)))))
 
-(fact "count-of saves the size of the named stack"
+(fact :spike "count-of saves the size of the named stack"
   (let [tester (-> [six-ints {}]
                    (count-of :integer :as :ints))]
     (second tester) => {:ints 6}))
 
-(fact "count-of does nothing if no local is specified"
+(fact :spike "count-of does nothing if no local is specified"
   (let [tester (-> [six-ints {}]
                    (count-of :integer))]
     (second tester) => {}))
@@ -343,14 +343,14 @@
               as
               old-stack))))
 
-(fact "consume-stack"
+(fact :spike "consume-stack"
   (second (consume-stack [six-ints {}] :integer :as :ints)) => {:ints '(6 5 4 3 2 1)}
   (get-stack-from-dslblob
     (consume-stack [six-ints {}] :integer :as :int1)
     :integer) => '())
 
 
-(fact "consume-stack with no :as argument just throws the thing away"
+(fact :spike "consume-stack with no :as argument just throws the thing away"
   (let [gone (->  [six-ints {}]
                   (consume-stack :integer))]
     (second gone) => {}
@@ -372,7 +372,7 @@
     `(fn [~interpreter] 
       (first (-> [~interpreter {}] ~@transactions))))))
 
-(fact "that works maybe"
+(fact :spike "that works maybe"
   (fn?
     (macroexpand-1
       (def-pushdsl
@@ -388,7 +388,7 @@
     (calculate [:int1 :int2] #(+ %1 %2) :as :sum)
     (put-onto :integer :sum)))
 
-(fact "that int-adder thing actually does the thing"
+(fact :spike "that int-adder thing actually does the thing"
   (get-stack (int-adder six-ints) :integer) => '(11 4 3 2 1))
 
 
@@ -398,7 +398,7 @@
   (def-pushdsl
     (consume-stack :boolean)))
 
-(fact "that bool-flusher thing actually does the thing"
+(fact :spike "that bool-flusher thing actually does the thing"
   (get-stack
     (bool-flusher (make-interpreter :stacks {:boolean '(false true false)}))
     :boolean) => '())
@@ -414,7 +414,7 @@
     (put-onto :float :dup-me)
     ))
 
-(fact "that float-yankduper thing actually does the thing"
+(fact :spike "that float-yankduper thing actually does the thing"
   (get-stack
     (float-yankduper
       (make-interpreter :stacks {:float '(1.1 2.2 3.3) :integer '(4)}))
@@ -428,7 +428,7 @@
 
 (def boring (make-interpreter))
 
-(fact "that noop thing actually does not one thing"
+(fact :spike "that noop thing actually does not one thing"
   (exec-noop boring) => boring)
 
 
@@ -486,7 +486,7 @@
                        :code '( (:foo :bar :baz) :nope)
                        :exec '(:qux)}))
 
-(fact "that code-do*range thing actually does all kinds of shit"
+(fact :spike "that code-do*range thing actually does all kinds of shit"
   (get-stack (code-do*range will-iterate) :integer) => '(5 7)
   (get-stack (code-do*range will-iterate) :code) => '(:nope)
   (get-stack (code-do*range will-iterate) :exec) => 
@@ -498,7 +498,7 @@
                        :code '( (:foo :bar :baz) :nope)
                        :exec '(:qux)}))
 
-(fact "that code-do*range thing actually does all kinds of shit"
+(fact :spike "that code-do*range thing actually does all kinds of shit"
   (get-stack (code-do*range not-iterating) :integer) => '(5 7)
   (get-stack (code-do*range not-iterating) :code) => '(:nope)
   (get-stack (code-do*range not-iterating) :exec) => 
@@ -530,7 +530,7 @@
     (remove nil? (map needs-of-dsl-step transaction)))
   )
 
-(fact "returns a combined of all the needs of all the DSL steps it sees"
+(fact :spike "returns a combined of all the needs of all the DSL steps it sees"
   (count-needs
     '(
       (consume-nth :foo :at 5 :as :ugh)
@@ -568,7 +568,7 @@
     ) => {:foo 4, :bar 2, :baz 1,  :fred 0}
   )
 
-(fact "count-needs works on the instructions I've sketched"
+(fact :spike "count-needs works on the instructions I've sketched"
   (count-needs 
     '((consume-top-of :code :as :to-do)
     (consume-top-of :integer :as :current-index)

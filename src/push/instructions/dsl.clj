@@ -1,6 +1,6 @@
-(ns push.push-dsl
+(ns push.instructions.dsl
   (:use midje.sweet)
-  (:use [push.interpreter]))
+  (:use [push.interpreter.core]))
 
 ;; a "PushDSL blob" is just a vector with an interpreter and a hashmap
 

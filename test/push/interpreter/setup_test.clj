@@ -1,6 +1,6 @@
-(ns push.interpreter-test
+(ns push.interpreter.setup-test
   (:use midje.sweet)
-  (:use [push.interpreter]))
+  (:use [push.interpreter.core]))
 
 ;; initialization with make-interpreter
 

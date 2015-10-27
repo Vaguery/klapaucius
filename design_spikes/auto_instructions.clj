@@ -1,6 +1,5 @@
 (ns push.design-spikes.auto-instructions
-  (:use midje.sweet)
-  (:use push.interpreter))
+  (:use midje.sweet))
 
 ;; This is a design spike. That means it's NOT TO BE USED.
 ;; IT'S A SKETCH.
@@ -24,10 +23,10 @@
   ))
 
 
-(fact "make-setter makes a setter"
+(fact :spike "make-setter makes a setter"
   (make-setter :rgba :red :integer) => "rgba-set-red-from-integer")
 
-(fact "make-getter makes a getter"
+(fact :spike "make-getter makes a getter"
   (make-getter :rgba :red :integer) => "rgba-get-red")
 
 (defn all-setters-n-getters
@@ -37,7 +36,7 @@
       (map (fn [[k v]] [(make-setter n k v) (make-getter n k v)]) (:signature newtype))))))
 
 
-(fact "all-setters-n-getters creates the power set of instruction names over get/set for the named atributes specified"
+(fact :spike "all-setters-n-getters creates the power set of instruction names over get/set for the named atributes specified"
   (all-setters-n-getters rgba) => 
     '("rgba-get-alpha"
       "rgba-get-blue"
@@ -57,7 +56,7 @@
                         :color :rgba}})
 
 
-(fact "all-setters-n-getters still works"
+(fact :spike "all-setters-n-getters still works"
   (all-setters-n-getters rect) => 
     '("rect-get-color"
       "rect-get-height"
