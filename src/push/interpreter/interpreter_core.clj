@@ -19,7 +19,9 @@
 
 (defn make-interpreter
   "creates a new Interpreter record
-  With no arguments, it has an empty :program, the :stacks include core types and are empty, no :instructions are registered, and the counter is 0.
+  With no arguments, it has an empty :program, the :stacks include
+  core types and are empty, no :instructions are registered, and the
+  counter is 0.
 
   Any of these can be specified by key."
   [& {:keys [program stacks instructions counter]
@@ -27,18 +29,36 @@
            stacks core-stacks
            instructions {}
            counter 0}}]
-  (->Interpreter program (merge core-stacks stacks) instructions counter))
+  (->Interpreter program (merge core-stacks stacks) 
+                   instructions counter))
 
+
+(defn- throw-redefined-instruction-error
+  [token]
+  (throw (Exception. (str 
+                        "Push Instruction Redefined:'"
+                        token
+                        "'"))))
+
+
+(defn- add-instruction
+  [interpreter instruction]
+  (assoc-in
+    interpreter
+    [:instructions (:token instruction)]
+    instruction))
 
 
 (defn register-instruction
-  "Takes an Interpreter and an Instruction, and attempts to add the Instruction to the :instructions map of the Interpreter, keyed by its :token."
+  "Takes an Interpreter and an Instruction, and attempts to add the
+  Instruction to the :instructions map of the Interpreter, keyed by
+  its :token."
   [interpreter instruction]
   (let [token (:token instruction)
         registry (:instructions interpreter)]
     (if (contains? registry token)
-      (throw (Exception. (str "Push Instruction Redefined:'" token "'")))
-      (assoc-in interpreter [:instructions (:token instruction)] instruction))))
+      (throw-redefined-instruction-error token))
+      (add-instruction interpreter instruction)))
 
 
 (defn contains-at-least?
@@ -171,3 +191,4 @@
             (set-stack :exec new-exec)
             (handle-item next-item)))
       interpreter)))
+
