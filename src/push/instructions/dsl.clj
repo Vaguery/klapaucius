@@ -54,6 +54,14 @@
                         "' can't be parsed as vector."))))
 
 
+(defn- throw-unknown-DSL-exception
+  [instruction]
+  (throw (Exception. (str 
+                        "Push DSL parse error: '"
+                        instruction
+                        "' is not a known instruction."))))
+
+
 (defn- index-from-scratch-ref
   "Takes a keyword and a scratch hashmap. If an integer is stored
   under that key in the hashmap, it's returned. Otherwise raises an
@@ -334,3 +342,40 @@
       (throw-missing-key-exception :as)
       [interpreter (assoc scratch as result)])))
 
+
+;;;; integration with instruction definitions
+
+(defn needs-of-dsl-step
+  [step]
+  (let [cmd (first step)]
+    (condp = cmd
+      'calculate {}
+      'consume-nth-of {(second step) 1}
+      'consume-stack {(second step) 0}
+      'consume-top-of {(second step) 1}
+      'count-of {(second step) 0}
+      'delete-nth-of {(second step) 1}
+      'delete-stack {(second step) 0}
+      'delete-top-of {(second step) 1}
+      'replace-stack {(second step) 0}
+      'push-onto {(second step) 0}
+      'save-nth-of {(second step) 1}
+      'save-stack {(second step) 0}
+      'save-top-of {(second step) 1}
+      (throw-unknown-DSL-exception cmd)  )))
+
+
+(defn total-needs
+  [transaction]
+  (apply (partial merge-with +)
+    (map needs-of-dsl-step transaction)))
+
+
+(defmacro
+  def-function-from-dsl
+  [& transactions]
+  (let [interpreter (gensym 'interpreter)
+       words &form]
+    (do 
+    `(fn [~interpreter] 
+      (first (-> [~interpreter {}] ~@transactions))))))

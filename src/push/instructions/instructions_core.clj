@@ -1,5 +1,6 @@
 (ns push.instructions.instructions-core
-  (:require [push.interpreter.interpreter-core :as i]))
+  (:require [push.interpreter.interpreter-core :as i])
+  (:use [push.instructions.dsl]))
 
 
 (defrecord Instruction [token needs makes transaction])
@@ -13,4 +14,3 @@
           makes {}
           transaction identity }}]
   (->Instruction token needs makes transaction))
-

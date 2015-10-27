@@ -4,7 +4,7 @@
 )
 
 
-;; make-instruction
+;; make-instruction (bare bones)
 
 
 (fact "make-instruction creates a new Instruction record with default values"
@@ -12,7 +12,6 @@
   (:needs (make-instruction :foo)) => {}
   (:makes (make-instruction :foo)) => {}
   (:transaction (make-instruction :foo)) => identity)
-
 
 (fact "make-instruction accepts a :needs argument"
   (:needs (make-instruction :foo :needs {:integer 2})) => {:integer 2})
@@ -26,3 +25,6 @@
   (let [fake_fn 88123]
      (:transaction (make-instruction :foo :transaction fake_fn)) => fake_fn))
 
+;; make-instruction-from-dsl
+
+(future-fact "make-instruction-from-dsl")
