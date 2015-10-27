@@ -14,3 +14,14 @@
           makes {}
           transaction identity }}]
   (->Instruction token needs makes transaction))
+
+
+(defmacro build-instruction
+  "Takes a token and zero or more transaction steps, and
+  creates the named instruction from those steps."
+  [new-name & transactions]
+  `(make-instruction (keyword ~(name new-name))
+      :needs ~(total-needs transactions)
+      :transaction (def-function-from-dsl ~@transactions))
+  )
+
