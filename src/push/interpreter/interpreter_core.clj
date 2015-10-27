@@ -9,7 +9,6 @@
     {:boolean '()
     :char '()
     :code '()
-    :input '()
     :integer '() 
     :exec '()
     :float '()

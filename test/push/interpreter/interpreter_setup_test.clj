@@ -35,7 +35,6 @@
                                     :code
                                     :exec 
                                     :float 
-                                    :input 
                                     :integer 
                                     :string] :in-any-order))
 
