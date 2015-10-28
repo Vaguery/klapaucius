@@ -29,6 +29,14 @@
   (:counter (make-interpreter :counter 771)) => 771 )
 
 
+(fact "a new interpreter will have a default :done? setting of false"
+  (:done? (make-interpreter)) => false )
+
+
+(fact "a new interpreter can have :done? set as an option"
+  (:done? (make-interpreter :done? true)) => true )
+
+
 (fact "the core stack types are defined"
   (keys core-stacks) =>  (contains [:boolean
                                     :char
