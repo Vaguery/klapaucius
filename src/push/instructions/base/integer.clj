@@ -12,6 +12,15 @@
     (push-onto :integer :sum)))
 
 
+(def integer-multiply
+  (core/build-instruction
+    integer-multiply
+    (consume-top-of :integer :as :arg1)
+    (consume-top-of :integer :as :arg2)
+    (calculate [:arg1 :arg2] #(*' %1 %2) :as :prod)
+    (push-onto :integer :prod)))
+
+
 (def integer-subtract
   (core/build-instruction
     integer-subtract

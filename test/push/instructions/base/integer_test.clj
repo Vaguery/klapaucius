@@ -67,7 +67,7 @@
       '(16 3333333333333333333 7777777777777777777)))
 
 
-(fact ":integer-subtract uses Clojure's +' function to auto-promote results"
+(fact ":integer-subtract uses Clojure's -' function to auto-promote results"
   (let [can-subtract (temp-register knows-some-integers integer-subtract)]
     (peek-i
       (-> can-subtract
@@ -85,5 +85,35 @@
           (do-this :integer-subtract)
           (do-this :integer-subtract)
           (do-this :integer-subtract))) =not=> (throws)))
+
+
+
+;; :integer-multiply
+
+
+(fact ":integer-multiply multiplies integers"
+  (let [can-multiply (temp-register knows-some-integers integer-multiply)]
+    (peek-i (do-this can-multiply :integer-multiply)) =>
+      '(-55 3333333333333333333 7777777777777777777)))
+
+
+(fact ":integer-multpliy uses Clojure's *' function to auto-promote results"
+  (let [can-multiply (temp-register knows-some-integers integer-multiply)]
+    (peek-i
+      (-> can-multiply
+        (do-this :integer-multiply)
+        (do-this :integer-multiply)
+        (do-this :integer-multiply))) =not=> (throws #"overflow")))
+
+
+(fact ":integer-multiply respects the :needs limit"
+  (let [can-multiply (temp-register knows-some-integers integer-multiply)]
+    (peek-i
+      (-> can-multiply
+          (do-this :integer-multiply)
+          (do-this :integer-multiply)
+          (do-this :integer-multiply)
+          (do-this :integer-multiply)
+          (do-this :integer-multiply))) =not=> (throws)))
 
 
