@@ -370,3 +370,4 @@
   (is-done? knows-some-things) => false
   (:done? knows-some-things) => false
   (:done? (step knows-some-things)) => true)
+

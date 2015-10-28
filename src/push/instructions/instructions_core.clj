@@ -22,6 +22,5 @@
   [new-name & transactions]
   `(make-instruction (keyword ~(name new-name))
       :needs ~(total-needs transactions)
-      :transaction (def-function-from-dsl ~@transactions))
-  )
+      :transaction (def-function-from-dsl ~@transactions)))
 

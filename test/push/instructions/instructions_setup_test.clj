@@ -2,8 +2,7 @@
   (:use midje.sweet)
   (:use [push.instructions.instructions-core])
   (:use [push.instructions.dsl])
-  (:require [push.interpreter.interpreter-core :as i])
-)
+  (:require [push.interpreter.interpreter-core :as i]))
 
 
 ;; make-instruction (bare bones)
