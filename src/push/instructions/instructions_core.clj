@@ -3,24 +3,32 @@
   (:use [push.instructions.dsl]))
 
 
-(defrecord Instruction [token needs makes transaction])
+(defrecord Instruction [token tags needs makes transaction])
 
 
 (defn make-instruction
   "creates a new Instruction record instance"
   [token & {
-    :keys [needs makes transaction] 
-    :or { needs {}
+    :keys [tags needs makes transaction] 
+    :or { tags #{}
+          needs {}
           makes {}
           transaction identity }}]
-  (->Instruction token needs makes transaction))
+  (->Instruction token tags needs makes transaction))
 
 
 (defmacro build-instruction
   "Takes a token and zero or more transaction steps, and
   creates the named instruction from those steps."
-  [new-name & transactions]
-  `(make-instruction (keyword ~(name new-name))
-      :needs ~(total-needs transactions)
-      :transaction (def-function-from-dsl ~@transactions)))
+  [new-name & steps]
+  (if (= :tags (first steps))
+    (let [tags (second steps)
+          steps (drop 2 steps)]
+    `(make-instruction (keyword ~(name new-name))
+      :tags ~tags
+      :needs ~(total-needs steps)
+      :transaction (def-function-from-dsl ~@steps)))
+    `(make-instruction (keyword ~(name new-name))
+      :needs ~(total-needs steps)
+      :transaction (def-function-from-dsl ~@steps))))
 
