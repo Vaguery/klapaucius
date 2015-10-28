@@ -1,7 +1,12 @@
 (ns push.interpreter.interpreter-core)
 
 
-(defrecord Interpreter [program stacks instructions counter done?])
+(defrecord Interpreter [program 
+                        stacks 
+                        instructions 
+                        config 
+                        counter 
+                        done?])
 
 
 (def core-stacks
@@ -23,14 +28,15 @@
   counter is 0.
 
   Any of these can be specified by key."
-  [& {:keys [program stacks instructions counter done?]
+  [& {:keys [program stacks instructions config counter done?]
       :or {program []
            stacks core-stacks
            instructions {}
+           config {}
            counter 0
            done? false}}]
   (->Interpreter program (merge core-stacks stacks) 
-                   instructions counter done?))
+                   instructions config counter done?))
 
 
 (defn- throw-redefined-instruction-error

@@ -21,6 +21,10 @@
   (:instructions (make-interpreter)) => {})
 
 
+(fact "a new Interpreter will have a :config map"
+  (:config (make-interpreter)) => {})
+
+
 (fact "a new Interpreter will have a counter = 0"
   (:counter (make-interpreter)) => 0)
 
@@ -365,5 +369,4 @@
 (fact "calling `step` sets the :done? flag if a halting condition is encountered"
   (is-done? knows-some-things) => false
   (:done? knows-some-things) => false
-  (:done? (step knows-some-things)) => true
-  )
+  (:done? (step knows-some-things)) => true)
