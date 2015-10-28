@@ -33,13 +33,14 @@
     (push-onto :integer :diff)))
 
 
-; (def integer-divide
-;   (core/build-instruction
-;     integer-divide
-;     :tags #{:arithmetic :base :warning}
-;     (consume-top-of :integer :as :denominator)
-;     (consume-top-of :integer :as :numerator)
-;     (calculate [:denominator] #(zero? %1) :as :boom)
-;     (calculate 
-;       [:boom :numerator :denominator] #(if %1 0 (int (/ %2 %3))) :as :quotient)
-;     (push-onto :integer :quotient)))
+(def integer-divide
+  (core/build-instruction
+    integer-divide
+    :tags #{:arithmetic :base :dangerous}
+    (consume-top-of :integer :as :denominator)
+    (consume-top-of :integer :as :numerator)
+    (calculate [:denominator :numerator]
+      #(if (zero? %1) %2 nil) :as :replacement)
+    (calculate [:denominator :numerator]
+      #(if (zero? %1) %1 (int (/ %2 %1))) :as :quotient)
+    (push-these-onto :integer [:replacement :quotient])))

@@ -284,7 +284,6 @@
     (throw-unknown-stack-exception stackname)))
 
 
-
 (defn save-stack
   "Takes a PushDSL blob, a stackname (keyword) and a scratch key (also
   keyword), and copies that stack into the scratch variable (without
@@ -378,6 +377,7 @@
       'delete-top-of {(second step) 1}
       'replace-stack {(second step) 0}
       'push-onto {(second step) 0}
+      'push-these-onto {(second step) 0}
       'save-nth-of {(second step) 1}
       'save-stack {(second step) 0}
       'save-top-of {(second step) 1}
