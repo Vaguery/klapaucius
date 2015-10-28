@@ -233,6 +233,19 @@
   (assoc interpreter :counter (inc (:counter interpreter))))
 
 
+(defn is-done?
+  "Takes and Interpreter and checks various halting conditions.
+  Returns true if any is true. Does not change interpreter state."
+  [interpreter]
+  (and (empty? (get-stack interpreter :exec))))
+
+
+(defn- set-doneness
+  "Takes an interpreter and sets its :done? to the `is-done?` result"
+  [interpreter]
+  (assoc interpreter :done? (is-done? interpreter)))
+
+
 (defn step
   "Takes an Interpreter, pops one item off :exec, routes it to the
   router, increments the counter. If the :exec stack is empty, does
@@ -245,6 +258,7 @@
         (-> interpreter
             (increment-counter)
             (set-stack :exec new-exec)
-            (handle-item next-item)))
+            (handle-item next-item)
+            (set-doneness)))
       interpreter)))
 

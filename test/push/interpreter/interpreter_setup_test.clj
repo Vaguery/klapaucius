@@ -335,6 +335,14 @@
   (:counter (increment-counter knows-some-things)) => 23)
 
 
+;; is-done?
+
+
+(fact "`is-done?` checks the Interpreter for various halting states"
+  (is-done? (make-interpreter)) => true
+  (is-done? knows-some-things) => false)
+
+
 ;; step
 
 
@@ -353,3 +361,9 @@
   (:counter (step (make-interpreter))) => 0
   (:counter (step (clear-stack knows-some-things :exec))) => 22)
 
+
+(fact "calling `step` sets the :done? flag if a halting condition is encountered"
+  (is-done? knows-some-things) => false
+  (:done? knows-some-things) => false
+  (:done? (step knows-some-things)) => true
+  )
