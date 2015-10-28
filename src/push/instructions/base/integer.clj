@@ -44,3 +44,16 @@
     (calculate [:denominator :numerator]
       #(if (zero? %1) %1 (int (/ %2 %1))) :as :quotient)
     (push-these-onto :integer [:replacement :quotient])))
+
+
+(def integer-mod
+  (core/build-instruction
+    integer-mod
+    :tags #{:arithmetic :base :dangerous}
+    (consume-top-of :integer :as :denominator)
+    (consume-top-of :integer :as :numerator)
+    (calculate [:denominator :numerator]
+      #(if (zero? %1) %2 nil) :as :replacement)
+    (calculate [:denominator :numerator]
+      #(if (zero? %1) %1 (mod %2 %1)) :as :remainder)
+    (push-these-onto :integer [:replacement :remainder])))

@@ -148,3 +148,37 @@
             integer-divide)
         :integer-divide)) => '(0 20 40))
 
+
+
+;; :integer-mod
+
+
+(fact ":integer-mod mods integers to produce an integer result"
+    (peek-i
+      (do-this 
+        (temp-register 
+          (i/make-interpreter :stacks {:integer '(4 20)})
+            integer-mod)
+        :integer-mod)) => '(0)
+    (peek-i
+      (do-this 
+        (temp-register 
+          (i/make-interpreter :stacks {:integer '(4 21)})
+            integer-mod)
+        :integer-mod)) => '(1)
+    (peek-i
+      (do-this 
+        (temp-register 
+          (i/make-interpreter :stacks {:integer '(-21 20)})
+            integer-mod)
+        :integer-mod)) => '(-1))
+
+
+(fact ":integer-mod leaves the :integer stack unchanged if the denominator is 0"
+    (peek-i
+      (do-this 
+        (temp-register 
+          (i/make-interpreter :stacks {:integer '(0 20 40)})
+            integer-mod)
+        :integer-mod)) => '(0 20 40))
+
