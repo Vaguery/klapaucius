@@ -71,8 +71,8 @@
 
 (fact "registering and executing the instruction in an Interpreter works"
   (let [foobar (build-instruction foobar             ;;; moves top :foo to :bar
-                    (consume-top-of :foo :as :in)
-                    (push-onto :bar :in))
+                  (consume-top-of :foo :as :in)
+                  (push-onto :bar :in))
         context (i/register-instruction 
                   (i/make-interpreter :stacks {:foo '(1 2 3) :bar '(4 5 6)})
                   foobar)]

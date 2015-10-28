@@ -266,6 +266,25 @@
     (throw-unknown-stack-exception stackname)))
 
 
+(defn push-these-onto
+  "Takes a PushDSL blob, a stackname (keyword) and a vector of scratch
+  keys (all keywords), and puts each item stored in the scratch
+  variables onto top of the named stack, in order specified. If any of
+  the stored items is nil, there is no effect (and no exception). No
+  type checking is used.
+
+  Exceptions when:
+  - the stack doesn't exist
+  - (does not warn when the keyword isn't defined)"
+  [[interpreter scratch] stackname keywords]
+  (if-let [old-stack (i/get-stack interpreter stackname)]
+    (let [new-items (map scratch keywords)
+          new-stack (into old-stack (remove nil? new-items))]
+      [(i/set-stack interpreter stackname new-stack) scratch])
+    (throw-unknown-stack-exception stackname)))
+
+
+
 (defn save-stack
   "Takes a PushDSL blob, a stackname (keyword) and a scratch key (also
   keyword), and copies that stack into the scratch variable (without

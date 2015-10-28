@@ -596,3 +596,39 @@
                   (calculate [:arg1 :arg2] #(+ %1 %2) :as :sum)
                   (push-onto :integer :sum))]
   (i/get-stack (int-add afew) :integer) => '(3 3)))
+
+
+;; `push-these-onto [stackname [locals]]`
+
+(facts "about `push-these-onto`"
+
+  (fact "`push-these-onto` places all indicated scratch items onto the named stack"
+    (get-stack-from-dslblob :integer
+      (push-these-onto
+        [afew {:foo 99 :bar 111}]
+        :integer
+        [:foo :bar])) => '(111 99 1 2 3))
+
+
+  (fact "`push-these-onto` throws up if the stack doesn't exist"
+    (push-these-onto [afew {:foo 99}] :grault [:foo]) =>
+      (throws #"no :grault stack"))
+
+
+  (fact "`push-these-onto` doesn't raise a fuss if a scratch variable isn't set"
+    (get-stack-from-dslblob :integer
+      (push-these-onto [afew {}] :integer [:foo])) => '(1 2 3)
+        (get-stack-from-dslblob :integer
+      (push-these-onto [afew {:foo 99 :bar 111}] :integer [:foo :qux])) => 
+        '(99 1 2 3))
+
+
+  (fact "`push-these-onto` doesn't raise a fuss if the vector's empty"
+    (get-stack-from-dslblob :integer
+      (push-these-onto [afew {:foo 99 :bar 111}] :integer [])) => '(1 2 3))
+
+
+  (fact "`push-onto` doesn't care if a scratch variable is a list"
+    (get-stack-from-dslblob :integer
+      (push-these-onto [afew {:foo '(4 5 6)}] :integer [:foo])) =>
+        '((4 5 6) 1 2 3)))

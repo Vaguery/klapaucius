@@ -132,9 +132,15 @@ Note that none of the `scratch` information exists at the start of the transacti
 
 - [X] `push-onto [stackname local]`
 
-  `push-onto :integer :sum`
+  Example: `push-onto :integer :sum`
 
-  Push the scratch value `local` onto the top of the indicated stack.
+  Push the scratch value `local` onto the top of the indicated stack. If the `local` is `nil`, that's OK; nothing bad will happen.
+
+- [X] `push-these-onto [stackname [locals]]`
+
+  Example: `push-these-onto :integer [:quotient :remainder]`
+
+  Push _each_ of the indicated scratch values in the _vector_ onto the top of the indicated stack, one at a time, first one pushed first, last one pushed last (and thus ending up at the top). If any of them is `nil` that's OK; nothing bad will happen.
 
 - [ ] `save-counter [:as local]`
   

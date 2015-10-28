@@ -116,3 +116,37 @@
           (do-this :integer-multiply))) =not=> (throws)))
 
 
+
+;; :integer-divide
+    
+
+
+(future-fact ":integer-divide divides integers to produce an integer result"
+    (peek-i
+      (do-this 
+        (temp-register 
+          (i/make-interpreter :stacks {:integer '(4 20)})
+            integer-divide)
+        :integer-divide)) => '(5)
+    (peek-i
+      (do-this 
+        (temp-register 
+          (i/make-interpreter :stacks {:integer '(6 20)})
+            integer-divide)
+        :integer-divide)) => '(3)
+    (peek-i
+      (do-this 
+        (temp-register 
+          (i/make-interpreter :stacks {:integer '(-21 20)})
+            integer-divide)
+        :integer-divide)) => '(0))
+
+
+(future-fact ":integer-divide leaves the :integer stack unchanged if the denominator is 0"
+    (peek-i
+      (do-this 
+        (temp-register 
+          (i/make-interpreter :stacks {:integer '(0 20)})
+            integer-divide)
+        :integer-divide)) => '(0 20))
+
