@@ -57,3 +57,36 @@
     (calculate [:denominator :numerator]
       #(if (zero? %1) %1 (mod %2 %1)) :as :remainder)
     (push-these-onto :integer [:replacement :remainder])))
+
+
+;; comparison
+
+
+(def integer-lt
+  (core/build-instruction
+    integer-lt
+    :tags #{:numeric :base :comparison}
+    (consume-top-of :integer :as :arg2)
+    (consume-top-of :integer :as :arg1)
+    (calculate [:arg2 :arg1] #(< %1 %2) :as :less?)
+    (push-onto :boolean :less?)))
+
+
+(def integer-gt
+  (core/build-instruction
+    integer-gt
+    :tags #{:numeric :base :comparison}
+    (consume-top-of :integer :as :arg2)
+    (consume-top-of :integer :as :arg1)
+    (calculate [:arg2 :arg1] #(> %1 %2) :as :more?)
+    (push-onto :boolean :more?)))
+
+
+(def integer-eq
+  (core/build-instruction
+    integer-eq
+    :tags #{:numeric :base :comparison}
+    (consume-top-of :integer :as :arg2)
+    (consume-top-of :integer :as :arg1)
+    (calculate [:arg2 :arg1] #(= %1 %2) :as :same?)
+    (push-onto :boolean :same?)))

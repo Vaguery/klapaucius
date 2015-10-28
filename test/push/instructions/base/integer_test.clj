@@ -26,6 +26,12 @@
   (i/get-stack interpreter :integer))
 
 
+(defn peek-b
+  [interpreter]
+  (i/get-stack interpreter :boolean))
+
+
+
 (def do-this i/execute-instruction)
 
 
@@ -182,3 +188,82 @@
             integer-mod)
         :integer-mod)) => '(0 20 40))
 
+
+
+;; :integer-lt
+
+
+(fact ":integer-lt compares two integers and returns true if arg1 < arg2"
+    (peek-b
+      (do-this 
+        (temp-register 
+          (i/make-interpreter :stacks {:integer '(4 20)})
+            integer-lt)
+        :integer-lt)) => '(true)
+    (peek-b
+      (do-this 
+        (temp-register 
+          (i/make-interpreter :stacks {:integer '(22 21)})
+            integer-lt)
+        :integer-lt)) => '(false)
+    (peek-b
+      (do-this 
+        (temp-register 
+          (i/make-interpreter :stacks {:integer '(20 20)})
+            integer-lt)
+        :integer-lt)) => '(false))
+
+
+;; :integer-gt
+
+
+(fact ":integer-gt compares two integers and returns true if arg1 > arg2"
+    (peek-b
+      (do-this 
+        (temp-register 
+          (i/make-interpreter :stacks {:integer '(4 20)})
+            integer-gt)
+        :integer-gt)) => '(false)
+    (peek-b
+      (do-this 
+        (temp-register 
+          (i/make-interpreter :stacks {:integer '(22 21)})
+            integer-gt)
+        :integer-gt)) => '(true)
+    (peek-b
+      (do-this 
+        (temp-register 
+          (i/make-interpreter :stacks {:integer '(20 20)})
+            integer-gt)
+        :integer-gt)) => '(false))
+
+
+
+;; :integer-eq
+
+
+(fact ":integer-eq compares two integers and returns true if arg1 = arg2"
+    (peek-b
+      (do-this 
+        (temp-register 
+          (i/make-interpreter :stacks {:integer '(4 20)})
+            integer-eq)
+        :integer-eq)) => '(false)
+    (peek-b
+      (do-this 
+        (temp-register 
+          (i/make-interpreter :stacks {:integer '(22 21)})
+            integer-eq)
+        :integer-eq)) => '(false)
+    (peek-b
+      (do-this 
+        (temp-register 
+          (i/make-interpreter :stacks {:integer '(20 20)})
+            integer-eq)
+        :integer-eq)) => '(true)
+    (peek-b
+      (do-this 
+        (temp-register 
+          (i/make-interpreter :stacks {:integer '(20N 20)})
+            integer-eq)
+        :integer-eq)) => '(true))
