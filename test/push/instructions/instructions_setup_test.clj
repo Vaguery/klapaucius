@@ -12,7 +12,6 @@
   (:token (make-instruction :foo)) => :foo
   (:tags (make-instruction :foo)) => #{}
   (:needs (make-instruction :foo)) => {}
-  (:makes (make-instruction :foo)) => {}
   (:transaction (make-instruction :foo)) => identity)
 
 
@@ -22,10 +21,6 @@
 
 (fact "make-instruction accepts a :needs argument"
   (:needs (make-instruction :foo :needs {:integer 2})) => {:integer 2})
-
-
-(fact "make-instruction accepts a :makes argument"
-  (:makes (make-instruction :foo :makes {:boolean 3})) => {:boolean 3})
 
 
 (fact "make-instruction accepts a :transaction argument"

@@ -3,18 +3,17 @@
   (:use [push.instructions.dsl]))
 
 
-(defrecord Instruction [token tags needs makes transaction])
+(defrecord Instruction [token tags needs transaction])
 
 
 (defn make-instruction
   "creates a new Instruction record instance"
   [token & {
-    :keys [tags needs makes transaction] 
+    :keys [tags needs transaction] 
     :or { tags #{}
           needs {}
-          makes {}
           transaction identity }}]
-  (->Instruction token tags needs makes transaction))
+  (->Instruction token tags needs transaction))
 
 
 (defmacro build-instruction
