@@ -25,6 +25,47 @@ As I said, there are some constraints:
 - arbitrary Clojure functions can be invoked, but it can _only_ use named scratch variables or inline literals as arguments
 - the general state of the `Interpreter` is not available; only stack items and a few other state variables can be read; only stacks can be written
 
+## A couple of (working) examples
+
+Note: these are calls to the `build-instruction` macro, which creates a new `Instruction` record with various other settings besides the transaction itself. The last few lines of each (after the `:tags` line) are the transaction proper.
+
+`:integer-lt` (less than):
+
+~~~clojure
+(def integer-lt
+  (core/build-instruction
+    integer-lt
+    :tags #{:numeric :base :comparison}
+    (consume-top-of :integer :as :arg2)
+    (consume-top-of :integer :as :arg1)
+    (calculate [:arg2 :arg1] #(< %1 %2) :as :less?)
+    (push-onto :boolean :less?)))
+~~~
+
+`:code-do*range`:
+
+~~~clojure
+(def code-do*range 
+  (core/build-instruction
+    code-do*range
+    :tags #{:code :base :iterator}
+    (consume-top-of :code :as :to-do)
+    (consume-top-of :integer :as :current-index)
+    (consume-top-of :integer :as :destination-index)
+    (calculate [:destination-index :current-index]
+               #(compare %1 %2)
+               :as :direction)
+    (calculate [:current-index :direction]
+               #(+ %1 %2) 
+               :as :new-index)
+    (calculate [:direction :new-index :destination-index :to-do]
+                #(if (zero? %1)
+                  (list)
+                  (list %2 %3 :code_quote %4 :code_do*range))
+                :as :continuation)
+    (put-onto :exec :continuation)))
+~~~
+
 ## DSL scratch variables
 
 All scratch variables are referred to by Clojure keywords (not symbols). These are keys of a transient local store, and you shouldn't have to worry about namespace leakage. However they should be unique; saving a new value to an already-defined keyword key will overwrite the old value.
