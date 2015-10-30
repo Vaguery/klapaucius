@@ -413,6 +413,7 @@
       'delete-nth-of {(second step) 1}
       'delete-stack {(second step) 0}
       'delete-top-of {(second step) 1}
+      'insert-as-nth-of {(second step) 0}
       'replace-stack {(second step) 0}
       'push-onto {(second step) 0}
       'push-these-onto {(second step) 0}

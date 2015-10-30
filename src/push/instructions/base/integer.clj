@@ -169,6 +169,22 @@
     (push-onto :integer :arg3)))
 
 
+(def integer-shove
+  (core/build-instruction
+    integer-shove
+    :tags #{:numeric :base :combinator}
+    (consume-top-of :integer :as :index)
+    (consume-top-of :integer :as :shoved-item)
+    (insert-as-nth-of :integer :shoved-item :at :index)))
+
+
+(def integer-shovedup
+  (core/build-instruction
+    integer-shovedup
+    :tags #{:numeric :base :combinator}
+    (consume-top-of :integer :as :index)
+    (save-top-of :integer :as :shoved-item)
+    (insert-as-nth-of :integer :shoved-item :at :index)))
 
 
 (def integer-swap
