@@ -106,6 +106,22 @@
 
 
 (tabular
+  (fact ":integer-lte returns a :boolean indicating whether :first <= :second"
+    (step-and-check-it ?set-stack ?items ?instruction ?get-stack) ?arrow ?expected)
+
+    ?set-stack  ?items    ?instruction    ?get-stack   ?arrow   ?expected
+    ;; just the math
+    :integer    '(4 20)    integer-lte      :boolean     =>       '(true)
+    :integer    '(20 4)    integer-lte      :boolean     =>       '(false)
+    :integer    '(4 4)     integer-lte      :boolean     =>       '(true)
+    ;; missing args 
+    :integer    '(11)      integer-lte      :boolean     =>       '()
+    :integer    '(11)      integer-lte      :integer     =>       '(11)
+    :integer    '()        integer-lte      :boolean     =>       '()
+    :integer    '()        integer-lte      :integer     =>       '())
+
+
+(tabular
   (fact ":integer-gt returns a :boolean indicating whether :first > :second"
     (step-and-check-it ?set-stack ?items ?instruction ?get-stack) ?arrow ?expected)
 
@@ -120,6 +136,21 @@
     :integer    '()        integer-gt      :boolean     =>       '()
     :integer    '()        integer-gt      :integer     =>       '())
 
+
+(tabular
+  (fact ":integer-gte returns a :boolean indicating whether :first > :second"
+    (step-and-check-it ?set-stack ?items ?instruction ?get-stack) ?arrow ?expected)
+
+    ?set-stack  ?items    ?instruction    ?get-stack   ?arrow   ?expected
+    ;; just the math
+    :integer    '(4 20)    integer-gte      :boolean     =>       '(false)
+    :integer    '(20 4)    integer-gte      :boolean     =>       '(true)
+    :integer    '(4 4)     integer-gte      :boolean     =>       '(true)
+    ;; missing args 
+    :integer    '(11)      integer-gte      :boolean     =>       '()
+    :integer    '(11)      integer-gte      :integer     =>       '(11)
+    :integer    '()        integer-gte      :boolean     =>       '()
+    :integer    '()        integer-gte      :integer     =>       '())
 
 
 (tabular

@@ -72,6 +72,16 @@
     (push-onto :boolean :less?)))
 
 
+(def integer-lte
+  (core/build-instruction
+    integer-lte
+    :tags #{:numeric :base :comparison}
+    (consume-top-of :integer :as :arg2)
+    (consume-top-of :integer :as :arg1)
+    (calculate [:arg2 :arg1] #(<= %1 %2) :as :lte?)
+    (push-onto :boolean :lte?)))
+
+
 (def integer-gt
   (core/build-instruction
     integer-gt
@@ -79,6 +89,16 @@
     (consume-top-of :integer :as :arg2)
     (consume-top-of :integer :as :arg1)
     (calculate [:arg2 :arg1] #(> %1 %2) :as :more?)
+    (push-onto :boolean :more?)))
+
+
+(def integer-gte
+  (core/build-instruction
+    integer-gte
+    :tags #{:numeric :base :comparison}
+    (consume-top-of :integer :as :arg2)
+    (consume-top-of :integer :as :arg1)
+    (calculate [:arg2 :arg1] #(>= %1 %2) :as :more?)
     (push-onto :boolean :more?)))
 
 
