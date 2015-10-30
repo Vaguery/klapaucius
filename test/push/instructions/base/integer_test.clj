@@ -5,18 +5,6 @@
   (:use [push.util.test-helpers]))
 
 
-;; fixtures
-
-
-(def knows-some-integers
-    (i/make-interpreter 
-      :stacks {:integer '(11 -5 3333333333333333333 7777777777777777777)}))
-      ;; the last two, when added, push us over the interger overflow limit
-
-
-; setup-stack items instruction read-stack
-
-
 (tabular
   (fact ":integer-add returns the sum, auto-promoting overflows"
     (step-and-check-it ?set-stack ?items ?instruction ?get-stack) ?arrow ?expected)
