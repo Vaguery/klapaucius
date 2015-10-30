@@ -1,7 +1,8 @@
 (ns push.instructions.base.integer_test
-  (:use midje.sweet)
   (:require [push.interpreter.interpreter-core :as i])
-  (:use [push.instructions.base.integer]))
+  (:use [push.instructions.base.integer])
+  (:use midje.sweet)
+  (:use [push.util.test-helpers]))
 
 
 ;; fixtures
@@ -13,257 +14,138 @@
       ;; the last two, when added, push us over the interger overflow limit
 
 
-;; convenience functions
+; setup-stack items instruction read-stack
 
 
-(defn temp-register
-  [interpreter instruction]
-  (i/register-instruction interpreter instruction))
+(tabular
+  (fact ":integer-add returns the sum, auto-promoting overflows"
+    (step-and-check-it ?set-stack ?items ?instruction ?get-stack) ?arrow ?expected)
+
+    ?set-stack  ?items    ?instruction  ?get-stack   ?arrow   ?expected
+    ;; adding
+    :integer    '(11 -5)  integer-add   :integer     =>       '(6)
+    :integer    '(-3 -5)  integer-add   :integer     =>       '(-8)
+    ;; missing args
+    :integer    '(11)     integer-add   :integer     =>       '(11)
+    :integer    '()       integer-add   :integer     =>       '()
+    ;; overflow
+    :integer    '(3333333333333333333 7777777777777777777)
+                          integer-add   :integer     =>       '(11111111111111111110N))
 
 
-(defn peek-i
-  [interpreter]
-  (i/get-stack interpreter :integer))
+(tabular
+  (fact ":integer-subtract returns (- :second :first)"
+    (step-and-check-it ?set-stack ?items ?instruction ?get-stack) ?arrow ?expected)
+
+    ?set-stack  ?items    ?instruction       ?get-stack   ?arrow   ?expected
+    ;; just the math
+    :integer    '(11 -5)  integer-subtract   :integer     =>       '(16)
+    :integer    '(-3 -5)  integer-subtract   :integer     =>       '(2)
+    ;; missing args
+    :integer    '(11)     integer-subtract   :integer     =>       '(11)
+    :integer    '()       integer-subtract   :integer     =>       '()
+    ;; overflow
+    :integer    '(33333333333333333333 77777777777777777777)
+                          integer-subtract   :integer     =>       '(-44444444444444444444N))
 
 
-(defn peek-b
-  [interpreter]
-  (i/get-stack interpreter :boolean))
+(tabular
+  (fact ":integer-multiply returns the product, auto-promoting overflows"
+    (step-and-check-it ?set-stack ?items ?instruction ?get-stack) ?arrow ?expected)
 
-
-
-(def do-this i/execute-instruction)
-
-
-;; :integer-add
-
-
-(fact ":integer-add adds integers"
-  (let [can-add (temp-register knows-some-integers integer-add)]
-    (peek-i (do-this can-add :integer-add)) =>
-    '(6 3333333333333333333 7777777777777777777)))
-
-
-(fact ":integer-add uses Clojure's +' function to auto-promote results"
-  (let [can-add (temp-register knows-some-integers integer-add)]
-    (peek-i
-      (-> can-add
-        (do-this :integer-add)
-        (do-this :integer-add)
-        (do-this :integer-add))) =not=> (throws #"overflow")))
-
-
-(fact ":integer-add respects the :needs limit"
-  (let [can-add (temp-register knows-some-integers integer-add)]
-    (peek-i
-      (-> can-add
-          (do-this :integer-add)
-          (do-this :integer-add)
-          (do-this :integer-add)
-          (do-this :integer-add) ;; runs out of arguments here
-          (do-this :integer-add))) =not=> (throws)))
-
-
-;; :integer-subtract
-
-
-(fact ":integer-subtract subtracts integers"
-  (let [can-subtract (temp-register knows-some-integers integer-subtract)]
-    (peek-i (do-this can-subtract :integer-subtract)) =>
-      '(16 3333333333333333333 7777777777777777777)))
-
-
-(fact ":integer-subtract uses Clojure's -' function to auto-promote results"
-  (let [can-subtract (temp-register knows-some-integers integer-subtract)]
-    (peek-i
-      (-> can-subtract
-        (do-this :integer-subtract)
-        (do-this :integer-subtract)
-        (do-this :integer-subtract))) =not=> (throws #"overflow")))
-
-
-(fact ":integer-subtract respects the :needs limit"
-  (let [can-subtract (temp-register knows-some-integers integer-subtract)]
-    (peek-i
-      (-> can-subtract
-          (do-this :integer-subtract)
-          (do-this :integer-subtract)
-          (do-this :integer-subtract)
-          (do-this :integer-subtract)
-          (do-this :integer-subtract))) =not=> (throws)))
-
-
-;; :integer-multiply
-
-
-(fact ":integer-multiply multiplies integers"
-  (let [can-multiply (temp-register knows-some-integers integer-multiply)]
-    (peek-i (do-this can-multiply :integer-multiply)) =>
-      '(-55 3333333333333333333 7777777777777777777)))
-
-
-(fact ":integer-multpliy uses Clojure's *' function to auto-promote results"
-  (let [can-multiply (temp-register knows-some-integers integer-multiply)]
-    (peek-i
-      (-> can-multiply
-        (do-this :integer-multiply)
-        (do-this :integer-multiply)
-        (do-this :integer-multiply))) =not=> (throws #"overflow")))
-
-
-(fact ":integer-multiply respects the :needs limit"
-  (let [can-multiply (temp-register knows-some-integers integer-multiply)]
-    (peek-i
-      (-> can-multiply
-          (do-this :integer-multiply)
-          (do-this :integer-multiply)
-          (do-this :integer-multiply)
-          (do-this :integer-multiply)
-          (do-this :integer-multiply))) =not=> (throws)))
-
-
-;; :integer-divide
-
-
-(fact ":integer-divide divides integers to produce an integer result"
-    (peek-i
-      (do-this 
-        (temp-register 
-          (i/make-interpreter :stacks {:integer '(4 20)})
-            integer-divide)
-        :integer-divide)) => '(5)
-    (peek-i
-      (do-this 
-        (temp-register 
-          (i/make-interpreter :stacks {:integer '(6 20)})
-            integer-divide)
-        :integer-divide)) => '(3)
-    (peek-i
-      (do-this 
-        (temp-register 
-          (i/make-interpreter :stacks {:integer '(-21 20)})
-            integer-divide)
-        :integer-divide)) => '(0))
-
-
-(fact ":integer-divide leaves the :integer stack unchanged if the denominator is 0"
-    (peek-i
-      (do-this 
-        (temp-register 
-          (i/make-interpreter :stacks {:integer '(0 20 40)})
-            integer-divide)
-        :integer-divide)) => '(0 20 40))
+    ?set-stack  ?items    ?instruction       ?get-stack   ?arrow   ?expected
+    ;; just the math
+    :integer    '(11 -5)  integer-multiply   :integer     =>       '(-55)
+    :integer    '(-3 -5)  integer-multiply   :integer     =>       '(15)
+    ;; missing args
+    :integer    '(11)     integer-multiply   :integer     =>       '(11)
+    :integer    '()       integer-multiply   :integer     =>       '()
+    ;; overflow
+    :integer    '(333333333333 777777777777)
+                          integer-multiply   :integer     =>       '(259259259258740740740741N))
 
 
 
-;; :integer-mod
+(tabular
+  (fact ":integer-divide returns the quotient :second/:first, unless :first is zero"
+    (step-and-check-it ?set-stack ?items ?instruction ?get-stack) ?arrow ?expected)
+
+    ?set-stack  ?items    ?instruction       ?get-stack   ?arrow   ?expected
+    ;; just the math
+    :integer    '(4 20)   integer-divide      :integer     =>       '(5)
+    :integer    '(-3 -15) integer-divide      :integer     =>       '(5)
+    ;; missing args
+    :integer    '(11)     integer-divide      :integer     =>       '(11)
+    :integer    '()       integer-divide      :integer     =>       '()
+    ;; divide-by-zero
+    :integer    '(0 11)   integer-divide      :integer     =>       '(0 11))
 
 
-(fact ":integer-mod mods integers to produce an integer result"
-    (peek-i
-      (do-this 
-        (temp-register 
-          (i/make-interpreter :stacks {:integer '(4 20)})
-            integer-mod)
-        :integer-mod)) => '(0)
-    (peek-i
-      (do-this 
-        (temp-register 
-          (i/make-interpreter :stacks {:integer '(4 21)})
-            integer-mod)
-        :integer-mod)) => '(1)
-    (peek-i
-      (do-this 
-        (temp-register 
-          (i/make-interpreter :stacks {:integer '(-21 20)})
-            integer-mod)
-        :integer-mod)) => '(-1))
+(tabular
+  (fact ":integer-mod returns (mod :second :first)"
+    (step-and-check-it ?set-stack ?items ?instruction ?get-stack) ?arrow ?expected)
 
-
-(fact ":integer-mod leaves the :integer stack unchanged if the denominator is 0"
-    (peek-i
-      (do-this 
-        (temp-register 
-          (i/make-interpreter :stacks {:integer '(0 20 40)})
-            integer-mod)
-        :integer-mod)) => '(0 20 40))
-
-
-
-;; :integer-lt
-
-
-(fact ":integer-lt compares two integers and returns true if arg1 < arg2"
-    (peek-b
-      (do-this 
-        (temp-register 
-          (i/make-interpreter :stacks {:integer '(4 20)})
-            integer-lt)
-        :integer-lt)) => '(true)
-    (peek-b
-      (do-this 
-        (temp-register 
-          (i/make-interpreter :stacks {:integer '(22 21)})
-            integer-lt)
-        :integer-lt)) => '(false)
-    (peek-b
-      (do-this 
-        (temp-register 
-          (i/make-interpreter :stacks {:integer '(20 20)})
-            integer-lt)
-        :integer-lt)) => '(false))
-
-
-;; :integer-gt
-
-
-(fact ":integer-gt compares two integers and returns true if arg1 > arg2"
-    (peek-b
-      (do-this 
-        (temp-register 
-          (i/make-interpreter :stacks {:integer '(4 20)})
-            integer-gt)
-        :integer-gt)) => '(false)
-    (peek-b
-      (do-this 
-        (temp-register 
-          (i/make-interpreter :stacks {:integer '(22 21)})
-            integer-gt)
-        :integer-gt)) => '(true)
-    (peek-b
-      (do-this 
-        (temp-register 
-          (i/make-interpreter :stacks {:integer '(20 20)})
-            integer-gt)
-        :integer-gt)) => '(false))
+    ?set-stack  ?items    ?instruction    ?get-stack   ?arrow   ?expected
+    ;; just the math
+    :integer    '(4 20)   integer-mod      :integer     =>       '(0)
+    :integer    '(4 21)   integer-mod      :integer     =>       '(1)
+    :integer    '(4 -21)  integer-mod      :integer     =>       '(3)
+    :integer    '(-4 21)  integer-mod      :integer     =>       '(-3)
+    :integer    '(-3 -15) integer-mod      :integer     =>       '(0)
+    :integer    '(-3 -16) integer-mod      :integer     =>       '(-1)
+    ;; missing args
+    :integer    '(11)     integer-mod      :integer     =>       '(11)
+    :integer    '()       integer-mod      :integer     =>       '()
+    ;; divide-by-zero
+    :integer    '(0 11)   integer-mod      :integer     =>       '(0 11))
 
 
 
-;; :integer-eq
+(tabular
+  (fact ":integer-lt returns a :boolean indicating whether :first < :second"
+    (step-and-check-it ?set-stack ?items ?instruction ?get-stack) ?arrow ?expected)
+
+    ?set-stack  ?items    ?instruction    ?get-stack   ?arrow   ?expected
+    ;; just the math
+    :integer    '(4 20)    integer-lt      :boolean     =>       '(true)
+    :integer    '(20 4)    integer-lt      :boolean     =>       '(false)
+    :integer    '(4 4)     integer-lt      :boolean     =>       '(false)
+    ;; missing args 
+    :integer    '(11)      integer-lt      :boolean     =>       '()
+    :integer    '(11)      integer-lt      :integer     =>       '(11)
+    :integer    '()        integer-lt      :boolean     =>       '()
+    :integer    '()        integer-lt      :integer     =>       '())
 
 
-(fact ":integer-eq compares two integers and returns true if arg1 = arg2"
-    (peek-b
-      (do-this 
-        (temp-register 
-          (i/make-interpreter :stacks {:integer '(4 20)})
-            integer-eq)
-        :integer-eq)) => '(false)
-    (peek-b
-      (do-this 
-        (temp-register 
-          (i/make-interpreter :stacks {:integer '(22 21)})
-            integer-eq)
-        :integer-eq)) => '(false)
-    (peek-b
-      (do-this 
-        (temp-register 
-          (i/make-interpreter :stacks {:integer '(20 20)})
-            integer-eq)
-        :integer-eq)) => '(true)
-    (peek-b
-      (do-this 
-        (temp-register 
-          (i/make-interpreter :stacks {:integer '(20N 20)})
-            integer-eq)
-        :integer-eq)) => '(true))
+(tabular
+  (fact ":integer-gt returns a :boolean indicating whether :first > :second"
+    (step-and-check-it ?set-stack ?items ?instruction ?get-stack) ?arrow ?expected)
+
+    ?set-stack  ?items    ?instruction    ?get-stack   ?arrow   ?expected
+    ;; just the math
+    :integer    '(4 20)    integer-gt      :boolean     =>       '(false)
+    :integer    '(20 4)    integer-gt      :boolean     =>       '(true)
+    :integer    '(4 4)     integer-gt      :boolean     =>       '(false)
+    ;; missing args 
+    :integer    '(11)      integer-gt      :boolean     =>       '()
+    :integer    '(11)      integer-gt      :integer     =>       '(11)
+    :integer    '()        integer-gt      :boolean     =>       '()
+    :integer    '()        integer-gt      :integer     =>       '())
+
+
+
+(tabular
+  (fact ":integer-eq returns a :boolean indicating whether :first = :second"
+    (step-and-check-it ?set-stack ?items ?instruction ?get-stack) ?arrow ?expected)
+
+    ?set-stack  ?items    ?instruction    ?get-stack   ?arrow   ?expected
+    ;; just the math
+    :integer    '(4 20)    integer-eq      :boolean     =>       '(false)
+    :integer    '(20 4)    integer-eq      :boolean     =>       '(false)
+    :integer    '(4 4)     integer-eq      :boolean     =>       '(true)
+    ;; missing args 
+    :integer    '(11)      integer-eq      :boolean     =>       '()
+    :integer    '(11)      integer-eq      :integer     =>       '(11)
+    :integer    '()        integer-eq      :boolean     =>       '()
+    :integer    '()        integer-eq      :integer     =>       '())
+
