@@ -110,3 +110,90 @@
     (consume-top-of :integer :as :arg1)
     (calculate [:arg2 :arg1] #(= %1 %2) :as :same?)
     (push-onto :boolean :same?)))
+
+
+;; introspection (will eventually be generated magically)
+
+
+(def integer-empty?
+  (core/build-instruction
+    integer-stackdepth
+    :tags #{:numeric :base :introspection}
+    (count-of :integer :as :depth)
+    (calculate [:depth] #(zero? %1) :as :check)
+    (push-onto :boolean :check)))
+
+
+(def integer-stackdepth
+  (core/build-instruction
+    integer-stackdepth
+    :tags #{:numeric :base :introspection}
+    (count-of :integer :as :depth)
+    (push-onto :integer :depth)))
+
+
+;; combinators (will eventually be generated automatically)
+
+
+(def integer-dup
+  (core/build-instruction
+    integer-dup
+    :tags #{:numeric :base :combinator}
+    (save-top-of :integer :as :again)
+    (push-onto :integer :again)))
+
+
+(def integer-flush
+  (core/build-instruction
+    integer-flush
+    :tags #{:numeric :base :combinator}
+    (delete-stack :integer)))
+
+
+(def integer-pop
+  (core/build-instruction
+    integer-pop
+    :tags #{:numeric :base :combinator}
+    (consume-top-of :integer :as :gone)))
+
+
+(def integer-rotate
+  (core/build-instruction
+    integer-rotate
+    :tags #{:numeric :base :combinator}
+    (consume-top-of :integer :as :arg1)
+    (consume-top-of :integer :as :arg2)
+    (consume-top-of :integer :as :arg3)
+    (push-onto :integer :arg2)
+    (push-onto :integer :arg1)
+    (push-onto :integer :arg3)))
+
+
+(def integer-swap
+  (core/build-instruction
+    integer-swap
+    :tags #{:numeric :base :combinator}
+    (consume-top-of :integer :as :arg1)
+    (consume-top-of :integer :as :arg2)
+    (push-onto :integer :arg1)
+    (push-onto :integer :arg2)))
+
+
+(def integer-yank
+  (core/build-instruction
+    integer-yank
+    :tags #{:numeric :base :combinator}
+    (consume-top-of :integer :as :index)
+    (count-of :integer :as :how-many)
+    (consume-nth-of :integer :at :index :as :yanked-item)
+    (push-onto :integer :yanked-item)))
+
+
+(def integer-yankdup
+  (core/build-instruction
+    integer-yankdup
+    :tags #{:numeric :base :combinator}
+    (consume-top-of :integer :as :index)
+    (count-of :integer :as :how-many)
+    (save-nth-of :integer :at :index :as :yanked-item)
+    (push-onto :integer :yanked-item)))
