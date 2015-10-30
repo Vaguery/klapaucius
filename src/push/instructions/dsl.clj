@@ -15,6 +15,18 @@
   (concat (take idx coll) (drop 1 (drop idx coll))))
 
 
+(defn- insert-as-nth
+  "Inserts the item so it is in the indicated position of the result. Note bounds
+  of possible range are [0,length] (it can be placed last)."
+  [coll item idx]
+  {:pre  [(list? coll)
+          (not (neg? idx))
+          (<= idx (count coll))]}
+  (into '()
+    (reverse
+      (concat (take idx coll) (list item) (drop idx coll)))))
+
+
 (defn- throw-empty-stack-exception
   [stackname]
   (throw (Exception. (str 
@@ -224,6 +236,32 @@
       [(i/set-stack interpreter stackname (rest old-stack)) scratch]
       (throw-empty-stack-exception stackname))
     (throw-unknown-stack-exception stackname)))
+
+
+(defn insert-as-nth-of
+  "Usage: `insert-of-nth-of [stackname local :at where]`
+
+  Place item stored in scratch variable `local` into the named stack
+  so it becomes the new item in the `where` position. If `where` is 
+  an integer, the index deleted is `(mod where (count stackname))`; if
+  it is a scratch reference, the numerical value is looked up. If the
+  item stored under key `where` in scratch is not an integer, an error
+  occurs.
+
+  Exceptions when:
+    - the stack doesn't exist
+    - the stack is empty
+    - no index is given
+    - the index is a :keyword that doesn't point to an integer"
+  [[interpreter scratch] stackname kwd & {:keys [as at]}]
+    (if-let [old-stack (i/get-stack interpreter stackname)]
+      (let [idx (valid-DSL-index at scratch)
+            which (mod idx (inc (count old-stack)))
+            new-item (kwd scratch)
+            new-stack (insert-as-nth old-stack new-item which)]
+        [(i/set-stack interpreter stackname new-stack) scratch])
+      (throw-unknown-stack-exception stackname)
+  ))
 
 
 (defn replace-stack

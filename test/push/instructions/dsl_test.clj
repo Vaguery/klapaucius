@@ -101,6 +101,31 @@
     (#'push.instructions.dsl/delete-nth '(0 1 2 3 4 5) 99) => (throws #"Assert")))
 
 
+;; insert-as-nth
+
+(facts "about `insert-as-nth`"
+
+  (fact "`insert-as-nth` returns a collection with the item inserted at position n"
+    (#'push.instructions.dsl/insert-as-nth '(0 1 2 3 4 5) \X 3) => '(0 1 2 \X 3 4 5)
+    (#'push.instructions.dsl/insert-as-nth '(0 1 2 3 4 5) \X 0) => '(\X 0 1 2 3 4 5)
+    (#'push.instructions.dsl/insert-as-nth '(0 1 2 3 4 5) \X 6) => '(0 1 2 3 4 5 \X))
+
+
+  (fact "`insert-as-nth` returns a PersistentList"
+    (class (#'push.instructions.dsl/insert-as-nth '(1 2 3 4) \X 3)) => 
+    clojure.lang.PersistentList)
+
+
+  (fact "`insert-as-nth` DOES NOT throw an Exception when the list is empty"
+    (#'push.instructions.dsl/insert-as-nth '() \X 0) =not=> (throws)
+    (#'push.instructions.dsl/insert-as-nth '() \X 0) =not=> (throws))
+
+
+  (fact "`insert-as-nth` throws an Exception when the index is out of range"
+    (#'push.instructions.dsl/insert-as-nth '(0 1 2 3 4 5) \X -99) => (throws #"Assert")
+    (#'push.instructions.dsl/insert-as-nth '(0 1 2 3 4 5) \X 99) => (throws #"Assert")))
+
+
 ;; `consume-stack [stackname :as local]`
 
 (facts "about `consume-stack`"
@@ -632,3 +657,59 @@
     (get-stack-from-dslblob :integer
       (push-these-onto [afew {:foo '(4 5 6)}] :integer [:foo])) =>
         '((4 5 6) 1 2 3)))
+
+
+
+;; `insert-as-nth-of [stackname local :at where]`
+
+(facts "about `insert-as-nth-of`"
+
+  (fact "`insert-as-nth-of` puts the named scratch item in position n of the named stack"
+    (get-stack-from-dslblob :integer
+      (insert-as-nth-of [afew {:foo 99}] :integer :foo :at 0)) => '(99 1 2 3)
+    (get-stack-from-dslblob :integer
+      (insert-as-nth-of [afew {:foo 99}] :integer :foo :at 1)) => '(1 99 2 3)
+    (get-stack-from-dslblob :integer
+      (insert-as-nth-of [afew {:foo 99}] :integer :foo :at 2)) => '(1 2 99 3)
+    (get-stack-from-dslblob :integer
+      (insert-as-nth-of [afew {:foo 99}] :integer :foo :at 3)) => '(1 2 3 99))
+
+
+  (fact "`insert-as-nth-of` picks the index as `(mod where stacklength)`"
+    (get-stack-from-dslblob :integer
+      (insert-as-nth-of [afew {:foo 99}] :integer :foo :at -1)) => '(1 2 3 99)
+    (get-stack-from-dslblob :integer
+      (insert-as-nth-of [afew {:foo 99}] :integer :foo :at 4)) => '(99 1 2 3)
+    (get-stack-from-dslblob :integer
+      (insert-as-nth-of [afew {:foo 99}] :integer :foo :at 6)) => '(1 2 99 3)
+    (get-stack-from-dslblob :integer
+      (insert-as-nth-of [afew {:foo 99}] :integer :foo :at -5)) => '(1 2 3 99))
+
+
+  (fact "`insert-as-nth-of` will use a scratch variable as index if it's an integer"
+    (get-stack-from-dslblob :integer
+      (insert-as-nth-of [afew {:foo 99 :bar 1}] :integer :foo :at :bar)) =>
+        '(1 99 2 3)
+    (get-stack-from-dslblob :integer
+      (insert-as-nth-of [afew {:foo 99 :bar -1}] :integer :foo :at :bar)) =>
+        '(1 2 3 99))
+
+
+  (fact "`insert-as-nth-of` throws up if the scratch variable isn't an integer"
+    (get-stack-from-dslblob :integer
+      (insert-as-nth-of [afew {:foo 99 :bar false}] :integer :foo :at :bar)) =>
+        (throws #"Push DSL argument error: :bar is not an integer")
+    (get-stack-from-dslblob :integer
+      (insert-as-nth-of [afew {:foo 99}] :integer :foo :at :bar)) =>
+        (throws #"Push DSL argument error: :bar is not an integer"))
+
+
+  (fact "`insert-as-nth-of` throws up if no index is given"
+    (get-stack-from-dslblob :integer
+      (insert-as-nth-of [afew {:foo 99}] :integer :foo)) =>
+        (throws #"Push DSL argument error: missing key: :at"))
+
+  (fact "`insert-as-nth-of` is OK if the stack is empty"
+    (get-stack-from-dslblob :boolean
+      (insert-as-nth-of [afew {:foo 99}] :boolean :foo :at 8182)) =>
+        '(99)))

@@ -236,42 +236,42 @@
     :integer    '()        integer-rotate      :integer       '())
 
 
-(tabular
-  (future-fact ":integer-shove takes its index from :integer, then MOVES the (current)
-    top item down to position indicated; uses (mod arg (count :integer))"
-    (step-and-check-it ?set-stack ?items ?instruction ?get-stack) => ?expected)
+; (tabular
+;   (future-fact ":integer-shove takes its index from :integer, then MOVES the (current)
+;     top item down to position indicated; uses (mod arg (count :integer))"
+;     (step-and-check-it ?set-stack ?items ?instruction ?get-stack) => ?expected)
 
-    ?set-stack  ?items          ?instruction      ?get-stack     ?expected
-    ;; just shifting things     
-    :integer    '(3 4 3 2 1)    integer-shove      :integer       '(3 2 1 4)
-    :integer    '(1 1 2 3)      integer-shove      :integer       '(2 1 3)
-    ;; 0 index
-    :integer    '(0 1 2 3)      integer-shove      :integer       '(1 2 3)
-    ;; range handling
-    :integer    '(-1 1 2 3)     integer-shove      :integer       '(1 3 2)
-    :integer    '(11 1 2 3)     integer-shove      :integer       '(2 3 1)
-    ;; missing args 
-    :integer    '(2)            integer-shove      :integer       '(2)
-    :integer    '()             integer-shove      :integer       '())
+;     ?set-stack  ?items          ?instruction      ?get-stack     ?expected
+;     ;; just shifting things     
+;     :integer    '(3 4 3 2 1)    integer-shove      :integer       '(3 2 1 4)
+;     :integer    '(1 1 2 3)      integer-shove      :integer       '(2 1 3)
+;     ;; 0 index
+;     :integer    '(0 1 2 3)      integer-shove      :integer       '(1 2 3)
+;     ;; range handling
+;     :integer    '(-1 1 2 3)     integer-shove      :integer       '(1 3 2)
+;     :integer    '(11 1 2 3)     integer-shove      :integer       '(2 3 1)
+;     ;; missing args 
+;     :integer    '(2)            integer-shove      :integer       '(2)
+;     :integer    '()             integer-shove      :integer       '())
 
 
-(tabular
-  (future-fact ":integer-shovedup takes its index from :integer, then COPIES the (current)
-    top item down to position indicated; uses (mod arg (count :integer))"
-    (step-and-check-it ?set-stack ?items ?instruction ?get-stack) => ?expected)
+; (tabular
+;   (future-fact ":integer-shovedup takes its index from :integer, then COPIES the (current)
+;     top item down to position indicated; uses (mod arg (count :integer))"
+;     (step-and-check-it ?set-stack ?items ?instruction ?get-stack) => ?expected)
 
-    ?set-stack  ?items          ?instruction      ?get-stack     ?expected
-    ;; just shifting things     
-    :integer    '(3 4 3 2 1)    integer-shovedup      :integer       '(4 3 2 1 4)
-    :integer    '(1 1 2 3)      integer-shovedup      :integer       '(1 1 2 3)
-    ;; 0 index
-    :integer    '(0 1 2 3)      integer-shovedup      :integer       '(1 1 2 3)
-    ;; range handling
-    :integer    '(-1 1 2 3)     integer-shovedup      :integer       '(1 2 1 3)
-    :integer    '(11 1 2 3)     integer-shovedup      :integer       '(1 2 3 1)
-    ;; missing args 
-    :integer    '(2)            integer-shovedup      :integer       '(2)
-    :integer    '()             integer-shovedup      :integer       '())
+;     ?set-stack  ?items          ?instruction      ?get-stack     ?expected
+;     ;; just shifting things     
+;     :integer    '(3 4 3 2 1)    integer-shovedup      :integer       '(4 3 2 1 4)
+;     :integer    '(1 1 2 3)      integer-shovedup      :integer       '(1 1 2 3)
+;     ;; 0 index
+;     :integer    '(0 1 2 3)      integer-shovedup      :integer       '(1 1 2 3)
+;     ;; range handling
+;     :integer    '(-1 1 2 3)     integer-shovedup      :integer       '(1 2 1 3)
+;     :integer    '(11 1 2 3)     integer-shovedup      :integer       '(1 2 3 1)
+;     ;; missing args 
+;     :integer    '(2)            integer-shovedup      :integer       '(2)
+;     :integer    '()             integer-shovedup      :integer       '())
 
 
 (tabular

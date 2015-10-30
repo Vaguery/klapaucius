@@ -171,6 +171,18 @@ Note that none of the `scratch` information exists at the start of the transacti
 
   Empty the named stack in the `Interpreter`.
 
+- [X] `insert-as-nth-of [stackname :local :at where]`
+  
+  Example: `insert-as-nth-of :integer :new-int :at -19`
+
+  Example: `insert-as-nth-of :boolean :new-bool :at :index`
+
+  Inserts the indicated item from `scratch` so that it is now in position `where` in the named stack.
+
+  If `where` is an integer literal, then the index of the item inserted is `(mod where (count stackname))`. If `where` is a keyword, then the index is obtained by looking that up in the scratch storage.
+
+  If the index (obtained via a local scratch value) is not an integer (including `nil`), an Exception is raised. If it is an integer, it is treated as before, and `mod`ded into the appropriate range.
+
 - [X] `push-onto [stackname local]`
 
   Example: `push-onto :integer :sum`
