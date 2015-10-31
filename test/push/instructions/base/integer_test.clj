@@ -323,7 +323,6 @@
     :integer    '()             integer-shove      :integer       '())
 
 
-
 (tabular
   (fact ":integer-stackdepth saves (count :integer) onto :integer"
     (step-and-check-it ?set-stack ?items ?instruction ?get-stack) => ?expected)

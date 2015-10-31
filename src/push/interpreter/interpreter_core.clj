@@ -2,7 +2,8 @@
 
 
 (defrecord Interpreter [program 
-                        stacks 
+                        stacks
+                        inputs
                         instructions 
                         config 
                         counter 
@@ -28,14 +29,15 @@
   counter is 0.
 
   Any of these can be specified by key."
-  [& {:keys [program stacks instructions config counter done?]
+  [& {:keys [program stacks inputs instructions config counter done?]
       :or {program []
            stacks core-stacks
+           inputs {}
            instructions {}
            config {}
            counter 0
            done? false}}]
-  (->Interpreter program (merge core-stacks stacks) 
+  (->Interpreter program (merge core-stacks stacks) inputs 
                    instructions config counter done?))
 
 
@@ -59,6 +61,35 @@
                         "Push Parsing Error: Cannot interpret '"
                         item
                         "' as a Push item."))))
+
+
+(defn register-input
+  "Takes an Interpreter record, a keyword and any item, and adds the
+  item as a value stored under the keyword in the :inputs hashmap."
+  ([interpreter value]
+    (let [next-index (inc (count (:inputs interpreter)))
+          next-input (keyword (str "input!" next-index))]
+      (register-input interpreter next-input value)))
+  ([interpreter kwd value]
+    (assoc-in interpreter [:inputs kwd] value)))
+
+
+(defn register-inputs
+  "Takes an Interpreter record, and a hashmap of key-value items;
+  merges them into the :inputs map if the Interpreter."
+  [interpreter values]
+  (cond (vector? values)
+    (reduce (partial register-input) interpreter values)
+  :else
+    (assoc interpreter :inputs (merge (:inputs interpreter) values))))
+
+
+
+(defn input?
+  "Takes an interpreter, and a keyword, and returns true if the
+  keyword is a key in the :inputs hashmap"
+  [interpreter kwd]
+  (contains? (:inputs interpreter) kwd))
 
 
 (defn- add-instruction
@@ -201,6 +232,8 @@
   instruction or some other kind of Push literal."
   [interpreter item]
   (cond
+    (input? interpreter item)
+      (push-item interpreter :exec (item (:inputs interpreter)))
     (instruction? interpreter item)
       (execute-instruction interpreter item)
     (integer? item) (push-item interpreter :integer item)
