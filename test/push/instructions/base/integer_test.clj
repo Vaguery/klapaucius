@@ -179,6 +179,41 @@
     :integer    '()        integer-eq      :integer       '())
 
 
+(tabular
+  (fact ":integer-inc takes one :integer and adds 1 to it"
+    (step-and-check-it ?set-stack ?items ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items          ?instruction      ?get-stack     ?expected
+    ;; just one more     
+    :integer    '(99)          integer-inc      :integer         '(100)
+    :integer    '(-99)         integer-inc      :integer         '(-98)
+    ;; overflow 
+    :integer    '(22222222222222222222222222222222222N)
+                               integer-inc      :integer       '(22222222222222222222222222222222223N)
+    :integer    '(-22222222222222222222222222222222222N)
+                               integer-inc      :integer       '(-22222222222222222222222222222222221N)
+    ;; missing args 
+    :integer    '()            integer-inc      :integer       '())
+
+
+
+(tabular
+  (fact ":integer-dec takes one :integer and subtracts 1 from it"
+    (step-and-check-it ?set-stack ?items ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items          ?instruction      ?get-stack     ?expected
+    ;; just one more     
+    :integer    '(99)          integer-dec      :integer         '(98)
+    :integer    '(-99)         integer-dec      :integer         '(-100)
+    ;; overflow 
+    :integer    '(22222222222222222222222222222222222N)
+                               integer-dec      :integer       '(22222222222222222222222222222222221N)
+    :integer    '(-22222222222222222222222222222222222N)
+                               integer-dec      :integer       '(-22222222222222222222222222222222223N)
+    ;; missing args 
+    :integer    '()            integer-dec      :integer       '())
+
+
 ;; combinators (will be built automatically in future)
 
 

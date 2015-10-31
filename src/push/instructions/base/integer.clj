@@ -13,6 +13,24 @@
     (push-onto :integer :sum)))
 
 
+(def integer-dec
+  (core/build-instruction
+    integer-dec
+    :tags #{:arithmetic :base}
+    (consume-top-of :integer :as :arg1)
+    (calculate [:arg1] #(dec' %1) :as :next)
+    (push-onto :integer :next)))
+
+
+(def integer-inc
+  (core/build-instruction
+    integer-inc
+    :tags #{:arithmetic :base}
+    (consume-top-of :integer :as :arg1)
+    (calculate [:arg1] #(inc' %1) :as :next)
+    (push-onto :integer :next)))
+
+
 (def integer-multiply
   (core/build-instruction
     integer-multiply
