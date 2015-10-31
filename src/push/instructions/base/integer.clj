@@ -45,8 +45,8 @@
   (core/build-instruction
     integer-subtract
     :tags #{:arithmetic :base}
-    (consume-top-of :integer :as :arg1)
     (consume-top-of :integer :as :arg2)
+    (consume-top-of :integer :as :arg1)
     (calculate [:arg1 :arg2] #(-' %1 %2) :as :diff)
     (push-onto :integer :diff)))
 
@@ -86,7 +86,7 @@
     :tags #{:numeric :base :comparison}
     (consume-top-of :integer :as :arg2)
     (consume-top-of :integer :as :arg1)
-    (calculate [:arg2 :arg1] #(< %1 %2) :as :less?)
+    (calculate [:arg1 :arg2] #(< %1 %2) :as :less?)
     (push-onto :boolean :less?)))
 
 
@@ -96,7 +96,7 @@
     :tags #{:numeric :base :comparison}
     (consume-top-of :integer :as :arg2)
     (consume-top-of :integer :as :arg1)
-    (calculate [:arg2 :arg1] #(<= %1 %2) :as :lte?)
+    (calculate [:arg1 :arg2] #(<= %1 %2) :as :lte?)
     (push-onto :boolean :lte?)))
 
 
@@ -106,7 +106,7 @@
     :tags #{:numeric :base :comparison}
     (consume-top-of :integer :as :arg2)
     (consume-top-of :integer :as :arg1)
-    (calculate [:arg2 :arg1] #(> %1 %2) :as :more?)
+    (calculate [:arg1 :arg2] #(> %1 %2) :as :more?)
     (push-onto :boolean :more?)))
 
 
@@ -116,7 +116,7 @@
     :tags #{:numeric :base :comparison}
     (consume-top-of :integer :as :arg2)
     (consume-top-of :integer :as :arg1)
-    (calculate [:arg2 :arg1] #(>= %1 %2) :as :more?)
+    (calculate [:arg1 :arg2] #(>= %1 %2) :as :more?)
     (push-onto :boolean :more?)))
 
 
@@ -126,7 +126,7 @@
     :tags #{:numeric :base :comparison}
     (consume-top-of :integer :as :arg2)
     (consume-top-of :integer :as :arg1)
-    (calculate [:arg2 :arg1] #(= %1 %2) :as :same?)
+    (calculate [:arg1 :arg2] #(= %1 %2) :as :same?)
     (push-onto :boolean :same?)))
 
 

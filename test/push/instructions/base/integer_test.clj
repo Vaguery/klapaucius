@@ -27,14 +27,14 @@
 
     ?set-stack  ?items    ?instruction       ?get-stack     ?expected
     ;; just the math
-    :integer    '(11 -5)  integer-subtract   :integer      '(16)
-    :integer    '(-3 -5)  integer-subtract   :integer      '(2)
+    :integer    '(11 -5)  integer-subtract   :integer      '(-16)
+    :integer    '(-3 -5)  integer-subtract   :integer      '(-2)
     ;; missing args
     :integer    '(11)     integer-subtract   :integer      '(11)
     :integer    '()       integer-subtract   :integer      '()
     ;; overflow
     :integer    '(33333333333333333333 77777777777777777777)
-                          integer-subtract   :integer      '(-44444444444444444444N))
+                          integer-subtract   :integer      '(44444444444444444444N))
 
 
 (tabular
@@ -95,8 +95,8 @@
 
     ?set-stack  ?items    ?instruction    ?get-stack     ?expected
     ;; just the math
-    :integer    '(4 20)    integer-lt      :boolean       '(true)
-    :integer    '(20 4)    integer-lt      :boolean       '(false)
+    :integer    '(4 20)    integer-lt      :boolean       '(false)
+    :integer    '(20 4)    integer-lt      :boolean       '(true)
     :integer    '(4 4)     integer-lt      :boolean       '(false)
     ;; missing args 
     :integer    '(11)      integer-lt      :boolean       '()
@@ -111,8 +111,8 @@
 
     ?set-stack  ?items    ?instruction    ?get-stack     ?expected
     ;; just the math
-    :integer    '(4 20)    integer-lte      :boolean      '(true)
-    :integer    '(20 4)    integer-lte      :boolean      '(false)
+    :integer    '(4 20)    integer-lte      :boolean      '(false)
+    :integer    '(20 4)    integer-lte      :boolean      '(true)
     :integer    '(4 4)     integer-lte      :boolean      '(true)
     ;; missing args 
     :integer    '(11)      integer-lte      :boolean      '()
@@ -127,8 +127,8 @@
 
     ?set-stack  ?items    ?instruction    ?get-stack     ?expected
     ;; just the math
-    :integer    '(4 20)    integer-gt      :boolean       '(false)
-    :integer    '(20 4)    integer-gt      :boolean       '(true)
+    :integer    '(4 20)    integer-gt      :boolean       '(true)
+    :integer    '(20 4)    integer-gt      :boolean       '(false)
     :integer    '(4 4)     integer-gt      :boolean       '(false)
     ;; missing args 
     :integer    '(11)      integer-gt      :boolean       '()
@@ -143,8 +143,8 @@
 
     ?set-stack  ?items    ?instruction    ?get-stack     ?expected
     ;; just the math
-    :integer    '(4 20)    integer-gte      :boolean     '(false)
-    :integer    '(20 4)    integer-gte      :boolean     '(true)
+    :integer    '(4 20)    integer-gte      :boolean     '(true)
+    :integer    '(20 4)    integer-gte      :boolean     '(false)
     :integer    '(4 4)     integer-gte      :boolean     '(true)
     ;; missing args 
     :integer    '(11)      integer-gte      :boolean     '()

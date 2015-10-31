@@ -28,8 +28,8 @@
     :tags #{:logic :base}
     (consume-top-of :boolean :as :arg1)
     (consume-top-of :boolean :as :arg2)
-    (calculate [:arg1 :arg2] #(or %1 %2) :as :both)
-    (push-onto :boolean :both)))
+    (calculate [:arg1 :arg2] #(or %1 %2) :as :either)
+    (push-onto :boolean :either)))
 
 
 (def boolean-xor
