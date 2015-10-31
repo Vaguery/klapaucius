@@ -324,7 +324,7 @@
 
 (tabular
   (fact ":integer-shovedup pops an item from :integer, then MOVES it to an index specified
-    by the second :integer value AND replaces it on the top of the stack;
+    by the second :integer value AFTER replacing it on the top of the stack;
     uses (mod arg (inc (count :integer)))"
     (step-and-check-it ?set-stack ?items ?instruction ?get-stack) => ?expected)
 
