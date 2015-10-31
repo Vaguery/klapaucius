@@ -211,18 +211,8 @@
   (core/build-instruction
     integer-shove
     :tags #{:numeric :base :combinator}
-    (consume-top-of :integer :as :shoved-item)
     (consume-top-of :integer :as :index)
-    (insert-as-nth-of :integer :shoved-item :at :index)))
-
-
-(def integer-shovedup
-  (core/build-instruction
-    integer-shovedup
-    :tags #{:numeric :base :combinator}
     (consume-top-of :integer :as :shoved-item)
-    (consume-top-of :integer :as :index)
-    (push-onto :integer :shoved-item)
     (insert-as-nth-of :integer :shoved-item :at :index)))
 
 

@@ -304,42 +304,24 @@
 
 
 (tabular
-  (fact ":integer-shove takes an item from :integer, then MOVES it to an index specified
-    by the second :integer value; uses (mod arg (inc (count :integer)))"
+  (fact ":integer-shove takes an pops an index from :integer, then MOVES
+    the next item to a new position specified by the index; uses
+    (mod arg (inc (count :integer))) to place it in range [0,(count stack)]"
     (step-and-check-it ?set-stack ?items ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction      ?get-stack     ?expected
     ;; just shifting things     
-    :integer    '(4 3 3 2 1)    integer-shove      :integer       '(3 2 1 4)
+    :integer    '(3 4 3 2 1)    integer-shove      :integer       '(3 2 1 4)
     :integer    '(1 1 2 3)      integer-shove      :integer       '(2 1 3)
     ;; 0 index
-    :integer    '(1 0 2 3)      integer-shove      :integer       '(1 2 3)
+    :integer    '(0 1 2 3)      integer-shove      :integer       '(1 2 3)
     ;; range handling
-    :integer    '(1 -1 2 3)     integer-shove      :integer       '(2 3 1)
-    :integer    '(1 10 2 3)     integer-shove      :integer       '(2 1 3)
+    :integer    '(-1 1 2 3)     integer-shove      :integer       '(2 3 1)
+    :integer    '(10 1 2 3)     integer-shove      :integer       '(2 1 3)
     ;; missing args 
     :integer    '(2)            integer-shove      :integer       '(2)
     :integer    '()             integer-shove      :integer       '())
 
-
-(tabular
-  (fact ":integer-shovedup pops an item from :integer, then MOVES it to an index specified
-    by the second :integer value AFTER replacing it on the top of the stack;
-    uses (mod arg (inc (count :integer)))"
-    (step-and-check-it ?set-stack ?items ?instruction ?get-stack) => ?expected)
-
-    ?set-stack  ?items          ?instruction      ?get-stack     ?expected
-    ;; just shifting things     
-    :integer    '(4 3 3 2 1)    integer-shovedup      :integer       '(4 3 2 4 1)
-    :integer    '(1 1 2 3)      integer-shovedup      :integer       '(1 1 2 3)
-    ;; 0 index
-    :integer    '(1 0 2 3)      integer-shovedup      :integer       '(1 1 2 3)
-    ;; range handling
-    :integer    '(1 -1 2 3)     integer-shovedup      :integer       '(1 2 3 1)
-    :integer    '(1 10 2 3)     integer-shovedup      :integer       '(1 2 1 3)
-    ;; missing args 
-    :integer    '(2)            integer-shovedup      :integer       '(2)
-    :integer    '()             integer-shovedup      :integer       '())
 
 
 (tabular
