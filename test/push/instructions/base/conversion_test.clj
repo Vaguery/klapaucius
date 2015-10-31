@@ -22,3 +22,24 @@
     ;; missing args 
     :boolean    '()              integer-fromboolean      :integer       '()
     :boolean    '()              integer-fromboolean      :boolean       '())
+
+
+(tabular
+  (fact ":integer-fromfloat takes a :float value, and truncates it to an :integer"
+    (step-and-check-it ?set-stack ?items ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items          ?instruction      ?get-stack     ?expected
+    ;; simple     
+    :float    '(0.0)          integer-fromfloat      :integer       '(0)
+    :float    '(0.1)          integer-fromfloat      :integer       '(0)
+    :float    '(0.9)          integer-fromfloat      :integer       '(0)
+    :float    '(22.22)        integer-fromfloat      :integer       '(22)
+    ;; consumes arg
+    :float    '(22.22)        integer-fromfloat      :float         '()
+    ;; edge cases 
+    :float    '(-0.0)         integer-fromfloat      :integer       '(0)
+    :float    '(-0.1)         integer-fromfloat      :integer       '(0)
+    :float    '(-22.22)       integer-fromfloat      :integer       '(-22)
+    ;; missing args 
+    :float    '()             integer-fromfloat      :integer       '()
+    :float    '()             integer-fromfloat      :float         '())
