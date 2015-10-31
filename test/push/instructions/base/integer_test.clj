@@ -210,6 +210,38 @@
 
 
 (tabular
+  (fact ":integer-max takes two items from :integer and replaces the larger one;
+    if they are the same, it still returns one of them only"
+    (step-and-check-it ?set-stack ?items ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items          ?instruction      ?get-stack     ?expected
+    ;; just the bigger one please     
+    :integer    '(4 3 2 1)     integer-max      :integer         '(4 2 1)
+    :integer    '(-1 2 3 4)    integer-max      :integer         '(2 3 4)
+    :integer    '(8 8 3 4)     integer-max      :integer         '(8 3 4)
+    ;; missing args 
+    :integer    '(2)            integer-max      :integer       '(2)
+    :integer    '()             integer-max      :integer       '())
+
+
+
+(tabular
+  (fact ":integer-min takes two items from :integer and replaces the smaller one;
+    if they are the same, it still returns one of them only"
+    (step-and-check-it ?set-stack ?items ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items          ?instruction      ?get-stack     ?expected
+    ;; just the smaller one please     
+    :integer    '(4 3 2 1)     integer-min      :integer         '(3 2 1)
+    :integer    '(-1 2 3 4)    integer-min      :integer         '(-1 3 4)
+    :integer    '(8 8 3 4)     integer-min      :integer         '(8 3 4)
+    ;; missing args 
+    :integer    '(2)            integer-min      :integer       '(2)
+    :integer    '()             integer-min      :integer       '())
+
+
+
+(tabular
   (fact ":integer-pop removes the top item from :integer"
     (step-and-check-it ?set-stack ?items ?instruction ?get-stack) => ?expected)
 

@@ -112,6 +112,26 @@
     (push-onto :boolean :same?)))
 
 
+(def integer-max
+  (core/build-instruction
+    integer-max
+    :tags #{:arithmetic :base}
+    (consume-top-of :integer :as :arg1)
+    (consume-top-of :integer :as :arg2)
+    (calculate [:arg1 :arg2] #(max %1 %2) :as :biggest)
+    (push-onto :integer :biggest)))
+
+
+(def integer-min
+  (core/build-instruction
+    integer-min
+    :tags #{:arithmetic :base}
+    (consume-top-of :integer :as :arg1)
+    (consume-top-of :integer :as :arg2)
+    (calculate [:arg1 :arg2] #(min %1 %2) :as :smallest)
+    (push-onto :integer :smallest)))
+
+
 ;; introspection (will eventually be generated magically)
 
 
