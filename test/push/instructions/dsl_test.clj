@@ -58,7 +58,14 @@
 
   (fact "`delete-top-of` raises an Exception if the stack is empty"
     (delete-top-of [nada {}] :integer) => 
-      (throws #"stack :integer is empty")))
+      (throws #"stack :integer is empty"))
+
+
+  (fact "`delete-top-of` works on :boolean stacks containing false values"
+    (get-stack-from-dslblob :boolean
+      (delete-top-of
+        [(i/make-interpreter :stacks {:boolean '(false true)}) {}]
+        :boolean)) => '(true)))
 
 
 ;; `consume-top-of [stackname :as local]`
@@ -79,7 +86,13 @@
 
 
   (fact "`consume-top-of` throws an exception when no local is given"
-    (consume-top-of [afew {:foo \f}] :integer) => (throws #"missing key: :as")))
+    (consume-top-of [afew {:foo \f}] :integer) => (throws #"missing key: :as"))
+
+
+
+  (fact "`consume-top-of` works with a :boolean stack of falses"
+    (consume-top-of [(i/make-interpreter :stacks {:boolean '(false false)}) {:foo \f}]
+      :boolean :as :foo) =not=> (throws)))
 
 
 ;; delete-nth
@@ -327,8 +340,12 @@
 
 
   (fact "`save-top-of` throws up if you forget the :as argument"
-    (save-top-of [afew {}] :integer) =>
-      (throws #"missing key: :as")))
+    (save-top-of [afew {}] :integer) => (throws #"missing key: :as"))
+
+
+  (fact "`save-top-of` works on :boolean stacks containing false"
+    (save-top-of [(i/make-interpreter :stacks {:boolean '(false)}) {}] :boolean :as :foo)
+      =not=> (throws)))
 
 
 ;; `save-nth-of [stackname :at where :as local]`
@@ -477,8 +494,13 @@
 
   (fact "`get-nth-of` throws up if you refer to an empty stack"
     (#'push.instructions.dsl/get-nth-of [afew {}] :boolean :at 6) =>
-      (throws #"stack :boolean is empty")))
+      (throws #"stack :boolean is empty"))
 
+
+  (fact "`get-nth-of` works with a stack full of false values"
+    (#'push.instructions.dsl/get-nth-of
+      [(i/make-interpreter :stacks {:boolean '(false false)}) {}] :boolean :at 6) =not=>
+        (throws)))
 
 
 ;; `calculate [[args] fn :as local]`

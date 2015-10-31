@@ -104,15 +104,12 @@
   (but no :as keyword), and returns the index and the item at that
   index, raising any argument exceptions it finds."
   [[interpreter scratch] stackname & {:keys [at]}]
-  (if-let [old-stack (i/get-stack interpreter stackname)]
-    (if (empty? old-stack)
-      (throw-empty-stack-exception stackname)
-      (let [idx (valid-DSL-index at scratch)
-            which (mod idx (count old-stack))]
-        [which old-stack]))
-    (throw-unknown-stack-exception stackname)))
-
-
+  (let [old-stack (i/get-stack interpreter stackname)]
+    (cond (nil? old-stack) (throw-unknown-stack-exception stackname)
+          (empty? old-stack) (throw-empty-stack-exception stackname)
+          :else (let [idx (valid-DSL-index at scratch)
+                      which (mod idx (count old-stack))]
+                  [which old-stack]))))
 
 
 ;; DSL instructions
@@ -141,14 +138,14 @@
     - the stack doesn't exist
     - the stack is empty"
   [ [interpreter scratch] stackname & {:keys [as]}]
-  (if-let [old-stack (i/get-stack interpreter stackname)]
-    (if-let [top-item (first old-stack)]
-      (if (nil? as)
-        (throw-missing-key-exception :as)
-        [(i/set-stack interpreter stackname (rest old-stack))
-          (assoc scratch as top-item)])
-      (throw-empty-stack-exception stackname))
-    (throw-unknown-stack-exception stackname)))
+  (let [old-stack (i/get-stack interpreter stackname)]
+    (cond (nil? old-stack) (throw-unknown-stack-exception stackname)
+          (empty? old-stack) (throw-empty-stack-exception stackname)
+          (nil? as) (throw-missing-key-exception :as)
+          :else (let [top-item (first old-stack)]
+                  [(i/set-stack interpreter stackname (rest old-stack))
+                   (assoc scratch as top-item)]))))
+      
 
 
 (defn count-of
@@ -231,11 +228,11 @@
     - the stack doesn't exist
     - the stack is empty"
   [[interpreter scratch] stackname]
-  (if-let [old-stack (i/get-stack interpreter stackname)]
-    (if-let [top-item (first old-stack)]
-      [(i/set-stack interpreter stackname (rest old-stack)) scratch]
-      (throw-empty-stack-exception stackname))
-    (throw-unknown-stack-exception stackname)))
+  (let [old-stack (i/get-stack interpreter stackname)]
+    (cond (nil? old-stack) (throw-unknown-stack-exception stackname)
+          (empty? old-stack) (throw-empty-stack-exception stackname)
+          :else (let [top-item (first old-stack)]
+            [(i/set-stack interpreter stackname (rest old-stack)) scratch]))))
 
 
 (defn insert-as-nth-of
@@ -260,8 +257,7 @@
             new-item (kwd scratch)
             new-stack (insert-as-nth old-stack new-item which)]
         [(i/set-stack interpreter stackname new-stack) scratch])
-      (throw-unknown-stack-exception stackname)
-  ))
+      (throw-unknown-stack-exception stackname)))
 
 
 (defn replace-stack
@@ -370,13 +366,12 @@
   - no :as argument is present
   - the stack is empty"
   [[interpreter scratch] stackname & {:keys [as]}]
-  (if-let [old-stack (i/get-stack interpreter stackname)]
-    (if-let [top-item (first old-stack)]
-      (if (some? as)
-        [interpreter (assoc scratch as top-item)]
-        (throw-missing-key-exception :as))
-      (throw-empty-stack-exception stackname))
-    (throw-unknown-stack-exception stackname)))
+  (let [old-stack (i/get-stack interpreter stackname)]
+    (cond (nil? old-stack) (throw-unknown-stack-exception stackname)
+          (empty? old-stack) (throw-empty-stack-exception stackname)
+          (nil? as) (throw-missing-key-exception ":as")
+          :else (let [top-item (first old-stack)]
+                     [interpreter (assoc scratch as top-item)]))))
 
 
 (defn calculate

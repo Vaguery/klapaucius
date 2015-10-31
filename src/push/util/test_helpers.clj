@@ -1,7 +1,8 @@
 (ns push.util.test-helpers
   (:use midje.sweet)
   (:require [push.interpreter.interpreter-core :as i])
-  (:use [push.instructions.base.integer]))
+  (:use [push.instructions.base.integer])
+  (:use [push.instructions.base.conversion]))
 
 
 ;; convenience functions for testing
