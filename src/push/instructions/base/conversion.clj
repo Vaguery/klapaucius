@@ -17,5 +17,14 @@
     integer-fromfloat
     :tags #{:numeric :base :conversion}
     (consume-top-of :float :as :arg1)
+    (calculate [:arg1] #(bigint %1) :as :int)
+    (push-onto :integer :int)))
+
+
+(def integer-fromchar
+  (core/build-instruction
+    integer-fromchar
+    :tags #{:base :conversion}
+    (consume-top-of :char :as :arg1)
     (calculate [:arg1] #(int %1) :as :int)
     (push-onto :integer :int)))

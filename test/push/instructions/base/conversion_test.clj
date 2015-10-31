@@ -40,6 +40,30 @@
     :float    '(-0.0)         integer-fromfloat      :integer       '(0)
     :float    '(-0.1)         integer-fromfloat      :integer       '(0)
     :float    '(-22.22)       integer-fromfloat      :integer       '(-22)
+    ;; range
+    :float    '(-22222222222222222222222222222.3333333333M)
+                              integer-fromfloat      :integer       '(-22222222222222222222222222222N)
     ;; missing args 
     :float    '()             integer-fromfloat      :integer       '()
     :float    '()             integer-fromfloat      :float         '())
+
+
+
+
+(tabular
+  (fact ":integer-fromchar takes a :char value, and converts it to an :integer"
+    (step-and-check-it ?set-stack ?items ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items          ?instruction      ?get-stack     ?expected
+    ;; simple     
+    :char    '(\0)           integer-fromchar      :integer       '(48)
+    :char    '(\r)           integer-fromchar      :integer       '(114)
+    :char    '(\newline)     integer-fromchar      :integer       '(10)
+    :char    '(\uF021)       integer-fromchar      :integer       '(61473)
+    ;; consumes arg
+    :char    '(\0)           integer-fromchar      :char          '()
+    ;; missing args 
+    :char    '()             integer-fromchar      :integer       '()
+    :char    '()             integer-fromchar      :char          '())
+
+
