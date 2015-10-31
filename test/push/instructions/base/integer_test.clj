@@ -304,9 +304,9 @@
 
 
 (tabular
-  (fact ":integer-shove takes an pops an index from :integer, then MOVES
+  (fact ":integer-shove pops an index from :integer, then MOVES
     the next item to a new position specified by the index; uses
-    (mod arg (inc (count :integer))) to place it in range [0,(count stack)]"
+    `(mod arg (inc (count :integer)))` to place it in range [0,(count stack)]"
     (step-and-check-it ?set-stack ?items ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction      ?get-stack     ?expected
