@@ -398,23 +398,24 @@
 
 (defn needs-of-dsl-step
   [step]
-  (let [cmd (first step)]
-    (condp = cmd
-      'calculate {}
-      'consume-nth-of {(second step) 1}
-      'consume-stack {(second step) 0}
-      'consume-top-of {(second step) 1}
-      'count-of {(second step) 0}
-      'delete-nth-of {(second step) 1}
-      'delete-stack {(second step) 0}
-      'delete-top-of {(second step) 1}
-      'insert-as-nth-of {(second step) 0}
-      'replace-stack {(second step) 0}
-      'push-onto {(second step) 0}
-      'push-these-onto {(second step) 0}
-      'save-nth-of {(second step) 1}
-      'save-stack {(second step) 0}
-      'save-top-of {(second step) 1}
+  (let [cmd (first step)
+        resolved (resolve cmd)]
+    (condp = resolved
+      #'calculate {}
+      #'consume-nth-of {(second step) 1}
+      #'consume-stack {(second step) 0}
+      #'consume-top-of {(second step) 1}
+      #'count-of {(second step) 0}
+      #'delete-nth-of {(second step) 1}
+      #'delete-stack {(second step) 0}
+      #'delete-top-of {(second step) 1}
+      #'insert-as-nth-of {(second step) 0}
+      #'replace-stack {(second step) 0}
+      #'push-onto {(second step) 0}
+      #'push-these-onto {(second step) 0}
+      #'save-nth-of {(second step) 1}
+      #'save-stack {(second step) 0}
+      #'save-top-of {(second step) 1}
       (throw-unknown-DSL-exception cmd)  )))
 
 

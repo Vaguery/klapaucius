@@ -155,7 +155,7 @@
 
 (def integer-empty?
   (core/build-instruction
-    integer-stackdepth
+    integer-empty?
     :tags #{:numeric :base :introspection}
     (count-of :integer :as :depth)
     (calculate [:depth] #(zero? %1) :as :check)

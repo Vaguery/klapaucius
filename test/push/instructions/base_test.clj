@@ -13,10 +13,11 @@
       boolean-not
       boolean-or
       boolean-xor
+      boolean-dup
       ) :in-any-order))
 
 
-(future-fact "all boolean instructions have docstrings")
+; (future-fact "all boolean instructions have docstrings")
 
 
 (fact "conversion instructions are defined"
@@ -28,7 +29,7 @@
       ) :in-any-order))
 
 
-(future-fact "all conversion instructions have docstrings")
+; (future-fact "all conversion instructions have docstrings")
 
 
 (fact "integer instructions are defined"
@@ -61,5 +62,5 @@
       ) :in-any-order))
 
 
-(future-fact "all integer instructions have docstrings")
+; (future-fact "all integer instructions have docstrings")
 

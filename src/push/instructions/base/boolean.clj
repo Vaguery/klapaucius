@@ -40,3 +40,11 @@
     (consume-top-of :boolean :as :arg2)
     (calculate [:arg1 :arg2] #(or (and %1 (not %2)) (and %2 (not %1))) :as :one)
     (push-onto :boolean :one)))
+
+
+(def boolean-dup
+  (core/build-instruction
+    boolean-dup
+    :tags #{:base :combinator}
+    (save-top-of :boolean :as :again)
+    (push-onto :boolean :again)))

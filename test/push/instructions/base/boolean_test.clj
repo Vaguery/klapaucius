@@ -60,3 +60,15 @@
     ;; missing args
     :boolean    '(false)        boolean-xor   :boolean     '(false)
     :boolean    '()             boolean-xor   :boolean     '())
+
+
+(tabular
+  (fact ":boolean-dup duplicates the top item from :boolean"
+    (step-and-check-it ?set-stack ?items ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items         ?instruction    ?get-stack     ?expected
+    ;; just shifting things
+    :boolean    '(false true)   boolean-dup      :boolean       '(false false true)
+    :boolean    '(true)         boolean-dup      :boolean       '(true true)
+    ;; missing args 
+    :boolean    '()             boolean-dup      :boolean       '())
