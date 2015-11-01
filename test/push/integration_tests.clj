@@ -15,3 +15,5 @@
 (future-fact "An Interpreter running a program needs an :until argument to take any steps at all")
 
 (future-fact "An Interpreter counts the steps it takes")
+
+(future-fact "A Clojush program can be translated into a Push-in-Clojure program with a preprocessor")
