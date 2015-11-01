@@ -5,24 +5,17 @@
 )
 
 
-(defrecord PushType [stackname recognizer attributes])
+(defrecord PushType [stackname recognizer attributes instructions])
 
 
 (defn make-type
   "Create a PushType record from a stackname (keyword), with
-  optional :recognizer and :attributes"
+  optional :recognizer :attributes and :instructions"
   [stackname & {
-    :keys [recognizer attributes] 
-    :or {attributes #{}}}]
-  (->PushType stackname recognizer attributes))
+    :keys [recognizer attributes instructions] 
+    :or {attributes #{} instructions []}}]
+  (->PushType stackname recognizer attributes instructions))
 
-
-(defn make-visible
-  "takes a PushType and adds the :visible attribute, and the
-  :pushtype-stackdepth and :pushtype-empty? instructions to its
-  :instructions collection"
-  [pushtype]
-  (assoc pushtype :attributes (conj (:attributes pushtype) :visible)))
 
 
 ;;;; type-associated instructions
@@ -55,4 +48,31 @@
       '(push.instructions.dsl/calculate [:depth] #(zero? %1) :as :check)
       '(push.instructions.dsl/push-onto :boolean :check)
       ))))
+
+
+(defn attach-stackdepth
+  [pushtype]
+  (let [old-instructions (:instructions pushtype)]
+    (assoc pushtype :instructions
+      (conj old-instructions (stackdepth-instruction pushtype)))))
+
+
+(defn attach-empty?
+  [pushtype]
+  (let [old-instructions (:instructions pushtype)]
+    (assoc pushtype :instructions
+      (conj old-instructions (empty?-instruction pushtype)))))
+
+;;;; stored generic instructions
+
+
+(defn make-visible
+  "takes a PushType and adds the :visible attribute, and the
+  :pushtype-stackdepth and :pushtype-empty? instructions to its
+  :instructions collection"
+  [pushtype]
+  (-> pushtype
+      attach-stackdepth
+      attach-empty?
+      (assoc :attributes (conj (:attributes pushtype) :visible))))
 

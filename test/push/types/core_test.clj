@@ -12,15 +12,14 @@
 
 (fact "`make-type` takes a keyword and recognizer"
   (make-type :integer :recognizer integer?) =>
-    {:stackname :integer, :recognizer integer?, :attributes #{}})
+    {:stackname :integer, :recognizer integer?, :attributes #{}, :instructions []})
 
 
 (fact "`make-type` takes an optional :attributes set"
   (:attributes (make-type 
                   :integer 
                   :recognizer integer? 
-                  :attributes #{:comparable :numeric})) =>
-  #{:comparable :numeric})
+                  :attributes #{:comparable :numeric})) => #{:comparable :numeric})
 
 
 ;; :visible types
@@ -28,7 +27,6 @@
 
 (fact "`make-visible` takes adds the :visible attribute to a PushType record"
   (:attributes (make-visible (make-type :integer))) => #{:visible})
-
 
 
 (fact "stackdepth-instruction returns an Instruction with the correct stuff"
@@ -41,7 +39,11 @@
       (i/register-instruction (i/make-interpreter :stacks {:foo '(1 2)}) foo-depth)
       :foo-stackdepth)
     :integer) => '(2)
-  ))
+  (i/get-stack
+    (i/execute-instruction
+      (i/register-instruction (i/make-interpreter :stacks {:foo '(false [2] 3)}) foo-depth)
+      :foo-stackdepth)
+    :integer) => '(3)))
 
 
 (fact "empty?-instruction returns an Instruction with the correct stuff"
@@ -54,11 +56,13 @@
       (i/register-instruction (i/make-interpreter :stacks {:foo '(1 2)}) foo-none?)
       :foo-empty?)
     :boolean) => '(false)
-  ))
+  (i/get-stack
+    (i/execute-instruction
+      (i/register-instruction (i/make-interpreter :stacks {:foo '()}) foo-none?)
+      :foo-empty?)
+    :boolean) => '(true)))
 
 
-
-; (fact "`make-visible` takes adds an x-stackdepth instruction to a PushType record"
-;   (keys (:instructions (make-visible (make-type :integer)))) =>
-;     '(:integer-stackdepth)
-;   )
+(fact "`make-visible` takes adds a x-stackdepth and x-empty? instructions to a PushType record"
+  (map :token (:instructions
+    (make-visible (make-type :foo)))) => '(:foo-stackdepth :foo-empty?))
