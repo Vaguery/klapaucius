@@ -50,14 +50,14 @@
       ))))
 
 
-(defn attach-stackdepth
+(defn attach-stackdepth-function
   [pushtype]
   (let [old-instructions (:instructions pushtype)]
     (assoc pushtype :instructions
       (conj old-instructions (stackdepth-instruction pushtype)))))
 
 
-(defn attach-empty?
+(defn attach-empty?-function
   [pushtype]
   (let [old-instructions (:instructions pushtype)]
     (assoc pushtype :instructions
@@ -72,7 +72,7 @@
   :instructions collection"
   [pushtype]
   (-> pushtype
-      attach-stackdepth
-      attach-empty?
+      attach-stackdepth-function
+      attach-empty?-function
       (assoc :attributes (conj (:attributes pushtype) :visible))))
 
