@@ -47,19 +47,19 @@ For a `Pushtype` `:foo` with the given attribute, these `Instructions` will be d
 ## Standard Push types
 
 - `:boolean`
-  - `:visible, :comparable, :movable, :printable`
+  - `:visible, :equatable, :movable, :printable`
 - `:char`
-  - `:visible, :comparable, :sortable, :movable, :printable`
+  - `:visible, :equatable, :comparable, :movable, :printable`
 - `:code`
-  - `:visible, :comparable, :movable, :printable, :quotable`
+  - `:visible, :equatable, :movable, :printable, :quotable`
 - `:exec`
-  - `:visible, :comparable, :movable, :printable, :quotable`
+  - `:visible, :equatable, :movable, :printable, :quotable`
 - `:float`
-  - `:visible, :comparable, :sortable, :movable, :printable`
+  - `:visible, :equatable, :comparable, :movable, :printable`
 - `:integer`
-  - `:visible, :comparable, :sortable, :movable, :printable`
+  - `:visible, :equatable, :comparable, :movable, :printable`
 - `:string`
-  - `:visible, :comparable, :sortable, :movable, :printable`
+  - `:visible, :equatable, :comparable, :movable, :printable`
 - `:print`
   - `:visible, :permanent` 
 - `:error`
