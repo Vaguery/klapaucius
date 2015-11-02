@@ -16,14 +16,14 @@ For a `Pushtype` `:foo` with the given attribute, these `Instructions` will be d
 - `:visible`
   - `:foo-empty?`
   - `:foo-stackdepth`
-- `:comparable`
+- `:equatable`
   - `:foo-eq?` aka `:foo-equal?`
   - `:foo-neq?` aka `:foo-notequal?`
-- `:sortable`
-  - `:foo-lt?` aka `:foo-lessthan?`
-  - `:foo-lte?` aka `:foo-lessthanorequal?`
-  - `:foo-gt?` aka `:foo-greaterthan?`
-  - `:foo-gte?` aka `:foo-greaterthanorequal?`
+- `:comparable`
+  - `:foo-lt?` aka `:foo<?`
+  - `:foo-lte?` aka `:foo≤?`
+  - `:foo-gt?` aka `:foo>?`
+  - `:foo-gte?` aka `:foo≥?`
   - `:foo-min`
   - `:foo-max`
 - `:movable` (combinators)

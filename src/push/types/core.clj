@@ -17,9 +17,15 @@
   (->PushType stackname recognizer attributes instructions))
 
 
+(defn attach-function
+  [pushtype function]
+  (let [old-instructions (:instructions pushtype)]
+    (assoc pushtype :instructions (conj old-instructions function))))
+
 
 ;;;; type-associated instructions
 
+;; :visible
 
 (defn stackdepth-instruction
   "returns a new x-stackdepth instruction for a PushType"
@@ -29,7 +35,7 @@
     (eval (list
       'push.instructions.instructions-core/build-instruction
       instruction-name
-      :tags #{:introspection}
+      :tags #{:visible}
       `(push.instructions.dsl/count-of ~typename :as :depth)
       '(push.instructions.dsl/push-onto :integer :depth)
       ))))
@@ -43,20 +49,11 @@
     (eval (list
       'push.instructions.instructions-core/build-instruction
       instruction-name
-      :tags #{:introspection}
+      :tags #{:visible}
       `(push.instructions.dsl/count-of ~typename :as :depth)
       '(push.instructions.dsl/calculate [:depth] #(zero? %1) :as :check)
       '(push.instructions.dsl/push-onto :boolean :check)
       ))))
-
-
-(defn attach-function
-  [pushtype function]
-  (let [old-instructions (:instructions pushtype)]
-    (assoc pushtype :instructions (conj old-instructions function))))
-
-
-;;;; stored generic instructions
 
 
 (defn make-visible
@@ -70,6 +67,8 @@
       (assoc :attributes (conj (:attributes pushtype) :visible))))
 
 
+;; :comparable
+
 
 (defn equal?-instruction
   "returns a new x-equal? instruction for a PushType"
@@ -79,7 +78,7 @@
     (eval (list
       'push.instructions.instructions-core/build-instruction
       instruction-name
-      :tags #{:introspection}
+      :tags #{:equatable}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
       `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
       '(push.instructions.dsl/calculate [:arg1 :arg2] #(= %1 %2) :as :check)
@@ -95,20 +94,136 @@
     (eval (list
       'push.instructions.instructions-core/build-instruction
       instruction-name
-      :tags #{:introspection}
+      :tags #{:equatable}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
       `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
       '(push.instructions.dsl/calculate [:arg1 :arg2] #(not= %1 %2) :as :check)
       '(push.instructions.dsl/push-onto :boolean :check)
       ))))
 
-(defn make-comparable
-  "takes a PushType and adds the :comparable attribute, and the
+
+(defn make-equatable
+  "takes a PushType and adds the :equatable attribute, and the
   :pushtype-equal? and :pushtype-notequal? instructions to its
   :instructions collection"
   [pushtype]
   (-> pushtype
       (attach-function (equal?-instruction pushtype))
       (attach-function (notequal?-instruction pushtype))
+      (assoc :attributes (conj (:attributes pushtype) :equatable))))
+
+
+;; comparable
+
+
+(defn lessthan?-instruction
+  "returns a new x-<? instruction for a PushType"
+  [pushtype]
+  (let [typename (:stackname pushtype)
+        instruction-name (str (name typename) "<?")]
+    (eval (list
+      'push.instructions.instructions-core/build-instruction
+      instruction-name
+      :tags #{:comparison}
+      `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
+      `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
+      '(push.instructions.dsl/calculate [:arg1 :arg2] #(< %1 %2) :as :check)
+      '(push.instructions.dsl/push-onto :boolean :check)
+      ))))
+
+
+(defn lessthanorequal?-instruction
+  "returns a new x≤? instruction for a PushType"
+  [pushtype]
+  (let [typename (:stackname pushtype)
+        instruction-name (str (name typename) "≤?")]
+    (eval (list
+      'push.instructions.instructions-core/build-instruction
+      instruction-name
+      :tags #{:comparison}
+      `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
+      `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
+      '(push.instructions.dsl/calculate [:arg1 :arg2] #(<= %1 %2) :as :check)
+      '(push.instructions.dsl/push-onto :boolean :check)
+      ))))
+
+
+(defn greaterthanorequal?-instruction
+  "returns a new x≥? instruction for a PushType"
+  [pushtype]
+  (let [typename (:stackname pushtype)
+        instruction-name (str (name typename) "≥?")]
+    (eval (list
+      'push.instructions.instructions-core/build-instruction
+      instruction-name
+      :tags #{:comparison}
+      `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
+      `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
+      '(push.instructions.dsl/calculate [:arg1 :arg2] #(>= %1 %2) :as :check)
+      '(push.instructions.dsl/push-onto :boolean :check)
+      ))))
+
+
+(defn greaterthan?-instruction
+  "returns a new x>? instruction for a PushType"
+  [pushtype]
+  (let [typename (:stackname pushtype)
+        instruction-name (str (name typename) ">?")]
+    (eval (list
+      'push.instructions.instructions-core/build-instruction
+      instruction-name
+      :tags #{:comparison}
+      `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
+      `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
+      '(push.instructions.dsl/calculate [:arg1 :arg2] #(> %1 %2) :as :check)
+      '(push.instructions.dsl/push-onto :boolean :check)
+      ))))
+
+
+(defn min-instruction
+  "returns a new x-min instruction for a PushType"
+  [pushtype]
+  (let [typename (:stackname pushtype)
+        instruction-name (str (name typename) "-min")]
+    (eval (list
+      'push.instructions.instructions-core/build-instruction
+      instruction-name
+      :tags #{:comparison}
+      `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
+      `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
+      '(push.instructions.dsl/calculate [:arg1 :arg2] #(min %1 %2) :as :winner)
+      `(push.instructions.dsl/push-onto ~typename :winner)
+      ))))
+
+
+
+(defn max-instruction
+  "returns a new x-max instruction for a PushType"
+  [pushtype]
+  (let [typename (:stackname pushtype)
+        instruction-name (str (name typename) "-max")]
+    (eval (list
+      'push.instructions.instructions-core/build-instruction
+      instruction-name
+      :tags #{:comparison}
+      `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
+      `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
+      '(push.instructions.dsl/calculate [:arg1 :arg2] #(max %1 %2) :as :winner)
+      `(push.instructions.dsl/push-onto ~typename :winner)
+      ))))
+
+
+(defn make-comparable
+  "takes a PushType and adds the :comparable attribute, and the
+  :pushtype>?, :pushtype≥?, :pushtype<?, :pushtype≤?, :pushtype-min and
+  :pushtype-max instructions to its :instructions collection"
+  [pushtype]
+  (-> pushtype
+      (attach-function (lessthan?-instruction pushtype))
+      (attach-function (lessthanorequal?-instruction pushtype))
+      (attach-function (greaterthan?-instruction pushtype))
+      (attach-function (greaterthanorequal?-instruction pushtype))
+      (attach-function (min-instruction pushtype))
+      (attach-function (max-instruction pushtype))
       (assoc :attributes (conj (:attributes pushtype) :comparable))))
 
