@@ -60,6 +60,8 @@ For a `Pushtype` `:foo` with the given attribute, these `Instructions` will be d
   - `:visible, :comparable, :sortable, :movable, :printable`
 - `:string`
   - `:visible, :comparable, :sortable, :movable, :printable`
+- `:print`
+  - `:visible, :permanent` 
 - `:error`
   - `:visible, :permanent, :printable`
 
