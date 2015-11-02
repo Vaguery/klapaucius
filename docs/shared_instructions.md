@@ -11,6 +11,8 @@ In this implementation, all types (even the simplest ones) are defined as `PushT
 
 For a `Pushtype` `:foo` with the given attribute, these `Instructions` will be defined automatically (and stored in the record):
 
+- `permanent`
+  - no instruction ever pops arguments from it
 - `:visible`
   - `:foo-empty?`
   - `:foo-stackdepth`
@@ -24,7 +26,7 @@ For a `Pushtype` `:foo` with the given attribute, these `Instructions` will be d
   - `:foo-gte?` aka `:foo-greaterthanorequal?`
   - `:foo-min`
   - `:foo-max`
-- `:combinatorial` (?)
+- `:movable` (combinators)
   - `:foo-dup`
   - `:foo-flush`
   - `:foo-pop`
@@ -37,7 +39,29 @@ For a `Pushtype` `:foo` with the given attribute, these `Instructions` will be d
 - `:printable`
   - `:foo-print`
 - `:quotable`
-  - `:foo-quote`
+  - `:foo->code`
+  - `:foo->exec`
+- `:collectible`
+  - implies existence of `:vector-of-foo` and `:set-of-foo` collection types (?)
+
+## Standard Push types
+
+- `:boolean`
+  - `:visible, :comparable, :movable, :printable`
+- `:char`
+  - `:visible, :comparable, :sortable, :movable, :printable`
+- `:code`
+  - `:visible, :comparable, :movable, :printable, :quotable`
+- `:exec`
+  - `:visible, :comparable, :movable, :printable, :quotable`
+- `:float`
+  - `:visible, :comparable, :sortable, :movable, :printable`
+- `:integer`
+  - `:visible, :comparable, :sortable, :movable, :printable`
+- `:string`
+  - `:visible, :comparable, :sortable, :movable, :printable`
+- `:error`
+  - `:visible, :permanent, :printable`
 
 ## Getters and Setters
 
