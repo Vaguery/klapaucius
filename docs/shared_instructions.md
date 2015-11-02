@@ -17,13 +17,13 @@ For a `Pushtype` `:foo` with the given attribute, these `Instructions` will be d
   - `:foo-empty?`
   - `:foo-stackdepth`
 - `:equatable`
-  - `:foo-eq?` aka `:foo-equal?`
-  - `:foo-neq?` aka `:foo-notequal?`
+  - `:foo-equal?`
+  - `:foo-notequal?`
 - `:comparable`
-  - `:foo-lt?` aka `:foo<?`
-  - `:foo-lte?` aka `:foo≤?`
-  - `:foo-gt?` aka `:foo>?`
-  - `:foo-gte?` aka `:foo≥?`
+  - `:foo<?` 
+  - `:foo≤?`
+  - `:foo>?` 
+  - `:foo≥?`
   - `:foo-min`
   - `:foo-max`
 - `:movable` (combinators)
