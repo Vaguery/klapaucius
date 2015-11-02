@@ -1,6 +1,6 @@
-# Implementing "higher-order functions" and "macros" as Push `:code`
+# Implementing first-order and "higher-order functions" as Push `:code`
 
-## Push "function signatures" and macros
+## Push "function signatures" and first-order functions
 
 Suppose we have some generic Push code like this:
 
@@ -26,9 +26,9 @@ The resulting "instruction" has simple, easily calculated `:needs` of `{:integer
 
 How can this new function be stored and invoked, though? The good old `:name` stack comes to mind. That is, local _ad hoc_ bindings and references. Or perhaps a `:function` stack?
 
-### trivial macros
+### trivial functions
 
-Of course the `:code` stack can contain more or less anything (and typically does), so one might find `'(77)` or `'(false)` sitting there. The procedure described above would produce a "macro" like this:
+Of course the `:code` stack can contain more or less anything (and typically does), so one might find `'(77)` or `'(false)` sitting there. The procedure described above would produce a "function" like this:
 
 ~~~clojure
 ; («integer»)
@@ -37,6 +37,16 @@ Of course the `:code` stack can contain more or less anything (and typically doe
 (calculate [:i-1] #(list %1) :as :result)
 (push-onto :exec :result)
 ~~~
+
+or even
+
+~~~clojure
+; (:foo-bar)
+
+(calculate [] #(:foo-bar) :as :result)
+(push-onto :exec :result)
+~~~
+
 
 Not especially exciting, but who are we to judge? That said, this sort of thing could be blocked if it becomes a problem.
 
