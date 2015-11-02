@@ -67,3 +67,50 @@
   (map :token (:instructions
     (make-visible (make-type :foo)))) => '(:foo-stackdepth :foo-empty?))
 
+
+;; comparable instructions
+
+
+
+(fact "equal?-instruction returns an Instruction with the correct stuff"
+  (let [foo-equal (equal?-instruction (make-type :foo))]
+    (class foo-equal) => push.instructions.instructions_core.Instruction
+    (:needs foo-equal) => {:foo 2, :boolean 0}
+    (:token foo-equal) => :foo-equal?
+    (i/get-stack
+      (i/execute-instruction
+        (i/register-instruction (i/make-interpreter :stacks {:foo '(1 2)}) foo-equal)
+        :foo-equal?)
+      :boolean) => '(false)
+    (i/get-stack
+      (i/execute-instruction
+        (i/register-instruction (i/make-interpreter :stacks {:foo '(1 1)}) foo-equal)
+        :foo-equal?)
+      :boolean) => '(true)))
+
+
+(fact "notequal?-instruction returns an Instruction with the correct stuff"
+  (let [foo-notequal (notequal?-instruction (make-type :foo))]
+    (class foo-notequal) => push.instructions.instructions_core.Instruction
+    (:needs foo-notequal) => {:foo 2, :boolean 0}
+    (:token foo-notequal) => :foo-notequal?
+    (i/get-stack
+      (i/execute-instruction
+        (i/register-instruction (i/make-interpreter :stacks {:foo '(1 2)}) foo-notequal)
+        :foo-notequal?)
+      :boolean) => '(true)
+    (i/get-stack
+      (i/execute-instruction
+        (i/register-instruction (i/make-interpreter :stacks {:foo '(1 1)}) foo-notequal)
+        :foo-notequal?)
+      :boolean) => '(false)))
+
+
+(fact "`make-comparable` takes adds the :comparable attribute to a PushType record"
+  (:attributes (make-comparable (make-type :foo))) => #{:comparable})
+
+
+(fact "`make-comparable` takes adds appropriate instructions to a PushType record"
+  (map :token (:instructions
+    (make-comparable (make-type :foo)))) => '(:foo-equal? :foo-notequal?))
+

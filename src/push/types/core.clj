@@ -50,18 +50,10 @@
       ))))
 
 
-(defn attach-stackdepth-function
-  [pushtype]
+(defn attach-function
+  [pushtype function]
   (let [old-instructions (:instructions pushtype)]
-    (assoc pushtype :instructions
-      (conj old-instructions (stackdepth-instruction pushtype)))))
-
-
-(defn attach-empty?-function
-  [pushtype]
-  (let [old-instructions (:instructions pushtype)]
-    (assoc pushtype :instructions
-      (conj old-instructions (empty?-instruction pushtype)))))
+    (assoc pushtype :instructions (conj old-instructions function))))
 
 
 ;;;; stored generic instructions
@@ -73,7 +65,50 @@
   :instructions collection"
   [pushtype]
   (-> pushtype
-      attach-stackdepth-function
-      attach-empty?-function
+      (attach-function (stackdepth-instruction pushtype))
+      (attach-function (empty?-instruction pushtype))
       (assoc :attributes (conj (:attributes pushtype) :visible))))
+
+
+
+(defn equal?-instruction
+  "returns a new x-equal? instruction for a PushType"
+  [pushtype]
+  (let [typename (:stackname pushtype)
+        instruction-name (str (name typename) "-equal?")]
+    (eval (list
+      'push.instructions.instructions-core/build-instruction
+      instruction-name
+      :tags #{:introspection}
+      `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
+      `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
+      '(push.instructions.dsl/calculate [:arg1 :arg2] #(= %1 %2) :as :check)
+      '(push.instructions.dsl/push-onto :boolean :check)
+      ))))
+
+
+(defn notequal?-instruction
+  "returns a new x-notequal? instruction for a PushType"
+  [pushtype]
+  (let [typename (:stackname pushtype)
+        instruction-name (str (name typename) "-notequal?")]
+    (eval (list
+      'push.instructions.instructions-core/build-instruction
+      instruction-name
+      :tags #{:introspection}
+      `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
+      `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
+      '(push.instructions.dsl/calculate [:arg1 :arg2] #(not= %1 %2) :as :check)
+      '(push.instructions.dsl/push-onto :boolean :check)
+      ))))
+
+(defn make-comparable
+  "takes a PushType and adds the :comparable attribute, and the
+  :pushtype-equal? and :pushtype-notequal? instructions to its
+  :instructions collection"
+  [pushtype]
+  (-> pushtype
+      (attach-function (equal?-instruction pushtype))
+      (attach-function (notequal?-instruction pushtype))
+      (assoc :attributes (conj (:attributes pushtype) :comparable))))
 
