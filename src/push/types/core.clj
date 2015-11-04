@@ -4,6 +4,18 @@
   (:require [push.instructions.dsl :as dsl]))
 
 
+(def core-stacks
+  "the basic types central to the Push language"
+    {:boolean '()
+    :char '()
+    :code '()
+    :integer '() 
+    :exec '()
+    :float '()
+    :string '()
+    })
+
+
 (defrecord PushType [stackname recognizer attributes instructions])
 
 

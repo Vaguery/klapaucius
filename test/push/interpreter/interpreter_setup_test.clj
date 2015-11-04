@@ -9,11 +9,11 @@
 ;; program
 
 
-(fact "a new Interpreter will have a program"
+(fact "a new Interpreter will have an empty program"
   (:program (make-interpreter)) => [])
 
 
-(fact "a program can be passed into make-interpreter"
+(fact "a Push program (a vector) can be passed into make-interpreter"
   (:program (make-interpreter :program [1 2 3])) => [1 2 3])
 
 

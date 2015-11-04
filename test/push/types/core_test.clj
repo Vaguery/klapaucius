@@ -21,3 +21,12 @@
                   :recognizer integer? 
                   :attributes #{:comparable :numeric})) => #{:comparable :numeric})
 
+
+(fact "the core stack types are defined"
+  (keys core-stacks) =>  (contains [:boolean
+                                    :char
+                                    :code
+                                    :exec 
+                                    :float 
+                                    :integer 
+                                    :string] :in-any-order))
