@@ -16,10 +16,13 @@
     {:boolean '()
     :char '()
     :code '()
+    :error '()
     :integer '() 
     :exec '()
     :float '()
     :string '()
+    :print '()
+    :unknown '()
     })
 
 

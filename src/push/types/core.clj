@@ -23,7 +23,7 @@
   optional :recognizer :attributes and :instructions"
   [stackname & {
     :keys [recognizer attributes instructions] 
-    :or {recognizer (fn [item] false) attributes #{} instructions {}}}]
+    :or {recognizer (constantly false) attributes #{} instructions {}}}]
   (->PushType stackname recognizer attributes instructions))
 
 

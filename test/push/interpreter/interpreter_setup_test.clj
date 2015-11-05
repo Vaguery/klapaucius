@@ -90,7 +90,7 @@
 
 (fact "`register-types` sets up all the stacks"
   (keys (:stacks (register-types (make-interpreter) [foo-type bar-type]))) =>
-    (contains [:foo :bar] :in-any-order))
+    (contains [:foo :bar] :in-any-order :gaps-ok))
 
 
 (fact "`register-types` adds all the instructions"
@@ -116,7 +116,7 @@
 
 (fact "if a PushType is passed into `make-interpreter`, its stack is added"
     (keys (:stacks (make-interpreter :types [foo-type]))) =>
-            '(:boolean :char :code :integer :exec :float :string :foo))
+            (contains :foo))
 
 
 (fact "if a PushType is passed into `make-interpreter`, its instructions are registered"
@@ -135,7 +135,7 @@
     (map :stackname (:types (register-type knows-foo bar-type))) => 
         '(:bar :foo)
     (keys (:stacks (register-type knows-foo bar-type))) =>
-        '(:boolean :char :code :integer :exec :float :string :foo :bar)
+        (contains [ :foo :bar] :in-any-order :gaps-ok)
     (keys (:instructions (register-type knows-foo bar-type))) =>
         (contains [:bar-notequal? :foo-rotate :foo-equal? :foo>? :bar-dup 
                   :foo-stackdepth :bar-swap :foo-notequal? :bar-rotate :foo<? 
@@ -202,10 +202,13 @@
   (keys core-stacks) =>  (contains [:boolean
                                     :char
                                     :code
+                                    :error
                                     :exec 
                                     :float 
-                                    :integer 
-                                    :string] :in-any-order))
+                                    :integer
+                                    :print
+                                    :string
+                                    :unknown] :in-any-order))
 
 
 ;; non-core but standard library core types: :tag, :genome, :return, :print, :puck, etc
