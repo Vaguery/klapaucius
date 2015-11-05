@@ -46,6 +46,6 @@
 
 
 (fact "`make-equatable` takes adds appropriate instructions to a PushType record"
-  (map :token (:instructions
+  (keys (:instructions
     (make-equatable (make-type :foo)))) => '(:foo-equal? :foo-notequal?))
 

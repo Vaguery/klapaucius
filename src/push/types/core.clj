@@ -1,5 +1,4 @@
 (ns push.types.core
-  (:require [push.interpreter.interpreter-core :as i])
   (:require [push.instructions.instructions-core :as core])
   (:require [push.instructions.dsl :as dsl]))
 
@@ -24,14 +23,18 @@
   optional :recognizer :attributes and :instructions"
   [stackname & {
     :keys [recognizer attributes instructions] 
-    :or {attributes #{} instructions []}}]
+    :or {recognizer (fn [item] false) attributes #{} instructions {}}}]
   (->PushType stackname recognizer attributes instructions))
 
 
-(defn attach-function
-  [pushtype function]
-  (let [old-instructions (:instructions pushtype)]
-    (assoc pushtype :instructions (conj old-instructions function))))
+(defn attach-instruction
+  [pushtype instruction]
+  (let [old-instructions (:instructions pushtype)
+        new-key (:token instruction)]
+    (assoc 
+      pushtype 
+      :instructions 
+      (merge old-instructions (hash-map new-key instruction)))))
 
 
 ;;;; type-associated instructions
@@ -73,8 +76,8 @@
   :instructions collection"
   [pushtype]
   (-> pushtype
-      (attach-function (stackdepth-instruction pushtype))
-      (attach-function (empty?-instruction pushtype))
+      (attach-instruction (stackdepth-instruction pushtype))
+      (attach-instruction (empty?-instruction pushtype))
       (assoc :attributes (conj (:attributes pushtype) :visible))))
 
 
@@ -117,8 +120,8 @@
   :instructions collection"
   [pushtype]
   (-> pushtype
-      (attach-function (equal?-instruction pushtype))
-      (attach-function (notequal?-instruction pushtype))
+      (attach-instruction (equal?-instruction pushtype))
+      (attach-instruction (notequal?-instruction pushtype))
       (assoc :attributes (conj (:attributes pushtype) :equatable))))
 
 
@@ -221,12 +224,12 @@
   :pushtype-max instructions to its :instructions collection"
   [pushtype]
   (-> pushtype
-      (attach-function (lessthan?-instruction pushtype))
-      (attach-function (lessthanorequal?-instruction pushtype))
-      (attach-function (greaterthan?-instruction pushtype))
-      (attach-function (greaterthanorequal?-instruction pushtype))
-      (attach-function (min-instruction pushtype))
-      (attach-function (max-instruction pushtype))
+      (attach-instruction (lessthan?-instruction pushtype))
+      (attach-instruction (lessthanorequal?-instruction pushtype))
+      (attach-instruction (greaterthan?-instruction pushtype))
+      (attach-instruction (greaterthanorequal?-instruction pushtype))
+      (attach-instruction (min-instruction pushtype))
+      (attach-instruction (max-instruction pushtype))
       (assoc :attributes (conj (:attributes pushtype) :comparable))))
 
 
@@ -354,12 +357,12 @@
   :pushtype-yankdup instructions to its :instructions collection"
   [pushtype]
   (-> pushtype
-      (attach-function (dup-instruction pushtype))
-      (attach-function (flush-instruction pushtype))
-      (attach-function (pop-instruction pushtype))
-      (attach-function (rotate-instruction pushtype))
-      (attach-function (shove-instruction pushtype))
-      (attach-function (swap-instruction pushtype))
-      (attach-function (yank-instruction pushtype))
-      (attach-function (yankdup-instruction pushtype))
+      (attach-instruction (dup-instruction pushtype))
+      (attach-instruction (flush-instruction pushtype))
+      (attach-instruction (pop-instruction pushtype))
+      (attach-instruction (rotate-instruction pushtype))
+      (attach-instruction (shove-instruction pushtype))
+      (attach-instruction (swap-instruction pushtype))
+      (attach-instruction (yank-instruction pushtype))
+      (attach-instruction (yankdup-instruction pushtype))
       (assoc :attributes (conj (:attributes pushtype) :movable))))

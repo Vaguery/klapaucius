@@ -46,5 +46,5 @@
 
 
 (fact "`make-visible` takes adds a x-stackdepth and x-empty? instructions to a PushType record"
-  (map :token (:instructions
+  (keys (:instructions
     (make-visible (make-type :foo)))) => '(:foo-stackdepth :foo-empty?))

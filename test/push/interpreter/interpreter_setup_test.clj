@@ -2,9 +2,12 @@
   (:use midje.sweet)
   (:require [push.instructions.instructions-core :as i])
   (:use [push.instructions.dsl])
-  (:use [push.interpreter.interpreter-core]))
+  (:use [push.interpreter.interpreter-core])
+  (:require [push.types.core :as types]))
+
 
 ;; initialization with make-interpreter
+
 
 ;; program
 
@@ -17,12 +20,162 @@
   (:program (make-interpreter :program [1 2 3])) => [1 2 3])
 
 
+; a fixture or two 
+
+
+(def foo-type 
+  (-> (types/make-type :foo :recognizer integer?)
+      types/make-visible
+      types/make-comparable
+      types/make-equatable
+      types/make-movable))
+
+
+(fact "foo-type knows some things (just checking)"
+  (keys (:instructions foo-type)) =>
+    (contains
+      [:foo-stackdepth :foo-empty? :foo<? 
+      :foo≤? :foo>? :foo≥? :foo-min :foo-max 
+      :foo-equal? :foo-notequal? :foo-dup :foo-flush 
+      :foo-pop :foo-rotate :foo-shove :foo-swap 
+      :foo-yank :foo-yankdup] :in-any-order)
+    (:stackname foo-type) => :foo)
+
+
+(def bar-type 
+  (-> (types/make-type :bar :recognizer keyword?)
+      types/make-visible
+      types/make-equatable
+      types/make-movable))
+
+
+(fact "bar-type knows some things (also just checking)"
+  (keys (:instructions bar-type)) =>
+    (contains
+      '(:bar-notequal? :bar-dup :bar-swap :bar-rotate 
+        :bar-flush :bar-stackdepth :bar-equal? :bar-empty? 
+        :bar-pop :bar-yank :bar-yankdup :bar-shove) :in-any-order)
+    (:stackname bar-type) => :bar)
+
+
+;;;; types
+
+
+;; register-type
+
+
+(fact "`register-type` adds the type passed in to an Interpreter"
+  (:types (register-type (make-interpreter) foo-type)) => 
+    (contains foo-type))
+
+
+(fact "`register-type` adds the stack type to the Interpreter stacks, if needed"
+  (keys (:stacks (register-type (make-interpreter) foo-type))) => (contains :foo))
+
+
+(fact "`register-type` adds any instructions attached to the type to the Interpreter"
+  (keys (:instructions (register-type (make-interpreter) foo-type))) => 
+    (contains [:foo-rotate :foo-equal? :foo>? :foo-stackdepth :foo-notequal?
+                :foo<? :foo-pop :foo-flush :foo-empty? :foo-dup :foo-min :foo≥? 
+                :foo-swap :foo-max :foo-shove :foo≤? :foo-yankdup :foo-yank] :in-any-order))
+
+
+;; register-types
+
+
+(fact "`register-types` will register a collection of PushTypes"
+  (:types (register-types (make-interpreter) [foo-type bar-type])) => 
+    (contains [foo-type bar-type] :in-any-order))
+
+
+(fact "`register-types` sets up all the stacks"
+  (keys (:stacks (register-types (make-interpreter) [foo-type bar-type]))) =>
+    (contains [:foo :bar] :in-any-order))
+
+
+(fact "`register-types` adds all the instructions"
+  (sort (keys (:instructions (register-types (make-interpreter)
+                                        [foo-type bar-type])))) => 
+    '(:bar-dup :bar-empty? :bar-equal? :bar-flush :bar-notequal? 
+      :bar-pop :bar-rotate :bar-shove :bar-stackdepth :bar-swap 
+      :bar-yank :bar-yankdup :foo-dup :foo-empty? :foo-equal? 
+      :foo-flush :foo-max :foo-min :foo-notequal? :foo-pop :foo-rotate 
+      :foo-shove :foo-stackdepth :foo-swap :foo-yank :foo-yankdup 
+      :foo<? :foo>? :foo≤? :foo≥?))
+
+
+;; registering types on initialization
+
+
+(fact "a list of PushTypes can be passed into `make-interpreter` and are added to :types"
+  (map :stackname (:types (make-interpreter :types [foo-type]))) => 
+    '(:foo)
+  (map :stackname (:types (make-interpreter :types [foo-type bar-type]))) => 
+    (just [:bar :foo]))
+
+
+(fact "if a PushType is passed into `make-interpreter`, its stack is added"
+    (keys (:stacks (make-interpreter :types [foo-type]))) =>
+            '(:boolean :char :code :integer :exec :float :string :foo))
+
+
+(fact "if a PushType is passed into `make-interpreter`, its instructions are registered"
+    (keys (:instructions (make-interpreter :types [foo-type]))) =>
+      (contains [:foo-rotate :foo-equal? :foo>? :foo-stackdepth :foo-notequal? 
+                 :foo<? :foo-pop :foo-flush :foo-empty? :foo-dup :foo-min 
+                 :foo≥? :foo-swap :foo-max :foo-shove :foo≤? :foo-yankdup 
+                 :foo-yank] :in-any-order))
+
+
+;; finesse (justified paranoia)
+
+
+(fact "registering a new type in an Interpreter with stuff defined still leaves that intact"
+  (let [knows-foo (make-interpreter :types [foo-type])]
+    (map :stackname (:types (register-type knows-foo bar-type))) => 
+        '(:bar :foo)
+    (keys (:stacks (register-type knows-foo bar-type))) =>
+        '(:boolean :char :code :integer :exec :float :string :foo :bar)
+    (keys (:instructions (register-type knows-foo bar-type))) =>
+        (contains [:bar-notequal? :foo-rotate :foo-equal? :foo>? :bar-dup 
+                  :foo-stackdepth :bar-swap :foo-notequal? :bar-rotate :foo<? 
+                  :foo-pop :bar-flush :foo-flush :foo-empty? :bar-stackdepth 
+                  :foo-dup :foo-min :foo≥? :bar-equal? :bar-empty? :foo-swap 
+                  :foo-max :foo-shove :foo≤? :bar-pop :foo-yankdup :bar-yank 
+                  :bar-yankdup :bar-shove :foo-yank] :in-any-order)))
+
+
+
+(future-fact "register-type adds a PushType to the specified Interpreter's router")
+
+
+;; instructions
+
+
 (fact "a new Interpreter will have an :instructions map"
   (:instructions (make-interpreter)) => {})
 
 
+;; inputs
+
+
+(fact "a new Interpreter passed an :inputs vector will have the bindings registered"
+  (:inputs (make-interpreter :inputs [1 2 3 4])) =>
+    {:input!1 1, :input!2 2, :input!3 3, :input!4 4})
+
+
+(fact "a new Interpreter passed an :inputs hashmap will have the bindings registered"
+  (:inputs (make-interpreter :inputs {:a 2 :b 4})) => {:a 2, :b 4})
+
+
+;; config
+
+
 (fact "a new Interpreter will have a :config map"
   (:config (make-interpreter)) => {})
+
+
+;; counter
 
 
 (fact "a new Interpreter will have a counter = 0"
@@ -33,12 +186,16 @@
   (:counter (make-interpreter :counter 771)) => 771 )
 
 
+;; done?
+
+
 (fact "a new interpreter will have a default :done? setting of false"
   (:done? (make-interpreter)) => false )
 
 
 (fact "a new interpreter can have :done? set as an option"
   (:done? (make-interpreter :done? true)) => true )
+
 
 
 (fact "the core stack types are defined"
@@ -64,7 +221,6 @@
   (get-stack (make-interpreter :stacks {:foo '(7 6 5)}) :foo ) => '(7 6 5)
   (get-stack (make-interpreter :stacks {:foo '(7 6 5)}) :integer ) => '()
   (get-stack (make-interpreter) :foo ) => nil)
-
 
 
 ;; register-instruction
@@ -209,165 +365,4 @@
     '([1 :weird :thing]))
 
 
-;; handle-item
-
-
-(fact "handle-item throws an error if the item isn't recognized"
-  ;; yes this is trying to process another interpreter, which is (for now) not permitted
-  (handle-item (make-interpreter) (make-interpreter)) => 
-    (throws Exception #"Push Parsing Error:"))
-
-
-(fact "handle-item sends integers to :integer"
-  (get-stack (handle-item (make-interpreter) 8) :integer) => '(8)
-  (get-stack (handle-item (make-interpreter) -8) :integer) => '(-8)
-  (get-stack (handle-item (make-interpreter :stacks {:integer '(1)}) -8) :integer) =>
-    '(-8 1))
-
-
-; (fact "handle-item handles integer overflow")
-
-
-(fact "handle-item sends floats to :float"
-  (get-stack (handle-item (make-interpreter) 8.0) :float) => '(8.0)
-  (get-stack (handle-item (make-interpreter) -8.0) :float) => '(-8.0)
-  (get-stack (handle-item (make-interpreter :stacks {:float '(1.0)}) -8.0) :float) =>
-    '(-8.0 1.0))
-
-
-; (fact "handle-item handles float overflow")
-; (fact "handle-item handles float underflow")
-
-
-(fact "handle-item sends booleans to :boolean"
-  (get-stack (handle-item (make-interpreter) false) :boolean) => '(false)
-  (get-stack (handle-item (make-interpreter) true) :boolean) => '(true)
-  (get-stack (handle-item (make-interpreter :stacks {:boolean '(false)}) true) :boolean) =>
-    '(true false))
-
-
-(fact "handle-item sends characters to :char"
-  (get-stack (handle-item (make-interpreter) \J) :char) => '(\J)
-  (get-stack (handle-item (make-interpreter) \o) :char) => '(\o)
-  (get-stack (handle-item (make-interpreter :stacks {:char '(\Y)}) \e) :char) =>
-    '(\e \Y))
-
-
-(fact "handle-item sends strings to :string"
-  (get-stack (handle-item (make-interpreter) "foo") :string) => '("foo")
-  (get-stack (handle-item (make-interpreter) "") :string) => '("")
-  (get-stack (handle-item (make-interpreter :stacks {:string '("bar")}) "baz") :string) =>
-    '("baz" "bar"))
-
-
-(fact "handle-item 'unwraps' quoted lists onto :exec"
-  (get-stack (handle-item (make-interpreter) '(1 2 3)) :exec) => '(1 2 3)
-  (get-stack (handle-item (make-interpreter) '(1 (2) (3))) :exec) => '(1 (2) (3))
-  (get-stack (handle-item (make-interpreter) '(1 () ())) :exec) => '(1 () ())
-  (get-stack (handle-item (make-interpreter) '()) :exec) => '())
-
-
-(fact "handle-item will execute a registered instruction"
- (let [foo (i/make-instruction :foo :transaction (fn [a] 761))
-       registry {:foo foo}
-       he-knows-foo (make-interpreter :instructions registry)]
-   (handle-item he-knows-foo :foo) => 761 ;; an intentionally surprising result
-   ))
-
-
-(fact "handle-item will not execute an unregistered instruction"
- (let [foo (i/make-instruction :foo :transaction (fn [a] 761))
-       registry {:foo foo}
-       he-knows-foo (make-interpreter :instructions registry)]
-   (handle-item he-knows-foo :bar) => (throws #"Push Parsing Error:")))
-
-
-;; some fixtures:
-
-
-(def intProductToFloat
-  (i/build-instruction intProductToFloat
-    (consume-top-of :integer :as :arg1)
-    (consume-top-of :integer :as :arg2)
-    (calculate [:arg1 :arg2] #(float (* %1 %2)) :as :p)
-    (push-onto :float :p)))
-
-
-(def knows-some-things
-  (register-instruction
-    (make-interpreter 
-      :program [1.1 2.2 :intProductToFloat]
-      :counter 22
-      :stacks {:integer '(1 2 3)
-               :exec '(:intProductToFloat)})
-    intProductToFloat))
-
-
-;; clear-all-stacks
-
-
-(fact "`clear-all-stacks` empties every stack"
-  (:stacks (clear-all-stacks knows-some-things)) => core-stacks)
-
-
-;; reset-interpreter
-
-
-(fact "calling `reset-interpreter` loads the program onto :exec"
-  (get-stack knows-some-things :exec) => '(:intProductToFloat)
-  (get-stack (reset-interpreter knows-some-things) :exec) =>
-    '(1.1 2.2 :intProductToFloat))
-
-
-(fact "calling `reset-interpreter` clears the other stacks"
-  (get-stack knows-some-things :integer) => '(1 2 3)
-  (:stacks (reset-interpreter knows-some-things)) => 
-    (merge core-stacks {:exec '(1.1 2.2 :intProductToFloat)}))
-
-
-(fact "`reset-interpreter` sets the counter to 0"
-  (let [counted (assoc knows-some-things :counter 9912)]
-    (:counter counted) => 9912
-    (:counter (reset-interpreter counted)) => 0))
-
-
-;; increment-counter
-
-
-(fact "`increment-counter` increments the counter"
-  (:counter knows-some-things) => 22
-  (:counter (increment-counter knows-some-things)) => 23)
-
-
-;; is-done?
-
-
-(fact "`is-done?` checks the Interpreter for various halting states"
-  (is-done? (make-interpreter)) => true
-  (is-done? knows-some-things) => false)
-
-
-;; step
-
-
-(fact "calling `step` consumes one item from the :exec stack (if any)"
-  (get-stack knows-some-things :exec) => '(:intProductToFloat)
-  (get-stack (step knows-some-things) :exec) => '())
-
-
-(fact "calling `step` increments the counter if something happens"
-  (:counter knows-some-things) => 22
-  (:counter (step knows-some-things)) => 23)
-
-
-(fact "calling `step` doesn't affect the counter if :exec is empty"
-  (:counter (make-interpreter)) => 0
-  (:counter (step (make-interpreter))) => 0
-  (:counter (step (clear-stack knows-some-things :exec))) => 22)
-
-
-(fact "calling `step` sets the :done? flag if a halting condition is encountered"
-  (is-done? knows-some-things) => false
-  (:done? knows-some-things) => false
-  (:done? (step knows-some-things)) => true)
 

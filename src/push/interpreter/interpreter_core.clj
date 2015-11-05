@@ -1,7 +1,8 @@
 (ns push.interpreter.interpreter-core)
 
 
-(defrecord Interpreter [program 
+(defrecord Interpreter [program
+                        types
                         stacks
                         inputs
                         instructions 
@@ -22,31 +23,12 @@
     })
 
 
-(defn make-interpreter
-  "creates a new Interpreter record
-  With no arguments, it has an empty :program, the :stacks include
-  core types and are empty, no :instructions are registered, and the
-  counter is 0.
-
-  Any of these can be specified by key."
-  [& {:keys [program stacks inputs instructions config counter done?]
-      :or {program []
-           stacks core-stacks
-           inputs {}
-           instructions {}
-           config {}
-           counter 0
-           done? false}}]
-  (->Interpreter program (merge core-stacks stacks) inputs 
-                   instructions config counter done?))
 
 
 (defn- throw-redefined-instruction-error
   [token]
   (throw (Exception. (str 
-                        "Push Instruction Redefined:'"
-                        token
-                        "'"))))
+                        "Push Instruction Redefined:'" token "'"))))
 
 
 (defn- throw-unknown-instruction-error
@@ -58,9 +40,30 @@
 (defn- throw-unknown-push-item-error
   [item]
   (throw (Exception. (str 
-                        "Push Parsing Error: Cannot interpret '"
-                        item
-                        "' as a Push item."))))
+    "Push Parsing Error: Cannot interpret '" item "' as a Push item."))))
+
+
+(defn register-type
+  "Takes an Interpreter record, and a PushType record, and adds the
+  PushType to the :types collection in the Interpeter; adds the
+  type's :stackname as a new stack (if not already present); adds
+  the type's internally defined instructions to the Interpreter's
+  registry automatically."
+  [interpreter type]
+  (let [old-types (:types interpreter)
+        old-stacks (:stacks interpreter)
+        old-instructions (:instructions interpreter)]
+        (-> interpreter
+            (assoc :types (conj old-types type))
+            (assoc :stacks (conj old-stacks [(:stackname type) '()]))
+            (assoc :instructions (merge old-instructions (:instructions type))))))
+
+
+(defn register-types
+  "Takes an Interpreter record, and a list of PushType records. Calls
+  `register-type` on each of the types in turn."
+  [interpreter types]
+  (reduce #(register-type %1 %2) interpreter types))
 
 
 (defn register-input
@@ -82,7 +85,6 @@
     (reduce (partial register-input) interpreter values)
   :else
     (assoc interpreter :inputs (merge (:inputs interpreter) values))))
-
 
 
 (defn input?
@@ -114,6 +116,37 @@
       (throw-redefined-instruction-error token))
       (add-instruction interpreter instruction)))
 
+
+(defn make-interpreter
+  "creates a new Interpreter record
+  With no arguments, it has an empty :program, the :stacks include
+  core types and are empty, no :instructions are registered, and the
+  counter is 0.
+
+  Any of these can be specified by key.
+
+  If a collection of :types is specified, the stacks are made and any
+  instructions defined in the PushType records are automatically
+  registered."
+  [& {:keys [program types stacks inputs instructions config counter done?]
+      :or {program []
+           types '()
+           stacks core-stacks
+           inputs {}
+           instructions {}
+           config {}
+           counter 0
+           done? false}}]
+  (let [all-stacks (merge core-stacks stacks)]
+    (-> (->Interpreter program '() all-stacks {} 
+                       instructions config counter done?)
+        (register-types types)
+        (register-inputs inputs)
+        )))
+
+
+
+;;; 
 
 (defn- contains-at-least?
   "Takes an interpreter, a stack name, and a count; returns true if
@@ -224,12 +257,13 @@
   (contains? (:instructions interpreter) token))
 
 
+
 (defn handle-item
   "Takes an Interpreter and an item, and either recognizes and invokes
-  a keyword registered in that Interpreter as an instruction, or sends
-  the item to the correct stack (if it exists). Throws an exception if
-  the Clojure expression is not recognized explicitly as a registered
-  instruction or some other kind of Push literal."
+  a keyword registered in that Interpreter as an input or instruction,
+  or sends the item to the correct stack (if it exists). Throws an
+  exception if the Clojure expression is not recognized explicitly as
+  a registered instruction or some other kind of Push literal."
   [interpreter item]
   (cond
     (input? interpreter item)

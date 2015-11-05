@@ -151,6 +151,6 @@
 
 
 (fact "`make-comparable` takes adds appropriate instructions to a PushType record"
-  (map :token (:instructions
+  (keys (:instructions
     (make-comparable (make-type :foo)))) =>
       '(:foo<? :foo≤? :foo>? :foo≥? :foo-min :foo-max))

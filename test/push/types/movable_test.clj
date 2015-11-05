@@ -177,6 +177,6 @@
 
 
 (fact "`make-movable` takes adds appropriate instructions to a PushType record"
-  (map :token (:instructions
+  (keys (:instructions
     (make-movable (make-type :foo)))) =>
       '(:foo-dup :foo-flush :foo-pop :foo-rotate :foo-shove :foo-swap :foo-yank :foo-yankdup))
