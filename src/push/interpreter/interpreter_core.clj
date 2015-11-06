@@ -3,6 +3,7 @@
 
 (defrecord Interpreter [program
                         types
+                        router
                         stacks
                         inputs
                         instructions 
@@ -131,9 +132,10 @@
   If a collection of :types is specified, the stacks are made and any
   instructions defined in the PushType records are automatically
   registered."
-  [& {:keys [program types stacks inputs instructions config counter done?]
+  [& {:keys [program types router stacks inputs instructions config counter done?]
       :or {program []
            types '()
+           router []
            stacks core-stacks
            inputs {}
            instructions {}
@@ -141,7 +143,7 @@
            counter 0
            done? false}}]
   (let [all-stacks (merge core-stacks stacks)]
-    (-> (->Interpreter program '() all-stacks {} 
+    (-> (->Interpreter program '() router all-stacks {} 
                        instructions config counter done?)
         (register-types types)
         (register-inputs inputs)
@@ -150,6 +152,8 @@
 
 
 ;;; 
+
+
 
 (defn- contains-at-least?
   "Takes an interpreter, a stack name, and a count; returns true if
@@ -260,6 +264,35 @@
   (contains? (:instructions interpreter) token))
 
 
+(defn router-sees?
+  "Takes an Interpreter and an item, and returns true if any predicate
+  defined in its :router collection matches, nil otherwise (NOTE)."
+  [interpreter item]
+  (let [recognizers (:router interpreter)]
+    (some #(apply (first %) [item]) recognizers)))
+
+
+(defn route-item
+  "Takes an Interpreter and an item it recognizes (which should be
+  established upstream) and sends the item to the designated stack
+  determined by the first matching router predicate."
+  [interpreter item]
+  (let [recognizers (:router interpreter)]
+    (push-item 
+      interpreter 
+      (second (first (filter #(apply (first %) [item]) recognizers)))
+      item)))
+
+
+(defn- handle-unknown-item
+  "Takes an Interpreter and an item. If the :config :lenient? flag is
+  true, it pushes an unknown item to the :unknown stack; otherwise it
+  calls `throw-unknown-push-item-error`"
+  [interpreter item]
+  (if (get-in interpreter [:config :lenient?])
+    (push-item interpreter :unknown item)
+    (throw-unknown-push-item-error item)))
+
 
 (defn handle-item
   "Takes an Interpreter and an item, and either recognizes and invokes
@@ -273,13 +306,14 @@
       (push-item interpreter :exec (item (:inputs interpreter)))
     (instruction? interpreter item)
       (execute-instruction interpreter item)
+    (router-sees? interpreter item) (route-item interpreter item)
     (integer? item) (push-item interpreter :integer item)
     (boolean? item) (push-item interpreter :boolean item)
     (char? item) (push-item interpreter :char item)
     (float? item) (push-item interpreter :float item)
     (string? item) (push-item interpreter :string item)
     (list? item) (load-items interpreter :exec item)
-    :else (throw-unknown-push-item-error item)))
+    :else (handle-unknown-item interpreter item)))
 
 
 (defn clear-all-stacks

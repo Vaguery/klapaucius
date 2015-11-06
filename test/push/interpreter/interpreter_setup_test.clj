@@ -61,6 +61,17 @@
 ;;;; types
 
 
+;; router
+
+
+(fact "if unspecified, the :router table is empty"
+  (:router (make-interpreter)) => [])
+
+
+(fact "a :router table can be added manually"
+  (:router (make-interpreter :router [[integer? :code]])) => [[integer? :code]])
+
+
 ;; register-type
 
 
@@ -78,6 +89,10 @@
     (contains [:foo-rotate :foo-equal? :foo>? :foo-stackdepth :foo-notequal?
                 :foo<? :foo-pop :foo-flush :foo-empty? :foo-dup :foo-min :foo≥? 
                 :foo-swap :foo-max :foo-shove :foo≤? :foo-yankdup :foo-yank] :in-any-order))
+
+
+(future-fact "`register-type` adds the :recognizer to the Interpreter's :router collection"
+  (:router (make-interpreter)) => [])
 
 
 ;; register-types
@@ -145,7 +160,6 @@
                   :bar-yankdup :bar-shove :foo-yank] :in-any-order)))
 
 
-
 (future-fact "register-type adds a PushType to the specified Interpreter's router")
 
 
@@ -173,6 +187,10 @@
 
 (fact "a new Interpreter will have a :config map"
   (:config (make-interpreter)) => {})
+
+
+(fact "a new Interpreter can have :config items set at creation"
+  (:config (make-interpreter :config {:lenient? true})) => {:lenient? true})
 
 
 ;; counter

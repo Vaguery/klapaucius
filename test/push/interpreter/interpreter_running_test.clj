@@ -6,13 +6,40 @@
   (:require [push.types.core :as types]))
 
 
-;; handle-item
+;;; the router and handle-item
 
 
-(fact "handle-item throws an error if the item isn't recognized"
-  ;; yes this is trying to process another interpreter, which is (for now) not permitted
+;; unknown items
+
+
+(fact "`handle-item` pushes an item to the :unknown stack if unrecognized when :config :lenient? is true"
+  (let [junk :this-is-an-unknown-item]
+    (get-stack
+      (handle-item 
+        (make-interpreter :config {:lenient? true})
+        junk)
+      :unknown) => '(:this-is-an-unknown-item)))
+
+
+(fact "`handle-item` pushes an item to the :unknown stack if 
+  unrecognized when :config :lenient? is not true (or unset)"
   (handle-item (make-interpreter) (make-interpreter)) => 
-    (throws Exception #"Push Parsing Error:"))
+    (throws #"Push Parsing Error: Cannot interpret '"))
+
+
+;; the router order is: :input? :instruction? [router] :unknown
+
+
+(fact "`router-sees?` checks the router predicates and returns true if one matches"
+  (router-sees? (make-interpreter) :not-likely) => nil
+  (router-sees? (make-interpreter 
+    :router [[(fn [item] (= item :not-likely)) :integer]]) :not-likely) => true)
+
+
+(fact "`handle-item` checks the :router list"
+  (let [he-knows-foo (make-interpreter :router [[integer? :code]])]
+        ;; this will route integers to the :code stack, and not to :integer
+    (:stacks (handle-item he-knows-foo 99) :code) => (contains {:code '(99)})))
 
 
 (fact "handle-item sends integers to :integer"

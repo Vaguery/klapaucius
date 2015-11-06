@@ -63,7 +63,7 @@
 
 
 (tabular
-  (fact ":boolean-dup duplicates the top item from :boolean"
+  (future-fact ":boolean-dup duplicates the top item from :boolean"
     (step-and-check-it ?set-stack ?items ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction    ?get-stack     ?expected

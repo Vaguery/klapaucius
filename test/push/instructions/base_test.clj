@@ -6,7 +6,7 @@
 ;; boolean instructions
 
 
-(fact "boolean instructions are defined"
+(future-fact "boolean instructions are defined"
   (keys (ns-publics 'push.instructions.base.boolean)) => 
     (contains '(
       boolean-and
