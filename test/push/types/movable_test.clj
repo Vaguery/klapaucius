@@ -1,6 +1,7 @@
 (ns push.types.movable-test
   (:use midje.sweet)
-  (:use [push.types.core])
+  (:use push.util.stack-manipulation)
+  (:use push.types.core)
   (:require [push.interpreter.core :as i]))
 
 
@@ -13,17 +14,17 @@
     (:tags foo-dup) => #{:combinator}
     (:needs foo-dup) => {:foo 1}
     (:token foo-dup) => :foo-dup
-    (i/get-stack
+    (get-stack
       (i/execute-instruction
         (i/register-instruction (i/make-interpreter :stacks {:foo '(1 2)}) foo-dup)
         :foo-dup)
       :foo) => '(1 1 2)
-    (i/get-stack
+    (get-stack
       (i/execute-instruction
         (i/register-instruction (i/make-interpreter :stacks {:foo '(11)}) foo-dup)
         :foo-dup)
       :foo) => '(11 11)
-    (i/get-stack
+    (get-stack
       (i/execute-instruction
         (i/register-instruction (i/make-interpreter :stacks {:foo '()}) foo-dup)
         :foo-dup)
@@ -36,12 +37,12 @@
     (:tags foo-flush) => #{:combinator}
     (:needs foo-flush) => {:foo 0}
     (:token foo-flush) => :foo-flush
-    (i/get-stack
+    (get-stack
       (i/execute-instruction
         (i/register-instruction (i/make-interpreter :stacks {:foo '(false 11)}) foo-flush)
         :foo-flush)
       :foo) => '()
-    (i/get-stack
+    (get-stack
       (i/execute-instruction
         (i/register-instruction (i/make-interpreter :stacks {:foo '()}) foo-flush)
         :foo-flush)
@@ -54,12 +55,12 @@
     (:tags foo-pop) => #{:combinator}
     (:needs foo-pop) => {:foo 1}
     (:token foo-pop) => :foo-pop
-    (i/get-stack
+    (get-stack
       (i/execute-instruction
         (i/register-instruction (i/make-interpreter :stacks {:foo '(11 22)}) foo-pop)
         :foo-pop)
       :foo) => '(22)
-    (i/get-stack
+    (get-stack
       (i/execute-instruction
         (i/register-instruction (i/make-interpreter :stacks {:foo '()}) foo-pop)
         :foo-pop)
@@ -72,22 +73,22 @@
     (:tags foo-rotate) => #{:combinator}
     (:needs foo-rotate) => {:foo 3}
     (:token foo-rotate) => :foo-rotate
-    (i/get-stack
+    (get-stack
       (i/execute-instruction
         (i/register-instruction (i/make-interpreter :stacks {:foo '(11 22 33 44)}) foo-rotate)
         :foo-rotate)
       :foo) => '(33 11 22 44)
-    (i/get-stack
+    (get-stack
       (i/execute-instruction
         (i/register-instruction (i/make-interpreter :stacks {:foo '(11 22 33)}) foo-rotate)
         :foo-rotate)
       :foo) => '(33 11 22)
-    (i/get-stack
+    (get-stack
       (i/execute-instruction
         (i/register-instruction (i/make-interpreter :stacks {:foo '(11 22)}) foo-rotate)
         :foo-rotate)
       :foo) => '(11 22)
-    (i/get-stack
+    (get-stack
       (i/execute-instruction
         (i/register-instruction (i/make-interpreter :stacks {:foo '()}) foo-rotate)
         :foo-rotate)
@@ -101,12 +102,12 @@
     (:tags foo-shove) => #{:combinator}
     (:needs foo-shove) => {:foo 1, :integer 1}
     (:token foo-shove) => :foo-shove
-    (i/get-stack
+    (get-stack
       (i/execute-instruction
         (i/register-instruction (i/make-interpreter :stacks {:foo '(:a :b :c) :integer '(1)}) foo-shove)
         :foo-shove)
       :foo) => '(:b :a :c)
-    (i/get-stack
+    (get-stack
       (i/execute-instruction
         (i/register-instruction (i/make-interpreter :stacks {:foo '(:a :b :c) :integer '(-1)}) foo-shove)
         :foo-shove)
@@ -119,12 +120,12 @@
     (:tags foo-swap) => #{:combinator}
     (:needs foo-swap) => {:foo 2}
     (:token foo-swap) => :foo-swap
-    (i/get-stack
+    (get-stack
       (i/execute-instruction
         (i/register-instruction (i/make-interpreter :stacks {:foo '(:a :b :c)}) foo-swap)
         :foo-swap)
       :foo) => '(:b :a :c)
-    (i/get-stack
+    (get-stack
       (i/execute-instruction
         (i/register-instruction (i/make-interpreter :stacks {:foo '(:a :b)}) foo-swap)
         :foo-swap)
@@ -137,13 +138,13 @@
     (:tags foo-yank) => #{:combinator}
     (:needs foo-yank) => {:foo 1, :integer 1}
     (:token foo-yank) => :foo-yank
-    (i/get-stack
+    (get-stack
       (i/execute-instruction
         (i/register-instruction (i/make-interpreter
           :stacks {:foo '(:a :b :c :d :e) :integer '(2)}) foo-yank)
         :foo-yank)
       :foo) => '(:c :a :b :d :e)
-    (i/get-stack
+    (get-stack
       (i/execute-instruction
         (i/register-instruction (i/make-interpreter
           :stacks {:foo '(:a :b :c :d :e) :integer '(-2)}) foo-yank)
@@ -158,13 +159,13 @@
     (:tags foo-yankdup) => #{:combinator}
     (:needs foo-yankdup) => {:foo 1, :integer 1}
     (:token foo-yankdup) => :foo-yankdup
-    (i/get-stack
+    (get-stack
       (i/execute-instruction
         (i/register-instruction (i/make-interpreter
           :stacks {:foo '(:a :b :c :d :e) :integer '(2)}) foo-yankdup)
         :foo-yankdup)
       :foo) => '(:c :a :b :c :d :e)
-    (i/get-stack
+    (get-stack
       (i/execute-instruction
         (i/register-instruction (i/make-interpreter
           :stacks {:foo '(:a :b :c :d :e) :integer '(-2)}) foo-yankdup)

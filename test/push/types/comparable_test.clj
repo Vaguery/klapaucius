@@ -1,6 +1,7 @@
 (ns push.types.comparable-test
   (:use midje.sweet)
-  (:use [push.types.core])
+  (:use push.util.stack-manipulation)
+  (:use push.types.core)
   (:require [push.interpreter.core :as i]))
 
 
@@ -13,17 +14,17 @@
     (:tags foo-lessthan) => #{:comparison}
     (:needs foo-lessthan) => {:foo 2, :boolean 0}
     (:token foo-lessthan) => :foo<?
-    (i/get-stack
+    (get-stack
       (i/execute-instruction
         (i/register-instruction (i/make-interpreter :stacks {:foo '(1 2)}) foo-lessthan)
         :foo<?)
       :boolean) => '(false)
-    (i/get-stack
+    (get-stack
       (i/execute-instruction
         (i/register-instruction (i/make-interpreter :stacks {:foo '(1 1)}) foo-lessthan)
         :foo<?)
       :boolean) => '(false)
-    (i/get-stack
+    (get-stack
       (i/execute-instruction
         (i/register-instruction (i/make-interpreter :stacks {:foo '(3 2)}) foo-lessthan)
         :foo<?)
@@ -36,17 +37,17 @@
     (:tags foo-lte) => #{:comparison}
     (:needs foo-lte) => {:foo 2, :boolean 0}
     (:token foo-lte) => :foo≤?
-    (i/get-stack
+    (get-stack
       (i/execute-instruction
         (i/register-instruction (i/make-interpreter :stacks {:foo '(1 2)}) foo-lte)
         :foo≤?)
       :boolean) => '(false)
-    (i/get-stack
+    (get-stack
       (i/execute-instruction
         (i/register-instruction (i/make-interpreter :stacks {:foo '(1 1)}) foo-lte)
         :foo≤?)
       :boolean) => '(true)
-    (i/get-stack
+    (get-stack
       (i/execute-instruction
         (i/register-instruction (i/make-interpreter :stacks {:foo '(3 2)}) foo-lte)
         :foo≤?)
@@ -59,17 +60,17 @@
     (:tags foo-gte) => #{:comparison}
     (:needs foo-gte) => {:foo 2, :boolean 0}
     (:token foo-gte) => :foo≥?
-    (i/get-stack
+    (get-stack
       (i/execute-instruction
         (i/register-instruction (i/make-interpreter :stacks {:foo '(1 2)}) foo-gte)
         :foo≥?)
       :boolean) => '(true)
-    (i/get-stack
+    (get-stack
       (i/execute-instruction
         (i/register-instruction (i/make-interpreter :stacks {:foo '(1 1)}) foo-gte)
         :foo≥?)
       :boolean) => '(true)
-    (i/get-stack
+    (get-stack
       (i/execute-instruction
         (i/register-instruction (i/make-interpreter :stacks {:foo '(3 2)}) foo-gte)
         :foo≥?)
@@ -83,17 +84,17 @@
     (:tags foo-gt) => #{:comparison}
     (:needs foo-gt) => {:foo 2, :boolean 0}
     (:token foo-gt) => :foo>?
-    (i/get-stack
+    (get-stack
       (i/execute-instruction
         (i/register-instruction (i/make-interpreter :stacks {:foo '(1 2)}) foo-gt)
         :foo>?)
       :boolean) => '(true)
-    (i/get-stack
+    (get-stack
       (i/execute-instruction
         (i/register-instruction (i/make-interpreter :stacks {:foo '(1 1)}) foo-gt)
         :foo>?)
       :boolean) => '(false)
-    (i/get-stack
+    (get-stack
       (i/execute-instruction
         (i/register-instruction (i/make-interpreter :stacks {:foo '(3 2)}) foo-gt)
         :foo>?)
@@ -106,17 +107,17 @@
     (:tags foo-min) => #{:comparison}
     (:needs foo-min) => {:foo 2}
     (:token foo-min) => :foo-min
-    (i/get-stack
+    (get-stack
       (i/execute-instruction
         (i/register-instruction (i/make-interpreter :stacks {:foo '(1 2)}) foo-min)
         :foo-min)
       :foo) => '(1)
-    (i/get-stack
+    (get-stack
       (i/execute-instruction
         (i/register-instruction (i/make-interpreter :stacks {:foo '(1 1)}) foo-min)
         :foo-min)
       :foo) => '(1)
-    (i/get-stack
+    (get-stack
       (i/execute-instruction
         (i/register-instruction (i/make-interpreter :stacks {:foo '(3 2)}) foo-min)
         :foo-min)
@@ -129,17 +130,17 @@
     (:tags foo-max) => #{:comparison}
     (:needs foo-max) => {:foo 2}
     (:token foo-max) => :foo-max
-    (i/get-stack
+    (get-stack
       (i/execute-instruction
         (i/register-instruction (i/make-interpreter :stacks {:foo '(1 2)}) foo-max)
         :foo-max)
       :foo) => '(2)
-    (i/get-stack
+    (get-stack
       (i/execute-instruction
         (i/register-instruction (i/make-interpreter :stacks {:foo '(1 1)}) foo-max)
         :foo-max)
       :foo) => '(1)
-    (i/get-stack
+    (get-stack
       (i/execute-instruction
         (i/register-instruction (i/make-interpreter :stacks {:foo '(3 2)}) foo-max)
         :foo-max)

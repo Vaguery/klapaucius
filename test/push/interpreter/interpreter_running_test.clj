@@ -1,8 +1,9 @@
 (ns push.interpreter.interpreter-running-test
   (:use midje.sweet)
-  (:require [push.instructions.core :as instr])
   (:use [push.instructions.dsl])
+  (:require [push.instructions.core :as instr])
   (:require [push.types.core :as types])
+  (:use push.util.stack-manipulation)
   (:use [push.interpreter.core]))
 
 

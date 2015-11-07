@@ -1,10 +1,13 @@
 (ns push.interpreter.interpreter-setup-test
   (:use midje.sweet)
-  (:require [push.instructions.core :as i])
   (:use [push.util.type-checkers :only (boolean?)])
+  (:use push.util.stack-manipulation)
   (:use [push.instructions.dsl])
   (:use [push.interpreter.core])
-  (:require [push.types.core :as types]))
+  (:require [push.instructions.core :as i])
+  (:require [push.types.core :as types])
+  (:require [push.types.base.integer])
+  )
 
 
 ;; initialization with make-interpreter
@@ -253,6 +256,49 @@
   (get-stack (make-interpreter :stacks {:foo '(7 6 5)}) :foo ) => '(7 6 5)
   (get-stack (make-interpreter :stacks {:foo '(7 6 5)}) :integer ) => '()
   (get-stack (make-interpreter) :foo ) => nil)
+
+
+;;;; make-classic-interpreter
+
+
+(fact "`make-classic-interpreter` has `classic-integer-type` registered"
+  (:types (make-classic-interpreter)) =>
+    (contains push.types.base.integer/classic-integer-type))
+
+
+(fact "`make-classic-interpreter` has `classic-boolean-type` registered"
+  (:types (make-classic-interpreter)) =>
+    (contains push.types.base.boolean/classic-boolean-type))
+
+
+(future-fact "`make-classic-interpreter` has `classic-float-type` registered"
+  (:types (make-classic-interpreter)) =>
+    (contains push.types.base.float/classic-float-type))
+
+
+(future-fact "`make-classic-interpreter` has `classic-code-type` registered"
+  (:types (make-classic-interpreter)) =>
+    (contains push.types.base.code/classic-code-type))
+
+
+(future-fact "`make-classic-interpreter` has `classic-exec-type` registered"
+  (:types (make-classic-interpreter)) =>
+    (contains push.types.base.exec/classic-exec-type))
+
+
+(future-fact "`make-classic-interpreter` can have its :stacks set")
+
+
+(future-fact "`make-classic-interpreter` can have its :inputs set")
+
+
+(future-fact "`make-classic-interpreter` can have its :config set")
+
+
+(future-fact "`make-classic-interpreter` can have its :counter set")
+
+
+;;;; manipulating existing interpreters
 
 
 ;; register-instruction

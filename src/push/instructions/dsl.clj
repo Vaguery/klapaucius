@@ -1,9 +1,13 @@
 (ns push.instructions.dsl
-  (:require [push.interpreter.core :as i]))
+  (:use [push.util.stack-manipulation])
+  )
 
-;; a "PushDSL blob" is just a vector with an interpreter and a hashmap
+
+;;;; a "PushDSL blob" is just a vector with an interpreter and a hashmap
+
 
 ;; utilities
+
 
 (defn- delete-nth
   "Removes an indexed item from a seq; raises an Exception if the seq
@@ -104,7 +108,7 @@
   (but no :as keyword), and returns the index and the item at that
   index, raising any argument exceptions it finds."
   [[interpreter scratch] stackname & {:keys [at]}]
-  (let [old-stack (i/get-stack interpreter stackname)]
+  (let [old-stack (get-stack interpreter stackname)]
     (cond (nil? old-stack) (throw-unknown-stack-exception stackname)
           (empty? old-stack) (throw-empty-stack-exception stackname)
           :else (let [idx (valid-DSL-index at scratch)
@@ -122,10 +126,10 @@
   Exceptions when:
   - the stack doesn't exist"
   [[interpreter scratch] stackname & {:keys [as]}]
-  (if-let [old-stack (i/get-stack interpreter stackname)]
+  (if-let [old-stack (get-stack interpreter stackname)]
     (if (nil? as)
       (throw-missing-key-exception :as)
-      [(i/clear-stack interpreter stackname)
+      [(clear-stack interpreter stackname)
         (assoc scratch as old-stack)])
     (throw-unknown-stack-exception stackname)))
 
@@ -138,12 +142,12 @@
     - the stack doesn't exist
     - the stack is empty"
   [ [interpreter scratch] stackname & {:keys [as]}]
-  (let [old-stack (i/get-stack interpreter stackname)]
+  (let [old-stack (get-stack interpreter stackname)]
     (cond (nil? old-stack) (throw-unknown-stack-exception stackname)
           (empty? old-stack) (throw-empty-stack-exception stackname)
           (nil? as) (throw-missing-key-exception :as)
           :else (let [top-item (first old-stack)]
-                  [(i/set-stack interpreter stackname (rest old-stack))
+                  [(set-stack interpreter stackname (rest old-stack))
                    (assoc scratch as top-item)]))))
       
 
@@ -159,7 +163,7 @@
     - the local is not specified (no :as argument)"
   [[interpreter scratch] stackname & {:keys [as]}]
   (if-let [scratch-var as]
-    (if-let [stack (i/get-stack interpreter stackname)]
+    (if-let [stack (get-stack interpreter stackname)]
       [interpreter (assoc scratch scratch-var (count stack))]
       (throw-unknown-stack-exception stackname))
     (throw-missing-key-exception :as)))
@@ -185,7 +189,7 @@
       (throw-missing-key-exception :as)
       (let [new-stack (delete-nth old-stack idx)
             saved-item (nth old-stack idx)]
-        [(i/set-stack interpreter stackname new-stack)
+        [(set-stack interpreter stackname new-stack)
          (assoc scratch as saved-item)]))))
 
 
@@ -206,7 +210,7 @@
   (let [[idx old-stack]
           (get-nth-of [interpreter scratch] stackname :at at)]
     (let [new-stack (delete-nth old-stack idx)]
-      [(i/set-stack interpreter stackname new-stack) scratch])))
+      [(set-stack interpreter stackname new-stack) scratch])))
 
 
 (defn delete-stack
@@ -215,8 +219,8 @@
   Exceptions when:
     - the stack doesn't exist"
   [[interpreter scratch] stackname]
-  (if-let [old-stack (i/get-stack interpreter stackname)]
-    [(i/clear-stack interpreter stackname) scratch]
+  (if-let [old-stack (get-stack interpreter stackname)]
+    [(clear-stack interpreter stackname) scratch]
     (throw-unknown-stack-exception stackname)))
 
 
@@ -228,11 +232,11 @@
     - the stack doesn't exist
     - the stack is empty"
   [[interpreter scratch] stackname]
-  (let [old-stack (i/get-stack interpreter stackname)]
+  (let [old-stack (get-stack interpreter stackname)]
     (cond (nil? old-stack) (throw-unknown-stack-exception stackname)
           (empty? old-stack) (throw-empty-stack-exception stackname)
           :else (let [top-item (first old-stack)]
-            [(i/set-stack interpreter stackname (rest old-stack)) scratch]))))
+            [(set-stack interpreter stackname (rest old-stack)) scratch]))))
 
 
 (defn insert-as-nth-of
@@ -251,12 +255,12 @@
     - no index is given
     - the index is a :keyword that doesn't point to an integer"
   [[interpreter scratch] stackname kwd & {:keys [as at]}]
-    (if-let [old-stack (i/get-stack interpreter stackname)]
+    (if-let [old-stack (get-stack interpreter stackname)]
       (let [idx (valid-DSL-index at scratch)
             which (mod idx (inc (count old-stack)))
             new-item (kwd scratch)
             new-stack (insert-as-nth old-stack new-item which)]
-        [(i/set-stack interpreter stackname new-stack) scratch])
+        [(set-stack interpreter stackname new-stack) scratch])
       (throw-unknown-stack-exception stackname)))
 
 
@@ -271,12 +275,12 @@
   - the stack doesn't exist
   - (does not warn when the keyword isn't defined)"
   [[interpreter scratch] stackname kwd]
-  (if (some? (i/get-stack interpreter stackname))
+  (if (some? (get-stack interpreter stackname))
     (let [replacement (kwd scratch)
           new-stack (cond (nil? replacement) (list)
                           (list? replacement) replacement
                           :else (list replacement))]
-      [(i/set-stack interpreter stackname new-stack) scratch])
+      [(set-stack interpreter stackname new-stack) scratch])
     (throw-unknown-stack-exception stackname)))
 
 
@@ -291,12 +295,12 @@
   - the stack doesn't exist
   - (does not warn when the keyword isn't defined)"
   [[interpreter scratch] stackname kwd]
-  (if-let [old-stack (i/get-stack interpreter stackname)]
+  (if-let [old-stack (get-stack interpreter stackname)]
     (let [new-item (kwd scratch)
           new-stack (if (nil? new-item)
                       old-stack 
                       (conj old-stack new-item))]
-      [(i/set-stack interpreter stackname new-stack) scratch])
+      [(set-stack interpreter stackname new-stack) scratch])
     (throw-unknown-stack-exception stackname)))
 
 
@@ -311,10 +315,10 @@
   - the stack doesn't exist
   - (does not warn when the keyword isn't defined)"
   [[interpreter scratch] stackname keywords]
-  (if-let [old-stack (i/get-stack interpreter stackname)]
+  (if-let [old-stack (get-stack interpreter stackname)]
     (let [new-items (map scratch keywords)
           new-stack (into old-stack (remove nil? new-items))]
-      [(i/set-stack interpreter stackname new-stack) scratch])
+      [(set-stack interpreter stackname new-stack) scratch])
     (throw-unknown-stack-exception stackname)))
 
 
@@ -327,7 +331,7 @@
   - the stack doesn't exist
   - no :as argument is present"
   [[interpreter scratch] stackname & {:keys [as]}]
-  (if-let [old-stack (i/get-stack interpreter stackname)]
+  (if-let [old-stack (get-stack interpreter stackname)]
     (if (some? as)
       [interpreter (assoc scratch as old-stack)]
       (throw-missing-key-exception :as))
@@ -366,7 +370,7 @@
   - no :as argument is present
   - the stack is empty"
   [[interpreter scratch] stackname & {:keys [as]}]
-  (let [old-stack (i/get-stack interpreter stackname)]
+  (let [old-stack (get-stack interpreter stackname)]
     (cond (nil? old-stack) (throw-unknown-stack-exception stackname)
           (empty? old-stack) (throw-empty-stack-exception stackname)
           (nil? as) (throw-missing-key-exception ":as")
@@ -394,42 +398,3 @@
       [interpreter (assoc scratch as result)])))
 
 
-;;;; integration with instruction definitions
-
-(defn needs-of-dsl-step
-  [step]
-  (let [cmd (first step)
-        resolved (resolve cmd)]
-    (condp = resolved
-      #'calculate {}
-      #'consume-nth-of {(second step) 1}
-      #'consume-stack {(second step) 0}
-      #'consume-top-of {(second step) 1}
-      #'count-of {(second step) 0}
-      #'delete-nth-of {(second step) 1}
-      #'delete-stack {(second step) 0}
-      #'delete-top-of {(second step) 1}
-      #'insert-as-nth-of {(second step) 0}
-      #'replace-stack {(second step) 0}
-      #'push-onto {(second step) 0}
-      #'push-these-onto {(second step) 0}
-      #'save-nth-of {(second step) 1}
-      #'save-stack {(second step) 0}
-      #'save-top-of {(second step) 1}
-      (throw-unknown-DSL-exception cmd)  )))
-
-
-(defn total-needs
-  [transaction]
-  (apply (partial merge-with +)
-    (map needs-of-dsl-step transaction)))
-
-
-(defmacro
-  def-function-from-dsl
-  [& transactions]
-  (let [interpreter (gensym 'interpreter)
-       words &form]
-    (do 
-    `(fn [~interpreter] 
-      (first (-> [~interpreter {}] ~@transactions))))))

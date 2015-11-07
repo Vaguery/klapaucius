@@ -1,0 +1,33 @@
+digraph simple_hierarchy {
+ graph [rankdir = "LR"];
+ push_util_test_helpers->midje_sweet;
+push_types_base_integer->push_instructions_dsl;
+push_types_base_integer->push_instructions_core;
+push_types_core->push_instructions_core;
+push_types_base_boolean->push_instructions_dsl;
+push_types_core->push_instructions_dsl;
+push_interpreter_core->push_types_base_integer;
+push_types_base_boolean->push_types_core;
+push_types_base_boolean->push_instructions_core;
+push_instructions_dsl->push_interpreter_core;
+push_types_base_integer->push_types_core;
+push_util_test_helpers->push_interpreter_core;
+push_types_base_boolean->push_util_type_checkers;
+push_interpreter_core->push_util_type_checkers;
+push_instructions_core->push_instructions_dsl;
+ subgraph cluster_clojure {
+label="clojure";
+color=blue;
+push_instructions_core[label="push.instructions.core"];
+push_types_base_integer[label="push.types.base.integer"];
+push_interpreter_core[label="push.interpreter.core"];
+push_instructions_dsl[label="push.instructions.dsl"];
+push_util_type_checkers[label="push.util.type-checkers"];
+push_types_core[label="push.types.core"];
+push_util_test_helpers[label="push.util.test-helpers"];
+push_types_base_boolean[label="push.types.base.boolean"];
+midje_sweet[label="midje.sweet"];
+} subgraph cluster_java {
+label="java";
+color=red;
+}}

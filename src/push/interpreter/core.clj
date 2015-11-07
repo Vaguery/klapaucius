@@ -1,5 +1,8 @@
 (ns push.interpreter.core
   (:use [push.util.type-checkers :only (boolean?)])
+  (:use [push.util.stack-manipulation])
+  (:require [push.types.base.integer])
+  (:require [push.types.base.boolean])
   )
 
 
@@ -158,8 +161,58 @@
         )))
 
 
+;;; make-classic-interpreter
 
-;;; 
+
+(defn make-classic-interpreter
+  "A convenience funciton that creates a new Interpreter record set up 'like Clojush'.
+
+  With no arguments, it has an empty :program, the :stacks include
+  core types and are empty, these types are loaded (in this order):
+  
+  - classic-integer-type
+  - classic-boolean-type
+  - classic-float-type
+  - classic-code-type
+  - classic-exec-setup
+
+  and the counter is 0.
+
+  Optional arguments include
+
+  - :program (defaults to an empty vector)
+  - :stacks (a hashmap, with contents)
+  - :inputs (either a vector of values or a hashmap of named bindings)
+  - :config
+  - :counter
+
+  (other interpreter values should be set after initialization)"
+  [& {:keys [program stacks inputs config counter done?]
+      :or {program []
+           stacks {}
+           inputs {}
+           instructions {}
+           config {}
+           counter 0
+           done? false}}]
+  (let [all-stacks (merge core-stacks stacks)]
+    (-> (->Interpreter  program 
+                        '()        ;; types
+                        []         ;; router
+                        all-stacks 
+                        {}         ;; inputs
+                        {}         ;; instructions
+                        config
+                        counter
+                        done?)
+        (register-types [push.types.base.integer/classic-integer-type
+                         push.types.base.boolean/classic-boolean-type])
+        ; (register-inputs inputs)
+        )))
+
+
+
+;;; manipulating Interpreter state
 
 
 
@@ -219,20 +272,6 @@
     :else interpreter)))
 
 
-(defn get-stack
-  "A convenience function which returns the named stack from the
-  interpreter"
-  [interpreter stack]
-  (get-in interpreter [:stacks stack]))
-
-
-(defn set-stack
-  "A convenience function which replaces the named stack with the
-  indicated list"
-  [interpreter stack new-value]
-  (assoc-in interpreter [:stacks stack] new-value))
-
-
 (defn push-item
   "Takes an Interpreter, a stack name and a Clojure expression, and
   returns the Interpreter with the item pushed onto the specified
@@ -250,13 +289,6 @@
   (let [old-stack (get-in interpreter [:stacks stackname])
         new-stack (into old-stack (reverse item-list))]
     (set-stack interpreter stackname new-stack)))
-
-
-(defn clear-stack
-  "Empties the named stack."
-  [interpreter stack]
-  (assoc-in interpreter [:stacks stack] (list)))
-
 
 
 (defn- instruction?

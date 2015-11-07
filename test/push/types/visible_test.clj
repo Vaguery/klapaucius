@@ -1,6 +1,7 @@
 (ns push.types.visible-test
   (:use midje.sweet)
-  (:use [push.types.core])
+  (:use push.types.core)
+  (:use push.util.stack-manipulation)
   (:require [push.interpreter.core :as i]))
 
 
@@ -16,12 +17,12 @@
     (class foo-depth) => push.instructions.core.Instruction
     (:needs foo-depth) => {:foo 0, :integer 0}
     (:token foo-depth) => :foo-stackdepth
-    (i/get-stack
+    (get-stack
       (i/execute-instruction
         (i/register-instruction (i/make-interpreter :stacks {:foo '(1 2)}) foo-depth)
         :foo-stackdepth)
       :integer) => '(2)
-    (i/get-stack
+    (get-stack
       (i/execute-instruction
         (i/register-instruction (i/make-interpreter :stacks {:foo '(false [2] 3)}) foo-depth)
         :foo-stackdepth)
@@ -33,12 +34,12 @@
     (class foo-none?) => push.instructions.core.Instruction
     (:needs foo-none?) => {:boolean 0, :foo 0}
     (:token foo-none?) => :foo-empty?
-    (i/get-stack
+    (get-stack
       (i/execute-instruction
         (i/register-instruction (i/make-interpreter :stacks {:foo '(1 2)}) foo-none?)
         :foo-empty?)
       :boolean) => '(false)
-    (i/get-stack
+    (get-stack
       (i/execute-instruction
         (i/register-instruction (i/make-interpreter :stacks {:foo '()}) foo-none?)
         :foo-empty?)

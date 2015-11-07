@@ -1,7 +1,8 @@
 (ns push.instructions.dsl-test
   (:use midje.sweet)
-  (:require [push.interpreter.core :as i])
   (:use push.instructions.dsl)
+  (:use push.util.stack-manipulation)
+  (:require [push.interpreter.core :as i])
   (:require [push.instructions.core :as inst]))
 
 ;; convenience functions for testing
@@ -42,7 +43,7 @@
 
 (defn get-stack-from-dslblob
   [stackname dslblob]
-  (i/get-stack (first dslblob) stackname))
+  (get-stack (first dslblob) stackname))
 
 
 (facts "about `delete-top-of`"
@@ -542,72 +543,72 @@
 ;;;; working with DSL transactions
 
 
-;; needs-of-dsl-step
+;; inst/needs-of-dsl-step
 
 (fact "`needs-of-dsl-step` returns a hashmap containing the needs for every DSL instruction"
-  (needs-of-dsl-step 
+  (inst/needs-of-dsl-step 
     '(calculate [:a :b] #(+ %1 %2) :as :sum)) => {}
-  (needs-of-dsl-step 
+  (inst/needs-of-dsl-step 
     '(consume-nth-of :integer :at 1 :as :bar)) => {:integer 1}
-  (needs-of-dsl-step
+  (inst/needs-of-dsl-step
     '(save-nth-of :integer :at 11 :as :foo))  => {:integer 1}
-  (needs-of-dsl-step
+  (inst/needs-of-dsl-step
     '(save-top-of :integer :as :bar))  => {:integer 1}
-  (needs-of-dsl-step
+  (inst/needs-of-dsl-step
     '(save-stack :integer :as :bar))  => {:integer 0}
-  (needs-of-dsl-step
+  (inst/needs-of-dsl-step
     '(push-onto :integer :foo))  => {:integer 0}
-  (needs-of-dsl-step
+  (inst/needs-of-dsl-step
     '(replace-stack :integer :foo))  => {:integer 0}
-  (needs-of-dsl-step
+  (inst/needs-of-dsl-step
     '(delete-nth-of :integer :at 1))  => {:integer 1}
-  (needs-of-dsl-step
+  (inst/needs-of-dsl-step
     '(delete-stack :integer))  => {:integer 0}
-  (needs-of-dsl-step
+  (inst/needs-of-dsl-step
     '(consume-stack :integer :as :foo))  => {:integer 0}
-  (needs-of-dsl-step
+  (inst/needs-of-dsl-step
     '(consume-top-of :integer :as :foo)) => {:integer 1}
-  (needs-of-dsl-step
+  (inst/needs-of-dsl-step
     '(delete-top-of :integer)) => {:integer 1}
-  (needs-of-dsl-step
+  (inst/needs-of-dsl-step
     '(count-of :integer :as :foo)) => {:integer 0})
 
 
-(fact "`needs-of-dsl-step` throws an exception for unknown DSL instructions"
-  (needs-of-dsl-step '(bad-idea-instruction :foo 8 :bar)) =>
+(fact "`inst/needs-of-dsl-step` throws an exception for unknown DSL instructions"
+  (inst/needs-of-dsl-step '(bad-idea-instruction :foo 8 :bar)) =>
     (throws #"parse error: 'bad-idea-instruction' is not"))
 
 
-;; total-needs
+;; inst/total-needs
 
-(fact "`total-needs` takes a whole transaction and sums up all the needs of each item"
-  (total-needs 
+(fact "`inst/total-needs` takes a whole transaction and sums up all the needs of each item"
+  (inst/total-needs 
     ['(consume-nth-of :integer :at 1 :as :bar)]) => {:integer 1}
 
-  (total-needs 
+  (inst/total-needs 
     ['(consume-top-of :integer :as :bar)
      '(consume-nth-of :integer :at 1 :as :bar)]) => {:integer 2}
 
-  (total-needs 
+  (inst/total-needs 
     ['(delete-nth-of :integer :at 1)
      '(consume-top-of :integer :as :arg1)
      '(consume-top-of :integer :as :arg2)
      '(consume-top-of :boolean :as :b1)
      '(consume-top-of :foo :as :foo1)]) => {:boolean 1, :foo 1, :integer 3}
 
-  (total-needs 
+  (inst/total-needs 
     ['(calculate [] #(33) :as :tt)]) => {}
 
 
-  (total-needs 
+  (inst/total-needs 
     ['(consume-top-of :integer :as :arg1)
      '(consume-top-of :integer :as :arg2)
      '(calculate [:arg1 :arg2] #(mod %1 %2) :as :m)
      '(push-onto :integer :m)]) => {:integer 2} )
 
 
-(fact "`total-needs` throws up when it sees bad DSL code"
-  (total-needs 
+(fact "`inst/total-needs` throws up when it sees bad DSL code"
+  (inst/total-needs 
     ['(consume-top-of :integer :as :arg1)
      '(consume-top-of :integer :as :arg2)
      '(calculate [:arg1 :arg2] #(mod %1 %2) :as :m)
@@ -615,20 +616,20 @@
     (throws "Push DSL parse error: 'push' is not a known instruction."))
 
 
-;; def-function-from-dsl
+;; inst/def-function-from-dsl
 
 
-(fact "`def-function-from-dsl` produces a function from zero or more DSL commands"
-  (fn? (macroexpand-1 (def-function-from-dsl 
+(fact "`inst/def-function-from-dsl` produces a function from zero or more DSL commands"
+  (fn? (macroexpand-1 (inst/def-function-from-dsl 
     (consume-top-of :integer :as :bar) ))) => true
-  (fn? (macroexpand-1 (def-function-from-dsl ))) => true
-  (fn? (macroexpand-1 (def-function-from-dsl 
+  (fn? (macroexpand-1 (inst/def-function-from-dsl ))) => true
+  (fn? (macroexpand-1 (inst/def-function-from-dsl 
     (consume-top-of :integer :as :bar)
     (consume-top-of :integer :as :bar) ))) => true)
 
 
 (fact "applying that function to an Interpreter produces an Interpreter result"
-  (let [int-add (def-function-from-dsl 
+  (let [int-add (inst/def-function-from-dsl 
                   (consume-top-of :integer :as :arg1)
                   (consume-top-of :integer :as :arg2)
                   (calculate [:arg1 :arg2] #(+ %1 %2) :as :sum)
@@ -637,12 +638,12 @@
 
 
 (fact "applying the function does the things it's supposed to"
-  (let [int-add (def-function-from-dsl 
+  (let [int-add (inst/def-function-from-dsl 
                   (consume-top-of :integer :as :arg1)
                   (consume-top-of :integer :as :arg2)
                   (calculate [:arg1 :arg2] #(+ %1 %2) :as :sum)
                   (push-onto :integer :sum))]
-  (i/get-stack (int-add afew) :integer) => '(3 3)))
+  (get-stack (int-add afew) :integer) => '(3 3)))
 
 
 ;; `push-these-onto [stackname [locals]]`

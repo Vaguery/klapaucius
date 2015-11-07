@@ -1,5 +1,6 @@
 (ns push.instructions.instructions-setup-test
   (:use midje.sweet)
+  (:use push.util.stack-manipulation)
   (:use [push.instructions.core])
   (:use [push.instructions.dsl])
   (:require [push.interpreter.core :as i]))
@@ -71,5 +72,5 @@
         context (i/register-instruction 
                   (i/make-interpreter :stacks {:foo '(1 2 3) :bar '(4 5 6)})
                   foobar)]
-  (i/get-stack (i/execute-instruction context :foobar) :bar ) => '(1 4 5 6)
-  (i/get-stack (i/execute-instruction context :foobar) :foo ) => '(2 3)))
+  (get-stack (i/execute-instruction context :foobar) :bar ) => '(1 4 5 6)
+  (get-stack (i/execute-instruction context :foobar) :foo ) => '(2 3)))

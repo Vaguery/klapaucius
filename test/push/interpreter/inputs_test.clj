@@ -1,5 +1,6 @@
 (ns push.interpreter.inputs-test
   (:use midje.sweet)
+  (:use push.util.stack-manipulation)
   (:use [push.interpreter.core]))
 
 
