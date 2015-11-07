@@ -1,7 +1,7 @@
 (ns push.types.movable-test
   (:use midje.sweet)
   (:use [push.types.core])
-  (:require [push.interpreter.interpreter-core :as i]))
+  (:require [push.interpreter.core :as i]))
 
 
 ;; movable instructions
@@ -9,7 +9,7 @@
 
 (fact "dup-instruction returns an Instruction with the correct stuff"
   (let [foo-dup (dup-instruction (make-type :foo))]
-    (class foo-dup) => push.instructions.instructions_core.Instruction
+    (class foo-dup) => push.instructions.core.Instruction
     (:tags foo-dup) => #{:combinator}
     (:needs foo-dup) => {:foo 1}
     (:token foo-dup) => :foo-dup
@@ -32,7 +32,7 @@
 
 (fact "flush-instruction returns an Instruction with the correct stuff"
   (let [foo-flush (flush-instruction (make-type :foo))]
-    (class foo-flush) => push.instructions.instructions_core.Instruction
+    (class foo-flush) => push.instructions.core.Instruction
     (:tags foo-flush) => #{:combinator}
     (:needs foo-flush) => {:foo 0}
     (:token foo-flush) => :foo-flush
@@ -50,7 +50,7 @@
 
 (fact "pop-instruction returns an Instruction with the correct stuff"
   (let [foo-pop (pop-instruction (make-type :foo))]
-    (class foo-pop) => push.instructions.instructions_core.Instruction
+    (class foo-pop) => push.instructions.core.Instruction
     (:tags foo-pop) => #{:combinator}
     (:needs foo-pop) => {:foo 1}
     (:token foo-pop) => :foo-pop
@@ -68,7 +68,7 @@
 
 (fact "rotate-instruction returns an Instruction with the correct stuff"
   (let [foo-rotate (rotate-instruction (make-type :foo))]
-    (class foo-rotate) => push.instructions.instructions_core.Instruction
+    (class foo-rotate) => push.instructions.core.Instruction
     (:tags foo-rotate) => #{:combinator}
     (:needs foo-rotate) => {:foo 3}
     (:token foo-rotate) => :foo-rotate
@@ -97,7 +97,7 @@
 
 (fact "shove-instruction returns an Instruction with the correct stuff"
   (let [foo-shove (shove-instruction (make-type :foo))]
-    (class foo-shove) => push.instructions.instructions_core.Instruction
+    (class foo-shove) => push.instructions.core.Instruction
     (:tags foo-shove) => #{:combinator}
     (:needs foo-shove) => {:foo 1, :integer 1}
     (:token foo-shove) => :foo-shove
@@ -115,7 +115,7 @@
 
 (fact "swap-instruction returns an Instruction with the correct stuff"
   (let [foo-swap (swap-instruction (make-type :foo))]
-    (class foo-swap) => push.instructions.instructions_core.Instruction
+    (class foo-swap) => push.instructions.core.Instruction
     (:tags foo-swap) => #{:combinator}
     (:needs foo-swap) => {:foo 2}
     (:token foo-swap) => :foo-swap
@@ -133,7 +133,7 @@
 
 (fact "yank-instruction returns an Instruction with the correct stuff"
   (let [foo-yank (yank-instruction (make-type :foo))]
-    (class foo-yank) => push.instructions.instructions_core.Instruction
+    (class foo-yank) => push.instructions.core.Instruction
     (:tags foo-yank) => #{:combinator}
     (:needs foo-yank) => {:foo 1, :integer 1}
     (:token foo-yank) => :foo-yank
@@ -154,7 +154,7 @@
 
 (fact "yankdup-instruction returns an Instruction with the correct stuff"
   (let [foo-yankdup (yankdup-instruction (make-type :foo))]
-    (class foo-yankdup) => push.instructions.instructions_core.Instruction
+    (class foo-yankdup) => push.instructions.core.Instruction
     (:tags foo-yankdup) => #{:combinator}
     (:needs foo-yankdup) => {:foo 1, :integer 1}
     (:token foo-yankdup) => :foo-yankdup

@@ -2,7 +2,7 @@
   (:use midje.sweet)
   (:require [push.instructions.base])
   (:use [push.instructions.dsl])
-  (:use [push.interpreter.interpreter-core]))
+  (:use [push.interpreter.core]))
 
 ;; First release
 

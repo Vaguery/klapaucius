@@ -1,9 +1,9 @@
 (ns push.interpreter.interpreter-running-test
   (:use midje.sweet)
-  (:require [push.instructions.instructions-core :as i])
+  (:require [push.instructions.core :as instr])
   (:use [push.instructions.dsl])
-  (:use [push.interpreter.interpreter-core])
-  (:require [push.types.core :as types]))
+  (:require [push.types.core :as types])
+  (:use [push.interpreter.core]))
 
 
 ;;; the router and handle-item
@@ -31,7 +31,7 @@
 
 
 (fact "`router-sees?` checks the router predicates and returns true if one matches"
-  (let [abbr #'push.interpreter.interpreter-core/router-sees?]
+  (let [abbr #'push.interpreter.core/router-sees?]
     (abbr (make-interpreter) :not-likely) => nil
     (abbr (make-interpreter 
       :router [[(fn [item] (= item :not-likely)) :integer]]) :not-likely) => true))
@@ -108,14 +108,15 @@
 
 
 (fact "handle-item will execute a registered instruction"
- (let [foo (i/make-instruction :foo :transaction (fn [a] 761))
+ (let [foo (instr/make-instruction :foo :transaction (fn [a] 761))
        registry {:foo foo}
        he-knows-foo (make-interpreter :instructions registry)]
-   (handle-item he-knows-foo :foo) => 761 ;; an intentionally surprising result))
+   (handle-item he-knows-foo :foo) => 761))
+    ;; an intentionally surprising result
 
 
 (fact "handle-item will not execute an unregistered instruction"
- (let [foo (i/make-instruction :foo :transaction (fn [a] 761))
+ (let [foo (instr/make-instruction :foo :transaction (fn [a] 761))
        registry {:foo foo}
        he-knows-foo (make-interpreter :instructions registry)]
    (handle-item he-knows-foo :bar) => (throws #"Push Parsing Error:")))
@@ -125,7 +126,7 @@
 
 
 (def intProductToFloat
-  (i/build-instruction intProductToFloat
+  (instr/build-instruction intProductToFloat
     (consume-top-of :integer :as :arg1)
     (consume-top-of :integer :as :arg2)
     (calculate [:arg1 :arg2] #(float (* %1 %2)) :as :p)

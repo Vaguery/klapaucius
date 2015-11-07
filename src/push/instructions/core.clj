@@ -1,5 +1,5 @@
-(ns push.instructions.instructions-core
-  (:require [push.interpreter.interpreter-core :as i])
+(ns push.instructions.core
+  (:require [push.interpreter.core :as i])
   (:use [push.instructions.dsl]))
 
 

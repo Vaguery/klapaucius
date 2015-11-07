@@ -1,8 +1,8 @@
 (ns push.interpreter.interpreter-setup-test
   (:use midje.sweet)
-  (:require [push.instructions.instructions-core :as i])
+  (:require [push.instructions.core :as i])
   (:use [push.instructions.dsl])
-  (:use [push.interpreter.interpreter-core])
+  (:use [push.interpreter.core])
   (:require [push.types.core :as types]))
 
 
@@ -274,7 +274,7 @@
 
 
 (fact "contains-at-least? returns true if the count of the specified stack is >= the number"
-  (let [abbr #'push.interpreter.interpreter-core/contains-at-least?]
+  (let [abbr #'push.interpreter.core/contains-at-least?]
   (abbr (make-interpreter) :integer 0) => true
   (abbr (make-interpreter) :integer 3) => false
   (abbr (make-interpreter :stacks {:integer '(1 2 3)}) :integer 3) => true
@@ -282,7 +282,7 @@
 
 
 (fact "contains-at-least? returns false if the named stack isn't present"
-  (let [abbr #'push.interpreter.interpreter-core/contains-at-least?]
+  (let [abbr #'push.interpreter.core/contains-at-least?]
 
   (abbr (make-interpreter) :foo 0) => false
   (abbr (make-interpreter) :boolean 0) => true))
@@ -292,7 +292,7 @@
 
 
 (fact "ready-for-instruction? returns false if the :needs of the specified instruction aren't met"
-  (let [abbr #'push.interpreter.interpreter-core/ready-for-instruction?
+  (let [abbr #'push.interpreter.core/ready-for-instruction?
         foo
           (i/make-instruction :foo :needs {:integer 2})
         an-int
@@ -302,13 +302,13 @@
     (count (get-stack an-int :integer)) => 1
     (abbr an-int :foo) => false
     (count (get-stack many-ints :integer )) => 4
-    (#'push.interpreter.interpreter-core/contains-at-least?
+    (#'push.interpreter.core/contains-at-least?
         many-ints :integer 2) => true
     (abbr many-ints :foo) => true))
 
 
 (fact "ready-for-instruction? returns false if the named instruction is not registered"
-  (let [abbr #'push.interpreter.interpreter-core/ready-for-instruction?
+  (let [abbr #'push.interpreter.core/ready-for-instruction?
         foo
           (i/make-instruction :foo :needs {:integer 2})
         an-int
@@ -371,7 +371,7 @@
 
 
 (fact "instruction? checks that an item is a registered Instruction in a given Interpreter"
- (let [abbr #'push.interpreter.interpreter-core/instruction?
+ (let [abbr #'push.interpreter.core/instruction?
        foo (i/make-instruction :foo)
        registry {:foo foo}
        he-knows-foo (make-interpreter :instructions registry)]

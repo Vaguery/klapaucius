@@ -1,8 +1,8 @@
 (ns push.instructions.dsl-test
   (:use midje.sweet)
-  (:require [push.interpreter.interpreter-core :as i])
+  (:require [push.interpreter.core :as i])
   (:use push.instructions.dsl)
-  (:require [push.instructions.instructions-core :as inst]))
+  (:require [push.instructions.core :as inst]))
 
 ;; convenience functions for testing
 
@@ -633,7 +633,7 @@
                   (consume-top-of :integer :as :arg2)
                   (calculate [:arg1 :arg2] #(+ %1 %2) :as :sum)
                   (push-onto :integer :sum))]
-  (class (int-add afew)) => push.interpreter.interpreter_core.Interpreter))
+  (class (int-add afew)) => push.interpreter.core.Interpreter))
 
 
 (fact "applying the function does the things it's supposed to"

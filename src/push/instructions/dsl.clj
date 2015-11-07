@@ -1,5 +1,5 @@
 (ns push.instructions.dsl
-  (:require [push.interpreter.interpreter-core :as i]))
+  (:require [push.interpreter.core :as i]))
 
 ;; a "PushDSL blob" is just a vector with an interpreter and a hashmap
 

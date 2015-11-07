@@ -1,5 +1,5 @@
 (ns push.instructions.base.integer_test
-  (:require [push.interpreter.interpreter-core :as i])
+  (:require [push.interpreter.core :as i])
   (:use [push.instructions.base.integer])
   (:use midje.sweet)
   (:use [push.util.test-helpers]))

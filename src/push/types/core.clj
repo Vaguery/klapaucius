@@ -1,5 +1,5 @@
 (ns push.types.core
-  (:require [push.instructions.instructions-core :as core])
+  (:require [push.instructions.core :as core])
   (:require [push.instructions.dsl :as dsl]))
 
 
@@ -49,7 +49,7 @@
   (let [typename (:stackname pushtype)
         instruction-name (str (name typename) "-stackdepth")]
     (eval (list
-      'push.instructions.instructions-core/build-instruction
+      'push.instructions.core/build-instruction
       instruction-name
       :tags #{:visible}
       `(push.instructions.dsl/count-of ~typename :as :depth)
@@ -62,7 +62,7 @@
   (let [typename (:stackname pushtype)
         instruction-name (str (name typename) "-empty?")]
     (eval (list
-      'push.instructions.instructions-core/build-instruction
+      'push.instructions.core/build-instruction
       instruction-name
       :tags #{:visible}
       `(push.instructions.dsl/count-of ~typename :as :depth)
@@ -90,7 +90,7 @@
   (let [typename (:stackname pushtype)
         instruction-name (str (name typename) "-equal?")]
     (eval (list
-      'push.instructions.instructions-core/build-instruction
+      'push.instructions.core/build-instruction
       instruction-name
       :tags #{:equatable}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
@@ -105,7 +105,7 @@
   (let [typename (:stackname pushtype)
         instruction-name (str (name typename) "-notequal?")]
     (eval (list
-      'push.instructions.instructions-core/build-instruction
+      'push.instructions.core/build-instruction
       instruction-name
       :tags #{:equatable}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
@@ -134,7 +134,7 @@
   (let [typename (:stackname pushtype)
         instruction-name (str (name typename) "<?")]
     (eval (list
-      'push.instructions.instructions-core/build-instruction
+      'push.instructions.core/build-instruction
       instruction-name
       :tags #{:comparison}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
@@ -149,7 +149,7 @@
   (let [typename (:stackname pushtype)
         instruction-name (str (name typename) "≤?")]
     (eval (list
-      'push.instructions.instructions-core/build-instruction
+      'push.instructions.core/build-instruction
       instruction-name
       :tags #{:comparison}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
@@ -164,7 +164,7 @@
   (let [typename (:stackname pushtype)
         instruction-name (str (name typename) "≥?")]
     (eval (list
-      'push.instructions.instructions-core/build-instruction
+      'push.instructions.core/build-instruction
       instruction-name
       :tags #{:comparison}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
@@ -179,7 +179,7 @@
   (let [typename (:stackname pushtype)
         instruction-name (str (name typename) ">?")]
     (eval (list
-      'push.instructions.instructions-core/build-instruction
+      'push.instructions.core/build-instruction
       instruction-name
       :tags #{:comparison}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
@@ -194,7 +194,7 @@
   (let [typename (:stackname pushtype)
         instruction-name (str (name typename) "-min")]
     (eval (list
-      'push.instructions.instructions-core/build-instruction
+      'push.instructions.core/build-instruction
       instruction-name
       :tags #{:comparison}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
@@ -209,7 +209,7 @@
   (let [typename (:stackname pushtype)
         instruction-name (str (name typename) "-max")]
     (eval (list
-      'push.instructions.instructions-core/build-instruction
+      'push.instructions.core/build-instruction
       instruction-name
       :tags #{:comparison}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
@@ -242,7 +242,7 @@
   (let [typename (:stackname pushtype)
         instruction-name (str (name typename) "-dup")]
     (eval (list
-      'push.instructions.instructions-core/build-instruction
+      'push.instructions.core/build-instruction
       instruction-name
       :tags #{:combinator}
       `(push.instructions.dsl/save-top-of ~typename :as :arg1)
@@ -255,7 +255,7 @@
   (let [typename (:stackname pushtype)
         instruction-name (str (name typename) "-flush")]
     (eval (list
-      'push.instructions.instructions-core/build-instruction
+      'push.instructions.core/build-instruction
       instruction-name
       :tags #{:combinator}
       `(push.instructions.dsl/delete-stack ~typename)))))
@@ -267,7 +267,7 @@
   (let [typename (:stackname pushtype)
         instruction-name (str (name typename) "-pop")]
     (eval (list
-      'push.instructions.instructions-core/build-instruction
+      'push.instructions.core/build-instruction
       instruction-name
       :tags #{:combinator}
       `(push.instructions.dsl/delete-top-of ~typename)))))
@@ -279,7 +279,7 @@
   (let [typename (:stackname pushtype)
         instruction-name (str (name typename) "-rotate")]
     (eval (list
-      'push.instructions.instructions-core/build-instruction
+      'push.instructions.core/build-instruction
       instruction-name
       :tags #{:combinator}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
@@ -296,7 +296,7 @@
   (let [typename (:stackname pushtype)
         instruction-name (str (name typename) "-shove")]
     (eval (list
-      'push.instructions.instructions-core/build-instruction
+      'push.instructions.core/build-instruction
       instruction-name
       :tags #{:combinator}
       '(push.instructions.dsl/consume-top-of :integer :as :index)
@@ -311,7 +311,7 @@
   (let [typename (:stackname pushtype)
         instruction-name (str (name typename) "-swap")]
     (eval (list
-      'push.instructions.instructions-core/build-instruction
+      'push.instructions.core/build-instruction
       instruction-name
       :tags #{:combinator}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
@@ -326,7 +326,7 @@
   (let [typename (:stackname pushtype)
         instruction-name (str (name typename) "-yank")]
     (eval (list
-      'push.instructions.instructions-core/build-instruction
+      'push.instructions.core/build-instruction
       instruction-name
       :tags #{:combinator}
       '(push.instructions.dsl/consume-top-of :integer :as :index)
@@ -341,7 +341,7 @@
   (let [typename (:stackname pushtype)
         instruction-name (str (name typename) "-yankdup")]
     (eval (list
-      'push.instructions.instructions-core/build-instruction
+      'push.instructions.core/build-instruction
       instruction-name
       :tags #{:combinator}
       '(push.instructions.dsl/consume-top-of :integer :as :index)

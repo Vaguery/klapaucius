@@ -1,4 +1,4 @@
-(ns push.interpreter.interpreter-core)
+(ns push.interpreter.core)
 
 
 (defrecord Interpreter [program

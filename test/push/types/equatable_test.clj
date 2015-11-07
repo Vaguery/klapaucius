@@ -1,7 +1,7 @@
 (ns push.types.equatable-test
   (:use midje.sweet)
   (:use [push.types.core])
-  (:require [push.interpreter.interpreter-core :as i]))
+  (:require [push.interpreter.core :as i]))
 
 
 ;; equatable instructions
@@ -9,7 +9,7 @@
 
 (fact "equal?-instruction returns an Instruction with the correct stuff"
   (let [foo-equal (equal?-instruction (make-type :foo))]
-    (class foo-equal) => push.instructions.instructions_core.Instruction
+    (class foo-equal) => push.instructions.core.Instruction
     (:needs foo-equal) => {:foo 2, :boolean 0}
     (:token foo-equal) => :foo-equal?
     (i/get-stack
@@ -26,7 +26,7 @@
 
 (fact "notequal?-instruction returns an Instruction with the correct stuff"
   (let [foo-notequal (notequal?-instruction (make-type :foo))]
-    (class foo-notequal) => push.instructions.instructions_core.Instruction
+    (class foo-notequal) => push.instructions.core.Instruction
     (:needs foo-notequal) => {:foo 2, :boolean 0}
     (:token foo-notequal) => :foo-notequal?
     (i/get-stack

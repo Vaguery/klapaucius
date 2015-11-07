@@ -1,7 +1,7 @@
 (ns push.types.core-test
   (:use midje.sweet)
   (:use [push.types.core])
-  (:require [push.interpreter.interpreter-core :as i]))
+  (:require [push.interpreter.core :as i]))
 
 
 ;;;; type information

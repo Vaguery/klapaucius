@@ -1,6 +1,6 @@
 (ns push.interpreter.inputs-test
   (:use midje.sweet)
-  (:use [push.interpreter.interpreter-core]))
+  (:use [push.interpreter.core]))
 
 
 (fact "a bare naked Interpreter has an empty :inputs hashmap"

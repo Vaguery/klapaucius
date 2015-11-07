@@ -1,5 +1,5 @@
 (ns push.instructions.base.boolean_test
-  (:require [push.interpreter.interpreter-core :as i])
+  (:require [push.interpreter.core :as i])
   (:use [push.util.test-helpers])
   (:use [push.instructions.base.boolean])
   (:use midje.sweet))

@@ -1,8 +1,8 @@
 (ns push.instructions.instructions-setup-test
   (:use midje.sweet)
-  (:use [push.instructions.instructions-core])
+  (:use [push.instructions.core])
   (:use [push.instructions.dsl])
-  (:require [push.interpreter.interpreter-core :as i]))
+  (:require [push.interpreter.core :as i]))
 
 
 ;; make-instruction (bare bones)

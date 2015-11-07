@@ -1,7 +1,7 @@
 (ns push.types.visible-test
   (:use midje.sweet)
   (:use [push.types.core])
-  (:require [push.interpreter.interpreter-core :as i]))
+  (:require [push.interpreter.core :as i]))
 
 
 ;; :visible types
@@ -13,7 +13,7 @@
 
 (fact "stackdepth-instruction returns an Instruction with the correct stuff"
   (let [foo-depth (stackdepth-instruction (make-type :foo))]
-    (class foo-depth) => push.instructions.instructions_core.Instruction
+    (class foo-depth) => push.instructions.core.Instruction
     (:needs foo-depth) => {:foo 0, :integer 0}
     (:token foo-depth) => :foo-stackdepth
     (i/get-stack
@@ -30,7 +30,7 @@
 
 (fact "empty?-instruction returns an Instruction with the correct stuff"
   (let [foo-none? (empty?-instruction (make-type :foo))]
-    (class foo-none?) => push.instructions.instructions_core.Instruction
+    (class foo-none?) => push.instructions.core.Instruction
     (:needs foo-none?) => {:boolean 0, :foo 0}
     (:token foo-none?) => :foo-empty?
     (i/get-stack

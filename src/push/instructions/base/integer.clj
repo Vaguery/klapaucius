@@ -1,5 +1,5 @@
 (ns push.instructions.base.integer
-  (:require [push.instructions.instructions-core :as core])
+  (:require [push.instructions.core :as core])
   (:use [push.instructions.dsl]))
 
 
