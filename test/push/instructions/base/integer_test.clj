@@ -6,6 +6,11 @@
   (:use [push.types.base.integer])  ;; sets up classic-integer-type
   )
 
+;; these are tests of an Interpreter with the classic-integer-type registered
+;; the instructions under test are those stored IN THAT TYPE
+
+
+;; integer-specific instructions
 
 
 (tabular
@@ -23,7 +28,6 @@
     ;; overflow
     :integer    '(3333333333333333333 7777777777777777777)
                           :integer-add   :integer     '(11111111111111111110N))
-
 
 
 (tabular
@@ -97,6 +101,45 @@
     :integer    '(0 11)   :integer-mod      :integer      '(0 11))
 
 
+(tabular
+  (fact ":integer-inc takes one :integer and adds 1 to it"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items          ?instruction      ?get-stack     ?expected
+    ;; just one more     
+    :integer    '(99)          :integer-inc      :integer         '(100)
+    :integer    '(-99)         :integer-inc      :integer         '(-98)
+    ;; overflow 
+    :integer    '(22222222222222222222222222222222222N)
+                               :integer-inc      :integer       '(22222222222222222222222222222222223N)
+    :integer    '(-22222222222222222222222222222222222N)
+                               :integer-inc      :integer       '(-22222222222222222222222222222222221N)
+    ;; missing args 
+    :integer    '()            :integer-inc      :integer       '())
+
+
+
+(tabular
+  (fact ":integer-dec takes one :integer and subtracts 1 from it"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items          ?instruction      ?get-stack     ?expected
+    ;; just one more     
+    :integer    '(99)          :integer-dec      :integer         '(98)
+    :integer    '(-99)         :integer-dec      :integer         '(-100)
+    ;; overflow 
+    :integer    '(22222222222222222222222222222222222N)
+                               :integer-dec      :integer       '(22222222222222222222222222222222221N)
+    :integer    '(-22222222222222222222222222222222222N)
+                               :integer-dec      :integer       '(-22222222222222222222222222222222223N)
+    ;; missing args 
+    :integer    '()            :integer-dec      :integer       '())
+
+
+;; comparable (generated) instructions
+
 
 (tabular
   (fact ":integer<? returns a :boolean indicating whether :first < :second"
@@ -167,103 +210,6 @@
 
 
 (tabular
-  (fact ":integer-empty? returns a :boolean indicating whether :integer is empty"
-    (register-type-and-check-instruction
-        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
-
-    ?set-stack  ?items    ?instruction    ?get-stack     ?expected
-    ;; just the math
-    :integer    '(4 20)    :integer-empty?      :boolean       '(false)
-    :integer    '()        :integer-empty?      :boolean       '(true))
-
-
-(tabular
-  (fact ":integer-equal? returns a :boolean indicating whether :first = :second"
-    (register-type-and-check-instruction
-        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
-
-    ?set-stack  ?items    ?instruction    ?get-stack     ?expected
-    ;; just the math
-    :integer    '(4 20)    :integer-equal?      :boolean       '(false)
-    :integer    '(20 4)    :integer-equal?      :boolean       '(false)
-    :integer    '(4 4)     :integer-equal?      :boolean       '(true)
-    ;; missing args 
-    :integer    '(11)      :integer-equal?      :boolean       '()
-    :integer    '(11)      :integer-equal?      :integer       '(11)
-    :integer    '()        :integer-equal?      :boolean       '()
-    :integer    '()        :integer-equal?      :integer       '())
-
-
-(tabular
-  (fact ":integer-inc takes one :integer and adds 1 to it"
-    (register-type-and-check-instruction
-        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
-
-    ?set-stack  ?items          ?instruction      ?get-stack     ?expected
-    ;; just one more     
-    :integer    '(99)          :integer-inc      :integer         '(100)
-    :integer    '(-99)         :integer-inc      :integer         '(-98)
-    ;; overflow 
-    :integer    '(22222222222222222222222222222222222N)
-                               :integer-inc      :integer       '(22222222222222222222222222222222223N)
-    :integer    '(-22222222222222222222222222222222222N)
-                               :integer-inc      :integer       '(-22222222222222222222222222222222221N)
-    ;; missing args 
-    :integer    '()            :integer-inc      :integer       '())
-
-
-
-(tabular
-  (fact ":integer-dec takes one :integer and subtracts 1 from it"
-    (register-type-and-check-instruction
-        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
-
-    ?set-stack  ?items          ?instruction      ?get-stack     ?expected
-    ;; just one more     
-    :integer    '(99)          :integer-dec      :integer         '(98)
-    :integer    '(-99)         :integer-dec      :integer         '(-100)
-    ;; overflow 
-    :integer    '(22222222222222222222222222222222222N)
-                               :integer-dec      :integer       '(22222222222222222222222222222222221N)
-    :integer    '(-22222222222222222222222222222222222N)
-                               :integer-dec      :integer       '(-22222222222222222222222222222222223N)
-    ;; missing args 
-    :integer    '()            :integer-dec      :integer       '())
-
-
-;; combinators (will be built automatically in future)
-
-
-(tabular
-  (fact ":integer-flush flushes the entire :integer stack"
-    (register-type-and-check-instruction
-        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
-
-    ?set-stack  ?items    ?instruction    ?get-stack     ?expected
-    ;; just shifting things
-    :integer    '(1 2 3)   :integer-flush      :integer       '()
-    :integer    '(2 3)     :integer-flush      :integer       '()
-    :integer    '(2)       :integer-flush      :integer       '()
-    ;; missing args 
-    :integer    '()        :integer-flush      :integer       '())
-
-
-
-(tabular
-  (fact ":integer-dup duplicates the top item from :integer"
-    (register-type-and-check-instruction
-        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
-
-    ?set-stack  ?items    ?instruction    ?get-stack     ?expected
-    ;; just shifting things
-    :integer    '(1 2 3)   :integer-dup      :integer       '(1 1 2 3)
-    :integer    '(2 3)     :integer-dup      :integer       '(2 2 3)
-    :integer    '(2)       :integer-dup      :integer       '(2 2)
-    ;; missing args 
-    :integer    '()        :integer-dup      :integer       '())
-
-
-(tabular
   (fact ":integer-max takes two items from :integer and replaces the larger one;
     if they are the same, it still returns one of them only"
     (register-type-and-check-instruction
@@ -295,6 +241,100 @@
     :integer    '(2)            :integer-min      :integer       '(2)
     :integer    '()             :integer-min      :integer       '())
 
+
+;; visible (generated) instructions
+
+
+(tabular
+  (fact ":integer-empty? returns a :boolean indicating whether :integer is empty"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items    ?instruction    ?get-stack     ?expected
+    ;; just the math
+    :integer    '(4 20)    :integer-empty?      :boolean       '(false)
+    :integer    '()        :integer-empty?      :boolean       '(true))
+
+
+(tabular
+  (fact ":integer-stackdepth saves (count :integer) onto :integer"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items      ?instruction            ?get-stack     ?expected
+    ;; just shifting things
+    :integer    '(1 2 3)     :integer-stackdepth      :integer       '(3 1 2 3)
+    :integer    '(1 1 1 1 1)    
+                             :integer-stackdepth      :integer       '(5 1 1 1 1 1)
+    :integer    '()          :integer-stackdepth      :integer       '(0))
+
+
+;; equatable (generated) instructions
+
+
+(tabular
+  (fact ":integer-equal? returns a :boolean indicating whether :first = :second"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items    ?instruction    ?get-stack     ?expected
+    ;; just the math
+    :integer    '(4 20)    :integer-equal?      :boolean       '(false)
+    :integer    '(20 4)    :integer-equal?      :boolean       '(false)
+    :integer    '(4 4)     :integer-equal?      :boolean       '(true)
+    ;; missing args 
+    :integer    '(11)      :integer-equal?      :boolean       '()
+    :integer    '(11)      :integer-equal?      :integer       '(11)
+    :integer    '()        :integer-equal?      :boolean       '()
+    :integer    '()        :integer-equal?      :integer       '())
+
+
+(tabular
+  (fact ":integer-notequal? returns a :boolean indicating whether :first ≠ :second"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items    ?instruction    ?get-stack     ?expected
+    ;; just the math
+    :integer    '(4 20)    :integer-notequal?      :boolean       '(true)
+    :integer    '(20 4)    :integer-notequal?      :boolean       '(true)
+    :integer    '(4 4)     :integer-notequal?      :boolean       '(false)
+    ;; missing args 
+    :integer    '(11)      :integer-notequal?      :boolean       '()
+    :integer    '(11)      :integer-notequal?      :integer       '(11)
+    :integer    '()        :integer-notequal?      :boolean       '()
+    :integer    '()        :integer-notequal?      :integer       '())
+
+
+;; movable (generated) instructions
+
+
+(tabular
+  (fact ":integer-flush flushes the entire :integer stack"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items    ?instruction    ?get-stack     ?expected
+    ;; just shifting things
+    :integer    '(1 2 3)   :integer-flush      :integer       '()
+    :integer    '(2 3)     :integer-flush      :integer       '()
+    :integer    '(2)       :integer-flush      :integer       '()
+    ;; missing args 
+    :integer    '()        :integer-flush      :integer       '())
+
+
+(tabular
+  (fact ":integer-dup duplicates the top item from :integer"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items    ?instruction    ?get-stack     ?expected
+    ;; just shifting things
+    :integer    '(1 2 3)   :integer-dup      :integer       '(1 1 2 3)
+    :integer    '(2 3)     :integer-dup      :integer       '(2 2 3)
+    :integer    '(2)       :integer-dup      :integer       '(2 2)
+    ;; missing args 
+    :integer    '()        :integer-dup      :integer       '())
 
 
 (tabular
@@ -348,19 +388,6 @@
 
 
 (tabular
-  (fact ":integer-stackdepth saves (count :integer) onto :integer"
-    (register-type-and-check-instruction
-        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
-
-    ?set-stack  ?items      ?instruction            ?get-stack     ?expected
-    ;; just shifting things
-    :integer    '(1 2 3)     :integer-stackdepth      :integer       '(3 1 2 3)
-    :integer    '(1 1 1 1 1)    
-                             :integer-stackdepth      :integer       '(5 1 1 1 1 1)
-    :integer    '()          :integer-stackdepth      :integer       '(0))
-
-
-(tabular
   (fact ":integer-swap swaps the top two items from :integer"
     (register-type-and-check-instruction
         ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
@@ -392,7 +419,6 @@
     ;; missing args 
     :integer    '(2)            :integer-yank      :integer       '(2)
     :integer    '()             :integer-yank      :integer       '())
-
 
 
 (tabular

@@ -1,6 +1,7 @@
 (ns push.interpreter.interpreter-setup-test
   (:use midje.sweet)
   (:require [push.instructions.core :as i])
+  (:use [push.util.type-checkers :only (boolean?)])
   (:use [push.instructions.dsl])
   (:use [push.interpreter.core])
   (:require [push.types.core :as types]))

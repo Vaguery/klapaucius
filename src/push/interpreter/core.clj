@@ -1,4 +1,6 @@
-(ns push.interpreter.core)
+(ns push.interpreter.core
+  (:use [push.util.type-checkers :only (boolean?)])
+  )
 
 
 (defrecord Interpreter [program
@@ -255,12 +257,6 @@
   [interpreter stack]
   (assoc-in interpreter [:stacks stack] (list)))
 
-
-(defn boolean?
-  "a checker that returns true if the argument is the literal `true`
-  or the literal `false`"
-  [item]
-  (or (false? item) (true? item)))
 
 
 (defn- instruction?
