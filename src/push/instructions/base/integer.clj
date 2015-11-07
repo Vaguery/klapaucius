@@ -1,6 +1,8 @@
 (ns push.instructions.base.integer
   (:require [push.instructions.core :as core])
+  (:require [push.types.core :as t])
   (:use [push.instructions.dsl]))
+
 
 
 (def integer-add
