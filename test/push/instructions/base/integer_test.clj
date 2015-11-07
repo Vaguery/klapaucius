@@ -1,6 +1,5 @@
 (ns push.instructions.base.integer_test
   (:require [push.interpreter.core :as i])
-  (:use [push.instructions.base.integer])
   (:use midje.sweet)
   (:use [push.util.test-helpers])
   (:use [push.types.base.integer])  ;; sets up classic-integer-type

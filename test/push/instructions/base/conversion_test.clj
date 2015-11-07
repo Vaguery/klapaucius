@@ -1,8 +1,7 @@
 (ns push.instructions.base.conversion_test
+  (:use midje.sweet)
   (:require [push.interpreter.core :as i])
   (:use [push.instructions.base.conversion])
-  (:use [push.instructions.base.integer])
-  (:use midje.sweet)
   (:use [push.util.test-helpers]))
 
 ;; conversion 
