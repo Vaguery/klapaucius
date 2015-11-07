@@ -143,17 +143,22 @@
 
 
 (fact "if a PushType is passed into `make-interpreter`, its instructions are registered"
-    (keys (:instructions (make-interpreter :types [foo-type]))) =>
-      (contains [:foo-rotate :foo-equal? :foo>? :foo-stackdepth :foo-notequal? 
-                 :foo<? :foo-pop :foo-flush :foo-empty? :foo-dup :foo-min 
-                 :foo≥? :foo-swap :foo-max :foo-shove :foo≤? :foo-yankdup 
-                 :foo-yank] :in-any-order))
+  (keys (:instructions (make-interpreter :types [foo-type]))) =>
+    (contains [:foo-rotate :foo-equal? :foo>? :foo-stackdepth :foo-notequal? 
+               :foo<? :foo-pop :foo-flush :foo-empty? :foo-dup :foo-min 
+               :foo≥? :foo-swap :foo-max :foo-shove :foo≤? :foo-yankdup 
+               :foo-yank] :in-any-order))
+
+
+(fact "if a PushType is passed into `make-interpreter`, its recognizer is added to the :router"
+  (let [foo-recognizer [(:recognizer foo-type) :foo] ]
+    (:router (make-interpreter :types [foo-type])) => (contains [foo-recognizer])))
 
 
 ;; finesse (justified paranoia)
 
 
-(fact "registering a new type in an Interpreter with stuff defined still leaves that intact"
+(fact "registering a new type in an Interpreter with stuff defined still leaves that stuff intact"
   (let [knows-foo (make-interpreter :types [foo-type])]
     (map :stackname (:types (register-type knows-foo bar-type))) => 
         '(:bar :foo)
@@ -287,26 +292,28 @@
 
 
 (fact "ready-for-instruction? returns false if the :needs of the specified instruction aren't met"
-  (let [foo
+  (let [abbr #'push.interpreter.interpreter-core/ready-for-instruction?
+        foo
           (i/make-instruction :foo :needs {:integer 2})
         an-int
           (register-instruction (make-interpreter :stacks {:integer '(1)}) foo)
         many-ints
           (register-instruction (make-interpreter :stacks {:integer '(1 2 3 4)}) foo)]
     (count (get-stack an-int :integer)) => 1
-    (ready-for-instruction? an-int :foo) => false
+    (abbr an-int :foo) => false
     (count (get-stack many-ints :integer )) => 4
     (#'push.interpreter.interpreter-core/contains-at-least?
         many-ints :integer 2) => true
-    (ready-for-instruction? many-ints :foo) => true))
+    (abbr many-ints :foo) => true))
 
 
 (fact "ready-for-instruction? returns false if the named instruction is not registered"
-  (let [foo
+  (let [abbr #'push.interpreter.interpreter-core/ready-for-instruction?
+        foo
           (i/make-instruction :foo :needs {:integer 2})
         an-int
           (register-instruction (make-interpreter :stacks {:integer '(1)}) foo)]
-    (ready-for-instruction? an-int :bar) => false))
+    (abbr an-int :bar) => false))
 
 
 ;; execute-instruction
@@ -364,11 +371,12 @@
 
 
 (fact "instruction? checks that an item is a registered Instruction in a given Interpreter"
- (let [foo (i/make-instruction :foo)
+ (let [abbr #'push.interpreter.interpreter-core/instruction?
+       foo (i/make-instruction :foo)
        registry {:foo foo}
        he-knows-foo (make-interpreter :instructions registry)]
-   (instruction? he-knows-foo :foo) => true
-   (instruction? he-knows-foo :bar) => false))
+   (abbr he-knows-foo :foo) => true
+   (abbr he-knows-foo :bar) => false))
 
 
 ;; dealing with stack items

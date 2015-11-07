@@ -178,7 +178,7 @@
   (contains? (:instructions interpreter) token))
 
 
-(defn ready-for-instruction?
+(defn- ready-for-instruction?
   "Takes an Interpreter (with registered instructions) and a keyword
   instruction token, and returns true if the number of items on the
   stacks meets or exceeds all the specified :needs for that
@@ -263,14 +263,14 @@
   (or (false? item) (true? item)))
 
 
-(defn instruction?
+(defn- instruction?
   "takes an Interpreter and a keyword, and returns true if the keyword
   is a key of the :instructions registry in that Interpreter instance"
   [interpreter token]
   (contains? (:instructions interpreter) token))
 
 
-(defn router-sees?
+(defn- router-sees?
   "Takes an Interpreter and an item, and returns true if any predicate
   defined in its :router collection matches, nil otherwise (NOTE)."
   [interpreter item]
@@ -278,7 +278,7 @@
     (some #(apply (first %) [item]) recognizers)))
 
 
-(defn route-item
+(defn- route-item
   "Takes an Interpreter and an item it recognizes (which should be
   established upstream) and sends the item to the designated stack
   determined by the first matching router predicate."

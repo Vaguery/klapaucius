@@ -31,9 +31,10 @@
 
 
 (fact "`router-sees?` checks the router predicates and returns true if one matches"
-  (router-sees? (make-interpreter) :not-likely) => nil
-  (router-sees? (make-interpreter 
-    :router [[(fn [item] (= item :not-likely)) :integer]]) :not-likely) => true)
+  (let [abbr #'push.interpreter.interpreter-core/router-sees?]
+    (abbr (make-interpreter) :not-likely) => nil
+    (abbr (make-interpreter 
+      :router [[(fn [item] (= item :not-likely)) :integer]]) :not-likely) => true))
 
 
 (fact "`handle-item` checks the :router list"
@@ -55,7 +56,6 @@
     [ [(:recognizer foo-type) :foo] ]
   (get-stack (handle-item (register-type (make-interpreter) foo-type) 99) :integer) => '()
   (get-stack (handle-item (register-type (make-interpreter) foo-type) 99) :foo) => '(99))
-
 
 
 (fact "handle-item sends integers to :integer"
@@ -111,8 +111,7 @@
  (let [foo (i/make-instruction :foo :transaction (fn [a] 761))
        registry {:foo foo}
        he-knows-foo (make-interpreter :instructions registry)]
-   (handle-item he-knows-foo :foo) => 761 ;; an intentionally surprising result
-   ))
+   (handle-item he-knows-foo :foo) => 761 ;; an intentionally surprising result))
 
 
 (fact "handle-item will not execute an unregistered instruction"
