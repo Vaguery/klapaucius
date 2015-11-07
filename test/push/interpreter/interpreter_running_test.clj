@@ -42,6 +42,22 @@
     (:stacks (handle-item he-knows-foo 99) :code) => (contains {:code '(99)})))
 
 
+(def foo-type 
+  (-> (types/make-type :foo :recognizer integer?)
+      types/make-visible
+      types/make-comparable
+      types/make-equatable
+      types/make-movable))
+
+
+(fact "types added to the router with `register-type` are used by `handle-item`"
+  (:router (register-type (make-interpreter) foo-type)) =>
+    [ [(:recognizer foo-type) :foo] ]
+  (get-stack (handle-item (register-type (make-interpreter) foo-type) 99) :integer) => '()
+  (get-stack (handle-item (register-type (make-interpreter) foo-type) 99) :foo) => '(99))
+
+
+
 (fact "handle-item sends integers to :integer"
   (get-stack (handle-item (make-interpreter) 8) :integer) => '(8)
   (get-stack (handle-item (make-interpreter) -8) :integer) => '(-8)

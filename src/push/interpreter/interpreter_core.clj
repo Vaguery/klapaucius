@@ -50,15 +50,18 @@
 (defn register-type
   "Takes an Interpreter record, and a PushType record, and adds the
   PushType to the :types collection in the Interpeter; adds the
-  type's :stackname as a new stack (if not already present); adds
+  type's :stackname as a new stack (if not already present); appends the 
+  type's :recognizer to the :router vector; adds
   the type's internally defined instructions to the Interpreter's
   registry automatically."
   [interpreter type]
   (let [old-types (:types interpreter)
         old-stacks (:stacks interpreter)
+        old-router (:router interpreter)
         old-instructions (:instructions interpreter)]
         (-> interpreter
             (assoc :types (conj old-types type))
+            (assoc :router (conj old-router [(:recognizer type) (:stackname type)]))
             (assoc :stacks (conj old-stacks [(:stackname type) '()]))
             (assoc :instructions (merge old-instructions (:instructions type))))))
 
@@ -131,7 +134,10 @@
 
   If a collection of :types is specified, the stacks are made and any
   instructions defined in the PushType records are automatically
-  registered."
+  registered.
+
+  Valid :config items include:
+  - `:lenient?` if true, the :unknown stack is used for unrecognized items"
   [& {:keys [program types router stacks inputs instructions config counter done?]
       :or {program []
            types '()

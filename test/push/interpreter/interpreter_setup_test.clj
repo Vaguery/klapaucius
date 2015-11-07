@@ -91,8 +91,16 @@
                 :foo-swap :foo-max :foo-shove :foo≤? :foo-yankdup :foo-yank] :in-any-order))
 
 
-(future-fact "`register-type` adds the :recognizer to the Interpreter's :router collection"
-  (:router (make-interpreter)) => [])
+(fact "`register-type` adds the :recognizer to the Interpreter's :router collection"
+  (:router (make-interpreter)) => []
+  (:router (register-type (make-interpreter) foo-type)) =>
+    [ [(:recognizer foo-type) :foo] ]
+
+  (:router (->  (make-interpreter) 
+                (register-type foo-type)
+                (register-type bar-type))) =>
+    [ [(:recognizer foo-type) :foo] 
+      [(:recognizer bar-type) :bar] ])
 
 
 ;; register-types
@@ -158,9 +166,6 @@
                   :foo-dup :foo-min :foo≥? :bar-equal? :bar-empty? :foo-swap 
                   :foo-max :foo-shove :foo≤? :bar-pop :foo-yankdup :bar-yank 
                   :bar-yankdup :bar-shove :foo-yank] :in-any-order)))
-
-
-(future-fact "register-type adds a PushType to the specified Interpreter's router")
 
 
 ;; instructions
