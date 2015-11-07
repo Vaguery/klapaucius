@@ -20,3 +20,19 @@
         after (i/execute-instruction setup (:token instruction))]
     (i/get-stack after read-stack)
     ))
+
+
+(defn register-type-and-check-instruction
+  "helper sets up an interpreter with `items` on `setup-stack`,
+  registers the named type (with all instructions loaded as a matter of course),
+  executes the named instruction to produce the next step after, and returns 
+  the indicated `get-stack`"
+  [setup-stack items type-under-test instruction-token read-stack]
+  (let [setup (i/set-stack 
+                (i/register-type
+                  (i/make-interpreter)
+                  type-under-test)
+                setup-stack items)
+        after (i/execute-instruction setup instruction-token)]
+    (i/get-stack after read-stack)
+    ))
