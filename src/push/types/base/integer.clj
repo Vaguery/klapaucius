@@ -5,6 +5,9 @@
   )
 
 
+;; arithmetic
+
+
 (def int-add
   (core/build-instruction
     integer-add
@@ -24,6 +27,19 @@
     (push-onto :integer :next)))
 
 
+(def int-divide
+  (core/build-instruction
+    integer-divide
+    :tags #{:arithmetic :base :dangerous}
+    (consume-top-of :integer :as :denominator)
+    (consume-top-of :integer :as :numerator)
+    (calculate [:denominator :numerator]
+      #(if (zero? %1) %2 nil) :as :replacement)
+    (calculate [:denominator :numerator]
+      #(if (zero? %1) %1 (int (/ %2 %1))) :as :quotient)
+    (push-these-onto :integer [:replacement :quotient])))
+
+
 (def int-inc
   (core/build-instruction
     integer-inc
@@ -31,6 +47,19 @@
     (consume-top-of :integer :as :arg1)
     (calculate [:arg1] #(inc' %1) :as :next)
     (push-onto :integer :next)))
+
+
+(def int-mod
+  (core/build-instruction
+    integer-mod
+    :tags #{:arithmetic :base :dangerous}
+    (consume-top-of :integer :as :denominator)
+    (consume-top-of :integer :as :numerator)
+    (calculate [:denominator :numerator]
+      #(if (zero? %1) %2 nil) :as :replacement)
+    (calculate [:denominator :numerator]
+      #(if (zero? %1) %1 (mod %2 %1)) :as :remainder)
+    (push-these-onto :integer [:replacement :remainder])))
 
 
 (def int-multiply
@@ -53,30 +82,35 @@
     (push-onto :integer :diff)))
 
 
-(def int-divide
-  (core/build-instruction
-    integer-divide
-    :tags #{:arithmetic :base :dangerous}
-    (consume-top-of :integer :as :denominator)
-    (consume-top-of :integer :as :numerator)
-    (calculate [:denominator :numerator]
-      #(if (zero? %1) %2 nil) :as :replacement)
-    (calculate [:denominator :numerator]
-      #(if (zero? %1) %1 (int (/ %2 %1))) :as :quotient)
-    (push-these-onto :integer [:replacement :quotient])))
+;; conversion
 
 
-(def int-mod
+(def int-fromboolean
   (core/build-instruction
-    integer-mod
-    :tags #{:arithmetic :base :dangerous}
-    (consume-top-of :integer :as :denominator)
-    (consume-top-of :integer :as :numerator)
-    (calculate [:denominator :numerator]
-      #(if (zero? %1) %2 nil) :as :replacement)
-    (calculate [:denominator :numerator]
-      #(if (zero? %1) %1 (mod %2 %1)) :as :remainder)
-    (push-these-onto :integer [:replacement :remainder])))
+    integer-fromboolean
+    :tags #{:base :conversion}
+    (consume-top-of :boolean :as :arg1)
+    (calculate [:arg1] #(if %1 1 0) :as :logic)
+    (push-onto :integer :logic)))
+
+
+(def int-fromfloat
+  (core/build-instruction
+    integer-fromfloat
+    :tags #{:numeric :base :conversion}
+    (consume-top-of :float :as :arg1)
+    (calculate [:arg1] #(bigint %1) :as :int)
+    (push-onto :integer :int)))
+
+
+(def int-fromchar
+  (core/build-instruction
+    integer-fromchar
+    :tags #{:base :conversion}
+    (consume-top-of :char :as :arg1)
+    (calculate [:arg1] #(int %1) :as :int)
+    (push-onto :integer :int)))
+
 
 
 
@@ -95,5 +129,8 @@
         (t/attach-instruction , int-mod)
         (t/attach-instruction , int-dec)
         (t/attach-instruction , int-inc)
+        (t/attach-instruction , int-fromboolean)
+        (t/attach-instruction , int-fromfloat)
+        (t/attach-instruction , int-fromchar)
         ))
 
