@@ -139,7 +139,7 @@
       :tags #{:comparison}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
       `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
-      '(push.instructions.dsl/calculate [:arg1 :arg2] #(= (compare %1 %2) -1) :as :check)
+      '(push.instructions.dsl/calculate [:arg1 :arg2] #(< (compare %1 %2) 0) :as :check)
       '(push.instructions.dsl/push-onto :boolean :check)))))
 
 
@@ -184,7 +184,7 @@
       :tags #{:comparison}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
       `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
-      '(push.instructions.dsl/calculate [:arg1 :arg2] #(= (compare %1 %2) 1) :as :check)
+      '(push.instructions.dsl/calculate [:arg1 :arg2] #(> (compare %1 %2) 0) :as :check)
       '(push.instructions.dsl/push-onto :boolean :check)))))
 
 
