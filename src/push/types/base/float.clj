@@ -15,7 +15,6 @@
 ; float_dec
 ; float_cos
 ; float_tan
-; float_sin
 ; float_fromboolean
 ; float_frominteger
 ; float_fromstring
@@ -41,6 +40,15 @@
     (d/push-onto :float :more)))
 
 
+(def float-sine
+  (core/build-instruction
+    float-sine
+    :tags #{:trigonometry :base}
+    (d/consume-top-of :float :as :arg1)
+    (d/calculate [:arg1] #(Math/sin %1) :as :sin)
+    (d/push-onto :float :sin)))
+
+
 (def classic-float-type
   ( ->  (t/make-type  :float
                       :recognizer float?
@@ -51,5 +59,6 @@
         t/make-movable
         (t/attach-instruction , float-add)
         (t/attach-instruction , float-inc)
+        (t/attach-instruction , float-sine)
         ))
 

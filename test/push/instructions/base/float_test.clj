@@ -31,7 +31,6 @@
 ; float_mod
 ; float_cos
 ; float_tan
-; float_inc
 ; float_dec
 
 
@@ -81,6 +80,23 @@
 
 (future-fact ":float-inc deals with overflows")
 (future-fact ":float-inc deals with underflows")
+
+
+(tabular
+  (fact ":float-sine returns the sine(x)"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-float-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items      ?instruction  ?get-stack   ?expected
+    ;; up we go
+    :float    '(0.0)        :float-sine    :float     '(0.0)
+    :float    (list (/ Math/PI 2))
+                            :float-sine    :float     '(1.0)
+
+    :float    '(-3.0)  :float-sine    :float     '(-0.1411200080598672)
+    ;; missing args
+    :float    '()           :float-sine    :float     '())
+
 
 
 ;; visible
