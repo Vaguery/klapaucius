@@ -3,6 +3,7 @@
   (:use [push.util.stack-manipulation])
   (:require [push.types.base.integer])
   (:require [push.types.base.boolean])
+  (:use [push.util.exceptions :as oops])
   )
 
 
@@ -30,26 +31,6 @@
     :print '()
     :unknown '()
     })
-
-
-
-
-(defn- throw-redefined-instruction-error
-  [token]
-  (throw (Exception. (str 
-                        "Push Instruction Redefined:'" token "'"))))
-
-
-(defn- throw-unknown-instruction-error
-  [token]
-  (throw (Exception. (str 
-                        "Unknown Push instruction:'" token "'"))))
-
-
-(defn- throw-unknown-push-item-error
-  [item]
-  (throw (Exception. (str 
-    "Push Parsing Error: Cannot interpret '" item "' as a Push item."))))
 
 
 (defn register-type
@@ -125,7 +106,7 @@
   (let [token (:token instruction)
         registry (:instructions interpreter)]
     (if (contains? registry token)
-      (throw-redefined-instruction-error token))
+      (oops/throw-redefined-instruction-error token))
       (add-instruction interpreter instruction)))
 
 
@@ -267,7 +248,7 @@
   (let [unrecognized (not (recognizes-instruction? interpreter token))
         ready (ready-for-instruction? interpreter token)]
   (cond
-    unrecognized (throw-unknown-instruction-error token)
+    unrecognized (oops/throw-unknown-instruction-error token)
     ready (apply-instruction interpreter token)
     :else interpreter)))
 
@@ -325,7 +306,7 @@
   [interpreter item]
   (if (get-in interpreter [:config :lenient?])
     (push-item interpreter :unknown item)
-    (throw-unknown-push-item-error item)))
+    (oops/throw-unknown-push-item-error item)))
 
 
 (defn handle-item

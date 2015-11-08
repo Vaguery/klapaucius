@@ -9,7 +9,7 @@
   )
 
 
-;;;; initialization with basic-interpreter
+;;;; initialization with `basic-interpreter`
 
 
 ;; NOTE: `basic-interpreter` is intended to be used to build EMPTY and/or

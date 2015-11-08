@@ -1,5 +1,6 @@
 (ns push.instructions.dsl
   (:use [push.util.stack-manipulation])
+  (:use [push.util.exceptions :as oops])
   )
 
 
@@ -31,51 +32,6 @@
       (concat (take idx coll) (list item) (drop idx coll)))))
 
 
-(defn- throw-empty-stack-exception
-  [stackname]
-  (throw (Exception. (str 
-                        "Push DSL runtime error: stack "
-                        stackname
-                        " is empty."))))
-
-
-(defn- throw-invalid-index-exception
-  [k]
-  (throw (Exception. (str 
-                        "Push DSL argument error: " 
-                        k 
-                        " is not an integer"))))
-
-
-(defn- throw-missing-key-exception
-  [k]
-  (throw  (Exception. (str 
-                         "Push DSL argument error: missing key: " 
-                         k))))
-
-
-(defn- throw-unknown-stack-exception
-  [stackname]
-  (throw (Exception. (str 
-                        "Push DSL argument error: no "
-                        stackname
-                        " stackname registered."))))
-
-
-(defn- throw-function-argument-exception
-  [args]
-  (throw (Exception. (str 
-                        "Push DSL argument error: '"
-                        args
-                        "' can't be parsed as vector."))))
-
-
-(defn- throw-unknown-DSL-exception
-  [instruction]
-  (throw (Exception. (str 
-                        "Push DSL parse error: '"
-                        instruction
-                        "' is not a known instruction."))))
 
 
 (defn- index-from-scratch-ref
@@ -86,7 +42,7 @@
   (let [stored (k locals)]
     (if (integer? stored)
       stored
-      (throw-invalid-index-exception k))))
+      (oops/throw-invalid-index-exception k))))
 
 
 (defn- valid-DSL-index
@@ -98,8 +54,8 @@
   (cond
     (integer? item) item
     (keyword? item) (index-from-scratch-ref item scratch)
-    (nil? item) (throw-missing-key-exception :at)
-    :else (throw-invalid-index-exception item)))
+    (nil? item) (oops/throw-missing-key-exception :at)
+    :else (oops/throw-invalid-index-exception item)))
 
 
 (defn- get-nth-of
@@ -109,8 +65,8 @@
   index, raising any argument exceptions it finds."
   [[interpreter scratch] stackname & {:keys [at]}]
   (let [old-stack (get-stack interpreter stackname)]
-    (cond (nil? old-stack) (throw-unknown-stack-exception stackname)
-          (empty? old-stack) (throw-empty-stack-exception stackname)
+    (cond (nil? old-stack) (oops/throw-unknown-stack-exception stackname)
+          (empty? old-stack) (oops/throw-empty-stack-exception stackname)
           :else (let [idx (valid-DSL-index at scratch)
                       which (mod idx (count old-stack))]
                   [which old-stack]))))
@@ -128,10 +84,10 @@
   [[interpreter scratch] stackname & {:keys [as]}]
   (if-let [old-stack (get-stack interpreter stackname)]
     (if (nil? as)
-      (throw-missing-key-exception :as)
+      (oops/throw-missing-key-exception :as)
       [(clear-stack interpreter stackname)
         (assoc scratch as old-stack)])
-    (throw-unknown-stack-exception stackname)))
+    (oops/throw-unknown-stack-exception stackname)))
 
 
 (defn consume-top-of
@@ -143,9 +99,9 @@
     - the stack is empty"
   [ [interpreter scratch] stackname & {:keys [as]}]
   (let [old-stack (get-stack interpreter stackname)]
-    (cond (nil? old-stack) (throw-unknown-stack-exception stackname)
-          (empty? old-stack) (throw-empty-stack-exception stackname)
-          (nil? as) (throw-missing-key-exception :as)
+    (cond (nil? old-stack) (oops/throw-unknown-stack-exception stackname)
+          (empty? old-stack) (oops/throw-empty-stack-exception stackname)
+          (nil? as) (oops/throw-missing-key-exception :as)
           :else (let [top-item (first old-stack)]
                   [(set-stack interpreter stackname (rest old-stack))
                    (assoc scratch as top-item)]))))
@@ -165,8 +121,8 @@
   (if-let [scratch-var as]
     (if-let [stack (get-stack interpreter stackname)]
       [interpreter (assoc scratch scratch-var (count stack))]
-      (throw-unknown-stack-exception stackname))
-    (throw-missing-key-exception :as)))
+      (oops/throw-unknown-stack-exception stackname))
+    (oops/throw-missing-key-exception :as)))
 
 
 (defn consume-nth-of
@@ -186,7 +142,7 @@
   (let [[idx old-stack]
           (get-nth-of [interpreter scratch] stackname :at at)]
     (if (nil? as)
-      (throw-missing-key-exception :as)
+      (oops/throw-missing-key-exception :as)
       (let [new-stack (delete-nth old-stack idx)
             saved-item (nth old-stack idx)]
         [(set-stack interpreter stackname new-stack)
@@ -221,7 +177,7 @@
   [[interpreter scratch] stackname]
   (if-let [old-stack (get-stack interpreter stackname)]
     [(clear-stack interpreter stackname) scratch]
-    (throw-unknown-stack-exception stackname)))
+    (oops/throw-unknown-stack-exception stackname)))
 
 
 (defn delete-top-of
@@ -233,8 +189,8 @@
     - the stack is empty"
   [[interpreter scratch] stackname]
   (let [old-stack (get-stack interpreter stackname)]
-    (cond (nil? old-stack) (throw-unknown-stack-exception stackname)
-          (empty? old-stack) (throw-empty-stack-exception stackname)
+    (cond (nil? old-stack) (oops/throw-unknown-stack-exception stackname)
+          (empty? old-stack) (oops/throw-empty-stack-exception stackname)
           :else (let [top-item (first old-stack)]
             [(set-stack interpreter stackname (rest old-stack)) scratch]))))
 
@@ -261,7 +217,7 @@
             new-item (kwd scratch)
             new-stack (insert-as-nth old-stack new-item which)]
         [(set-stack interpreter stackname new-stack) scratch])
-      (throw-unknown-stack-exception stackname)))
+      (oops/throw-unknown-stack-exception stackname)))
 
 
 (defn replace-stack
@@ -281,7 +237,7 @@
                           (list? replacement) replacement
                           :else (list replacement))]
       [(set-stack interpreter stackname new-stack) scratch])
-    (throw-unknown-stack-exception stackname)))
+    (oops/throw-unknown-stack-exception stackname)))
 
 
 (defn push-onto
@@ -301,7 +257,7 @@
                       old-stack 
                       (conj old-stack new-item))]
       [(set-stack interpreter stackname new-stack) scratch])
-    (throw-unknown-stack-exception stackname)))
+    (oops/throw-unknown-stack-exception stackname)))
 
 
 (defn push-these-onto
@@ -319,7 +275,7 @@
     (let [new-items (map scratch keywords)
           new-stack (into old-stack (remove nil? new-items))]
       [(set-stack interpreter stackname new-stack) scratch])
-    (throw-unknown-stack-exception stackname)))
+    (oops/throw-unknown-stack-exception stackname)))
 
 
 (defn save-stack
@@ -334,8 +290,8 @@
   (if-let [old-stack (get-stack interpreter stackname)]
     (if (some? as)
       [interpreter (assoc scratch as old-stack)]
-      (throw-missing-key-exception :as))
-    (throw-unknown-stack-exception stackname)))
+      (oops/throw-missing-key-exception :as))
+    (oops/throw-unknown-stack-exception stackname)))
 
 
 (defn save-nth-of
@@ -355,7 +311,7 @@
   (let [[idx old-stack]
           (get-nth-of [interpreter scratch] stackname :at at)]
     (if (nil? as)
-      (throw-missing-key-exception :as)
+      (oops/throw-missing-key-exception :as)
       (let [saved-item (nth old-stack idx)]
         [interpreter (assoc scratch as saved-item)]))))
 
@@ -371,9 +327,9 @@
   - the stack is empty"
   [[interpreter scratch] stackname & {:keys [as]}]
   (let [old-stack (get-stack interpreter stackname)]
-    (cond (nil? old-stack) (throw-unknown-stack-exception stackname)
-          (empty? old-stack) (throw-empty-stack-exception stackname)
-          (nil? as) (throw-missing-key-exception ":as")
+    (cond (nil? old-stack) (oops/throw-unknown-stack-exception stackname)
+          (empty? old-stack) (oops/throw-empty-stack-exception stackname)
+          (nil? as) (oops/throw-missing-key-exception ":as")
           :else (let [top-item (first old-stack)]
                      [interpreter (assoc scratch as top-item)]))))
 
@@ -392,9 +348,9 @@
   (let [locals (map scratch args)
         result (if (vector? args)
                   (apply fxn locals)
-                  (throw-function-argument-exception args))]
+                  (oops/throw-function-argument-exception args))]
     (if (nil? as)
-      (throw-missing-key-exception :as)
+      (oops/throw-missing-key-exception :as)
       [interpreter (assoc scratch as result)])))
 
 

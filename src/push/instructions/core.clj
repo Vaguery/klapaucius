@@ -1,5 +1,6 @@
 (ns push.instructions.core
   (:use [push.instructions.dsl])
+  (:use [push.util.exceptions :as oops])
   )
 
 
@@ -26,7 +27,7 @@
       #'save-nth-of {(second step) 1}
       #'save-stack {(second step) 0}
       #'save-top-of {(second step) 1}
-      (#'push.instructions.dsl/throw-unknown-DSL-exception cmd)  )))
+      (oops/throw-unknown-DSL-exception cmd)  )))
 
 
 (defn total-needs
