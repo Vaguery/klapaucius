@@ -23,7 +23,7 @@
         ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction  ?get-stack   ?expected
-    ;; anding
+    ;; exploring Java's recognizers
     :char    '(\R)           :char-letter?   :boolean     '(true)
     :char    '(\8)           :char-letter?   :boolean     '(false)
     :char    '(\e)           :char-letter?   :boolean     '(true)
@@ -46,7 +46,7 @@
         ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction  ?get-stack   ?expected
-    ;; anding
+    ;; exploring Java's recognizers
     :char    '(\R)           :char-digit?   :boolean     '(false)
     :char    '(\8)           :char-digit?   :boolean     '(true)
     :char    '(\e)           :char-digit?   :boolean     '(false)
@@ -70,7 +70,7 @@
         ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items              ?instruction  ?get-stack     ?expected
-    ;; anding
+    ;; exploring Java's recognizers
     :char    '(\space)           :char-whitespace?   :boolean     '(true)
     :char    '(\newline)         :char-whitespace?   :boolean     '(true)
     :char    '(\e)               :char-whitespace?   :boolean     '(false)
@@ -109,7 +109,7 @@
         ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items     ?instruction  ?get-stack     ?expected
-    ;; anding
+    ;; exploring Java's recognizers
     :char    '(\r)         :char-lowercase?   :boolean     '(true)
     :char    '(\R)         :char-lowercase?   :boolean     '(false)
     :char    '(\1)         :char-lowercase?   :boolean     '(false)
@@ -135,7 +135,7 @@
         ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items     ?instruction  ?get-stack     ?expected
-    ;; anding
+    ;; exploring Java's recognizers
     :char    '(\r)         :char-uppercase?   :boolean     '(false)
     :char    '(\R)         :char-uppercase?   :boolean     '(true)
     :char    '(\1)         :char-uppercase?   :boolean     '(false)
@@ -167,7 +167,6 @@
         ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items        ?instruction  ?get-stack     ?expected
-    ;; anding
     :char    '(\r \e \l \p)  :char-stackdepth   :integer     '(4)
     :char    '(\R)           :char-stackdepth   :integer     '(1)
     :char    '()             :char-stackdepth   :integer     '(0))
@@ -179,7 +178,6 @@
         ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items        ?instruction  ?get-stack     ?expected
-    ;; anding
     :char    '(\r \e \l \p)  :char-empty?   :boolean     '(false)
     :char    '()             :char-empty?   :boolean     '(true))
 
@@ -193,7 +191,7 @@
         ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items    ?instruction  ?get-stack     ?expected
-    ;; just the math
+    ;; identical
     :char    '(\r \s)       :char-equal?      :boolean        '(false)
     :char    '(\s \r)       :char-equal?      :boolean        '(false)
     :char    '(\r \r)       :char-equal?      :boolean        '(true)
@@ -210,7 +208,7 @@
         ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items    ?instruction  ?get-stack     ?expected
-    ;; just the math
+    ;; different
     :char    '(\r \s)       :char-notequal?      :boolean        '(true)
     :char    '(\s \r)       :char-notequal?      :boolean        '(true)
     :char    '(\r \r)       :char-notequal?      :boolean        '(false)
@@ -230,7 +228,7 @@
         ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items    ?instruction  ?get-stack     ?expected
-    ;; just the math
+    ;; note: these use (compare A B), not (< A B)
     :char    '(\r \s)       :char<?      :boolean        '(false)
     :char    '(\s \r)       :char<?      :boolean        '(true)
     :char    '(\r \r)       :char<?      :boolean        '(false)
@@ -247,7 +245,7 @@
         ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items    ?instruction  ?get-stack     ?expected
-    ;; just the math
+    ;; note: these use (compare A B), not (< A B)
     :char    '(\r \s)       :char≤?      :boolean        '(false)
     :char    '(\s \r)       :char≤?      :boolean        '(true)
     :char    '(\r \r)       :char≤?      :boolean        '(true)
@@ -264,7 +262,7 @@
         ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items    ?instruction  ?get-stack     ?expected
-    ;; just the math
+    ;; note: these use (compare A B), not (< A B)
     :char    '(\r \s)       :char≥?      :boolean        '(true)
     :char    '(\s \r)       :char≥?      :boolean        '(false)
     :char    '(\r \r)       :char≥?      :boolean        '(true)
@@ -281,7 +279,7 @@
         ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items    ?instruction  ?get-stack     ?expected
-    ;; just the math
+    ;; note: these use (compare A B), not (< A B)
     :char    '(\r \s)       :char>?      :boolean        '(true)
     :char    '(\s \r)       :char>?      :boolean        '(false)
     :char    '(\r \r)       :char>?      :boolean        '(false)
