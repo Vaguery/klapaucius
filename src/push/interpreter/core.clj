@@ -2,6 +2,7 @@
   (:require [push.util.stack-manipulation :as u])
   (:require [push.types.base.boolean])
   (:require [push.types.base.char])
+  (:require [push.types.base.code])
   (:require [push.types.base.float])
   (:require [push.types.base.integer])
   (:require [push.types.base.string])
@@ -194,8 +195,10 @@
         (register-types [push.types.base.integer/classic-integer-type
                          push.types.base.boolean/classic-boolean-type
                          push.types.base.char/classic-char-type
+                         push.types.base.code/classic-code-type
                          push.types.base.float/classic-float-type
-                         push.types.base.string/classic-string-type])
+                         push.types.base.string/classic-string-type
+                         ])
         (register-inputs inputs)
         )))
 

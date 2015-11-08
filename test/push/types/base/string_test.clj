@@ -33,6 +33,6 @@
     (contains [:string-shove :string-pop :string-dup :string-rotate :string-yank :string-yankdup :string-flush :string-swap] :in-any-order :gaps-ok))
 
 
-(fact "classic-string-type knows a few things about string"
+(future-fact "classic-string-type knows a few things about string"
   (keys (:instructions classic-string-type)) =>
-  (contains [] :in-any-order :gaps-ok))
+    (contains [] :in-any-order :gaps-ok))
