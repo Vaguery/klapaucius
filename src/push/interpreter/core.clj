@@ -3,6 +3,7 @@
   (:require [push.types.base.boolean])
   (:require [push.types.base.char])
   (:require [push.types.base.code])
+  (:require [push.types.base.exec])
   (:require [push.types.base.float])
   (:require [push.types.base.integer])
   (:require [push.types.base.string])
@@ -196,6 +197,7 @@
                          push.types.base.boolean/classic-boolean-type
                          push.types.base.char/classic-char-type
                          push.types.base.code/classic-code-type
+                         push.types.base.exec/classic-exec-type
                          push.types.base.float/classic-float-type
                          push.types.base.string/classic-string-type
                          ])
