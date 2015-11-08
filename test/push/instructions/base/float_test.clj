@@ -25,7 +25,6 @@
 ; float methods qua methods
 
 
-; float_add
 ; float_sub
 ; float_mult
 ; float_div
@@ -35,6 +34,53 @@
 ; float_inc
 ; float_dec
 
+
+(tabular
+  (fact ":float-add returns the sum, auto-promoting overflows"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-float-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items      ?instruction  ?get-stack   ?expected
+    ;; adding
+    :float    '(11.0 -5.0)  :float-add   :float     '(6.0)
+    :float    '(-3.0 -5.0)  :float-add   :float     '(-8.0)
+    ;; missing args
+    :float    '(11.0)       :float-add   :float     '(11.0)
+    :float    '()           :float-add   :float     '()
+    ;; bigness
+    :float    '(3.1e12 2.4e13)
+                            :float-add   :float     '(2.71E13)
+    ;; smallness
+    :float    '(3.1e-88 2.4e-88)
+                            :float-add   :float     '(5.5E-88))
+
+
+
+(future-fact ":float-add deals with overflows")
+(future-fact ":float-add deals with underflows")
+
+
+(tabular
+  (fact ":float-inc returns the sum, auto-promoting overflows"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-float-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items      ?instruction  ?get-stack   ?expected
+    ;; up we go
+    :float    '(11.0 -5.0)  :float-inc    :float     '(12.0 -5.0)
+    :float    '(-3.0 -5.0)  :float-inc    :float     '(-2.0 -5.0)
+    ;; missing args
+    :float    '()           :float-inc    :float     '()
+    ;; bigness
+    :float    '(3.1e12)     :float-inc    :float     '(3.100000000001E12)
+    ;; smallness
+    :float    '(3.1e-77M)    :float-inc   :float
+      '(1.000000000000000000000000000000000000000000000000000000000000000000000000000031M)
+    :float    '(3.1e-88)     :float-inc   :float     '(1.0)) ;; hmm
+
+
+(future-fact ":float-inc deals with overflows")
+(future-fact ":float-inc deals with underflows")
 
 
 ;; visible
