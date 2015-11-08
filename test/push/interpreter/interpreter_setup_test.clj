@@ -113,6 +113,12 @@
       [(:recognizer bar-type) :bar] ])
 
 
+(fact "`register-type` does not empty a stack if it already contains stuff"
+  (let [loaded-with-foo (basic-interpreter :stacks {:foo '(7 77 777)})]
+    (u/get-stack loaded-with-foo :foo) => '(7 77 777)
+    (u/get-stack (register-type loaded-with-foo foo-type) :foo) => '(7 77 777)))
+
+
 ;; register-types
 
 
@@ -282,6 +288,16 @@
     (contains push.types.base.boolean/classic-boolean-type))
 
 
+(fact "`make-classic-interpreter` has `classic-string-type` registered"
+  (:types (make-classic-interpreter)) =>
+    (contains push.types.base.string/classic-string-type))
+
+
+(fact "`make-classic-interpreter` has `classic-char-type` registered"
+  (:types (make-classic-interpreter)) =>
+    (contains push.types.base.char/classic-char-type))
+
+
 (future-fact "`make-classic-interpreter` has `classic-float-type` registered"
   (:types (make-classic-interpreter)) =>
     (contains push.types.base.float/classic-float-type))
@@ -297,16 +313,39 @@
     (contains push.types.base.exec/classic-exec-type))
 
 
-(future-fact "`make-classic-interpreter` can have its :stacks set")
+(fact "`make-classic-interpreter` can have its :stacks set"
+  (keys (:stacks (make-classic-interpreter))) => (contains
+    [:boolean :char :code :error :exec :float :integer :print :string :unknown]
+    :in-any-order)
+  (:integer (:stacks (make-classic-interpreter :stacks {:integer '(8)}))) => '(8)
+  (:boolean (:stacks (make-classic-interpreter :stacks {:boolean '(:test)}))) => '(:test))
 
 
-(future-fact "`make-classic-interpreter` can have its :inputs set")
+(fact "`make-classic-interpreter` can have its :inputs set"
+  (:inputs (make-classic-interpreter)) => {}
+  (:inputs (make-classic-interpreter :inputs [1 2 3])) => {:input!1 1, :input!2 2, :input!3 3}
+  (:inputs (make-classic-interpreter :inputs {:a 8 :b false})) => {:a 8, :b false})
+  
+
+(fact "`make-classic-interpreter` can have its :config set"
+  (:config (make-classic-interpreter)) => {}
+  (:config (make-classic-interpreter :config {:weird-config 88})) => {:weird-config 88})
 
 
-(future-fact "`make-classic-interpreter` can have its :config set")
+(fact "`make-classic-interpreter` can have its :counter set"
+  (:counter (make-classic-interpreter)) => 0
+  (:counter (make-classic-interpreter :counter 7777)) => 7777)
 
 
-(future-fact "`make-classic-interpreter` can have its :counter set")
+(fact "`make-classic-interpreter` knows all kinds of instructions already"
+  (let [benchmarker (make-classic-interpreter)]
+    (println (str "[Classic interpreter knows "
+                  (count (keys (:instructions benchmarker)))
+                  " different instructions and "
+                  (count (:router benchmarker))
+                  " types.]"))
+    (keys (:instructions benchmarker)) =>  ;; just a sampling as a rough check
+      (contains [:integer-add :boolean-and :char≥? :string-concat] :in-any-order :gaps-ok)))
 
 
 ;;;; manipulating existing interpreters

@@ -48,7 +48,7 @@
         (-> interpreter
             (assoc :types (conj old-types type))
             (assoc :router (conj old-router [(:recognizer type) (:stackname type)]))
-            (assoc :stacks (conj old-stacks [(:stackname type) '()]))
+            (assoc :stacks (merge {(:stackname type) '()}  old-stacks))
             (assoc :instructions (merge old-instructions (:instructions type))))))
 
 
@@ -151,11 +151,13 @@
   With no arguments, it has an empty :program, the :stacks include
   core types and are empty, these types are loaded (in this order):
   
-  - classic-integer-type
   - classic-boolean-type
-  - classic-float-type
+  - classic-char-type
   - classic-code-type
   - classic-exec-setup
+  - classic-integer-type
+  - classic-float-type
+  - classic-string-type
 
   and the counter is 0.
 
@@ -187,8 +189,10 @@
                         counter
                         done?)
         (register-types [push.types.base.integer/classic-integer-type
-                         push.types.base.boolean/classic-boolean-type])
-        ; (register-inputs inputs)
+                         push.types.base.boolean/classic-boolean-type
+                         push.types.base.char/classic-char-type
+                         push.types.base.string/classic-string-type])
+        (register-inputs inputs)
         )))
 
 
