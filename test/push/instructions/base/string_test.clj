@@ -8,25 +8,38 @@
 ;; these are tests of an Interpreter with the classic-string-type registered
 ;; the instructions under test are those stored IN THAT TYPE
 
+;; work in progress
+;; these instructions from Clojush are yet to be implemented:
+
+; assemblers and disassemblers
 
 ; string_frominteger
 ; string_fromfloat
 ; string_fromboolean
 ; string_fromchar
-
+; string_parse_to_chars
 ; string_conjchar
+
+; getters and setters
+
+; string_setchar
+; string_readchar
+; string_readline
+; string_whitespace
+; string_emptystring
+; string_nth
 ; string_take
 ; string_substring
 ; string_first
 ; string_last
-; string_nth
 ; string_rest
 ; string_butlast
+
+; string methods qua methods
+
 ; string_length
 ; string_reverse
-; string_parse_to_chars
 ; string_split
-; string_emptystring
 ; string_contains
 ; string_containschar
 ; string_indexofchar
@@ -36,11 +49,7 @@
 ; string_replacechar
 ; string_replacefirstchar
 ; string_removechar
-; string_setchar
 ; exec_string_iterate
-; string_readchar
-; string_readline
-; string_whitespace
 
 
 ;; specific string behavior

@@ -163,7 +163,7 @@ For example, suppose a simple experiment specifies:
 ## Configuring types and instructions
 
 ~~~clojure
-(def x (make-interpreter)) ;; the thing we're setting up
+(def x (basic-interpreter)) ;; the thing we're setting up
 
 (load-into x '[push.interpreter.types.core])
   ;; adds all of :boolean :char :code :integer :float :string

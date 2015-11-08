@@ -14,7 +14,7 @@
   the next step after, and returns the indicated `get-stack`"
   [setup-stack items instruction read-stack]
   (let [setup (i/register-instruction
-                (set-stack (i/make-interpreter) setup-stack items)
+                (set-stack (i/basic-interpreter) setup-stack items)
                 instruction)
         after (i/execute-instruction setup (:token instruction))]
     (get-stack after read-stack)
@@ -29,7 +29,7 @@
   [setup-stack items type-under-test instruction-token read-stack]
   (let [setup (set-stack 
                 (i/register-type
-                  (i/make-interpreter)
+                  (i/basic-interpreter)
                   type-under-test)
                 setup-stack items)
         after (i/execute-instruction setup instruction-token)]

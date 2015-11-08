@@ -30,9 +30,5 @@
         t/make-comparable
         t/make-movable
         (t/attach-instruction , string-concat)
-        ; (t/attach-instruction , char-digit?)
-        ; (t/attach-instruction , char-whitespace?)
-        ; (t/attach-instruction , char-lowercase?)
-        ; (t/attach-instruction , char-uppercase?)
         ))
 

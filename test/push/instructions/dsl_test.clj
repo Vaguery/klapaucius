@@ -12,9 +12,9 @@
   (kwd (second dslblob)))
 
 
-(def nada (i/make-interpreter))
-(def afew (i/make-interpreter :stacks {:integer '(1 2 3)}))
-(def lots (i/make-interpreter :stacks {:code (range 1 20)}))
+(def nada (i/basic-interpreter))
+(def afew (i/basic-interpreter :stacks {:integer '(1 2 3)}))
+(def lots (i/basic-interpreter :stacks {:code (range 1 20)}))
 
 
 ;; count-of
@@ -65,7 +65,7 @@
   (fact "`delete-top-of` works on :boolean stacks containing false values"
     (get-stack-from-dslblob :boolean
       (delete-top-of
-        [(i/make-interpreter :stacks {:boolean '(false true)}) {}]
+        [(i/basic-interpreter :stacks {:boolean '(false true)}) {}]
         :boolean)) => '(true)))
 
 
@@ -92,7 +92,7 @@
 
 
   (fact "`consume-top-of` works with a :boolean stack of falses"
-    (consume-top-of [(i/make-interpreter :stacks {:boolean '(false false)}) {:foo \f}]
+    (consume-top-of [(i/basic-interpreter :stacks {:boolean '(false false)}) {:foo \f}]
       :boolean :as :foo) =not=> (throws)))
 
 
@@ -345,7 +345,7 @@
 
 
   (fact "`save-top-of` works on :boolean stacks containing false"
-    (save-top-of [(i/make-interpreter :stacks {:boolean '(false)}) {}] :boolean :as :foo)
+    (save-top-of [(i/basic-interpreter :stacks {:boolean '(false)}) {}] :boolean :as :foo)
       =not=> (throws)))
 
 
@@ -500,7 +500,7 @@
 
   (fact "`get-nth-of` works with a stack full of false values"
     (#'push.instructions.dsl/get-nth-of
-      [(i/make-interpreter :stacks {:boolean '(false false)}) {}] :boolean :at 6) =not=>
+      [(i/basic-interpreter :stacks {:boolean '(false false)}) {}] :boolean :at 6) =not=>
         (throws)))
 
 

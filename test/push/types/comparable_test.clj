@@ -16,17 +16,17 @@
     (:token foo-lessthan) => :foo<?
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/make-interpreter :stacks {:foo '(1 2)}) foo-lessthan)
+        (i/register-instruction (i/basic-interpreter :stacks {:foo '(1 2)}) foo-lessthan)
         :foo<?)
       :boolean) => '(false)
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/make-interpreter :stacks {:foo '(1 1)}) foo-lessthan)
+        (i/register-instruction (i/basic-interpreter :stacks {:foo '(1 1)}) foo-lessthan)
         :foo<?)
       :boolean) => '(false)
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/make-interpreter :stacks {:foo '(3 2)}) foo-lessthan)
+        (i/register-instruction (i/basic-interpreter :stacks {:foo '(3 2)}) foo-lessthan)
         :foo<?)
       :boolean) => '(true)))
 
@@ -39,17 +39,17 @@
     (:token foo-lte) => :foo≤?
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/make-interpreter :stacks {:foo '(1 2)}) foo-lte)
+        (i/register-instruction (i/basic-interpreter :stacks {:foo '(1 2)}) foo-lte)
         :foo≤?)
       :boolean) => '(false)
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/make-interpreter :stacks {:foo '(1 1)}) foo-lte)
+        (i/register-instruction (i/basic-interpreter :stacks {:foo '(1 1)}) foo-lte)
         :foo≤?)
       :boolean) => '(true)
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/make-interpreter :stacks {:foo '(3 2)}) foo-lte)
+        (i/register-instruction (i/basic-interpreter :stacks {:foo '(3 2)}) foo-lte)
         :foo≤?)
       :boolean) => '(true)))
 
@@ -62,17 +62,17 @@
     (:token foo-gte) => :foo≥?
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/make-interpreter :stacks {:foo '(1 2)}) foo-gte)
+        (i/register-instruction (i/basic-interpreter :stacks {:foo '(1 2)}) foo-gte)
         :foo≥?)
       :boolean) => '(true)
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/make-interpreter :stacks {:foo '(1 1)}) foo-gte)
+        (i/register-instruction (i/basic-interpreter :stacks {:foo '(1 1)}) foo-gte)
         :foo≥?)
       :boolean) => '(true)
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/make-interpreter :stacks {:foo '(3 2)}) foo-gte)
+        (i/register-instruction (i/basic-interpreter :stacks {:foo '(3 2)}) foo-gte)
         :foo≥?)
       :boolean) => '(false)))
 
@@ -86,17 +86,17 @@
     (:token foo-gt) => :foo>?
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/make-interpreter :stacks {:foo '(1 2)}) foo-gt)
+        (i/register-instruction (i/basic-interpreter :stacks {:foo '(1 2)}) foo-gt)
         :foo>?)
       :boolean) => '(true)
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/make-interpreter :stacks {:foo '(1 1)}) foo-gt)
+        (i/register-instruction (i/basic-interpreter :stacks {:foo '(1 1)}) foo-gt)
         :foo>?)
       :boolean) => '(false)
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/make-interpreter :stacks {:foo '(3 2)}) foo-gt)
+        (i/register-instruction (i/basic-interpreter :stacks {:foo '(3 2)}) foo-gt)
         :foo>?)
       :boolean) => '(false)))
 
@@ -109,17 +109,17 @@
     (:token foo-min) => :foo-min
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/make-interpreter :stacks {:foo '(1 2)}) foo-min)
+        (i/register-instruction (i/basic-interpreter :stacks {:foo '(1 2)}) foo-min)
         :foo-min)
       :foo) => '(1)
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/make-interpreter :stacks {:foo '(1 1)}) foo-min)
+        (i/register-instruction (i/basic-interpreter :stacks {:foo '(1 1)}) foo-min)
         :foo-min)
       :foo) => '(1)
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/make-interpreter :stacks {:foo '(3 2)}) foo-min)
+        (i/register-instruction (i/basic-interpreter :stacks {:foo '(3 2)}) foo-min)
         :foo-min)
       :foo) => '(2)))
 
@@ -132,17 +132,17 @@
     (:token foo-max) => :foo-max
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/make-interpreter :stacks {:foo '(1 2)}) foo-max)
+        (i/register-instruction (i/basic-interpreter :stacks {:foo '(1 2)}) foo-max)
         :foo-max)
       :foo) => '(2)
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/make-interpreter :stacks {:foo '(1 1)}) foo-max)
+        (i/register-instruction (i/basic-interpreter :stacks {:foo '(1 1)}) foo-max)
         :foo-max)
       :foo) => '(1)
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/make-interpreter :stacks {:foo '(3 2)}) foo-max)
+        (i/register-instruction (i/basic-interpreter :stacks {:foo '(3 2)}) foo-max)
         :foo-max)
       :foo) => '(3)))
 

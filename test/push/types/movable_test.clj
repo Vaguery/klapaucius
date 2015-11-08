@@ -16,17 +16,17 @@
     (:token foo-dup) => :foo-dup
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/make-interpreter :stacks {:foo '(1 2)}) foo-dup)
+        (i/register-instruction (i/basic-interpreter :stacks {:foo '(1 2)}) foo-dup)
         :foo-dup)
       :foo) => '(1 1 2)
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/make-interpreter :stacks {:foo '(11)}) foo-dup)
+        (i/register-instruction (i/basic-interpreter :stacks {:foo '(11)}) foo-dup)
         :foo-dup)
       :foo) => '(11 11)
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/make-interpreter :stacks {:foo '()}) foo-dup)
+        (i/register-instruction (i/basic-interpreter :stacks {:foo '()}) foo-dup)
         :foo-dup)
       :foo) => '()))
 
@@ -39,12 +39,12 @@
     (:token foo-flush) => :foo-flush
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/make-interpreter :stacks {:foo '(false 11)}) foo-flush)
+        (i/register-instruction (i/basic-interpreter :stacks {:foo '(false 11)}) foo-flush)
         :foo-flush)
       :foo) => '()
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/make-interpreter :stacks {:foo '()}) foo-flush)
+        (i/register-instruction (i/basic-interpreter :stacks {:foo '()}) foo-flush)
         :foo-flush)
       :foo) => '()))
 
@@ -57,12 +57,12 @@
     (:token foo-pop) => :foo-pop
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/make-interpreter :stacks {:foo '(11 22)}) foo-pop)
+        (i/register-instruction (i/basic-interpreter :stacks {:foo '(11 22)}) foo-pop)
         :foo-pop)
       :foo) => '(22)
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/make-interpreter :stacks {:foo '()}) foo-pop)
+        (i/register-instruction (i/basic-interpreter :stacks {:foo '()}) foo-pop)
         :foo-pop)
       :foo) => '()))
 
@@ -75,22 +75,22 @@
     (:token foo-rotate) => :foo-rotate
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/make-interpreter :stacks {:foo '(11 22 33 44)}) foo-rotate)
+        (i/register-instruction (i/basic-interpreter :stacks {:foo '(11 22 33 44)}) foo-rotate)
         :foo-rotate)
       :foo) => '(33 11 22 44)
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/make-interpreter :stacks {:foo '(11 22 33)}) foo-rotate)
+        (i/register-instruction (i/basic-interpreter :stacks {:foo '(11 22 33)}) foo-rotate)
         :foo-rotate)
       :foo) => '(33 11 22)
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/make-interpreter :stacks {:foo '(11 22)}) foo-rotate)
+        (i/register-instruction (i/basic-interpreter :stacks {:foo '(11 22)}) foo-rotate)
         :foo-rotate)
       :foo) => '(11 22)
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/make-interpreter :stacks {:foo '()}) foo-rotate)
+        (i/register-instruction (i/basic-interpreter :stacks {:foo '()}) foo-rotate)
         :foo-rotate)
       :foo) => '()))
 
@@ -104,12 +104,12 @@
     (:token foo-shove) => :foo-shove
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/make-interpreter :stacks {:foo '(:a :b :c) :integer '(1)}) foo-shove)
+        (i/register-instruction (i/basic-interpreter :stacks {:foo '(:a :b :c) :integer '(1)}) foo-shove)
         :foo-shove)
       :foo) => '(:b :a :c)
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/make-interpreter :stacks {:foo '(:a :b :c) :integer '(-1)}) foo-shove)
+        (i/register-instruction (i/basic-interpreter :stacks {:foo '(:a :b :c) :integer '(-1)}) foo-shove)
         :foo-shove)
       :foo) => '(:b :c :a)))
 
@@ -122,12 +122,12 @@
     (:token foo-swap) => :foo-swap
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/make-interpreter :stacks {:foo '(:a :b :c)}) foo-swap)
+        (i/register-instruction (i/basic-interpreter :stacks {:foo '(:a :b :c)}) foo-swap)
         :foo-swap)
       :foo) => '(:b :a :c)
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/make-interpreter :stacks {:foo '(:a :b)}) foo-swap)
+        (i/register-instruction (i/basic-interpreter :stacks {:foo '(:a :b)}) foo-swap)
         :foo-swap)
       :foo) => '(:b :a)))
 
@@ -140,13 +140,13 @@
     (:token foo-yank) => :foo-yank
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/make-interpreter
+        (i/register-instruction (i/basic-interpreter
           :stacks {:foo '(:a :b :c :d :e) :integer '(2)}) foo-yank)
         :foo-yank)
       :foo) => '(:c :a :b :d :e)
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/make-interpreter
+        (i/register-instruction (i/basic-interpreter
           :stacks {:foo '(:a :b :c :d :e) :integer '(-2)}) foo-yank)
         :foo-yank)
       :foo) => '(:d :a :b :c :e)))
@@ -161,13 +161,13 @@
     (:token foo-yankdup) => :foo-yankdup
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/make-interpreter
+        (i/register-instruction (i/basic-interpreter
           :stacks {:foo '(:a :b :c :d :e) :integer '(2)}) foo-yankdup)
         :foo-yankdup)
       :foo) => '(:c :a :b :c :d :e)
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/make-interpreter
+        (i/register-instruction (i/basic-interpreter
           :stacks {:foo '(:a :b :c :d :e) :integer '(-2)}) foo-yankdup)
         :foo-yankdup)
       :foo) => '(:d :a :b :c :d :e)))

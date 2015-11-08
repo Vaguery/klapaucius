@@ -129,7 +129,7 @@
       (add-instruction interpreter instruction)))
 
 
-(defn make-interpreter
+(defn basic-interpreter
   "creates a new Interpreter record
   With no arguments, it has an empty :program, the :stacks include
   core types and are empty, no :instructions are registered, and the

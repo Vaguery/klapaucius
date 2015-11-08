@@ -17,14 +17,14 @@
   (let [junk :this-is-an-unknown-item]
     (get-stack
       (handle-item 
-        (make-interpreter :config {:lenient? true})
+        (basic-interpreter :config {:lenient? true})
         junk)
       :unknown) => '(:this-is-an-unknown-item)))
 
 
 (fact "`handle-item` pushes an item to the :unknown stack if 
   unrecognized when :config :lenient? is not true (or unset)"
-  (handle-item (make-interpreter) (make-interpreter)) => 
+  (handle-item (basic-interpreter) (basic-interpreter)) => 
     (throws #"Push Parsing Error: Cannot interpret '"))
 
 
@@ -33,13 +33,13 @@
 
 (fact "`router-sees?` checks the router predicates and returns true if one matches"
   (let [abbr #'push.interpreter.core/router-sees?]
-    (abbr (make-interpreter) :not-likely) => nil
-    (abbr (make-interpreter 
+    (abbr (basic-interpreter) :not-likely) => nil
+    (abbr (basic-interpreter 
       :router [[(fn [item] (= item :not-likely)) :integer]]) :not-likely) => true))
 
 
 (fact "`handle-item` checks the :router list"
-  (let [he-knows-foo (make-interpreter :router [[integer? :code]])]
+  (let [he-knows-foo (basic-interpreter :router [[integer? :code]])]
         ;; this will route integers to the :code stack, and not to :integer
     (:stacks (handle-item he-knows-foo 99) :code) => (contains {:code '(99)})))
 
@@ -53,16 +53,16 @@
 
 
 (fact "types added to the router with `register-type` are used by `handle-item`"
-  (:router (register-type (make-interpreter) foo-type)) =>
+  (:router (register-type (basic-interpreter) foo-type)) =>
     [ [(:recognizer foo-type) :foo] ]
-  (get-stack (handle-item (register-type (make-interpreter) foo-type) 99) :integer) => '()
-  (get-stack (handle-item (register-type (make-interpreter) foo-type) 99) :foo) => '(99))
+  (get-stack (handle-item (register-type (basic-interpreter) foo-type) 99) :integer) => '()
+  (get-stack (handle-item (register-type (basic-interpreter) foo-type) 99) :foo) => '(99))
 
 
 (fact "handle-item sends integers to :integer"
-  (get-stack (handle-item (make-interpreter) 8) :integer) => '(8)
-  (get-stack (handle-item (make-interpreter) -8) :integer) => '(-8)
-  (get-stack (handle-item (make-interpreter :stacks {:integer '(1)}) -8) :integer) =>
+  (get-stack (handle-item (basic-interpreter) 8) :integer) => '(8)
+  (get-stack (handle-item (basic-interpreter) -8) :integer) => '(-8)
+  (get-stack (handle-item (basic-interpreter :stacks {:integer '(1)}) -8) :integer) =>
     '(-8 1))
 
 
@@ -70,9 +70,9 @@
 
 
 (fact "handle-item sends floats to :float"
-  (get-stack (handle-item (make-interpreter) 8.0) :float) => '(8.0)
-  (get-stack (handle-item (make-interpreter) -8.0) :float) => '(-8.0)
-  (get-stack (handle-item (make-interpreter :stacks {:float '(1.0)}) -8.0) :float) =>
+  (get-stack (handle-item (basic-interpreter) 8.0) :float) => '(8.0)
+  (get-stack (handle-item (basic-interpreter) -8.0) :float) => '(-8.0)
+  (get-stack (handle-item (basic-interpreter :stacks {:float '(1.0)}) -8.0) :float) =>
     '(-8.0 1.0))
 
 
@@ -81,37 +81,37 @@
 
 
 (fact "handle-item sends booleans to :boolean"
-  (get-stack (handle-item (make-interpreter) false) :boolean) => '(false)
-  (get-stack (handle-item (make-interpreter) true) :boolean) => '(true)
-  (get-stack (handle-item (make-interpreter :stacks {:boolean '(false)}) true) :boolean) =>
+  (get-stack (handle-item (basic-interpreter) false) :boolean) => '(false)
+  (get-stack (handle-item (basic-interpreter) true) :boolean) => '(true)
+  (get-stack (handle-item (basic-interpreter :stacks {:boolean '(false)}) true) :boolean) =>
     '(true false))
 
 
 (fact "handle-item sends characters to :char"
-  (get-stack (handle-item (make-interpreter) \J) :char) => '(\J)
-  (get-stack (handle-item (make-interpreter) \o) :char) => '(\o)
-  (get-stack (handle-item (make-interpreter :stacks {:char '(\Y)}) \e) :char) =>
+  (get-stack (handle-item (basic-interpreter) \J) :char) => '(\J)
+  (get-stack (handle-item (basic-interpreter) \o) :char) => '(\o)
+  (get-stack (handle-item (basic-interpreter :stacks {:char '(\Y)}) \e) :char) =>
     '(\e \Y))
 
 
 (fact "handle-item sends strings to :string"
-  (get-stack (handle-item (make-interpreter) "foo") :string) => '("foo")
-  (get-stack (handle-item (make-interpreter) "") :string) => '("")
-  (get-stack (handle-item (make-interpreter :stacks {:string '("bar")}) "baz") :string) =>
+  (get-stack (handle-item (basic-interpreter) "foo") :string) => '("foo")
+  (get-stack (handle-item (basic-interpreter) "") :string) => '("")
+  (get-stack (handle-item (basic-interpreter :stacks {:string '("bar")}) "baz") :string) =>
     '("baz" "bar"))
 
 
 (fact "handle-item 'unwraps' quoted lists onto :exec"
-  (get-stack (handle-item (make-interpreter) '(1 2 3)) :exec) => '(1 2 3)
-  (get-stack (handle-item (make-interpreter) '(1 (2) (3))) :exec) => '(1 (2) (3))
-  (get-stack (handle-item (make-interpreter) '(1 () ())) :exec) => '(1 () ())
-  (get-stack (handle-item (make-interpreter) '()) :exec) => '())
+  (get-stack (handle-item (basic-interpreter) '(1 2 3)) :exec) => '(1 2 3)
+  (get-stack (handle-item (basic-interpreter) '(1 (2) (3))) :exec) => '(1 (2) (3))
+  (get-stack (handle-item (basic-interpreter) '(1 () ())) :exec) => '(1 () ())
+  (get-stack (handle-item (basic-interpreter) '()) :exec) => '())
 
 
 (fact "handle-item will execute a registered instruction"
  (let [foo (instr/make-instruction :foo :transaction (fn [a] 761))
        registry {:foo foo}
-       he-knows-foo (make-interpreter :instructions registry)]
+       he-knows-foo (basic-interpreter :instructions registry)]
    (handle-item he-knows-foo :foo) => 761))
     ;; an intentionally surprising result
 
@@ -119,7 +119,7 @@
 (fact "handle-item will not execute an unregistered instruction"
  (let [foo (instr/make-instruction :foo :transaction (fn [a] 761))
        registry {:foo foo}
-       he-knows-foo (make-interpreter :instructions registry)]
+       he-knows-foo (basic-interpreter :instructions registry)]
    (handle-item he-knows-foo :bar) => (throws #"Push Parsing Error:")))
 
 
@@ -136,7 +136,7 @@
 
 (def knows-some-things
   (register-instruction
-    (make-interpreter 
+    (basic-interpreter 
       :program [1.1 2.2 :intProductToFloat]
       :counter 22
       :stacks {:integer '(1 2 3)
@@ -184,7 +184,7 @@
 
 
 (fact "`is-done?` checks the Interpreter for various halting states"
-  (is-done? (make-interpreter)) => true
+  (is-done? (basic-interpreter)) => true
   (is-done? knows-some-things) => false)
 
 
@@ -202,8 +202,8 @@
 
 
 (fact "calling `step` doesn't affect the counter if :exec is empty"
-  (:counter (make-interpreter)) => 0
-  (:counter (step (make-interpreter))) => 0
+  (:counter (basic-interpreter)) => 0
+  (:counter (step (basic-interpreter))) => 0
   (:counter (step (clear-stack knows-some-things :exec))) => 22)
 
 

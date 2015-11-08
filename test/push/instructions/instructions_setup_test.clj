@@ -70,7 +70,7 @@
                   (consume-top-of :foo :as :in)
                   (push-onto :bar :in))
         context (i/register-instruction 
-                  (i/make-interpreter :stacks {:foo '(1 2 3) :bar '(4 5 6)})
+                  (i/basic-interpreter :stacks {:foo '(1 2 3) :bar '(4 5 6)})
                   foobar)]
   (get-stack (i/execute-instruction context :foobar) :bar ) => '(1 4 5 6)
   (get-stack (i/execute-instruction context :foobar) :foo ) => '(2 3)))
