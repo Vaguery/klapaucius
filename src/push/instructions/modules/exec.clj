@@ -1,4 +1,4 @@
-(ns push.types.base.exec
+(ns push.instructions.modules.exec
   (:require [push.instructions.core :as core])
   (:require [push.types.core :as t])
   (:require [push.instructions.dsl :as d])
@@ -25,9 +25,9 @@
 ; exec_fromziprights
 
 
-(def classic-exec-type
-  ( ->  (t/make-type  :exec
-                      :attributes #{:complex :base})
+(def classic-exec-module
+  ( ->  (t/make-module  :exec
+                        :attributes #{:complex :base})
         t/make-visible 
         t/make-equatable
         t/make-movable

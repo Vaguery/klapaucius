@@ -38,6 +38,20 @@
       (merge old-instructions (hash-map new-key instruction)))))
 
 
+;;;; Modules (like PushTypes, but not about the stack items)
+
+
+(defn make-module
+  "creates a simple hash-map that is a type-like bundle
+  of attributes and instructions"
+  [module-name & 
+    {:keys [attributes instructions] 
+       :or {attributes #{} instructions {}}}]
+  {:stackname module-name
+   :attributes attributes
+   :instructions instructions})
+
+
 ;;;; type-associated instructions
 
 

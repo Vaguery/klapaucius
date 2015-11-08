@@ -2,11 +2,12 @@
   (:use midje.sweet)
   (:use [push.util.test-helpers])
   (:require [push.interpreter.core :as i])
-  (:use [push.types.base.exec])            ;; sets up classic-exec-type
+  (:use [push.instructions.modules.exec])
   )
 
 
-;; these are tests of an Interpreter with the classic-exec-type registered
+
+;; these are tests of an Interpreter with the classic-exec-module registered
 ;; the instructions under test are those stored IN THAT TYPE
 
 ;; work in progress
@@ -48,7 +49,7 @@
 (tabular
   (fact ":exec-stackdepth returns the number of items on the :exec stack (to :integer)"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-exec-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items classic-exec-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; how many?
@@ -60,7 +61,7 @@
 (tabular
   (fact ":exec-empty? returns the true (to :boolean stack) if the stack is empty"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-exec-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items classic-exec-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction  ?get-stack     ?expected
     ;; none?
@@ -68,13 +69,13 @@
     :exec    '()                 :exec-empty?   :boolean     '(true))
 
 
-; ; ;; equatable
+;; equatable
 
 
 (tabular
   (fact ":exec-equal? returns a :boolean indicating whether :first = :second"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-exec-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items classic-exec-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction      ?get-stack     ?expected
     ;; same?
@@ -91,7 +92,7 @@
 (tabular
   (fact ":exec-notequal? returns a :boolean indicating whether :first ≠ :second"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-exec-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items classic-exec-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items           ?instruction      ?get-stack     ?expected
     ;; different

@@ -3,7 +3,7 @@
   (:require [push.types.base.boolean])
   (:require [push.types.base.char])
   (:require [push.types.base.code])
-  (:require [push.types.base.exec])
+  (:require [push.instructions.modules.exec])
   (:require [push.types.base.float])
   (:require [push.types.base.integer])
   (:require [push.types.base.string])
@@ -57,11 +57,28 @@
             (assoc :instructions (merge old-instructions (:instructions type))))))
 
 
+(defn register-module
+  "Takes an Interpreter record, and a module; adds
+  the module's internally defined instructions to the Interpreter's
+  registry automatically."
+  [interpreter module]
+  (let [old-instructions (:instructions interpreter)]
+    (-> interpreter
+      (assoc :instructions (merge old-instructions (:instructions module))))))
+
+
 (defn register-types
   "Takes an Interpreter record, and a list of PushType records. Calls
   `register-type` on each of the types in turn."
   [interpreter types]
   (reduce #(register-type %1 %2) interpreter types))
+
+
+(defn register-modules
+  "Takes an Interpreter record, and a list of modules. Calls
+  `register-module` on each of those in turn."
+  [interpreter modules]
+  (reduce #(register-module %1 %2) interpreter modules))
 
 
 (defn register-input
@@ -197,10 +214,10 @@
                          push.types.base.boolean/classic-boolean-type
                          push.types.base.char/classic-char-type
                          push.types.base.code/classic-code-type
-                         push.types.base.exec/classic-exec-type
                          push.types.base.float/classic-float-type
                          push.types.base.string/classic-string-type
                          ])
+        (register-module push.instructions.modules.exec/classic-exec-module)
         (register-inputs inputs)
         )))
 

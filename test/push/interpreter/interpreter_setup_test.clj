@@ -2,6 +2,7 @@
   (:use midje.sweet)
   (:require [push.util.stack-manipulation :as u])
   (:require [push.instructions.core :as i])
+  (:require [push.instructions.dsl :as d])
   (:require [push.types.core :as types])
   (:use [push.util.type-checkers :only (boolean?)])
   (:use [push.interpreter.core])
@@ -119,6 +120,33 @@
     (u/get-stack (register-type loaded-with-foo foo-type) :foo) => '(7 77 777)))
 
 
+;; register-module
+
+
+;; a fixture
+
+
+(def foo-barbaz
+  (i/build-instruction
+    foo-barbaz))
+
+
+(def foo-qux
+  (i/build-instruction
+    foo-barqux))
+
+
+(def foo-module
+  (-> (types/make-module :foo)
+      (types/attach-instruction , foo-barbaz)
+      (types/attach-instruction , foo-qux)))
+
+
+(fact "`register-module` adds any instructions attached to the module to the Interpreter"
+  (keys (:instructions 
+    (register-module (basic-interpreter) foo-module))) => '(:foo-barbaz :foo-barqux))
+
+
 ;; register-types
 
 
@@ -141,6 +169,28 @@
       :foo-flush :foo-max :foo-min :foo-notequal? :foo-pop :foo-rotate 
       :foo-shove :foo-stackdepth :foo-swap :foo-yank :foo-yankdup 
       :foo<? :foo>? :foo≤? :foo≥?))
+
+
+;; register-modules
+
+
+;; a fixture
+
+
+(def bar-barbaz
+  (i/build-instruction
+    bar-barbaz))
+
+
+(def bar-module
+  (-> (types/make-module :bar)
+      (types/attach-instruction , bar-barbaz)))
+
+
+(fact "`register-modules` adds all the instructions"
+  (sort (keys (:instructions (register-modules (basic-interpreter)
+                                               [foo-module bar-module])))) => 
+    '(:bar-barbaz :foo-barbaz :foo-barqux))
 
 
 ;; registering types on initialization
@@ -303,14 +353,14 @@
     (contains push.types.base.float/classic-float-type))
 
 
-(future-fact "`make-classic-interpreter` has `classic-code-type` registered"
+(fact "`make-classic-interpreter` has `classic-code-type` registered"
   (:types (make-classic-interpreter)) =>
     (contains push.types.base.code/classic-code-type))
 
 
-(future-fact "`make-classic-interpreter` has `classic-exec-type` registered"
-  (:types (make-classic-interpreter)) =>
-    (contains push.types.base.exec/classic-exec-type))
+(fact "`make-classic-interpreter` has `classic-exec-module` registered"
+  (keys (:instructions (make-classic-interpreter))) =>
+    (contains :exec-stackdepth))
 
 
 (fact "`make-classic-interpreter` can have its :stacks set"
@@ -494,6 +544,5 @@
 (fact "push-item will create a stack if told to"
   (u/get-stack (push-item (basic-interpreter) :foo [1 :weird :thing]) :foo) =>
     '([1 :weird :thing]))
-
 
 

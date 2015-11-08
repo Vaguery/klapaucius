@@ -1,6 +1,8 @@
 (ns push.types.core-test
   (:use midje.sweet)
   (:require [push.interpreter.core :as i])
+  (:require [push.instructions.core :as instr])
+  (:require [push.instructions.dsl :as d])
   (:use [push.types.core])
   )
 
@@ -35,3 +37,35 @@
                                     :float 
                                     :integer 
                                     :string] :in-any-order))
+
+
+;;;; Modules (like types, just not about items)
+
+
+;; modules
+
+
+(fact "`make-module` creates a simple map with :attributes and :instructions fields"
+  (:stackname (make-module :foo)) => :foo
+  (:attributes (make-module :foo)) => #{}
+  (:instructions (make-module :foo)) => {})
+
+
+(fact "modules can have whole attributes assigned as with PushTypes"
+  (keys (:instructions (make-visible (make-module :foo)))) => '(:foo-stackdepth :foo-empty?)
+  (:attributes (make-visible (make-module :foo))) => #{:visible})
+
+
+;; a fixture
+
+
+(def foo-barbaz
+  (instr/build-instruction
+    foo-barbaz
+    :tags #{:foo :double-ba*}
+    (d/consume-top-of :foo :as :arg1)))
+
+
+(fact "modules can have individual instructions assigned"
+  (keys (:instructions (attach-instruction (make-module :foo) foo-barbaz))) =>
+    '(:foo-barbaz))
