@@ -22,14 +22,9 @@
 ; exec_fromziprights
 
 
-; getters and setters
-
-; ??
-
-; code methods qua methods
+; exec methods qua methods
 
 
-; exec_noop
 ; exec_do*range
 ; exec_do*count
 ; exec_do*times
@@ -40,6 +35,18 @@
 ; exec_k
 ; exec_s
 ; exec_y
+
+
+(tabular
+  (fact ":exec-noop does nothing"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-exec-module ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items            ?instruction      ?get-stack     ?expected
+    ;; how many?
+    :exec    '(1.1 2.2)          :exec-noop          :exec         '(1.1 2.2) 
+    :exec    '(1.0)              :exec-noop          :exec         '(1.0)     
+    :exec    '()                 :exec-noop          :exec         '())
 
 
 

@@ -38,7 +38,6 @@
 
 ; string methods qua methods
 
-; string_length
 ; string_reverse
 ; string_split
 ; string_contains
@@ -72,6 +71,24 @@
                                 :string-concat  :string     '("\n\b8")
    ;; missing args
     :string    '("foo")         :string-concat  :string     '("foo"))
+
+
+
+(tabular
+  (fact ":string-length returns the second :string item tacked to the end of the first"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items         ?instruction  ?get-stack   ?expected
+    ;; length
+    :string    '("foo")         :string-length  :integer     '(3)
+    :string    '(" foo ")       :string-length  :integer     '(5)
+    :string    '("foo\n\t\t\n") :string-length  :integer     '(7)
+    :string    '("\u2665")      :string-length  :integer     '(1)
+    ;; because Java is weird enough to let you inline backspace characters
+    :string    '("\b8" )        :string-length  :integer     '(2)
+   ;; missing args
+    :string    '()              :string-length  :integer     '())
 
 
 ; ;; visible

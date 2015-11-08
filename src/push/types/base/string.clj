@@ -19,6 +19,14 @@
     (d/push-onto :string :both)))
 
 
+(def string-length
+  (core/build-instruction
+    string-length
+    :tags #{:string :base}
+    (d/consume-top-of :string :as :arg1)
+    (d/calculate [:arg1] #(count %1) :as :len)
+    (d/push-onto :integer :len)))
+
 
 
 (def classic-string-type
@@ -30,5 +38,6 @@
         t/make-comparable
         t/make-movable
         (t/attach-instruction , string-concat)
+        (t/attach-instruction , string-length)
         ))
 

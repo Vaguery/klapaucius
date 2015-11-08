@@ -7,7 +7,6 @@
 
 ;; exec-specific
 
-; exec_noop
 ; exec_do*range
 ; exec_do*count
 ; exec_do*times
@@ -25,11 +24,18 @@
 ; exec_fromziprights
 
 
+(def exec-noop
+  (core/build-instruction
+    exec-noop
+    :tags #{:complex :base}))
+
+
 (def classic-exec-module
   ( ->  (t/make-module  :exec
                         :attributes #{:complex :base})
         t/make-visible 
         t/make-equatable
         t/make-movable
+        (t/attach-instruction , exec-noop)
         ))
 
