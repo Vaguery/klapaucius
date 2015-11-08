@@ -1,9 +1,9 @@
 (ns push.types.base.boolean_test
   (:use midje.sweet)
   (:use [push.util.test-helpers])
-  (:use [push.types.base.boolean])
   (:use [push.util.type-checkers :only (boolean?)])
-)
+  (:use [push.types.base.boolean])
+  )
 
 
 (fact "classic-boolean-type has :stackname ':boolean'"

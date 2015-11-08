@@ -1,9 +1,9 @@
 (ns push.interpreter.core
-  (:use [push.util.type-checkers :only (boolean?)])
-  (:use [push.util.stack-manipulation])
+  (:require [push.util.stack-manipulation :as u])
   (:require [push.types.base.integer])
   (:require [push.types.base.boolean])
-  (:use [push.util.exceptions :as oops])
+  (:require [push.util.exceptions :as oops])
+  (:use [push.util.type-checkers :only (boolean?)])
   )
 
 
@@ -269,7 +269,7 @@
   [interpreter stackname item-list]
   (let [old-stack (get-in interpreter [:stacks stackname])
         new-stack (into old-stack (reverse item-list))]
-    (set-stack interpreter stackname new-stack)))
+    (u/set-stack interpreter stackname new-stack)))
 
 
 (defn- instruction?
@@ -362,7 +362,7 @@
   "Takes and Interpreter and checks various halting conditions.
   Returns true if any is true. Does not change interpreter state."
   [interpreter]
-  (and (empty? (get-stack interpreter :exec))))
+  (and (empty? (u/get-stack interpreter :exec))))
 
 
 (defn- set-doneness
@@ -376,13 +376,13 @@
   router, increments the counter. If the :exec stack is empty, does
   nothing."
   [interpreter]
-  (let [old-exec (get-stack interpreter :exec)]
+  (let [old-exec (u/get-stack interpreter :exec)]
     (if (seq old-exec)
       (let [next-item (first old-exec)
             new-exec (pop old-exec)]
         (-> interpreter
             (increment-counter)
-            (set-stack :exec new-exec)
+            (u/set-stack :exec new-exec)
             (handle-item next-item)
             (set-doneness)))
       interpreter)))

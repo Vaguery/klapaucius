@@ -1,11 +1,10 @@
 (ns push.interpreter.interpreter-setup-test
   (:use midje.sweet)
-  (:use [push.util.type-checkers :only (boolean?)])
-  (:use push.util.stack-manipulation)
-  (:use [push.instructions.dsl])
-  (:use [push.interpreter.core])
+  (:require [push.util.stack-manipulation :as u])
   (:require [push.instructions.core :as i])
   (:require [push.types.core :as types])
+  (:use [push.util.type-checkers :only (boolean?)])
+  (:use [push.interpreter.core])
   )
 
 
@@ -259,11 +258,11 @@
 
 
 (fact "basic-interpreter can be passed a hashmap of populated stacks to merge into the core"
-  (get-stack (basic-interpreter) :integer ) => '()
-  (get-stack (basic-interpreter :stacks {:integer '(7 6 5)}) :integer ) => '(7 6 5)
-  (get-stack (basic-interpreter :stacks {:foo '(7 6 5)}) :foo ) => '(7 6 5)
-  (get-stack (basic-interpreter :stacks {:foo '(7 6 5)}) :integer ) => '()
-  (get-stack (basic-interpreter) :foo ) => nil)
+  (u/get-stack (basic-interpreter) :integer ) => '()
+  (u/get-stack (basic-interpreter :stacks {:integer '(7 6 5)}) :integer ) => '(7 6 5)
+  (u/get-stack (basic-interpreter :stacks {:foo '(7 6 5)}) :foo ) => '(7 6 5)
+  (u/get-stack (basic-interpreter :stacks {:foo '(7 6 5)}) :integer ) => '()
+  (u/get-stack (basic-interpreter) :foo ) => nil)
 
 
 ;;;; make-classic-interpreter
@@ -358,9 +357,9 @@
           (register-instruction (basic-interpreter :stacks {:integer '(1)}) foo)
         many-ints
           (register-instruction (basic-interpreter :stacks {:integer '(1 2 3 4)}) foo)]
-    (count (get-stack an-int :integer)) => 1
+    (count (u/get-stack an-int :integer)) => 1
     (abbr an-int :foo) => false
-    (count (get-stack many-ints :integer )) => 4
+    (count (u/get-stack many-ints :integer )) => 4
     (#'push.interpreter.core/contains-at-least?
         many-ints :integer 2) => true
     (abbr many-ints :foo) => true))
@@ -403,21 +402,21 @@
 ;; utilities and helpers
 
 
-(fact "get-stack is a convenience function for reading the named stack"
-  (get-stack (basic-interpreter :stacks {:boolean '(false true)}) :boolean) =>
+(fact "u/get-stack is a convenience function for reading the named stack"
+  (u/get-stack (basic-interpreter :stacks {:boolean '(false true)}) :boolean) =>
     '(false true))
 
 
-(fact "get-stack will happily look up and return any named stack"
-  (get-stack (basic-interpreter) :foo) => nil)
+(fact "u/get-stack will happily look up and return any named stack"
+  (u/get-stack (basic-interpreter) :foo) => nil)
 
 
-(fact "get-stack will return an empty list for an existing (but empty) stack"
-  (get-stack (basic-interpreter) :integer) => '())
+(fact "u/get-stack will return an empty list for an existing (but empty) stack"
+  (u/get-stack (basic-interpreter) :integer) => '())
 
 
-(fact "set-stack replaces a stack completely"
-  (get-stack (set-stack (basic-interpreter) :integer '(1 2 3)) :integer) => '(1 2 3)
+(fact "u/set-stack replaces a stack completely"
+  (u/get-stack (u/set-stack (basic-interpreter) :integer '(1 2 3)) :integer) => '(1 2 3)
   )
 
 
@@ -442,19 +441,19 @@
 
 
 (fact "push-item pushes the specified item to the stack, returning the updated Interpreter"
-  (get-stack (push-item (basic-interpreter) :integer 9) :integer) => '(9)
-  (get-stack (push-item 
+  (u/get-stack (push-item (basic-interpreter) :integer 9) :integer) => '(9)
+  (u/get-stack (push-item 
     (basic-interpreter :stacks {:integer '(1 2 3)}) :integer 9) :integer) => '(9 1 2 3))
 
 
 (fact "push-item does not do type-checking"
-  (get-stack (
+  (u/get-stack (
     push-item (basic-interpreter :stacks {:integer '(1 2 3)}) :integer false)  :integer) =>
     '(false 1 2 3))
 
 
 (fact "push-item will create a stack if told to"
-  (get-stack (push-item (basic-interpreter) :foo [1 :weird :thing]) :foo) =>
+  (u/get-stack (push-item (basic-interpreter) :foo [1 :weird :thing]) :foo) =>
     '([1 :weird :thing]))
 
 

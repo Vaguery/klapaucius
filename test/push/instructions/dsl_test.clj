@@ -1,15 +1,20 @@
 (ns push.instructions.dsl-test
   (:use midje.sweet)
-  (:use push.instructions.dsl)
-  (:use push.util.stack-manipulation)
+  (:require [push.util.stack-manipulation :as u])
   (:require [push.interpreter.core :as i])
-  (:require [push.instructions.core :as inst]))
+  (:require [push.instructions.core :as inst])
+  (:use push.instructions.dsl)
+  )
 
 ;; convenience functions for testing
+
 
 (defn get-local-from-dslblob
   [kwd dslblob]
   (kwd (second dslblob)))
+
+
+;; fixtures
 
 
 (def nada (i/basic-interpreter))
@@ -18,6 +23,7 @@
 
 
 ;; count-of
+
 
 (facts "about `count-of`"
   (fact "`count-of` saves the number of items on the named stack in the specified local"
@@ -43,7 +49,7 @@
 
 (defn get-stack-from-dslblob
   [stackname dslblob]
-  (get-stack (first dslblob) stackname))
+  (u/get-stack (first dslblob) stackname))
 
 
 (facts "about `delete-top-of`"
@@ -117,6 +123,7 @@
 
 ;; insert-as-nth
 
+
 (facts "about `insert-as-nth`"
 
   (fact "`insert-as-nth` returns a collection with the item inserted at position n"
@@ -141,6 +148,7 @@
 
 
 ;; `consume-stack [stackname :as local]`
+
 
 (facts "about `consume-stack`"
 
@@ -168,6 +176,7 @@
 
 ;; `delete-stack [stackname]`
 
+
 (facts "about `delete-stack`"
 
   (fact "`delete-stack` discards the named stack"
@@ -182,6 +191,7 @@
 
 
 ;; `index-from-scratch-ref [key hashmap]`
+
 
 (facts "about `index-from-scratch-ref`"
 
@@ -200,6 +210,7 @@
 
 
 ;; `delete-nth-of [stackname :at where]`
+
 
 (facts "about `delete-nth-of`"
 
@@ -243,6 +254,7 @@
 
 ;; `replace-stack [stackname local]`
 
+
 (facts "about `replace-stack`"
 
   (fact "`replace-stack` sets the named stack to the value of the local if it is a list"
@@ -265,6 +277,7 @@
 
 
 ;; `push-onto [stackname local]`
+
 
 (facts "about `push-onto`"
 
@@ -289,6 +302,7 @@
 
 
 ;; `save-stack [stackname :as local]`
+
 
 (facts "about `save-stack`"
 
@@ -315,6 +329,7 @@
 
 
 ;; `save-top-of [stackname :as local]`
+
 
 (facts "about `save-top-of`"
 
@@ -350,6 +365,7 @@
 
 
 ;; `save-nth-of [stackname :at where :as local]`
+
 
 (facts "about `save-nth-of"
 
@@ -405,6 +421,7 @@
 
 
 ;; `consume-nth-of [stackname :at where :as local]`
+
 
 (facts "about `consume-nth-of`"
 
@@ -506,6 +523,7 @@
 
 ;; `calculate [[args] fn :as local]`
 
+
 (facts "about `calculate`"
 
   (fact "calculate maps the function onto the indicated scratch items and stores the result in the named local"
@@ -545,6 +563,7 @@
 
 ;; inst/needs-of-dsl-step
 
+
 (fact "`needs-of-dsl-step` returns a hashmap containing the needs for every DSL instruction"
   (inst/needs-of-dsl-step 
     '(calculate [:a :b] #(+ %1 %2) :as :sum)) => {}
@@ -580,6 +599,7 @@
 
 
 ;; inst/total-needs
+
 
 (fact "`inst/total-needs` takes a whole transaction and sums up all the needs of each item"
   (inst/total-needs 
@@ -643,10 +663,11 @@
                   (consume-top-of :integer :as :arg2)
                   (calculate [:arg1 :arg2] #(+ %1 %2) :as :sum)
                   (push-onto :integer :sum))]
-  (get-stack (int-add afew) :integer) => '(3 3)))
+  (u/get-stack (int-add afew) :integer) => '(3 3)))
 
 
 ;; `push-these-onto [stackname [locals]]`
+
 
 (facts "about `push-these-onto`"
 
@@ -684,6 +705,7 @@
 
 
 ;; `insert-as-nth-of [stackname local :at where]`
+
 
 (facts "about `insert-as-nth-of`"
 

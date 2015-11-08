@@ -1,9 +1,9 @@
 (ns push.types.base.char_test
   (:use midje.sweet)
   (:use [push.util.test-helpers])
-  (:use [push.types.base.char])
   (:use [push.util.type-checkers :only (boolean?)])
-)
+  (:use [push.types.base.char])
+  )
 
 
 (fact "classic-char-type has :stackname ':char'"

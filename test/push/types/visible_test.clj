@@ -1,8 +1,9 @@
 (ns push.types.visible-test
   (:use midje.sweet)
-  (:use push.types.core)
   (:use push.util.stack-manipulation)
-  (:require [push.interpreter.core :as i]))
+  (:require [push.interpreter.core :as i])
+  (:use push.types.core)
+  )
 
 
 ;; :visible types

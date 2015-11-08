@@ -1,8 +1,9 @@
 (ns push.instructions.base.char_test
-  (:require [push.interpreter.core :as i])
+  (:use midje.sweet)
   (:use [push.util.test-helpers])
+  (:require [push.interpreter.core :as i])
   (:use [push.types.base.char])  ;; sets up classic-char-type
-  (:use midje.sweet))
+  )
 
 
 ;; these are tests of an Interpreter with the classic-char-type registered

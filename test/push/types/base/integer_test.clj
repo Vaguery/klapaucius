@@ -1,7 +1,8 @@
 (ns push.types.base.integer_test
   (:use midje.sweet)
   (:use [push.util.test-helpers])
-  (:use [push.types.base.integer]))
+  (:use [push.types.base.integer])
+  )
 
 
 (fact "classic-integer-type has :stackname ':integer'"

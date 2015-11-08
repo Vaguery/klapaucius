@@ -1,6 +1,6 @@
 (ns push.util.test-helpers
   (:use midje.sweet)
-  (:use [push.util.stack-manipulation])
+  (:require [push.util.stack-manipulation :as u])
   (:require [push.interpreter.core :as i])
   )
 
@@ -14,10 +14,10 @@
   the next step after, and returns the indicated `get-stack`"
   [setup-stack items instruction read-stack]
   (let [setup (i/register-instruction
-                (set-stack (i/basic-interpreter) setup-stack items)
+                (u/set-stack (i/basic-interpreter) setup-stack items)
                 instruction)
         after (i/execute-instruction setup (:token instruction))]
-    (get-stack after read-stack)
+    (u/get-stack after read-stack)
     ))
 
 
@@ -27,11 +27,11 @@
   executes the named instruction to produce the next step after, and returns 
   the indicated `get-stack`"
   [setup-stack items type-under-test instruction-token read-stack]
-  (let [setup (set-stack 
+  (let [setup (u/set-stack 
                 (i/register-type
                   (i/basic-interpreter)
                   type-under-test)
                 setup-stack items)
         after (i/execute-instruction setup instruction-token)]
-    (get-stack after read-stack)
+    (u/get-stack after read-stack)
     ))

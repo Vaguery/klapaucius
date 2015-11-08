@@ -1,6 +1,6 @@
 (ns push.interpreter.inputs-test
   (:use midje.sweet)
-  (:use push.util.stack-manipulation)
+  (:require [push.util.stack-manipulation :as u])
   (:use [push.interpreter.core]))
 
 
@@ -20,7 +20,7 @@
 (fact "an Interpreter will recognize a registered input keyword in a
   running program and replace it with the stored value"
   (let [neo (register-input (basic-interpreter) :kung "foo")]
-    (get-stack (handle-item neo :kung) :exec) => '("foo")))
+    (u/get-stack (handle-item neo :kung) :exec) => '("foo")))
 
 
 (fact "`register-input` saves a new key-value pair with a generated key if none is given"

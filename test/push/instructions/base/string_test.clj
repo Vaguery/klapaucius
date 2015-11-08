@@ -1,8 +1,9 @@
 (ns push.instructions.base.string_test
-  (:require [push.interpreter.core :as i])
+  (:use midje.sweet)
   (:use [push.util.test-helpers])
+  (:require [push.interpreter.core :as i])
   (:use [push.types.base.string])  ;; sets up classic-string-type
-  (:use midje.sweet))
+  )
 
 
 ;; these are tests of an Interpreter with the classic-string-type registered

@@ -1,10 +1,11 @@
 (ns push.interpreter.interpreter-running-test
   (:use midje.sweet)
-  (:use [push.instructions.dsl])
+  (:require [push.instructions.dsl :as dsl])
   (:require [push.instructions.core :as instr])
   (:require [push.types.core :as types])
-  (:use push.util.stack-manipulation)
-  (:use [push.interpreter.core]))
+  (:require [push.util.stack-manipulation :as u])
+  (:use [push.interpreter.core])
+  )
 
 
 ;;; the router and handle-item
@@ -15,7 +16,7 @@
 
 (fact "`handle-item` pushes an item to the :unknown stack if unrecognized when :config :lenient? is true"
   (let [junk :this-is-an-unknown-item]
-    (get-stack
+    (u/get-stack
       (handle-item 
         (basic-interpreter :config {:lenient? true})
         junk)
@@ -55,14 +56,14 @@
 (fact "types added to the router with `register-type` are used by `handle-item`"
   (:router (register-type (basic-interpreter) foo-type)) =>
     [ [(:recognizer foo-type) :foo] ]
-  (get-stack (handle-item (register-type (basic-interpreter) foo-type) 99) :integer) => '()
-  (get-stack (handle-item (register-type (basic-interpreter) foo-type) 99) :foo) => '(99))
+  (u/get-stack (handle-item (register-type (basic-interpreter) foo-type) 99) :integer) => '()
+  (u/get-stack (handle-item (register-type (basic-interpreter) foo-type) 99) :foo) => '(99))
 
 
 (fact "handle-item sends integers to :integer"
-  (get-stack (handle-item (basic-interpreter) 8) :integer) => '(8)
-  (get-stack (handle-item (basic-interpreter) -8) :integer) => '(-8)
-  (get-stack (handle-item (basic-interpreter :stacks {:integer '(1)}) -8) :integer) =>
+  (u/get-stack (handle-item (basic-interpreter) 8) :integer) => '(8)
+  (u/get-stack (handle-item (basic-interpreter) -8) :integer) => '(-8)
+  (u/get-stack (handle-item (basic-interpreter :stacks {:integer '(1)}) -8) :integer) =>
     '(-8 1))
 
 
@@ -70,9 +71,9 @@
 
 
 (fact "handle-item sends floats to :float"
-  (get-stack (handle-item (basic-interpreter) 8.0) :float) => '(8.0)
-  (get-stack (handle-item (basic-interpreter) -8.0) :float) => '(-8.0)
-  (get-stack (handle-item (basic-interpreter :stacks {:float '(1.0)}) -8.0) :float) =>
+  (u/get-stack (handle-item (basic-interpreter) 8.0) :float) => '(8.0)
+  (u/get-stack (handle-item (basic-interpreter) -8.0) :float) => '(-8.0)
+  (u/get-stack (handle-item (basic-interpreter :stacks {:float '(1.0)}) -8.0) :float) =>
     '(-8.0 1.0))
 
 
@@ -81,31 +82,31 @@
 
 
 (fact "handle-item sends booleans to :boolean"
-  (get-stack (handle-item (basic-interpreter) false) :boolean) => '(false)
-  (get-stack (handle-item (basic-interpreter) true) :boolean) => '(true)
-  (get-stack (handle-item (basic-interpreter :stacks {:boolean '(false)}) true) :boolean) =>
+  (u/get-stack (handle-item (basic-interpreter) false) :boolean) => '(false)
+  (u/get-stack (handle-item (basic-interpreter) true) :boolean) => '(true)
+  (u/get-stack (handle-item (basic-interpreter :stacks {:boolean '(false)}) true) :boolean) =>
     '(true false))
 
 
 (fact "handle-item sends characters to :char"
-  (get-stack (handle-item (basic-interpreter) \J) :char) => '(\J)
-  (get-stack (handle-item (basic-interpreter) \o) :char) => '(\o)
-  (get-stack (handle-item (basic-interpreter :stacks {:char '(\Y)}) \e) :char) =>
+  (u/get-stack (handle-item (basic-interpreter) \J) :char) => '(\J)
+  (u/get-stack (handle-item (basic-interpreter) \o) :char) => '(\o)
+  (u/get-stack (handle-item (basic-interpreter :stacks {:char '(\Y)}) \e) :char) =>
     '(\e \Y))
 
 
 (fact "handle-item sends strings to :string"
-  (get-stack (handle-item (basic-interpreter) "foo") :string) => '("foo")
-  (get-stack (handle-item (basic-interpreter) "") :string) => '("")
-  (get-stack (handle-item (basic-interpreter :stacks {:string '("bar")}) "baz") :string) =>
+  (u/get-stack (handle-item (basic-interpreter) "foo") :string) => '("foo")
+  (u/get-stack (handle-item (basic-interpreter) "") :string) => '("")
+  (u/get-stack (handle-item (basic-interpreter :stacks {:string '("bar")}) "baz") :string) =>
     '("baz" "bar"))
 
 
 (fact "handle-item 'unwraps' quoted lists onto :exec"
-  (get-stack (handle-item (basic-interpreter) '(1 2 3)) :exec) => '(1 2 3)
-  (get-stack (handle-item (basic-interpreter) '(1 (2) (3))) :exec) => '(1 (2) (3))
-  (get-stack (handle-item (basic-interpreter) '(1 () ())) :exec) => '(1 () ())
-  (get-stack (handle-item (basic-interpreter) '()) :exec) => '())
+  (u/get-stack (handle-item (basic-interpreter) '(1 2 3)) :exec) => '(1 2 3)
+  (u/get-stack (handle-item (basic-interpreter) '(1 (2) (3))) :exec) => '(1 (2) (3))
+  (u/get-stack (handle-item (basic-interpreter) '(1 () ())) :exec) => '(1 () ())
+  (u/get-stack (handle-item (basic-interpreter) '()) :exec) => '())
 
 
 (fact "handle-item will execute a registered instruction"
@@ -128,10 +129,10 @@
 
 (def intProductToFloat
   (instr/build-instruction intProductToFloat
-    (consume-top-of :integer :as :arg1)
-    (consume-top-of :integer :as :arg2)
-    (calculate [:arg1 :arg2] #(float (* %1 %2)) :as :p)
-    (push-onto :float :p)))
+    (dsl/consume-top-of :integer :as :arg1)
+    (dsl/consume-top-of :integer :as :arg2)
+    (dsl/calculate [:arg1 :arg2] #(float (* %1 %2)) :as :p)
+    (dsl/push-onto :float :p)))
 
 
 (def knows-some-things
@@ -155,13 +156,13 @@
 
 
 (fact "calling `reset-interpreter` loads the program onto :exec"
-  (get-stack knows-some-things :exec) => '(:intProductToFloat)
-  (get-stack (reset-interpreter knows-some-things) :exec) =>
+  (u/get-stack knows-some-things :exec) => '(:intProductToFloat)
+  (u/get-stack (reset-interpreter knows-some-things) :exec) =>
     '(1.1 2.2 :intProductToFloat))
 
 
 (fact "calling `reset-interpreter` clears the other stacks"
-  (get-stack knows-some-things :integer) => '(1 2 3)
+  (u/get-stack knows-some-things :integer) => '(1 2 3)
   (:stacks (reset-interpreter knows-some-things)) => 
     (merge core-stacks {:exec '(1.1 2.2 :intProductToFloat)}))
 
@@ -192,8 +193,8 @@
 
 
 (fact "calling `step` consumes one item from the :exec stack (if any)"
-  (get-stack knows-some-things :exec) => '(:intProductToFloat)
-  (get-stack (step knows-some-things) :exec) => '())
+  (u/get-stack knows-some-things :exec) => '(:intProductToFloat)
+  (u/get-stack (step knows-some-things) :exec) => '())
 
 
 (fact "calling `step` increments the counter if something happens"
@@ -204,7 +205,7 @@
 (fact "calling `step` doesn't affect the counter if :exec is empty"
   (:counter (basic-interpreter)) => 0
   (:counter (step (basic-interpreter))) => 0
-  (:counter (step (clear-stack knows-some-things :exec))) => 22)
+  (:counter (step (u/clear-stack knows-some-things :exec))) => 22)
 
 
 (fact "calling `step` sets the :done? flag if a halting condition is encountered"
