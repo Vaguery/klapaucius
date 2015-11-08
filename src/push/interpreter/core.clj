@@ -1,7 +1,10 @@
 (ns push.interpreter.core
   (:require [push.util.stack-manipulation :as u])
-  (:require [push.types.base.integer])
   (:require [push.types.base.boolean])
+  (:require [push.types.base.char])
+  (:require [push.types.base.float])
+  (:require [push.types.base.integer])
+  (:require [push.types.base.string])
   (:require [push.util.exceptions :as oops])
   (:use [push.util.type-checkers :only (boolean?)])
   )
@@ -191,6 +194,7 @@
         (register-types [push.types.base.integer/classic-integer-type
                          push.types.base.boolean/classic-boolean-type
                          push.types.base.char/classic-char-type
+                         push.types.base.float/classic-float-type
                          push.types.base.string/classic-string-type])
         (register-inputs inputs)
         )))

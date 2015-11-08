@@ -298,7 +298,7 @@
     (contains push.types.base.char/classic-char-type))
 
 
-(future-fact "`make-classic-interpreter` has `classic-float-type` registered"
+(fact "`make-classic-interpreter` has `classic-float-type` registered"
   (:types (make-classic-interpreter)) =>
     (contains push.types.base.float/classic-float-type))
 
