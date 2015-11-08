@@ -38,7 +38,6 @@
 
 ; string methods qua methods
 
-; string_reverse
 ; string_split
 ; string_contains
 ; string_containschar
@@ -90,6 +89,23 @@
    ;; missing args
     :string    '()              :string-length  :integer     '())
 
+
+(tabular
+  (fact ":string-reverse returns the second :string item tacked to the end of the first"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items         ?instruction  ?get-stack   ?expected
+    ;; backwards
+    :string    '("foo")         :string-reverse  :string     '("oof")
+    :string    '(" foo ")       :string-reverse  :string     '(" oof ")
+    :string    '("foo\n\t\t\n") :string-reverse  :string     '("\n\t\t\noof")
+    :string    '("\u2665\u2666")
+                                :string-reverse  :string     '("\u2666\u2665")
+    ;; because Java is weird enough to let you inline backspace characters
+    :string    '("\b8" )        :string-reverse  :string     '("8\b")
+   ;; missing args
+    :string    '()              :string-reverse  :string     '())
 
 ; ;; visible
 

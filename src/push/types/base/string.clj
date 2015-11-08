@@ -28,6 +28,14 @@
     (d/push-onto :integer :len)))
 
 
+(def string-reverse
+  (core/build-instruction
+    string-reverse
+    :tags #{:string :base}
+    (d/consume-top-of :string :as :arg1)
+    (d/calculate [:arg1] #(strings/reverse %1) :as :sdrawkcab)
+    (d/push-onto :string :sdrawkcab)))
+
 
 (def classic-string-type
   ( ->  (t/make-type  :string
@@ -39,5 +47,6 @@
         t/make-movable
         (t/attach-instruction , string-concat)
         (t/attach-instruction , string-length)
+        (t/attach-instruction , string-reverse)
         ))
 
