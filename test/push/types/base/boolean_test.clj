@@ -6,8 +6,8 @@
   )
 
 
-(fact "classic-boolean-type has :stackname ':boolean'"
-  (:stackname classic-boolean-type) => :boolean)
+(fact "classic-boolean-type has :name ':boolean'"
+  (:name classic-boolean-type) => :boolean)
 
 
 (fact "classic-boolean-type has the correct :recognizer"

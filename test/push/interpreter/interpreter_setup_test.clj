@@ -50,7 +50,7 @@
       :foo-equal? :foo-notequal? :foo-dup :foo-flush 
       :foo-pop :foo-rotate :foo-shove :foo-swap 
       :foo-yank :foo-yankdup] :in-any-order)
-    (:stackname foo-type) => :foo)
+    (:name foo-type) => :foo)
 
 
 (def bar-type 
@@ -66,7 +66,7 @@
       '(:bar-notequal? :bar-dup :bar-swap :bar-rotate 
         :bar-flush :bar-stackdepth :bar-equal? :bar-empty? 
         :bar-pop :bar-yank :bar-yankdup :bar-shove) :in-any-order)
-    (:stackname bar-type) => :bar)
+    (:name bar-type) => :bar)
 
 
 ;;;; types
@@ -197,9 +197,9 @@
 
 
 (fact "a list of PushTypes can be passed into `basic-interpreter` and are added to :types"
-  (map :stackname (:types (basic-interpreter :types [foo-type]))) => 
+  (map :name (:types (basic-interpreter :types [foo-type]))) => 
     '(:foo)
-  (map :stackname (:types (basic-interpreter :types [foo-type bar-type]))) => 
+  (map :name (:types (basic-interpreter :types [foo-type bar-type]))) => 
     (just [:bar :foo]))
 
 
@@ -226,7 +226,7 @@
 
 (fact "registering a new type in an Interpreter with stuff defined still leaves that stuff intact"
   (let [knows-foo (basic-interpreter :types [foo-type])]
-    (map :stackname (:types (register-type knows-foo bar-type))) => 
+    (map :name (:types (register-type knows-foo bar-type))) => 
         '(:bar :foo)
     (keys (:stacks (register-type knows-foo bar-type))) =>
         (contains [ :foo :bar] :in-any-order :gaps-ok)

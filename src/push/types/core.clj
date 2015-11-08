@@ -16,16 +16,16 @@
     })
 
 
-(defrecord PushType [stackname recognizer attributes instructions])
+(defrecord PushType [name recognizer attributes instructions])
 
 
 (defn make-type
-  "Create a PushType record from a stackname (keyword), with
+  "Create a PushType record from a name (keyword), with
   optional :recognizer :attributes and :instructions"
-  [stackname & {
+  [name & {
     :keys [recognizer attributes instructions] 
     :or {recognizer (constantly false) attributes #{} instructions {}}}]
-  (->PushType stackname recognizer attributes instructions))
+  (->PushType name recognizer attributes instructions))
 
 
 (defn attach-instruction
@@ -47,7 +47,7 @@
   [module-name & 
     {:keys [attributes instructions] 
        :or {attributes #{} instructions {}}}]
-  {:stackname module-name
+  {:name module-name
    :attributes attributes
    :instructions instructions})
 
@@ -61,7 +61,7 @@
 (defn stackdepth-instruction
   "returns a new x-stackdepth instruction for a PushType"
   [pushtype]
-  (let [typename (:stackname pushtype)
+  (let [typename (:name pushtype)
         instruction-name (str (name typename) "-stackdepth")]
     (eval (list
       'push.instructions.core/build-instruction
@@ -74,7 +74,7 @@
 (defn empty?-instruction
   "returns a new x-empty? instruction for a PushType"
   [pushtype]
-  (let [typename (:stackname pushtype)
+  (let [typename (:name pushtype)
         instruction-name (str (name typename) "-empty?")]
     (eval (list
       'push.instructions.core/build-instruction
@@ -102,7 +102,7 @@
 (defn equal?-instruction
   "returns a new x-equal? instruction for a PushType"
   [pushtype]
-  (let [typename (:stackname pushtype)
+  (let [typename (:name pushtype)
         instruction-name (str (name typename) "-equal?")]
     (eval (list
       'push.instructions.core/build-instruction
@@ -117,7 +117,7 @@
 (defn notequal?-instruction
   "returns a new x-notequal? instruction for a PushType"
   [pushtype]
-  (let [typename (:stackname pushtype)
+  (let [typename (:name pushtype)
         instruction-name (str (name typename) "-notequal?")]
     (eval (list
       'push.instructions.core/build-instruction
@@ -146,7 +146,7 @@
 (defn lessthan?-instruction
   "returns a new x-<? instruction for a PushType"
   [pushtype]
-  (let [typename (:stackname pushtype)
+  (let [typename (:name pushtype)
         instruction-name (str (name typename) "<?")]
     (eval (list
       'push.instructions.core/build-instruction
@@ -161,7 +161,7 @@
 (defn lessthanorequal?-instruction
   "returns a new x≤? instruction for a PushType"
   [pushtype]
-  (let [typename (:stackname pushtype)
+  (let [typename (:name pushtype)
         instruction-name (str (name typename) "≤?")]
     (eval (list
       'push.instructions.core/build-instruction
@@ -176,7 +176,7 @@
 (defn greaterthanorequal?-instruction
   "returns a new x≥? instruction for a PushType"
   [pushtype]
-  (let [typename (:stackname pushtype)
+  (let [typename (:name pushtype)
         instruction-name (str (name typename) "≥?")]
     (eval (list
       'push.instructions.core/build-instruction
@@ -191,7 +191,7 @@
 (defn greaterthan?-instruction
   "returns a new x>? instruction for a PushType"
   [pushtype]
-  (let [typename (:stackname pushtype)
+  (let [typename (:name pushtype)
         instruction-name (str (name typename) ">?")]
     (eval (list
       'push.instructions.core/build-instruction
@@ -206,7 +206,7 @@
 (defn min-instruction
   "returns a new x-min instruction for a PushType"
   [pushtype]
-  (let [typename (:stackname pushtype)
+  (let [typename (:name pushtype)
         instruction-name (str (name typename) "-min")]
     (eval (list
       'push.instructions.core/build-instruction
@@ -221,7 +221,7 @@
 (defn max-instruction
   "returns a new x-max instruction for a PushType"
   [pushtype]
-  (let [typename (:stackname pushtype)
+  (let [typename (:name pushtype)
         instruction-name (str (name typename) "-max")]
     (eval (list
       'push.instructions.core/build-instruction
@@ -254,7 +254,7 @@
 (defn dup-instruction
   "returns a new x-dup instruction for a PushType"
   [pushtype]
-  (let [typename (:stackname pushtype)
+  (let [typename (:name pushtype)
         instruction-name (str (name typename) "-dup")]
     (eval (list
       'push.instructions.core/build-instruction
@@ -267,7 +267,7 @@
 (defn flush-instruction
   "returns a new x-flush instruction for a PushType"
   [pushtype]
-  (let [typename (:stackname pushtype)
+  (let [typename (:name pushtype)
         instruction-name (str (name typename) "-flush")]
     (eval (list
       'push.instructions.core/build-instruction
@@ -279,7 +279,7 @@
 (defn pop-instruction
   "returns a new x-pop instruction for a PushType"
   [pushtype]
-  (let [typename (:stackname pushtype)
+  (let [typename (:name pushtype)
         instruction-name (str (name typename) "-pop")]
     (eval (list
       'push.instructions.core/build-instruction
@@ -291,7 +291,7 @@
 (defn rotate-instruction
   "returns a new x-rotate instruction for a PushType"
   [pushtype]
-  (let [typename (:stackname pushtype)
+  (let [typename (:name pushtype)
         instruction-name (str (name typename) "-rotate")]
     (eval (list
       'push.instructions.core/build-instruction
@@ -308,7 +308,7 @@
 (defn shove-instruction
   "returns a new x-shove instruction for a PushType"
   [pushtype]
-  (let [typename (:stackname pushtype)
+  (let [typename (:name pushtype)
         instruction-name (str (name typename) "-shove")]
     (eval (list
       'push.instructions.core/build-instruction
@@ -323,7 +323,7 @@
 (defn swap-instruction
   "returns a new x-swap instruction for a PushType"
   [pushtype]
-  (let [typename (:stackname pushtype)
+  (let [typename (:name pushtype)
         instruction-name (str (name typename) "-swap")]
     (eval (list
       'push.instructions.core/build-instruction
@@ -338,7 +338,7 @@
 (defn yank-instruction
   "returns a new x-yank instruction for a PushType"
   [pushtype]
-  (let [typename (:stackname pushtype)
+  (let [typename (:name pushtype)
         instruction-name (str (name typename) "-yank")]
     (eval (list
       'push.instructions.core/build-instruction
@@ -353,7 +353,7 @@
 (defn yankdup-instruction
   "returns a new x-yankdup instruction for a PushType"
   [pushtype]
-  (let [typename (:stackname pushtype)
+  (let [typename (:name pushtype)
         instruction-name (str (name typename) "-yankdup")]
     (eval (list
       'push.instructions.core/build-instruction

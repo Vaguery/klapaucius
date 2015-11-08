@@ -15,7 +15,7 @@
 
 (fact "`make-type` takes a keyword and recognizer"
   (make-type :integer :recognizer integer?) =>
-    {:stackname :integer, :recognizer integer?, :attributes #{}, :instructions {}})
+    {:name :integer, :recognizer integer?, :attributes #{}, :instructions {}})
 
 
 (fact "`make-type` defaults the :recognizer to #(false)"
@@ -46,7 +46,7 @@
 
 
 (fact "`make-module` creates a simple map with :attributes and :instructions fields"
-  (:stackname (make-module :foo)) => :foo
+  (:name (make-module :foo)) => :foo
   (:attributes (make-module :foo)) => #{}
   (:instructions (make-module :foo)) => {})
 

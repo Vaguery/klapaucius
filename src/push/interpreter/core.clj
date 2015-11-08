@@ -41,7 +41,7 @@
 (defn register-type
   "Takes an Interpreter record, and a PushType record, and adds the
   PushType to the :types collection in the Interpeter; adds the
-  type's :stackname as a new stack (if not already present); appends the 
+  type's :name as a new stack (if not already present); appends the 
   type's :recognizer to the :router vector; adds
   the type's internally defined instructions to the Interpreter's
   registry automatically."
@@ -52,8 +52,8 @@
         old-instructions (:instructions interpreter)]
         (-> interpreter
             (assoc :types (conj old-types type))
-            (assoc :router (conj old-router [(:recognizer type) (:stackname type)]))
-            (assoc :stacks (merge {(:stackname type) '()}  old-stacks))
+            (assoc :router (conj old-router [(:recognizer type) (:name type)]))
+            (assoc :stacks (merge {(:name type) '()}  old-stacks))
             (assoc :instructions (merge old-instructions (:instructions type))))))
 
 

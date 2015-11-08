@@ -6,8 +6,8 @@
 
 
 
-(fact "classic-exec-module has :stackname ':exec'"
-  (:stackname classic-exec-module) => :exec)
+(fact "classic-exec-module has :name ':exec'"
+  (:name classic-exec-module) => :exec)
 
 
 (fact "classic-exec-module has the expected :attributes"

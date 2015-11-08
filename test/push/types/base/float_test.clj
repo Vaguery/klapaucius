@@ -5,8 +5,8 @@
   )
 
 
-(fact "classic-float-type has :stackname ':float'"
-  (:stackname classic-float-type) => :float)
+(fact "classic-float-type has :name ':float'"
+  (:name classic-float-type) => :float)
 
 
 (fact "classic-float-type has the correct :recognizer"

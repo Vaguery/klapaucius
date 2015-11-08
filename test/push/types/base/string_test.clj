@@ -5,8 +5,8 @@
   )
 
 
-(fact "classic-string-type has :stackname ':string'"
-  (:stackname classic-string-type) => :string)
+(fact "classic-string-type has :name ':string'"
+  (:name classic-string-type) => :string)
 
 
 (fact "classic-string-type has the correct :recognizer"

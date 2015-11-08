@@ -6,8 +6,8 @@
   )
 
 
-(fact "classic-char-type has :stackname ':char'"
-  (:stackname classic-char-type) => :char)
+(fact "classic-char-type has :name ':char'"
+  (:name classic-char-type) => :char)
 
 
 (fact "classic-char-type has the correct :recognizer"

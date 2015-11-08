@@ -5,8 +5,8 @@
   )
 
 
-(fact "classic-integer-type has :stackname ':integer'"
-  (:stackname classic-integer-type) => :integer)
+(fact "classic-integer-type has :name ':integer'"
+  (:name classic-integer-type) => :integer)
 
 
 (fact "classic-integer-type has the correct :recognizer"

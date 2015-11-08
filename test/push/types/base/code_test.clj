@@ -5,8 +5,8 @@
   )
 
 
-(fact "classic-code-type has :stackname ':code'"
-  (:stackname classic-code-type) => :code)
+(fact "classic-code-type has :name ':code'"
+  (:name classic-code-type) => :code)
 
 
 (fact "classic-code-type has the correct :recognizer"
