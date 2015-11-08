@@ -153,10 +153,55 @@
     :char    '(\ℜ)         :char-uppercase?   :boolean     '(true)
     :char    '(\℞)         :char-uppercase?   :boolean     '(false)
     :char    '(\₨)         :char-uppercase?   :boolean     '(false)
-    :char    '(\🄷)         :char-uppercase?   :boolean     '(false)
-    :char    '(\🄖)         :char-uppercase?   :boolean     '(false)
-    :char    '(\Ⓕ)         :char-uppercase?   :boolean     '(false)
-    :char    '(\🅴)         :char-uppercase?   :boolean     '(false)
+    :char    '(\Ⓕ)         :char-uppercase?   :boolean     '(true)
    ;; missing args
     :char    '()           :char-uppercase?   :boolean     '())
 
+
+;; visible
+
+(tabular
+  (fact ":char-stackdepth returns the number of items on the :char stack (to :integer)"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items        ?instruction  ?get-stack     ?expected
+    ;; anding
+    :char    '(\r \e \l \p)  :char-stackdepth   :integer     '(4)
+    :char    '(\R)           :char-stackdepth   :integer     '(1)
+    :char    '()             :char-stackdepth   :integer     '(0))
+
+
+(tabular
+  (fact ":char-empty? returns the true (to :boolean stack) if the stack is empty"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items        ?instruction  ?get-stack     ?expected
+    ;; anding
+    :char    '(\r \e \l \p)  :char-empty?   :boolean     '(false)
+    :char    '()             :char-empty?   :boolean     '(true))
+
+
+;; equatable
+
+;; comparable
+
+(tabular
+  (fact ":char<? returns a :boolean indicating whether :first < :second"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items    ?instruction  ?get-stack     ?expected
+    ;; just the math
+    :char    '(\r \s)       :char<?      :boolean        '(false)
+    :char    '(\s \r)       :char<?      :boolean        '(true)
+    :char    '(\r \r)       :char<?      :boolean        '(false)
+    ;; missing args    
+    :char    '(\s)          :char<?      :boolean        '()
+    :char    '(\s)          :char<?      :char           '(\s)
+    :char    '()            :char<?      :boolean        '()
+    :char    '()            :char<?      :char           '())
+
+
+;; movable

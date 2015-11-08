@@ -36,4 +36,4 @@
 
 (fact "classic-char-type knows a few things about characters"
   (keys (:instructions classic-char-type)) =>
-  (contains [:char-letter?] :in-any-order :gaps-ok))
+  (contains [:char-letter? :char-digit? :char-whitespace? :char-lowercase? :char-uppercase?] :in-any-order :gaps-ok))
