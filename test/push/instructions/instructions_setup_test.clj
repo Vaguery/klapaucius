@@ -66,6 +66,15 @@
       (d/push-onto :bar :in)))) => true)
 
 
+(future-fact "`build-instruction` captures the docstring")
+
+
+(future-fact "`build-instruction` raises an exception if there is no docstring associated with the built instruction")
+
+
+;; a bit of a test
+
+
 (fact "registering and executing the instruction in an Interpreter works"
   (let [foobar (build-instruction foobar             ;;; moves top :foo to :bar
                   (d/consume-top-of :foo :as :in)
