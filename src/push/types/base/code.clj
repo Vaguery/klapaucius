@@ -9,7 +9,6 @@
 
 ;; code-specific
 
-; code_append
 ; code_atom
 ; code_car
 ; code_cdr
@@ -39,12 +38,40 @@
 ; code_member
 ; code_nth
 ; code_nthcdr
-; code_null
 ; code_overlap
 ; code_position
 ; code_size
 ; code_subst
 ; code_wrap
+
+
+
+
+(def code-append
+  (core/build-instruction
+    code-append
+    :tags #{:complex :base}
+    (d/consume-top-of :code :as :arg2)
+    (d/consume-top-of :code :as :arg1)
+    (d/calculate [:arg1] #(if (seq? %1) %1 (list %1)) :as :list1)
+    (d/calculate [:arg2] #(if (seq? %1) %1 (list %1)) :as :list2)
+    (d/calculate [:list1 :list2] #(concat %1 %2) :as :both)
+    (d/push-onto :code :both)))
+
+
+(def code-noop
+  (core/build-instruction
+    code-noop
+    :tags #{:complex :base}))
+
+
+(def code-null?
+  (core/build-instruction
+    code-null?
+    :tags #{:complex :predicate :base}
+    (d/consume-top-of :code :as :c)
+    (d/calculate [:c] #(and (seq? %1) (empty? %1)) :as :empty)
+    (d/push-onto :boolean :empty)))
 
 
 (def code-quote
@@ -55,13 +82,6 @@
     (d/push-onto :code :arg1)))
 
 
-
-(def code-noop
-  (core/build-instruction
-    code-noop
-    :tags #{:complex :base}))
-
-
 (def classic-code-type
   ( ->  (t/make-type  :code
                       :recognizer push-code?
@@ -69,7 +89,9 @@
         t/make-visible 
         t/make-equatable
         t/make-movable
+        (t/attach-instruction , code-append)
         (t/attach-instruction , code-noop)
+        (t/attach-instruction , code-null?)
         (t/attach-instruction , code-quote)
         ))
 

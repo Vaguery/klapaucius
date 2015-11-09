@@ -57,22 +57,54 @@
 ; code_if
 ; code_list
 ; code_member
-; code_null
 ; code_subst
 ; code_contains
 ; code_position
 
 
 (tabular
-  (fact ":code-noop returns the number of items on the :code stack (to :integer)"
+  (fact ":code-append concats two :code items, wrapping them in lists first if they aren't already"
     (register-type-and-check-instruction
         ?set-stack ?items classic-code-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
-    ;; how many?
+    ;; stick 'em together
+    :code    '((1.1) (8 9))         :code-append        :code        '((8 9 1.1))
+    :code    '(2 3)                 :code-append        :code        '((3 2))
+    :code    '(() 3)                :code-append        :code        '((3))
+    :code    '(2 ())                :code-append        :code        '((2))
+    :code    '(() ())               :code-append        :code        '(())
+    :code    '(2)                   :code-append        :code        '(2))
+
+
+(tabular
+  (fact ":code-noop don't do shit"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-code-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items            ?instruction      ?get-stack     ?expected
+    ;; be very quiet
     :code    '(1.1 '(8 9))         :code-noop        :code        '(1.1 '(8 9))
     :code    '()                   :code-noop        :code        '())
      
+
+
+
+(tabular
+  (future-fact ":code-null? pushes true to :boolean if the top :code item is an empty list, false otherwise"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-code-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items            ?instruction      ?get-stack     ?expected
+    ;; an echoing sound is heard
+    :code    '(1.1 '(8 9))         :code-null?        :boolean        '(false)
+    :code    '(() 8)               :code-null?        :boolean        '(true)
+    
+;;;;; PROBLEM HERE
+    :code    '('() 8)              :code-null?        :boolean        '(true)
+    ;; …except in silence
+    :code    '()                   :code-null?        :boolean        '()
+    )
 
 
 (tabular
