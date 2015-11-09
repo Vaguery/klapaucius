@@ -22,8 +22,10 @@
     ;; all the letters
     :string    '("foo")         :char-allfromstring   :char     '(\f \o \o)
     :string    '("4\n5")        :char-allfromstring   :char     '(\4 \newline \5)
+    :string    '("")            :char-allfromstring   :char     '()
     ;; missing args
-    :string    '("")            :char-allfromstring   :char     '())
+    :string    '()              :char-allfromstring   :char     '())
+
 
 
 (tabular
