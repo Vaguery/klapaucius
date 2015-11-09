@@ -259,7 +259,8 @@
 
   (fact "`replace-stack` sets the named stack to the value of the local if it is a list"
     (get-stack-from-dslblob :integer
-      (replace-stack [afew {:foo '(4 5 6)}] :integer :foo)) => '(4 5 6))
+      (replace-stack [afew {:foo '(4 5 6)}] :integer :foo)) => '(4 5 6)
+    )
 
 
   (fact "`replace-stack` empties a stack if the local is not defined"

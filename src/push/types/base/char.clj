@@ -8,6 +8,18 @@
 ;; character-specific
 
 
+(def char-allfromstring
+  (core/build-instruction
+    char-allfromstring
+    :tags #{:string :base}
+    (d/consume-top-of :string :as :arg)
+    (d/consume-stack :char :as :old-stack)
+    (d/calculate [:arg :old-stack]
+      #(if (empty? %1) %2 (concat (seq %1) %2)) :as :new-stack)
+    (d/calculate [:new-stack] #(into '() (reverse %1)) :as :kludged)
+    (d/replace-stack :char :kludged)))
+
+
 (def char-letter?
   (core/build-instruction
     char-letter?
@@ -61,6 +73,7 @@
         t/make-equatable
         t/make-comparable
         t/make-movable
+        (t/attach-instruction , char-allfromstring)
         (t/attach-instruction , char-letter?)
         (t/attach-instruction , char-digit?)
         (t/attach-instruction , char-whitespace?)

@@ -32,7 +32,6 @@
 ; exec_do*while
 ; exec_if
 ; exec_when
-; exec_s
 
 
 

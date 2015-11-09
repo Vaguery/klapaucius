@@ -10,12 +10,48 @@
 ;; the instructions under test are those stored IN THAT TYPE
 
 
-; char_allfromstring
 ; char_frominteger
 ; char_fromfloat
 
 
 ;; specific char behavior
+
+
+(tabular
+  (fact ":char-allfromstring puts every char in the top :string onto the :char stack"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items          ?instruction  ?get-stack         ?expected
+    ;; all the letters
+    :string    '("foo")         :char-allfromstring   :char     '(\f \o \o)
+    :string    '("4\n5")        :char-allfromstring   :char     '(\4 \newline \5)
+    ;; missing args
+    :string    '("")            :char-allfromstring   :char     '())
+
+
+(tabular
+  (fact ":char-digit? returns true when the :char item is an numeric digit"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items         ?instruction  ?get-stack   ?expected
+    ;; exploring Java's recognizers
+    :char    '(\R)           :char-digit?   :boolean     '(false)
+    :char    '(\8)           :char-digit?   :boolean     '(true)
+    :char    '(\e)           :char-digit?   :boolean     '(false)
+    :char    '(\space)       :char-digit?   :boolean     '(false)
+    :char    '(\2)           :char-digit?   :boolean     '(true)
+    :char    '(\٧)           :char-digit?   :boolean     '(true)   ;; Arabic
+    :char    '(\൬)           :char-digit?   :boolean     '(true)  ;; Malayalam
+    :char    '(\④)           :char-digit?   :boolean     '(false)
+    :char    '(\⒋)           :char-digit?   :boolean     '(false)
+    :char    '(\⓽)           :char-digit?   :boolean     '(false)
+    :char    '(\➏)           :char-digit?   :boolean     '(false)
+    :char    '(\８)           :char-digit?   :boolean     '(true)   ;; fullwidth (Asian)
+    :char    '(\Ⅷ)           :char-digit?   :boolean    '(false)
+   ;; missing args
+    :char    '()             :char-digit?   :boolean     '())
 
 
 (tabular
@@ -42,27 +78,58 @@
 
 
 (tabular
-  (fact ":char-digit? returns true when the :char item is an numeric digit"
+  (fact ":char-lowercase? returns true when the :char item is lowercase (per Java)"
     (register-type-and-check-instruction
         ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
 
-    ?set-stack  ?items         ?instruction  ?get-stack   ?expected
+    ?set-stack  ?items     ?instruction  ?get-stack     ?expected
     ;; exploring Java's recognizers
-    :char    '(\R)           :char-digit?   :boolean     '(false)
-    :char    '(\8)           :char-digit?   :boolean     '(true)
-    :char    '(\e)           :char-digit?   :boolean     '(false)
-    :char    '(\space)       :char-digit?   :boolean     '(false)
-    :char    '(\2)           :char-digit?   :boolean     '(true)
-    :char    '(\٧)           :char-digit?   :boolean     '(true)   ;; Arabic
-    :char    '(\൬)           :char-digit?   :boolean     '(true)  ;; Malayalam
-    :char    '(\④)           :char-digit?   :boolean     '(false)
-    :char    '(\⒋)           :char-digit?   :boolean     '(false)
-    :char    '(\⓽)           :char-digit?   :boolean     '(false)
-    :char    '(\➏)           :char-digit?   :boolean     '(false)
-    :char    '(\８)           :char-digit?   :boolean     '(true)   ;; fullwidth (Asian)
-    :char    '(\Ⅷ)           :char-digit?   :boolean    '(false)
+    :char    '(\r)         :char-lowercase?   :boolean     '(true)
+    :char    '(\R)         :char-lowercase?   :boolean     '(false)
+    :char    '(\1)         :char-lowercase?   :boolean     '(false)
+    :char    '(\space)     :char-lowercase?   :boolean     '(false)
+    :char    '(\æ)         :char-lowercase?   :boolean     '(true)
+    :char    '(\ƛ)         :char-lowercase?   :boolean     '(true)
+    :char    '(\ǯ)         :char-lowercase?   :boolean     '(true)
+    :char    '(\ɷ)         :char-lowercase?   :boolean     '(true)
+    :char    '(\ʯ)         :char-lowercase?   :boolean     '(true)
+    :char    '(\π)         :char-lowercase?   :boolean     '(true)
+    :char    '(\ß)         :char-lowercase?   :boolean     '(true)
+    :char    '(\℥)         :char-lowercase?   :boolean     '(false)
+    :char    '(\⒦)         :char-lowercase?   :boolean     '(false)
+    :char    '(\ⓝ)         :char-lowercase?   :boolean     '(true)
    ;; missing args
-    :char    '()             :char-digit?   :boolean     '())
+    :char    '()           :char-lowercase?   :boolean     '())
+
+
+(tabular
+  (fact ":char-uppercase? returns true when the :char item is uppercase (per Java)"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items     ?instruction  ?get-stack     ?expected
+    ;; exploring Java's recognizers
+    :char    '(\r)         :char-uppercase?   :boolean     '(false)
+    :char    '(\R)         :char-uppercase?   :boolean     '(true)
+    :char    '(\1)         :char-uppercase?   :boolean     '(false)
+    :char    '(\space)     :char-uppercase?   :boolean     '(false)
+    :char    '(\æ)         :char-uppercase?   :boolean     '(false)
+    :char    '(\Æ)         :char-uppercase?   :boolean     '(true)
+    :char    '(\Ə)         :char-uppercase?   :boolean     '(true)
+    :char    '(\Ȝ)         :char-uppercase?   :boolean     '(true)
+    :char    '(\ʀ)         :char-uppercase?   :boolean     '(false)
+    :char    '(\ᴆ)         :char-uppercase?   :boolean     '(false)
+    :char    '(\Ψ)         :char-uppercase?   :boolean     '(true)
+    :char    '(\∃)         :char-uppercase?   :boolean     '(false)
+    :char    '(\∀)         :char-uppercase?   :boolean     '(false)
+    :char    '(\ℍ)         :char-uppercase?   :boolean     '(true)
+    :char    '(\ℚ)         :char-uppercase?   :boolean     '(true)
+    :char    '(\ℜ)         :char-uppercase?   :boolean     '(true)
+    :char    '(\℞)         :char-uppercase?   :boolean     '(false)
+    :char    '(\₨)         :char-uppercase?   :boolean     '(false)
+    :char    '(\Ⓕ)         :char-uppercase?   :boolean     '(true)
+   ;; missing args
+    :char    '()           :char-uppercase?   :boolean     '())
 
 
 (tabular
@@ -101,63 +168,6 @@
     :char    '(\u0011)           :char-whitespace?   :boolean     '(false)
    ;; missing args
     :char    '()                 :char-whitespace?   :boolean     '())
-
-
-
-(tabular
-  (fact ":char-lowercase? returns true when the :char item is lowercase (per Java)"
-    (register-type-and-check-instruction
-        ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
-
-    ?set-stack  ?items     ?instruction  ?get-stack     ?expected
-    ;; exploring Java's recognizers
-    :char    '(\r)         :char-lowercase?   :boolean     '(true)
-    :char    '(\R)         :char-lowercase?   :boolean     '(false)
-    :char    '(\1)         :char-lowercase?   :boolean     '(false)
-    :char    '(\space)     :char-lowercase?   :boolean     '(false)
-    :char    '(\æ)         :char-lowercase?   :boolean     '(true)
-    :char    '(\ƛ)         :char-lowercase?   :boolean     '(true)
-    :char    '(\ǯ)         :char-lowercase?   :boolean     '(true)
-    :char    '(\ɷ)         :char-lowercase?   :boolean     '(true)
-    :char    '(\ʯ)         :char-lowercase?   :boolean     '(true)
-    :char    '(\π)         :char-lowercase?   :boolean     '(true)
-    :char    '(\ß)         :char-lowercase?   :boolean     '(true)
-    :char    '(\℥)         :char-lowercase?   :boolean     '(false)
-    :char    '(\⒦)         :char-lowercase?   :boolean     '(false)
-    :char    '(\ⓝ)         :char-lowercase?   :boolean     '(true)
-   ;; missing args
-    :char    '()           :char-lowercase?   :boolean     '())
-
-
-
-(tabular
-  (fact ":char-uppercase? returns true when the :char item is uppercase (per Java)"
-    (register-type-and-check-instruction
-        ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
-
-    ?set-stack  ?items     ?instruction  ?get-stack     ?expected
-    ;; exploring Java's recognizers
-    :char    '(\r)         :char-uppercase?   :boolean     '(false)
-    :char    '(\R)         :char-uppercase?   :boolean     '(true)
-    :char    '(\1)         :char-uppercase?   :boolean     '(false)
-    :char    '(\space)     :char-uppercase?   :boolean     '(false)
-    :char    '(\æ)         :char-uppercase?   :boolean     '(false)
-    :char    '(\Æ)         :char-uppercase?   :boolean     '(true)
-    :char    '(\Ə)         :char-uppercase?   :boolean     '(true)
-    :char    '(\Ȝ)         :char-uppercase?   :boolean     '(true)
-    :char    '(\ʀ)         :char-uppercase?   :boolean     '(false)
-    :char    '(\ᴆ)         :char-uppercase?   :boolean     '(false)
-    :char    '(\Ψ)         :char-uppercase?   :boolean     '(true)
-    :char    '(\∃)         :char-uppercase?   :boolean     '(false)
-    :char    '(\∀)         :char-uppercase?   :boolean     '(false)
-    :char    '(\ℍ)         :char-uppercase?   :boolean     '(true)
-    :char    '(\ℚ)         :char-uppercase?   :boolean     '(true)
-    :char    '(\ℜ)         :char-uppercase?   :boolean     '(true)
-    :char    '(\℞)         :char-uppercase?   :boolean     '(false)
-    :char    '(\₨)         :char-uppercase?   :boolean     '(false)
-    :char    '(\Ⓕ)         :char-uppercase?   :boolean     '(true)
-   ;; missing args
-    :char    '()           :char-uppercase?   :boolean     '())
 
 
 ;; visible
