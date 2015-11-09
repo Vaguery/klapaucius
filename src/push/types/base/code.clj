@@ -9,7 +9,6 @@
 
 ;; code-specific
 
-; code_atom
 ; code_car
 ; code_cdr
 ; code_cons
@@ -59,6 +58,15 @@
     (d/push-onto :code :both)))
 
 
+(def code-atom?
+  (core/build-instruction
+    code-atom?
+    :tags #{:complex :predicate :base}
+    (d/consume-top-of :code :as :c)
+    (d/calculate [:c] #(not (seq? %1)) :as :unlisted)
+    (d/push-onto :boolean :unlisted)))
+
+
 (def code-noop
   (core/build-instruction
     code-noop
@@ -90,6 +98,7 @@
         t/make-equatable
         t/make-movable
         (t/attach-instruction , code-append)
+        (t/attach-instruction , code-atom?)
         (t/attach-instruction , code-noop)
         (t/attach-instruction , code-null?)
         (t/attach-instruction , code-quote)

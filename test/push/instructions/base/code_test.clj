@@ -78,6 +78,22 @@
 
 
 (tabular
+  (future-fact ":code-atom? pushes true to :boolean if the top :code is not a list"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-code-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items            ?instruction      ?get-stack     ?expected
+    ;; an echoing sound is heard
+    :code    '(1.1 '(8 9))         :code-atom?        :boolean        '(true)
+    :code    '(() 8)               :code-atom?        :boolean        '(false)
+    
+;;;;; PROBLEM HERE
+    :code    '('() 8)              :code-atom?        :boolean        '(true)
+    ;; …except in silence
+    :code    '()                   :code-atom?        :boolean        '())
+
+
+(tabular
   (fact ":code-noop don't do shit"
     (register-type-and-check-instruction
         ?set-stack ?items classic-code-type ?instruction ?get-stack) => ?expected)
@@ -103,8 +119,7 @@
 ;;;;; PROBLEM HERE
     :code    '('() 8)              :code-null?        :boolean        '(true)
     ;; …except in silence
-    :code    '()                   :code-null?        :boolean        '()
-    )
+    :code    '()                   :code-null?        :boolean        '())
 
 
 (tabular
