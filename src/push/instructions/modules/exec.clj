@@ -23,6 +23,15 @@
 ; exec_fromziprights
 
 
+(def exec-k
+  (core/build-instruction
+    exec-k
+    :tags #{:complex :base}
+    (d/consume-top-of :exec :as :arg1)
+    (d/consume-top-of :exec :as :arg2)
+    (d/push-onto :exec :arg1)))
+
+
 (def exec-noop
   (core/build-instruction
     exec-noop
@@ -45,6 +54,7 @@
         t/make-visible 
         t/make-equatable
         t/make-movable
+        (t/attach-instruction , exec-k)
         (t/attach-instruction , exec-noop)
         (t/attach-instruction , exec-y)
         ))

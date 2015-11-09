@@ -32,8 +32,21 @@
 ; exec_do*while
 ; exec_if
 ; exec_when
-; exec_k
 ; exec_s
+
+
+
+(tabular
+  (fact ":exec-k applies the K combinator"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-exec-module ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items         ?instruction      ?get-stack     ?expected
+    ;; not the second one
+    :exec    '(1.1 2.2 (3.3))    :exec-k          :exec         '(1.1 (3.3)) 
+    ;; missing arguments
+    :exec    '(1.0)              :exec-k          :exec         '(1.0)     
+    :exec    '()                 :exec-k          :exec         '())
 
 
 (tabular
