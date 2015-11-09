@@ -16,7 +16,6 @@
 ; exec_when
 ; exec_k
 ; exec_s
-; exec_y
 ; exec_fromzipnode
 ; exec_fromziproot
 ; exec_fromzipchildren
@@ -30,6 +29,16 @@
     :tags #{:complex :base}))
 
 
+(def exec-y
+  (core/build-instruction
+    exec-y
+    :tags #{:complex :base}
+    (d/consume-top-of :exec :as :arg)
+    (d/calculate [:arg] #(list :exec-y %1) :as :result)
+    (d/push-onto :exec :result)
+    (d/push-onto :exec :arg)))
+
+
 (def classic-exec-module
   ( ->  (t/make-module  :exec
                         :attributes #{:complex :base})
@@ -37,5 +46,6 @@
         t/make-equatable
         t/make-movable
         (t/attach-instruction , exec-noop)
+        (t/attach-instruction , exec-y)
         ))
 

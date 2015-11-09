@@ -34,7 +34,6 @@
 ; exec_when
 ; exec_k
 ; exec_s
-; exec_y
 
 
 (tabular
@@ -43,11 +42,22 @@
         ?set-stack ?items classic-exec-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
-    ;; how many?
+    ;; nothing happens
     :exec    '(1.1 2.2)          :exec-noop          :exec         '(1.1 2.2) 
     :exec    '(1.0)              :exec-noop          :exec         '(1.0)     
     :exec    '()                 :exec-noop          :exec         '())
 
+
+(tabular
+  (fact ":exec-y applies the Y combinator"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-exec-module ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items            ?instruction      ?get-stack     ?expected
+    ;; forever
+    :exec    '(1.1 2.2)          :exec-y          :exec         '(1.1 (:exec-y 1.1) 2.2) 
+    :exec    '(1.0)              :exec-y          :exec         '(1.0 (:exec-y 1.0))     
+    :exec    '()                 :exec-y          :exec         '())
 
 
 ;; visible
