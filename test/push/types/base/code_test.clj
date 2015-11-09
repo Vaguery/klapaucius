@@ -10,7 +10,14 @@
 
 
 (fact "classic-code-type has the correct :recognizer"
-  (:recognizer classic-code-type) => (exactly list?))
+  (apply (:recognizer classic-code-type) [8]) => false
+  (apply (:recognizer classic-code-type) ['8]) => false
+  (apply (:recognizer classic-code-type) [''8]) => true
+  (apply (:recognizer classic-code-type) [#{1 2 3}]) => false
+  (apply (:recognizer classic-code-type) ['#{1 2 3}]) => false
+  (apply (:recognizer classic-code-type) [''#{1 2 3}]) => true
+  (apply (:recognizer classic-code-type) [:foo-bar]) => false
+  (apply (:recognizer classic-code-type) ['':foo-bar]) => true)
 
 
 (fact "classic-code-type has the expected :attributes"

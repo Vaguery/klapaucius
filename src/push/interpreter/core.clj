@@ -351,13 +351,8 @@
       (push-item interpreter :exec (item (:inputs interpreter)))
     (instruction? interpreter item)
       (execute-instruction interpreter item)
-    (router-sees? interpreter item) (route-item interpreter item)
-    (integer? item) (push-item interpreter :integer item)
-    (boolean? item) (push-item interpreter :boolean item)
-    (char? item) (push-item interpreter :char item)
-    (float? item) (push-item interpreter :float item)
-    (string? item) (push-item interpreter :string item)
     (list? item) (load-items interpreter :exec item)
+    (router-sees? interpreter item) (route-item interpreter item)
     :else (handle-unknown-item interpreter item)))
 
 
