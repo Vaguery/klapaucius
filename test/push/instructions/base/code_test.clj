@@ -43,7 +43,6 @@
 
 ; code_discrepancy
 ; code_overlap
-; code_noop
 ; code_append
 ; code_atom
 ; code_car
@@ -62,6 +61,18 @@
 ; code_subst
 ; code_contains
 ; code_position
+
+
+(tabular
+  (fact ":code-noop returns the number of items on the :code stack (to :integer)"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-code-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items            ?instruction      ?get-stack     ?expected
+    ;; how many?
+    :code    '(1.1 '(8 9))         :code-noop        :code        '(1.1 '(8 9))
+    :code    '()                    :code-noop        :code        '())
+     
 
 ;; visible
 

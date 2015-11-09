@@ -37,7 +37,6 @@
 ; code_list
 ; code_map
 ; code_member
-; code_noop
 ; code_nth
 ; code_nthcdr
 ; code_null
@@ -49,6 +48,12 @@
 ; code_wrap
 
 
+(def code-noop
+  (core/build-instruction
+    code-noop
+    :tags #{:complex :base}))
+
+
 (def classic-code-type
   ( ->  (t/make-type  :code
                       :recognizer push-code?
@@ -56,5 +61,6 @@
         t/make-visible 
         t/make-equatable
         t/make-movable
+        (t/attach-instruction , code-noop)
         ))
 
