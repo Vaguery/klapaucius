@@ -71,8 +71,30 @@
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; how many?
     :code    '(1.1 '(8 9))         :code-noop        :code        '(1.1 '(8 9))
-    :code    '()                    :code-noop        :code        '())
+    :code    '()                   :code-noop        :code        '())
      
+
+
+(tabular
+  (fact ":code-quote moves the top :exec item to :code"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks classic-code-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction       ?expected
+
+    {:exec '(1 2 3)
+     :code '(false)}           :code-quote            {:exec '(2 3)
+                                                       :code '(1 false)} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec '((1 2) 3)
+     :code '(true)}            :code-quote            {:exec '(3)
+                                                       :code '((1 2) true)} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;; missing arguments
+    {:exec '()
+     :code '(true)}            :code-quote            {:exec '()
+                                                       :code '(true)})
+
 
 ;; visible
 

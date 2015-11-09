@@ -42,10 +42,18 @@
 ; code_null
 ; code_overlap
 ; code_position
-; code_quote
 ; code_size
 ; code_subst
 ; code_wrap
+
+
+(def code-quote
+  (core/build-instruction
+    code-quote
+    :tags #{:complex :base}
+    (d/consume-top-of :exec :as :arg1)
+    (d/push-onto :code :arg1)))
+
 
 
 (def code-noop
@@ -62,5 +70,6 @@
         t/make-equatable
         t/make-movable
         (t/attach-instruction , code-noop)
+        (t/attach-instruction , code-quote)
         ))
 
