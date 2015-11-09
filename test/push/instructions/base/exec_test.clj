@@ -62,6 +62,18 @@
 
 
 (tabular
+  (fact ":exec-s applies the S combinator"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-exec-module ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items            ?instruction      ?get-stack     ?expected
+    ;; forever
+    :exec    '(1.1 2.2 3.3 4.4)  :exec-s          :exec         '(1.1 3.3 (2.2 3.3) 4.4) 
+    :exec    '(1.1 2.2)          :exec-s          :exec         '(1.1 2.2)     
+    :exec    '()                 :exec-s          :exec         '())
+
+
+(tabular
   (fact ":exec-y applies the Y combinator"
     (register-type-and-check-instruction
         ?set-stack ?items classic-exec-module ?instruction ?get-stack) => ?expected)
@@ -71,6 +83,7 @@
     :exec    '(1.1 2.2)          :exec-y          :exec         '(1.1 (:exec-y 1.1) 2.2) 
     :exec    '(1.0)              :exec-y          :exec         '(1.0 (:exec-y 1.0))     
     :exec    '()                 :exec-y          :exec         '())
+
 
 
 ;; visible

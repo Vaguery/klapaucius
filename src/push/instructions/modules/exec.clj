@@ -38,6 +38,19 @@
     :tags #{:complex :base}))
 
 
+(def exec-s
+  (core/build-instruction
+    exec-s
+    :tags #{:complex :base}
+    (d/consume-top-of :exec :as :a)
+    (d/consume-top-of :exec :as :b)
+    (d/consume-top-of :exec :as :c)
+    (d/calculate [:b :c] #(list %1 %2) :as :bc)
+    (d/push-onto :exec :bc)
+    (d/push-onto :exec :c)
+    (d/push-onto :exec :a)))
+
+
 (def exec-y
   (core/build-instruction
     exec-y
@@ -56,6 +69,7 @@
         t/make-movable
         (t/attach-instruction , exec-k)
         (t/attach-instruction , exec-noop)
+        (t/attach-instruction , exec-s)
         (t/attach-instruction , exec-y)
         ))
 
