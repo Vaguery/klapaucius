@@ -11,7 +11,7 @@
 (def char-allfromstring
   (core/build-instruction
     char-allfromstring
-    :tags #{:string :base}
+    :tags #{:string :conversion :base}
     (d/consume-top-of :string :as :arg)
     (d/consume-stack :char :as :old-stack)
     (d/calculate [:arg :old-stack]
@@ -20,21 +20,39 @@
     (d/replace-stack :char :kludged)))
 
 
-(def char-letter?
-  (core/build-instruction
-    char-letter?
-    :tags #{:string :base}
-    (d/consume-top-of :char :as :arg1)
-    (d/calculate [:arg1] #(Character/isLetter %1) :as :check)
-    (d/push-onto :boolean :check)))
-
-
 (def char-digit?
   (core/build-instruction
     char-digit?
     :tags #{:string :base}
     (d/consume-top-of :char :as :arg1)
     (d/calculate [:arg1] #(Character/isDigit %1) :as :check)
+    (d/push-onto :boolean :check)))
+
+
+(def char-frominteger
+  (core/build-instruction
+    char-frominteger
+    :tags #{:string :conversion :base}
+    (d/consume-top-of :integer :as :arg)
+    (d/calculate [:arg] #(char (mod %1 128)) :as :c)
+    (d/push-onto :char :c)))
+
+
+(def char-fromfloat
+  (core/build-instruction
+    char-fromfloat
+    :tags #{:string :conversion :base}
+    (d/consume-top-of :float :as :arg)
+    (d/calculate [:arg] #(char (mod (long %1) 128)) :as :c)
+    (d/push-onto :char :c)))
+
+
+(def char-letter?
+  (core/build-instruction
+    char-letter?
+    :tags #{:string :base}
+    (d/consume-top-of :char :as :arg1)
+    (d/calculate [:arg1] #(Character/isLetter %1) :as :check)
     (d/push-onto :boolean :check)))
 
 
@@ -77,6 +95,8 @@
         (t/attach-instruction , char-letter?)
         (t/attach-instruction , char-digit?)
         (t/attach-instruction , char-whitespace?)
+        (t/attach-instruction , char-frominteger)
+        (t/attach-instruction , char-fromfloat)
         (t/attach-instruction , char-lowercase?)
         (t/attach-instruction , char-uppercase?)
         ))

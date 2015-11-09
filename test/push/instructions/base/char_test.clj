@@ -10,10 +10,6 @@
 ;; the instructions under test are those stored IN THAT TYPE
 
 
-; char_frominteger
-; char_fromfloat
-
-
 ;; specific char behavior
 
 
@@ -52,6 +48,51 @@
     :char    '(\Ⅷ)           :char-digit?   :boolean    '(false)
    ;; missing args
     :char    '()             :char-digit?   :boolean     '())
+
+
+;; fixture
+
+(def zerochar-list (list (char 0)))
+
+(tabular
+  (fact ":char-frominteger drops the top :integer into [0..128] and pushes that ASCII character"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items          ?instruction  ?get-stack         ?expected
+    ;; all the letters
+    :integer    '(88)         :char-frominteger   :char         '(\X)
+    :integer    '(37)         :char-frominteger   :char         '(\%)
+    :integer    '(-37)        :char-frominteger   :char         '(\[)
+    :integer    '(200)        :char-frominteger   :char         '(\H)
+    ;; edge cases
+    :integer    '(0)          :char-frominteger   :char         zerochar-list
+    :integer    '(128)        :char-frominteger   :char         zerochar-list
+    :integer    '(256)        :char-frominteger   :char         zerochar-list
+    :integer    '(-128)       :char-frominteger   :char         zerochar-list
+    ;; missing args
+    :integer    '()           :char-frominteger   :char         '())
+
+
+(tabular
+  (fact ":char-float drops the top :float down to an integer value in [0..128] and pushes that ASCII character"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items          ?instruction  ?get-stack         ?expected
+    ;; all the letters
+    :float    '(88.9)         :char-fromfloat   :char         '(\X)
+    :float    '(37.2)         :char-fromfloat   :char         '(\%)
+    :float    '(-37.9)        :char-fromfloat   :char         '(\[)
+    :float    '(200.2)        :char-fromfloat   :char         '(\H)
+    ;; edge cases
+    :float    '(0.2)          :char-fromfloat   :char         zerochar-list
+    :float    '(128.2)        :char-fromfloat   :char         zerochar-list
+    :float    '(256.2)        :char-fromfloat   :char         zerochar-list
+    :float    '(-128.2)       :char-fromfloat   :char         zerochar-list
+    ;; missing args
+    :float    '()             :char-fromfloat   :char         '())
+
 
 
 (tabular
