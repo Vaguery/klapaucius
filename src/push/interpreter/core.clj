@@ -351,8 +351,8 @@
       (push-item interpreter :exec (item (:inputs interpreter)))
     (instruction? interpreter item)
       (execute-instruction interpreter item)
-    (list? item) (load-items interpreter :exec item)
     (router-sees? interpreter item) (route-item interpreter item)
+    (list? item) (load-items interpreter :exec item)
     :else (handle-unknown-item interpreter item)))
 
 

@@ -4,6 +4,8 @@
   (:require [push.instructions.dsl :as d])
   )
 
+(defn push-code? [item] (and (list? item) (= (first item) 'quote)))
+
 
 ;; code-specific
 
@@ -49,7 +51,7 @@
 
 (def classic-code-type
   ( ->  (t/make-type  :code
-                      :recognizer #(and (list? %) (= (first %) 'quote))
+                      :recognizer push-code?
                       :attributes #{:complex :base})
         t/make-visible 
         t/make-equatable
