@@ -18,14 +18,14 @@
   (let [junk :this-is-an-unknown-item]
     (u/get-stack
       (handle-item 
-        (basic-interpreter :config {:lenient? true})
+        (make-classic-interpreter :config {:lenient? true})
         junk)
       :unknown) => '(:this-is-an-unknown-item)))
 
 
 (fact "`handle-item` pushes an item to the :unknown stack if 
   unrecognized when :config :lenient? is not true (or unset)"
-  (handle-item (basic-interpreter) (basic-interpreter)) => 
+  (handle-item (make-classic-interpreter) (basic-interpreter)) => 
     (throws #"Push Parsing Error: Cannot interpret '"))
 
 
@@ -34,7 +34,7 @@
 
 (fact "`router-sees?` checks the router predicates and returns true if one matches"
   (let [abbr #'push.interpreter.core/router-sees?]
-    (abbr (basic-interpreter) :not-likely) => nil
+    (abbr (make-classic-interpreter) :not-likely) => nil
     (abbr (basic-interpreter 
       :router [[(fn [item] (= item :not-likely)) :integer]]) :not-likely) => true))
 
@@ -61,9 +61,9 @@
 
 
 (fact "handle-item sends integers to :integer"
-  (u/get-stack (handle-item (basic-interpreter) 8) :integer) => '(8)
-  (u/get-stack (handle-item (basic-interpreter) -8) :integer) => '(-8)
-  (u/get-stack (handle-item (basic-interpreter :stacks {:integer '(1)}) -8) :integer) =>
+  (u/get-stack (handle-item (make-classic-interpreter) 8) :integer) => '(8)
+  (u/get-stack (handle-item (make-classic-interpreter) -8) :integer) => '(-8)
+  (u/get-stack (handle-item (make-classic-interpreter :stacks {:integer '(1)}) -8) :integer) =>
     '(-8 1))
 
 
@@ -71,9 +71,9 @@
 
 
 (fact "handle-item sends floats to :float"
-  (u/get-stack (handle-item (basic-interpreter) 8.0) :float) => '(8.0)
-  (u/get-stack (handle-item (basic-interpreter) -8.0) :float) => '(-8.0)
-  (u/get-stack (handle-item (basic-interpreter :stacks {:float '(1.0)}) -8.0) :float) =>
+  (u/get-stack (handle-item (make-classic-interpreter) 8.0) :float) => '(8.0)
+  (u/get-stack (handle-item (make-classic-interpreter) -8.0) :float) => '(-8.0)
+  (u/get-stack (handle-item (make-classic-interpreter :stacks {:float '(1.0)}) -8.0) :float) =>
     '(-8.0 1.0))
 
 
@@ -82,31 +82,31 @@
 
 
 (fact "handle-item sends booleans to :boolean"
-  (u/get-stack (handle-item (basic-interpreter) false) :boolean) => '(false)
-  (u/get-stack (handle-item (basic-interpreter) true) :boolean) => '(true)
-  (u/get-stack (handle-item (basic-interpreter :stacks {:boolean '(false)}) true) :boolean) =>
+  (u/get-stack (handle-item (make-classic-interpreter) false) :boolean) => '(false)
+  (u/get-stack (handle-item (make-classic-interpreter) true) :boolean) => '(true)
+  (u/get-stack (handle-item (make-classic-interpreter :stacks {:boolean '(false)}) true) :boolean) =>
     '(true false))
 
 
 (fact "handle-item sends characters to :char"
-  (u/get-stack (handle-item (basic-interpreter) \J) :char) => '(\J)
-  (u/get-stack (handle-item (basic-interpreter) \o) :char) => '(\o)
-  (u/get-stack (handle-item (basic-interpreter :stacks {:char '(\Y)}) \e) :char) =>
+  (u/get-stack (handle-item (make-classic-interpreter) \J) :char) => '(\J)
+  (u/get-stack (handle-item (make-classic-interpreter) \o) :char) => '(\o)
+  (u/get-stack (handle-item (make-classic-interpreter :stacks {:char '(\Y)}) \e) :char) =>
     '(\e \Y))
 
 
 (fact "handle-item sends strings to :string"
-  (u/get-stack (handle-item (basic-interpreter) "foo") :string) => '("foo")
-  (u/get-stack (handle-item (basic-interpreter) "") :string) => '("")
-  (u/get-stack (handle-item (basic-interpreter :stacks {:string '("bar")}) "baz") :string) =>
+  (u/get-stack (handle-item (make-classic-interpreter) "foo") :string) => '("foo")
+  (u/get-stack (handle-item (make-classic-interpreter) "") :string) => '("")
+  (u/get-stack (handle-item (make-classic-interpreter :stacks {:string '("bar")}) "baz") :string) =>
     '("baz" "bar"))
 
 
-(fact "handle-item 'unwraps' quoted lists onto :exec"
-  (u/get-stack (handle-item (basic-interpreter) '(1 2 3)) :exec) => '(1 2 3)
-  (u/get-stack (handle-item (basic-interpreter) '(1 (2) (3))) :exec) => '(1 (2) (3))
-  (u/get-stack (handle-item (basic-interpreter) '(1 () ())) :exec) => '(1 () ())
-  (u/get-stack (handle-item (basic-interpreter) '()) :exec) => '())
+(fact "handle-item 'unwraps' lists onto :exec"
+  (u/get-stack (handle-item (make-classic-interpreter) '(1 2 3)) :exec) => '(1 2 3)
+  (u/get-stack (handle-item (make-classic-interpreter) '(1 (2) (3))) :exec) => '(1 (2) (3))
+  (u/get-stack (handle-item (make-classic-interpreter) '(1 () ())) :exec) => '(1 () ())
+  (u/get-stack (handle-item (make-classic-interpreter) '()) :exec) => '())
 
 
 (fact "handle-item will execute a registered instruction"

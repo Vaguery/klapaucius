@@ -49,7 +49,7 @@
 
 (def classic-code-type
   ( ->  (t/make-type  :code
-                      :recognizer list?
+                      :recognizer #(and (list? %) (= (first %) 'quote))
                       :attributes #{:complex :base})
         t/make-visible 
         t/make-equatable
