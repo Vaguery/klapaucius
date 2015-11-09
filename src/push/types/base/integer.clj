@@ -72,6 +72,15 @@
     (d/push-onto :integer :prod)))
 
 
+(def int-sign
+  (core/build-instruction
+    integer-sign
+    :tags #{:arithmetic :base}
+    (d/consume-top-of :integer :as :arg1)
+    (d/calculate [:arg1] #(compare %1 0) :as :sign)
+    (d/push-onto :integer :sign)))
+
+
 (def int-subtract
   (core/build-instruction
     integer-subtract
@@ -123,14 +132,15 @@
         t/make-comparable
         t/make-movable
         (t/attach-instruction , int-add)
-        (t/attach-instruction , int-subtract)
-        (t/attach-instruction , int-multiply)
-        (t/attach-instruction , int-divide)
-        (t/attach-instruction , int-mod)
         (t/attach-instruction , int-dec)
-        (t/attach-instruction , int-inc)
+        (t/attach-instruction , int-divide)
         (t/attach-instruction , int-fromboolean)
-        (t/attach-instruction , int-fromfloat)
         (t/attach-instruction , int-fromchar)
+        (t/attach-instruction , int-fromfloat)
+        (t/attach-instruction , int-inc)
+        (t/attach-instruction , int-mod)
+        (t/attach-instruction , int-multiply)
+        (t/attach-instruction , int-sign)
+        (t/attach-instruction , int-subtract)
         ))
 

@@ -201,6 +201,21 @@
     :char    '()             :integer-fromchar      :char          '())
 
 
+(tabular
+  (fact ":integer-sign returns the sine(x)"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items      ?instruction  ?get-stack   ?expected
+    ;; up we go
+    :integer    '(-0)        :integer-sign    :integer     '(0)
+    :integer    '(111)       :integer-sign    :integer     '(1)
+
+    :integer    '(-3)        :integer-sign    :integer     '(-1)
+    ;; missing args
+    :integer    '()          :integer-sign    :integer     '())
+
+
 ;; comparable (generated) instructions
 
 

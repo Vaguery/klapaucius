@@ -40,6 +40,15 @@
     (d/push-onto :float :more)))
 
 
+(def float-sign
+  (core/build-instruction
+    float-sign
+    :tags #{:base}
+    (d/consume-top-of :float :as :arg1)
+    (d/calculate [:arg1] #(float (compare %1 0.0)) :as :sign)
+    (d/push-onto :float :sign)))
+
+
 (def float-sine
   (core/build-instruction
     float-sine
@@ -47,6 +56,8 @@
     (d/consume-top-of :float :as :arg1)
     (d/calculate [:arg1] #(Math/sin %1) :as :sin)
     (d/push-onto :float :sin)))
+
+
 
 
 (def classic-float-type
@@ -59,6 +70,7 @@
         t/make-movable
         (t/attach-instruction , float-add)
         (t/attach-instruction , float-inc)
+        (t/attach-instruction , float-sign)
         (t/attach-instruction , float-sine)
         ))
 

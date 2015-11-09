@@ -98,6 +98,21 @@
     :float    '()           :float-sine    :float     '())
 
 
+(tabular
+  (fact ":float-sign returns the sine(x)"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-float-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items      ?instruction  ?get-stack   ?expected
+    ;; up we go
+    :float    '(-0.0)        :float-sign    :float     '(0.0)
+    :float    '(111.11)      :float-sign    :float     '(1.0)
+
+    :float    '(-3.0)        :float-sign    :float     '(-1.0)
+    ;; missing args
+    :float    '()            :float-sign    :float     '())
+
+
 
 ;; visible
 
