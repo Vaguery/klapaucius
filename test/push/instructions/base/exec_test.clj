@@ -30,9 +30,35 @@
 ; exec_do*times
 ; exec_while
 ; exec_do*while
-; exec_if
 ; exec_when
 
+
+
+
+
+(tabular
+  (fact ":exec-if pops either the top or second :exec item"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks classic-exec-module ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction       ?expected
+
+    {:exec '(1 2 3)
+     :bool '(false)}           :exec-if            {:exec '(2 3)
+                                                    :bool '()} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec '(1 2 3)
+     :bool '(true)}            :exec-if            {:exec '(1 3)
+                                                    :bool '()} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;; missing arguments
+    {:exec '(1)
+     :bool '(true)}            :exec-if            {:exec '(1)
+                                                    :bool '(true)} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec '(1 2 3)
+     :bool '()}                :exec-if            {:exec '(1 2 3)
+                                                    :bool '()})
 
 
 (tabular

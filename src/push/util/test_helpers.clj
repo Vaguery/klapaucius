@@ -35,3 +35,16 @@
         after (i/execute-instruction setup instruction-token)]
     (u/get-stack after read-stack)
     ))
+
+
+(defn check-instruction-with-all-kinds-of-stack-stuff
+  "helper sets up an interpreter with a hash-map of stacks and items,
+  registers the named type (with all instructions loaded as a matter of course),
+  executes the named instruction to produce the next step after, and returns all
+  the stacks of the resulting Interpreter state"
+  [new-stacks type-under-test instruction-token]
+  (let [setup (i/register-type (i/basic-interpreter) type-under-test)
+        old-stacks (:stacks setup)
+        with-stacks (assoc setup :stacks (merge old-stacks new-stacks))
+        after (i/execute-instruction with-stacks instruction-token)]
+    (:stacks after)))
