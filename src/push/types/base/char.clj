@@ -20,13 +20,7 @@
     (d/replace-stack :char :kludged)))
 
 
-(def char-digit?
-  (core/build-instruction
-    char-digit?
-    :tags #{:string :base}
-    (d/consume-top-of :char :as :arg1)
-    (d/calculate [:arg1] #(Character/isDigit %1) :as :check)
-    (d/push-onto :boolean :check)))
+(def char-digit? (t/basic-1-in-predicate :char "digit?" #(Character/isDigit %1)))
 
 
 (def char-frominteger
@@ -47,40 +41,16 @@
     (d/push-onto :char :c)))
 
 
-(def char-letter?
-  (core/build-instruction
-    char-letter?
-    :tags #{:string :base}
-    (d/consume-top-of :char :as :arg1)
-    (d/calculate [:arg1] #(Character/isLetter %1) :as :check)
-    (d/push-onto :boolean :check)))
+(def char-letter? (t/basic-1-in-predicate :char "letter?" #(Character/isLetter %1)))
 
 
-(def char-whitespace?
-  (core/build-instruction
-    char-whitespace?
-    :tags #{:string :base}
-    (d/consume-top-of :char :as :arg1)
-    (d/calculate [:arg1] #(Character/isWhitespace %1) :as :check)
-    (d/push-onto :boolean :check)))
+(def char-lowercase? (t/basic-1-in-predicate :char "lowercase?" #(Character/isLowerCase %1)))
 
 
-(def char-lowercase?
-  (core/build-instruction
-    char-lowercase?
-    :tags #{:string :base}
-    (d/consume-top-of :char :as :arg1)
-    (d/calculate [:arg1] #(Character/isLowerCase %1) :as :check)
-    (d/push-onto :boolean :check)))
+(def char-uppercase? (t/basic-1-in-predicate :char "uppercase?" #(Character/isUpperCase %1)))
 
 
-(def char-uppercase?
-  (core/build-instruction
-    char-uppercase?
-    :tags #{:string :base}
-    (d/consume-top-of :char :as :arg1)
-    (d/calculate [:arg1] #(Character/isUpperCase %1) :as :check)
-    (d/push-onto :boolean :check)))
+(def char-whitespace? (t/basic-1-in-predicate :char "whitespace?" #(Character/isWhitespace %1)))
 
 
 (def classic-char-type

@@ -54,14 +54,14 @@
 (def code-atom? (t/basic-1-in-predicate :code "atom?" #(not (coll? %1))))
 
 
-(def code-cons (t/basic-2-in-1-out-instruction 
+(def code-cons (t/simple-2-in-1-out-instruction 
                     :code 
                     "cons" #(if (seq? %2) 
                                 (conj %2 %1) 
                                 (conj (list %2) %1))))
 
 
-(def code-first (t/basic-1-in-1-out-instruction :code "first" #(if (seq? %) (first %) %)))
+(def code-first (t/simple-1-in-1-out-instruction :code "first" #(if (seq? %) (first %) %)))
 
 
 (def code-length
@@ -73,7 +73,7 @@
     (d/push-onto :integer :len)))
 
 
-(def code-list (t/basic-2-in-1-out-instruction :code "list" #(list %1 %2)))
+(def code-list (t/simple-2-in-1-out-instruction :code "list" #(list %1 %2)))
 
 
 (def code-member?
@@ -104,7 +104,7 @@
     (d/push-onto :code :arg1)))
 
 
-(def code-rest (t/basic-1-in-1-out-instruction 
+(def code-rest (t/simple-1-in-1-out-instruction 
                     :code 
                     "rest" 
                     #(if (coll? %1) 

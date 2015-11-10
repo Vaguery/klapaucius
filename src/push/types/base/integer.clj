@@ -11,10 +11,10 @@
 (defn sign [i] (compare i 0))
 
 
-(def int-add (t/basic-2-in-1-out-instruction :integer "add" '+'))
+(def int-add (t/simple-2-in-1-out-instruction :integer "add" '+'))
 
 
-(def int-dec (t/basic-1-in-1-out-instruction :integer "dec" 'dec'))
+(def int-dec (t/simple-1-in-1-out-instruction :integer "dec" 'dec'))
 
 
 (def int-divide
@@ -30,7 +30,7 @@
     (d/push-these-onto :integer [:replacement :quotient])))
 
 
-(def int-inc (t/basic-1-in-1-out-instruction :integer "inc" 'inc'))
+(def int-inc (t/simple-1-in-1-out-instruction :integer "inc" 'inc'))
 
 
 (def int-mod
@@ -46,13 +46,13 @@
     (d/push-these-onto :integer [:replacement :remainder])))
 
 
-(def int-multiply (t/basic-2-in-1-out-instruction :integer  "multiply" '*'))
+(def int-multiply (t/simple-2-in-1-out-instruction :integer  "multiply" '*'))
 
 
-(def int-sign (t/basic-1-in-1-out-instruction :integer  "sign" 'sign))
+(def int-sign (t/simple-1-in-1-out-instruction :integer  "sign" 'sign))
 
 
-(def int-subtract (t/basic-2-in-1-out-instruction :integer "subtract" '-'))
+(def int-subtract (t/simple-2-in-1-out-instruction :integer "subtract" '-'))
 
 
 ;; conversion

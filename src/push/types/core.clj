@@ -58,7 +58,7 @@
 ;; some generic instruction constructors
 
 
-(defn basic-1-in-1-out-instruction
+(defn simple-1-in-1-out-instruction
   "returns a standard :typed arity-1 function, where the output
   and input are the same type"
   [type word operation]
@@ -73,7 +73,7 @@
       `(d/push-onto ~stackname :result)))))
 
 
-(defn basic-2-in-1-out-instruction
+(defn simple-2-in-1-out-instruction
   "returns a standard :typed arity-2 function, where the output
   and inputs are all the same type"
   [type word operation]

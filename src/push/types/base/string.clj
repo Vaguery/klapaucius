@@ -9,7 +9,7 @@
 ;; string-specific
 
 
-(def string-concat (t/basic-2-in-1-out-instruction :string "concat" 'str))
+(def string-concat (t/simple-2-in-1-out-instruction :string "concat" 'str))
 
 
 (def string-length
@@ -21,7 +21,7 @@
     (d/push-onto :integer :len)))
 
 
-(def string-reverse (t/basic-1-in-1-out-instruction :string "reverse" 'strings/reverse))
+(def string-reverse (t/simple-1-in-1-out-instruction :string "reverse" 'strings/reverse))
 
 
 (def classic-string-type

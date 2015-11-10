@@ -21,43 +21,16 @@
 ; float_fromchar
 
 
-(def float-add
-  (core/build-instruction
-    float-add
-    :tags #{:arithmetic :base}
-    (d/consume-top-of :float :as :arg1)
-    (d/consume-top-of :float :as :arg2)
-    (d/calculate [:arg1 :arg2] #(+' %1 %2) :as :sum)
-    (d/push-onto :float :sum)))
+(def float-add (t/simple-2-in-1-out-instruction :float "add" '+'))
 
 
-(def float-inc
-  (core/build-instruction
-    float-inc
-    :tags #{:arithmetic :base}
-    (d/consume-top-of :float :as :arg1)
-    (d/calculate [:arg1] #(inc' %1) :as :more)
-    (d/push-onto :float :more)))
+(def float-inc (t/simple-1-in-1-out-instruction :float "inc" 'inc'))
 
 
-(def float-sign
-  (core/build-instruction
-    float-sign
-    :tags #{:base}
-    (d/consume-top-of :float :as :arg1)
-    (d/calculate [:arg1] #(float (compare %1 0.0)) :as :sign)
-    (d/push-onto :float :sign)))
+(def float-sign (t/simple-1-in-1-out-instruction :float "sign" #(float (compare %1 0.0))))
 
 
-(def float-sine
-  (core/build-instruction
-    float-sine
-    :tags #{:trigonometry :base}
-    (d/consume-top-of :float :as :arg1)
-    (d/calculate [:arg1] #(Math/sin %1) :as :sin)
-    (d/push-onto :float :sin)))
-
-
+(def float-sine (t/simple-1-in-1-out-instruction :float "sine" #(Math/sin %1)))
 
 
 (def classic-float-type

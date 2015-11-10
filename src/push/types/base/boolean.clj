@@ -10,19 +10,19 @@
 
 
 (def bool-and
-  (t/basic-2-in-1-out-instruction :boolean "and" 'and))
+  (t/simple-2-in-1-out-instruction :boolean "and" 'and))
 
   
 (def bool-or
-  (t/basic-2-in-1-out-instruction :boolean "or" 'or))
+  (t/simple-2-in-1-out-instruction :boolean "or" 'or))
 
 
 (def bool-xor
-  (t/basic-2-in-1-out-instruction :boolean "xor" 'xor2))
+  (t/simple-2-in-1-out-instruction :boolean "xor" 'xor2))
 
 
 (def bool-not 
-  (t/basic-1-in-1-out-instruction :boolean "not" 'not))
+  (t/simple-1-in-1-out-instruction :boolean "not" 'not))
 
 
 (def classic-boolean-type
