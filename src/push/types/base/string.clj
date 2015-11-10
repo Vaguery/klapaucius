@@ -19,7 +19,6 @@
 ; string_frominteger
 ; string_parse_to_chars
 ; string_replace
-; string_replacechar
 ; string_replacefirst
 ; string_replacefirstchar
 ; string_rest
@@ -109,6 +108,17 @@
     (d/push-onto :string :gone)))
 
 
+(def string-replacechar
+  (core/build-instruction
+    string-replacechar
+    :tags #{:string :base}
+    (d/consume-top-of :string :as :s)
+    (d/consume-top-of :char :as :c1)
+    (d/consume-top-of :char :as :c2)
+    (d/calculate [:s :c1 :c2] #(strings/replace %1 %2 %3) :as :different)
+    (d/push-onto :string :different)))
+
+
 (def string-reverse (t/simple-1-in-1-out-instruction :string "reverse" 'strings/reverse))
 
 
@@ -130,6 +140,7 @@
         (t/attach-instruction , string-nth)
         (t/attach-instruction , string-occurrencesofchar)
         (t/attach-instruction , string-removechar)
+        (t/attach-instruction , string-replacechar)
         (t/attach-instruction , string-reverse)
         ))
 

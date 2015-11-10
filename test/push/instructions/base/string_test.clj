@@ -324,6 +324,53 @@
                                                    :string '()})
 
 
+
+(tabular
+  (fact ":string-replacechar replaces all occurrences of :char/1 with :char/2"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks classic-string-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction       ?expected
+
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:char   '(\e \f)
+     :string '("ere he was able")}           
+                                :string-replacechar       
+                                                  {:char '()
+                                                   :string '("frf hf was ablf")} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:char   '(\space \•)
+     :string '("ere he was able")}           
+                                :string-replacechar       
+                                                  {:char '()
+                                                   :string '("ere•he•was•able")} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:char   '(\z \q)
+     :string '("ere he was able")}           
+                                :string-replacechar       
+                                                  {:char '()
+                                                   :string '("ere he was able")} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;; missing arguments
+    {:char   '()
+     :string '("ere he was able")}           
+                                :string-replacechar       
+                                                  {:char '()
+                                                   :string '("ere he was able")} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:char   '(\e)
+     :string '("ere he was able")}           
+                                :string-replacechar       
+                                                  {:char '(\e)
+                                                   :string '("ere he was able")} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:char   '(\e \f)
+     :string '()}           
+                                :string-replacechar       
+                                                  {:char '(\e \f)
+                                                   :string '()})
+
+
 (tabular
   (fact ":string-reverse returns the second :string item tacked to the end of the first"
     (register-type-and-check-instruction
