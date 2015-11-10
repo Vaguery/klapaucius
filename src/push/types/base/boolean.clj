@@ -5,14 +5,31 @@
   (:use [push.util.type-checkers :only (boolean?)])
   )
 
-(def bool-and
-  (core/build-instruction
-    boolean-and
-    :tags #{:logic :base}
-    (d/consume-top-of :boolean :as :arg1)
-    (d/consume-top-of :boolean :as :arg2)
-    (d/calculate [:arg1 :arg2] #(and %1 %2) :as :both)
-    (d/push-onto :boolean :both)))
+
+(defn xor2 [p q] (or (and p (not q)) (and q (not p))))
+
+
+(defn basic-boolean-instruction
+  "returns a standard :boolean arity-2 function"
+  [operation]
+  (let [instruction-name (str "boolean-" operation)]
+    (eval (list
+      'core/build-instruction
+      instruction-name
+      :tags #{:logic :base}
+      '(d/consume-top-of :boolean :as :arg1)
+      '(d/consume-top-of :boolean :as :arg2)
+      `(d/calculate [:arg1 :arg2] #(~operation %1 %2) :as :result)
+      '(d/push-onto :boolean :result)))))
+
+
+(def bool-and (basic-boolean-instruction 'and))
+
+  
+(def bool-or (basic-boolean-instruction 'or))
+
+
+(def bool-xor (basic-boolean-instruction 'xor2))
 
 
 (def bool-not
@@ -22,28 +39,6 @@
     (d/consume-top-of :boolean :as :arg1)
     (d/calculate [:arg1] #(not %1) :as :nope)
     (d/push-onto :boolean :nope)))
-
-
-(def bool-or
-  (core/build-instruction
-    boolean-or
-    :tags #{:logic :base}
-    (d/consume-top-of :boolean :as :arg1)
-    (d/consume-top-of :boolean :as :arg2)
-    (d/calculate [:arg1 :arg2] #(or %1 %2) :as :either)
-    (d/push-onto :boolean :either)))
-
-
-(def bool-xor
-  (core/build-instruction
-    boolean-xor
-    :tags #{:logic :base}
-    (d/consume-top-of :boolean :as :arg1)
-    (d/consume-top-of :boolean :as :arg2)
-    (d/calculate [:arg1 :arg2] #(or (and %1 (not %2)) (and %2 (not %1))) :as :one)
-    (d/push-onto :boolean :one)))
-
-
 
 
 (def classic-boolean-type

@@ -72,3 +72,11 @@
   (contains-anywhere? monster 5) => true
   (contains-anywhere? monster :d) => true
   (contains-anywhere? monster [8,9]) => false))
+
+
+;; container-in
+
+
+(future-fact "`container-in` traverses a collection and returns the collection (if any) containing that item"
+  (container-in '(1 2 3) 3) => '( (1 2 3) )
+  (container-in '(1 2 3) 4) => '())
