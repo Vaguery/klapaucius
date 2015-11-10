@@ -18,12 +18,9 @@
 ; string_fromfloat
 ; string_frominteger
 ; string_parse_to_chars
-; string_rest
 ; string_setchar
-; string_split
 ; string_substring
 ; string_take
-; string_whitespace
 
 
 
@@ -149,7 +146,30 @@
     (d/push-onto :string :different)))
 
 
+(def string-rest (t/simple-1-in-1-out-instruction :string "rest"
+                      #(clojure.string/join (rest %1))))
+
+
 (def string-reverse (t/simple-1-in-1-out-instruction :string "reverse" 'strings/reverse))
+
+
+(def string-solid? (t/simple-1-in-predicate :string "solid?"
+                          #(boolean (re-matches #"\S+" %1))))
+
+
+(def string-splitonspaces
+  (core/build-instruction
+    string-splitonspaces
+    :tags #{:string :base}
+    (d/consume-top-of :string :as :s)
+    (d/consume-stack :string :as :old)
+    (d/calculate [:s] #(strings/split %1 #"\s+") :as :words)
+    (d/calculate [:words :old] #(into %2 (reverse %1)) :as :new)
+    (d/replace-stack :string :new)))
+
+
+(def string-spacey? (t/simple-1-in-predicate :string "spacey?"
+                          #(boolean (re-matches #"\s+" %1))))
 
 
 (def classic-string-type
@@ -174,6 +194,10 @@
         (t/attach-instruction , string-replacechar)
         (t/attach-instruction , string-replacefirst)
         (t/attach-instruction , string-replacefirstchar)
+        (t/attach-instruction , string-rest)
         (t/attach-instruction , string-reverse)
+        (t/attach-instruction , string-solid?)
+        (t/attach-instruction , string-splitonspaces)
+        (t/attach-instruction , string-spacey?)
         ))
 

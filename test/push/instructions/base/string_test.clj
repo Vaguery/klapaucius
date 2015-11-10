@@ -24,17 +24,9 @@
 ; getters and setters
 
 ; string_setchar
-; string_readchar
-; string_readline
-; string_whitespace
-; string_emptystring
 ; string_nth
 ; string_take
 ; string_substring
-; string_first
-; string_last
-; string_rest
-; string_butlast
 
 ; string methods qua methods
 
@@ -42,12 +34,6 @@
 ; string_contains
 ; string_containschar
 ; string_indexofchar
-; string_occurrencesofchar
-; string_replace
-; string_replacefirst
-; string_replacechar
-; string_replacefirstchar
-; string_removechar
 ; exec_string_iterate
 
 
@@ -89,7 +75,7 @@
 
 
 (tabular
-  (fact ":string-emptystring? removes the last char from a string argument"
+  (fact ":string-emptystring? returns true if the argument is exactly \"\""
     (register-type-and-check-instruction
         ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
 
@@ -462,6 +448,25 @@
                                                    :string '()})
 
 
+
+(tabular
+  (fact ":string-rest removes the first char from a string argument"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items         ?instruction  ?get-stack   ?expected
+    ;; lost the head
+    :string    '("foo")         :string-rest  :string     '("oo")
+    :string    '(" foo ")       :string-rest  :string     '("foo ")
+    :string    '("\n\t\t\n")    :string-rest  :string     '("\t\t\n")
+    :string    '("\"\"")        :string-rest  :string     '("\"")
+    :string    '("")            :string-rest  :string     '("")
+    ;; missing args
+    :string    '()              :string-rest  :string     '())
+
+
+
+
 (tabular
   (fact ":string-reverse returns the second :string item tacked to the end of the first"
     (register-type-and-check-instruction
@@ -478,6 +483,60 @@
     :string    '("\b8" )        :string-reverse  :string     '("8\b")
     ;; missing args
     :string    '()              :string-reverse  :string     '())
+
+
+(tabular
+  (fact ":string-solid? returns true if there is no whitespace anywhere in the string"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items         ?instruction  ?get-stack   ?expected
+    ;; we good here?
+    :string    '("foo")         :string-solid?  :boolean     '(true)
+    :string    '("foo_bar")     :string-solid?  :boolean     '(true)
+    :string    '("foo/bar")     :string-solid?  :boolean     '(true)
+    :string    '("a\u1722b")    :string-solid?  :boolean     '(true)
+    :string    '("")            :string-solid?  :boolean     '(false)
+    :string    '("foo bar")     :string-solid?  :boolean     '(false)
+    :string    '("foo\nbar")    :string-solid?  :boolean     '(false)
+    :string    '(" foo")        :string-solid?  :boolean     '(false)
+    ;; missing args  
+    :string    '()              :string-solid?  :boolean     '())
+
+
+
+(tabular
+  (fact ":string-spacey? returns true if there is no NON-whitespace anywhere in the string"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items         ?instruction  ?get-stack   ?expected
+    ;; we good here?
+    :string    '("foo")         :string-spacey?  :boolean     '(false)
+    :string    '("       ")     :string-spacey?  :boolean     '(true)
+    :string    '("\n\n\n\n")    :string-spacey?  :boolean     '(true)
+    :string    '("\n\n\n\n.")    :string-spacey?  :boolean    '(false)
+    :string    '("")            :string-spacey?  :boolean     '(false)
+    ;; missing args  
+    :string    '()              :string-spacey?  :boolean     '())
+
+
+(tabular
+  (fact ":string-splitonspaces pushes the space-delimited parts of :string onto the stack"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items         ?instruction  ?get-stack   ?expected
+    ;; chunks
+    :string    '("a b c d e")   :string-splitonspaces  :string     '("a" "b" "c" "d" "e")
+    :string    '(" foo ")       :string-splitonspaces  :string     '("" "foo")
+    :string    '("\na\tb\tc\n\n") 
+                                :string-splitonspaces  :string   '("" "a" "b" "c")
+    :string    '("\"\"")        :string-splitonspaces  :string     '("\"\"")
+    :string    '("")            :string-splitonspaces  :string     '("")
+    ;; missing args
+    :string    '()              :string-splitonspaces  :string     '())
+
 
 ; ;; visible
 
