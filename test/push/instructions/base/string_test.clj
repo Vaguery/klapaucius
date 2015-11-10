@@ -326,6 +326,50 @@
 
 
 (tabular
+  (fact ":string-replace replaces all occurrences of :str/2 with :str/1 in :str/3"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items         ?instruction  ?get-stack   ?expected
+    :string    '("X" "ab" "aabbaaabbb")         
+                                :string-replace  :string     '("aXbaaXbb")
+    :string    '("Napoleon" "he" "ere he was able")       
+                                :string-replace  :string     '("ere Napoleon was able")
+    :string    '(" " "\n" "foo\n\t\t\n")
+                                :string-replace  :string     '("foo \t\t ")
+    :string    '("" "a" "aabbaaabbb")
+                                :string-replace  :string     '("bbbbb")
+    :string    '("X" "" "aabbaaabbb")
+                                :string-replace  :string     '("XaXaXbXbXaXaXaXbXbXbX")
+    ;; missing args
+    :string    '("a" "b")       :string-replace  :string     '("a" "b")
+    :string    '("a")           :string-replace  :string     '("a")
+    :string    '("")            :string-replace  :string     '(""))
+
+
+(tabular
+  (fact ":string-replacefirst the first occurrence of :str/2 with :str/1 in :str/3"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items         ?instruction           ?get-stack   ?expected
+    :string    '("X" "ab" "aabbaaabbb")         
+                                :string-replacefirst  :string     '("aXbaaabbb")
+    :string    '("Napoleon" "he" "ere he was able")       
+                                :string-replacefirst  :string     '("ere Napoleon was able")
+    :string    '(" " "\n" "foo\n\t\t\n")
+                                :string-replacefirst  :string     '("foo \t\t\n")
+    :string    '("" "a" "aabbaaabbb")
+                                :string-replacefirst  :string     '("abbaaabbb")
+    :string    '("X" "" "aabbaaabbb")
+                                :string-replacefirst  :string     '("Xaabbaaabbb")
+    ;; missing args
+    :string    '("a" "b")       :string-replacefirst  :string     '("a" "b")
+    :string    '("a")           :string-replacefirst  :string     '("a")
+    :string    '("")            :string-replacefirst  :string     '(""))
+
+
+(tabular
   (fact ":string-replacechar replaces all occurrences of :char/1 with :char/2"
     (check-instruction-with-all-kinds-of-stack-stuff
         ?new-stacks classic-string-type ?instruction) => (contains ?expected))
@@ -367,6 +411,53 @@
     {:char   '(\e \f)
      :string '()}           
                                 :string-replacechar       
+                                                  {:char '(\e \f)
+                                                   :string '()})
+
+
+
+(tabular
+  (fact ":string-replacefirstchar replaces the first occurrence of :char/1 with :char/2"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks classic-string-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction       ?expected
+
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:char   '(\e \f)
+     :string '("ere he was able")}           
+                                :string-replacefirstchar       
+                                                  {:char '()
+                                                   :string '("fre he was able")} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:char   '(\space \•)
+     :string '("ere he was able")}           
+                                :string-replacefirstchar       
+                                                  {:char '()
+                                                   :string '("ere•he was able")} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:char   '(\z \q)
+     :string '("ere he was able")}           
+                                :string-replacefirstchar       
+                                                  {:char '()
+                                                   :string '("ere he was able")} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;; missing arguments
+    {:char   '()
+     :string '("ere he was able")}           
+                                :string-replacefirstchar       
+                                                  {:char '()
+                                                   :string '("ere he was able")} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:char   '(\e)
+     :string '("ere he was able")}           
+                                :string-replacefirstchar       
+                                                  {:char '(\e)
+                                                   :string '("ere he was able")} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:char   '(\e \f)
+     :string '()}           
+                                :string-replacefirstchar       
                                                   {:char '(\e \f)
                                                    :string '()})
 

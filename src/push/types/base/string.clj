@@ -18,9 +18,6 @@
 ; string_fromfloat
 ; string_frominteger
 ; string_parse_to_chars
-; string_replace
-; string_replacefirst
-; string_replacefirstchar
 ; string_rest
 ; string_setchar
 ; string_split
@@ -108,6 +105,17 @@
     (d/push-onto :string :gone)))
 
 
+(def string-replace
+  (core/build-instruction
+    string-replace
+    :tags #{:string :base}
+    (d/consume-top-of :string :as :s3)
+    (d/consume-top-of :string :as :s2)
+    (d/consume-top-of :string :as :s1)
+    (d/calculate [:s1 :s2 :s3] #(strings/replace %1 %2 %3) :as :different)
+    (d/push-onto :string :different)))
+
+
 (def string-replacechar
   (core/build-instruction
     string-replacechar
@@ -116,6 +124,28 @@
     (d/consume-top-of :char :as :c1)
     (d/consume-top-of :char :as :c2)
     (d/calculate [:s :c1 :c2] #(strings/replace %1 %2 %3) :as :different)
+    (d/push-onto :string :different)))
+
+
+(def string-replacefirst
+  (core/build-instruction
+    string-replacefirst
+    :tags #{:string :base}
+    (d/consume-top-of :string :as :s3)
+    (d/consume-top-of :string :as :s2)
+    (d/consume-top-of :string :as :s1)
+    (d/calculate [:s1 :s2 :s3] #(strings/replace-first %1 %2 %3) :as :different)
+    (d/push-onto :string :different)))
+
+
+(def string-replacefirstchar
+  (core/build-instruction
+    string-replacefirstchar
+    :tags #{:string :base}
+    (d/consume-top-of :string :as :s)
+    (d/consume-top-of :char :as :c1)
+    (d/consume-top-of :char :as :c2)
+    (d/calculate [:s :c1 :c2] #(strings/replace-first %1 %2 %3) :as :different)
     (d/push-onto :string :different)))
 
 
@@ -140,7 +170,10 @@
         (t/attach-instruction , string-nth)
         (t/attach-instruction , string-occurrencesofchar)
         (t/attach-instruction , string-removechar)
+        (t/attach-instruction , string-replace)
         (t/attach-instruction , string-replacechar)
+        (t/attach-instruction , string-replacefirst)
+        (t/attach-instruction , string-replacefirstchar)
         (t/attach-instruction , string-reverse)
         ))
 
