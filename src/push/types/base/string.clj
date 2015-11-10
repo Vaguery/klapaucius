@@ -17,7 +17,6 @@
 ; string_fromchar
 ; string_fromfloat
 ; string_frominteger
-; string_indexofchar
 ; string_nth
 ; string_parse_to_chars
 ; string_readchar
@@ -53,6 +52,16 @@
     (d/consume-top-of :string :as :arg1)
     (d/calculate [:arg1] #(first %1) :as :c)
     (d/push-onto :char :c)))
+
+
+(def string-indexofchar
+  (core/build-instruction
+    string-indexofchar
+    :tags #{:string :base}
+    (d/consume-top-of :string :as :s)
+    (d/consume-top-of :char :as :c)
+    (d/calculate [:s :c] #(.indexOf %1 (int %2)) :as :where)
+    (d/push-onto :integer :where)))
 
 
 (def string-last
@@ -98,6 +107,7 @@
         (t/attach-instruction , string-concat)
         (t/attach-instruction , string-emptystring?)
         (t/attach-instruction , string-first)
+        (t/attach-instruction , string-indexofchar)
         (t/attach-instruction , string-last)
         (t/attach-instruction , string-length)
         (t/attach-instruction , string-occurrencesofchar)

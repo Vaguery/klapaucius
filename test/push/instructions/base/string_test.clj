@@ -121,6 +121,51 @@
 
 
 (tabular
+  (fact ":string-indexofchar returns the index of :char (or -1)"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks classic-string-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction       ?expected
+
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:char   '(\e)
+     :string '("ere he was able")}           
+                                :string-indexofchar       
+                                                  {:char '()
+                                                   :string '()
+                                                   :integer '(0)} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:char   '(\a)
+     :string '("ere he was able")}           
+                                :string-indexofchar       
+                                                  {:char '()
+                                                   :string '()
+                                                   :integer '(8)} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:char   '(\z)
+     :string '("ere he was able")}           
+                                :string-indexofchar       
+                                                  {:char '()
+                                                   :string '()
+                                                   :integer '(-1)} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;; missing arguments
+    {:char   '()
+     :string '("ere he was able")}           
+                                :string-indexofchar       
+                                                  {:char '()
+                                                   :string '("ere he was able")
+                                                   :integer '()} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:char   '(\e)
+     :string '()}           
+                                :string-indexofchar       
+                                                  {:char '(\e)
+                                                   :string '()
+                                                   :integer '()})
+
+
+(tabular
   (fact ":string-last returns the last :char of the string"
     (register-type-and-check-instruction
         ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
