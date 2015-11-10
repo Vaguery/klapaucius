@@ -43,11 +43,6 @@
 
 ; code_discrepancy
 ; code_overlap
-; code_append
-; code_atom
-; code_car
-; code_cdr
-; code_cons
 ; code_do
 ; code_do*
 ; code_do*range
@@ -55,7 +50,6 @@
 ; code_do*times
 ; code_map
 ; code_if
-; code_list
 ; code_member
 ; code_subst
 ; code_contains
@@ -122,6 +116,20 @@
     :code    '(((3)))             :code-first        :code        '((3))
     :code    '()                  :code-first        :code        '())
 
+
+(tabular
+  (fact ":code-list puts the top 2 :code items into a list on the :code stack"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-code-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items            ?instruction      ?get-stack     ?expected
+    ;; stick 'em together
+    :code    '((1.1) (8 9))         :code-list        :code        '(((8 9) (1.1)))
+    :code    '(2 3)                 :code-list        :code        '((3 2))
+    :code    '(() 3)                :code-list        :code        '((3 ()))
+    :code    '(2 ())                :code-list        :code        '((() 2))
+    :code    '(() ())               :code-list        :code        '((() ()))
+    :code    '(2)                   :code-list        :code        '(2))
 
 
 (tabular

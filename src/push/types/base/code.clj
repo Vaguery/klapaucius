@@ -75,6 +75,16 @@
     (d/push-onto :code :result)))
 
 
+(def code-list
+  (core/build-instruction
+    code-list
+    :tags #{:complex :base}
+    (d/consume-top-of :code :as :arg2)
+    (d/consume-top-of :code :as :arg1)
+    (d/calculate [:arg1 :arg2] #(list %1 %2) :as :both)
+    (d/push-onto :code :both)))
+
+
 (def code-rest
   (core/build-instruction
     code-rest
@@ -127,6 +137,7 @@
         (t/attach-instruction , code-atom?)
         (t/attach-instruction , code-cons)
         (t/attach-instruction , code-first)
+        (t/attach-instruction , code-list)
         (t/attach-instruction , code-noop)
         (t/attach-instruction , code-null?)
         (t/attach-instruction , code-quote)
