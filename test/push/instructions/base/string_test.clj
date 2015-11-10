@@ -155,6 +155,45 @@
     :string    '()              :string-length  :integer     '())
 
 
+
+(tabular
+  (fact ":string-occurrencesofchar counts :char in :string (as :int)"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks classic-string-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction       ?expected
+
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:char   '(\e)
+     :string '("ere he was able")}           
+                                :string-occurrencesofchar       
+                                                  {:char '()
+                                                   :string '()
+                                                   :integer '(4)} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:char   '(\z)
+     :string '("ere he was able")}           
+                                :string-occurrencesofchar       
+                                                  {:char '()
+                                                   :string '()
+                                                   :integer '(0)} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;; missing arguments
+    {:char   '()
+     :string '("ere he was able")}           
+                                :string-occurrencesofchar       
+                                                  {:char '()
+                                                   :string '("ere he was able")
+                                                   :integer '()} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:char   '(\e)
+     :string '()}           
+                                :string-occurrencesofchar       
+                                                  {:char '(\e)
+                                                   :string '()
+                                                   :integer '()})
+
+
 (tabular
   (fact ":string-reverse returns the second :string item tacked to the end of the first"
     (register-type-and-check-instruction

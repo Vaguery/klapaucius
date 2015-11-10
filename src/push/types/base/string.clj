@@ -19,7 +19,6 @@
 ; string_frominteger
 ; string_indexofchar
 ; string_nth
-; string_occurrencesofchar
 ; string_parse_to_chars
 ; string_readchar
 ; string_readline
@@ -74,6 +73,16 @@
     (d/push-onto :integer :len)))
 
 
+(def string-occurrencesofchar
+  (core/build-instruction
+    string-occurrencesofchar
+    :tags #{:string :base}
+    (d/consume-top-of :string :as :s)
+    (d/consume-top-of :char :as :c)
+    (d/calculate [:s :c] #(get (frequencies %1) %2 0) :as :count)
+    (d/push-onto :integer :count)))
+
+
 (def string-reverse (t/simple-1-in-1-out-instruction :string "reverse" 'strings/reverse))
 
 
@@ -91,6 +100,7 @@
         (t/attach-instruction , string-first)
         (t/attach-instruction , string-last)
         (t/attach-instruction , string-length)
+        (t/attach-instruction , string-occurrencesofchar)
         (t/attach-instruction , string-reverse)
         ))
 
