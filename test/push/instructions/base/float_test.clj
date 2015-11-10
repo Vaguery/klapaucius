@@ -25,9 +25,6 @@
 ; float methods qua methods
 
 
-; float_sub
-; float_mult
-; float_div
 ; float_mod
 ; float_cos
 ; float_tan
@@ -60,7 +57,80 @@
 
 
 (tabular
-  (fact ":float-inc returns the sum, auto-promoting overflows"
+  (fact ":float-cosine returns the cosine(x)"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-float-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items      ?instruction  ?get-stack   ?expected
+    ;; wavy
+    :float    '(0.0)        :float-cosine    :float     '(1.0)
+    :float    (list (/ Math/PI 1.0))
+                            :float-cosine    :float     '(-1.0)
+
+    :float    (list (* 2 (/ Math/PI -1.0)))       
+                            :float-cosine    :float     '(1.0)
+    ;; missing args
+    :float    '()           :float-cosine    :float     '())
+
+
+
+(tabular
+  (fact ":float-divide returns the quotient, unless the denominator is 0.0"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-float-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items      ?instruction  ?get-stack   ?expected
+    ;; division
+    :float    '(20.0 -5.0)  :float-divide   :float     '(-0.25)
+    :float    '(-3.0 -15.0) :float-divide   :float     '(5.0)
+    ;; zero
+    :float    '(0.0 -5.0)   :float-divide   :float     '(0.0 -5.0)
+    :float    '(-0.0 0.0)  :float-divide   :float      '(-0.0 0.0)
+    ;; missing args
+    :float    '(11.0)       :float-divide   :float     '(11.0)
+    :float    '()           :float-divide   :float     '()
+    ;; bigness
+    :float    '(5.0e12 2.5e13)
+                            :float-divide   :float     '(5.0)
+    ;; smallness
+    :float    '(3.0e-89 2.7e-88)
+                            :float-divide   :float     '(9.0)
+    :float    '(3.0 2.7e-88)
+                            :float-divide   :float     '(9.0e-89)
+    :float    '(3.0M 2.7e-88M)
+                            :float-divide   :float     '(9.0e-89M))
+
+
+(tabular
+  (fact ":float-mod returns the modulo (positive remainder), unless the denominator is 0.0"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-float-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items      ?instruction  ?get-stack   ?expected
+    ;; leftovers
+    :float    '(20.0 -5.0)  :float-mod   :float     '(15.0)
+    :float    '(-3.0 -15.0) :float-mod   :float     '(0.0)
+    ;; zero
+    :float    '(0.0 -5.0)   :float-mod   :float     '(0.0 -5.0)
+    :float    '(-0.0 0.0)  :float-mod   :float      '(-0.0 0.0)
+    ;; missing args
+    :float    '(11.0)       :float-mod   :float     '(11.0)
+    :float    '()           :float-mod   :float     '()
+    ;; bigness
+    :float    '(5.0e12 2.4e13)
+                            :float-mod   :float     '(4.0E12)
+    ;; smallness
+    :float    '(3.0e-89M 2.5e-88M)
+                            :float-mod   :float     '(1.0E-89M)
+    :float    '(3.0 2.7e-88)
+                            :float-mod   :float     '(2.7e-88)
+    :float    '(3.0M 2.7e-88M)
+                            :float-mod   :float     '(2.7E-88M))
+
+
+
+(tabular
+  (fact ":float-inc returns the number increased by 1.0"
     (register-type-and-check-instruction
         ?set-stack ?items classic-float-type ?instruction ?get-stack) => ?expected)
 
@@ -80,6 +150,45 @@
 
 (future-fact ":float-inc deals with overflows")
 (future-fact ":float-inc deals with underflows")
+
+
+(tabular
+  (fact ":float-dec returns the value reduced by 1.0"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-float-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items      ?instruction  ?get-stack   ?expected
+    ;; down we go
+    :float    '(11.0 -5.0)  :float-dec    :float     '(10.0 -5.0)
+    :float    '(-3.0 -5.0)  :float-dec    :float     '(-4.0 -5.0)
+    ;; missing args
+    :float    '()           :float-dec    :float     '()
+    ;; bigness
+    :float    '(3.1e12)     :float-dec    :float     '(3.099999999999E12)
+    ;; smallness
+    :float    '(3.1e-77M)    :float-dec   :float     (list (dec' 3.1e-77M))
+    :float    '(3.1e-88)     :float-dec   :float     '(-1.0)) ;; hmm
+
+
+(tabular
+  (fact ":float-multiply returns the sum, auto-promoting overflows"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-float-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items      ?instruction  ?get-stack   ?expected
+    ;; multiplying
+    :float    '(11.0 -5.0)  :float-multiply   :float     '(-55.0)
+    :float    '(-3.0 -5.0)  :float-multiply   :float     '(15.0)
+    ;; missing args
+    :float    '(11.0)       :float-multiply   :float     '(11.0)
+    :float    '()           :float-multiply   :float     '()
+    ;; bigness
+    :float    '(3.0e12 2.5e13)
+                            :float-multiply   :float     '(7.5E25)
+    ;; smallness
+    :float    '(3.0e-88 2.5e-88)
+                            :float-multiply   :float     '(7.5E-176))
+
 
 
 (tabular
@@ -131,6 +240,20 @@
     ;; smallness
     :float    '(3.0e-88M 2.5e-88M)
                             :float-subtract   :float     '(-5E-89M))
+
+(tabular
+  (fact ":float-tangent returns the tan(x)"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-float-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items      ?instruction  ?get-stack   ?expected
+    ;; wavy
+    :float    '(0.0)        :float-tangent    :float     '(0.0)
+    :float    (list 3.0)
+                            :float-tangent    :float     (list (Math/tan 3.0))
+
+    ;; missing args
+    :float    '()           :float-tangent    :float     '())
 
 
 ;; visible
