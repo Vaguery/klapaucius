@@ -285,6 +285,46 @@
 
 
 (tabular
+  (fact ":string-removechar takes all occurrences of :char out"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks classic-string-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction       ?expected
+
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:char   '(\e)
+     :string '("ere he was able")}           
+                                :string-removechar       
+                                                  {:char '()
+                                                   :string '("r h was abl")} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:char   '(\space)
+     :string '("ere he was able")}           
+                                :string-removechar       
+                                                  {:char '()
+                                                   :string '("erehewasable")} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:char   '(\z)
+     :string '("ere he was able")}           
+                                :string-removechar       
+                                                  {:char '()
+                                                   :string '("ere he was able")} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;; missing arguments
+    {:char   '()
+     :string '("ere he was able")}           
+                                :string-removechar       
+                                                  {:char '()
+                                                   :string '("ere he was able")} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:char   '(\e)
+     :string '()}           
+                                :string-removechar       
+                                                  {:char '(\e)
+                                                   :string '()})
+
+
+(tabular
   (fact ":string-reverse returns the second :string item tacked to the end of the first"
     (register-type-and-check-instruction
         ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)

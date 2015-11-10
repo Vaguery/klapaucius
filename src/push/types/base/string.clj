@@ -18,9 +18,6 @@
 ; string_fromfloat
 ; string_frominteger
 ; string_parse_to_chars
-; string_readchar
-; string_readline
-; string_removechar
 ; string_replace
 ; string_replacechar
 ; string_replacefirst
@@ -102,6 +99,16 @@
     (d/push-onto :integer :count)))
 
 
+(def string-removechar
+  (core/build-instruction
+    string-removechar
+    :tags #{:string :base}
+    (d/consume-top-of :string :as :s)
+    (d/consume-top-of :char :as :c)
+    (d/calculate [:s :c] #(clojure.string/join (remove #{%2} %1)) :as :gone)
+    (d/push-onto :string :gone)))
+
+
 (def string-reverse (t/simple-1-in-1-out-instruction :string "reverse" 'strings/reverse))
 
 
@@ -122,6 +129,7 @@
         (t/attach-instruction , string-length)
         (t/attach-instruction , string-nth)
         (t/attach-instruction , string-occurrencesofchar)
+        (t/attach-instruction , string-removechar)
         (t/attach-instruction , string-reverse)
         ))
 
