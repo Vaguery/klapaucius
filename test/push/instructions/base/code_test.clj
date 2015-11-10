@@ -83,7 +83,7 @@
         ?set-stack ?items classic-code-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
-    ;; an echoing sound is heard
+    ;; are you alone?
     :code    '(1.1 '(8 9))         :code-atom?        :boolean        '(true)
     :code    '(() 8)               :code-atom?        :boolean        '(false)
     
@@ -92,6 +92,20 @@
     ;; …except in silence
     :code    '()                   :code-atom?        :boolean        '())
 
+
+(tabular
+  (fact ":code-cons conj's the second :code item onto the first, coercing it to a list if necessary"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-code-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items            ?instruction      ?get-stack     ?expected
+    ;; stick 'em together
+    :code    '((1.1) (8 9))         :code-cons        :code        '(((8 9) 1.1))
+    :code    '(2 3)                 :code-cons        :code        '((3 2))
+    :code    '(() 3)                :code-cons        :code        '((3))
+    :code    '(2 ())                :code-cons        :code        '((() 2))
+    :code    '(() ())               :code-cons        :code        '((()))
+    :code    '(2)                   :code-cons        :code        '(2))
 
 
 (tabular

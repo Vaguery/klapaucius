@@ -9,7 +9,7 @@
 
 ;; code-specific
 
-; code_cons
+
 ; code_container
 ; code_contains
 ; code_discrepancy
@@ -65,6 +65,16 @@
     (d/push-onto :boolean :unlisted)))
 
 
+(def code-cons
+  (core/build-instruction
+    code-cons
+    :tags #{:complex :base}
+    (d/consume-top-of :code :as :arg1)
+    (d/consume-top-of :code :as :arg2)
+    (d/calculate [:arg1 :arg2] #(if (seq? %1) (conj %1 %2) (conj (list %1) %2)) :as :result)
+    (d/push-onto :code :result)))
+
+
 (def code-rest
   (core/build-instruction
     code-rest
@@ -115,6 +125,7 @@
         t/make-movable
         (t/attach-instruction , code-append)
         (t/attach-instruction , code-atom?)
+        (t/attach-instruction , code-cons)
         (t/attach-instruction , code-first)
         (t/attach-instruction , code-noop)
         (t/attach-instruction , code-null?)
