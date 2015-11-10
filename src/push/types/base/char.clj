@@ -20,7 +20,7 @@
     (d/replace-stack :char :kludged)))
 
 
-(def char-digit? (t/basic-1-in-predicate :char "digit?" #(Character/isDigit %1)))
+(def char-digit? (t/simple-1-in-predicate :char "digit?" #(Character/isDigit %1)))
 
 
 (def char-frominteger
@@ -41,16 +41,16 @@
     (d/push-onto :char :c)))
 
 
-(def char-letter? (t/basic-1-in-predicate :char "letter?" #(Character/isLetter %1)))
+(def char-letter? (t/simple-1-in-predicate :char "letter?" #(Character/isLetter %1)))
 
 
-(def char-lowercase? (t/basic-1-in-predicate :char "lowercase?" #(Character/isLowerCase %1)))
+(def char-lowercase? (t/simple-1-in-predicate :char "lowercase?" #(Character/isLowerCase %1)))
 
 
-(def char-uppercase? (t/basic-1-in-predicate :char "uppercase?" #(Character/isUpperCase %1)))
+(def char-uppercase? (t/simple-1-in-predicate :char "uppercase?" #(Character/isUpperCase %1)))
 
 
-(def char-whitespace? (t/basic-1-in-predicate :char "whitespace?" #(Character/isWhitespace %1)))
+(def char-whitespace? (t/simple-1-in-predicate :char "whitespace?" #(Character/isWhitespace %1)))
 
 
 (def classic-char-type

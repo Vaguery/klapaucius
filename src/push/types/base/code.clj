@@ -51,7 +51,7 @@
 
 
 
-(def code-atom? (t/basic-1-in-predicate :code "atom?" #(not (coll? %1))))
+(def code-atom? (t/simple-1-in-predicate :code "atom?" #(not (coll? %1))))
 
 
 (def code-cons (t/simple-2-in-1-out-instruction 
@@ -93,7 +93,7 @@
     :tags #{:complex :base}))
 
 
-(def code-null? (t/basic-1-in-predicate :code "null?" #(and (coll? %) (empty? %))))
+(def code-null? (t/simple-1-in-predicate :code "null?" #(and (coll? %) (empty? %))))
 
 
 (def code-quote

@@ -89,7 +89,7 @@
       `(d/push-onto ~stackname :result)))))
 
 
-(defn basic-1-in-predicate
+(defn simple-1-in-predicate
   "returns a standard :typed arity-1 function, where the output is
   a :boolean and inputs are the same type"
   [type word operation]
