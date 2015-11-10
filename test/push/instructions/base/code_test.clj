@@ -93,6 +93,23 @@
     :code    '()                   :code-atom?        :boolean        '())
 
 
+
+(tabular
+  (fact ":code-first pushes the first item of the top :code item, if it's a list"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-code-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items            ?instruction      ?get-stack     ?expected
+    ;; stick 'em together
+    :code    '((1.1) (8 9))       :code-first        :code        '(1.1 (8 9))
+    :code    '((2 3))             :code-first        :code        '(2)
+    :code    '(() 3)              :code-first        :code        '(3)
+    :code    '(2)                 :code-first        :code        '(2)
+    :code    '(((3)))             :code-first        :code        '((3))
+    :code    '()                  :code-first        :code        '())
+
+
+
 (tabular
   (fact ":code-noop don't do shit"
     (register-type-and-check-instruction

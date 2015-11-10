@@ -9,7 +9,6 @@
 
 ;; code-specific
 
-; code_car
 ; code_cdr
 ; code_cons
 ; code_container
@@ -67,6 +66,15 @@
     (d/push-onto :boolean :unlisted)))
 
 
+(def code-first
+  (core/build-instruction
+    code-first
+    :tags #{:complex :base}
+    (d/consume-top-of :code :as :arg)
+    (d/calculate [:arg] #(if (seq? %1) (first %1) %1) :as :item)
+    (d/push-onto :code :item)))
+
+
 (def code-noop
   (core/build-instruction
     code-noop
@@ -99,6 +107,7 @@
         t/make-movable
         (t/attach-instruction , code-append)
         (t/attach-instruction , code-atom?)
+        (t/attach-instruction , code-first)
         (t/attach-instruction , code-noop)
         (t/attach-instruction , code-null?)
         (t/attach-instruction , code-quote)
