@@ -50,32 +50,18 @@
     (d/push-onto :code :both)))
 
 
-(def code-atom?
-  (core/build-instruction
-    code-atom?
-    :tags #{:complex :predicate :base}
-    (d/consume-top-of :code :as :c)
-    (d/calculate [:c] #(not (coll? %1)) :as :unlisted)
-    (d/push-onto :boolean :unlisted)))
+
+(def code-atom? (t/basic-1-in-predicate :code "atom?" #(not (coll? %1))))
 
 
-(def code-cons
-  (core/build-instruction
-    code-cons
-    :tags #{:complex :base}
-    (d/consume-top-of :code :as :arg1)
-    (d/consume-top-of :code :as :arg2)
-    (d/calculate [:arg1 :arg2] #(if (coll? %1) (conj %1 %2) (conj (list %1) %2)) :as :result)
-    (d/push-onto :code :result)))
+(def code-cons (t/basic-2-in-1-out-instruction 
+                    :code 
+                    "cons" #(if (seq? %2) 
+                                (conj %2 %1) 
+                                (conj (list %2) %1))))
 
 
-(def code-first
-  (core/build-instruction
-    code-first
-    :tags #{:complex :base}
-    (d/consume-top-of :code :as :arg)
-    (d/calculate [:arg] #(if (seq? %1) (first %1) %1) :as :item)
-    (d/push-onto :code :item)))
+(def code-first (t/basic-1-in-1-out-instruction :code "first" #(if (seq? %) (first %) %)))
 
 
 (def code-length
@@ -87,14 +73,7 @@
     (d/push-onto :integer :len)))
 
 
-(def code-list
-  (core/build-instruction
-    code-list
-    :tags #{:complex :base}
-    (d/consume-top-of :code :as :arg2)
-    (d/consume-top-of :code :as :arg1)
-    (d/calculate [:arg1 :arg2] #(list %1 %2) :as :both)
-    (d/push-onto :code :both)))
+(def code-list (t/basic-2-in-1-out-instruction :code "list" #(list %1 %2)))
 
 
 (def code-member?
@@ -114,13 +93,7 @@
     :tags #{:complex :base}))
 
 
-(def code-null?
-  (core/build-instruction
-    code-null?
-    :tags #{:complex :predicate :base}
-    (d/consume-top-of :code :as :c)
-    (d/calculate [:c] #(and (coll? %1) (empty? %1)) :as :empty)
-    (d/push-onto :boolean :empty)))
+(def code-null? (t/basic-1-in-predicate :code "null?" #(and (coll? %) (empty? %))))
 
 
 (def code-quote
@@ -131,13 +104,12 @@
     (d/push-onto :code :arg1)))
 
 
-(def code-rest
-  (core/build-instruction
-    code-rest
-    :tags #{:complex :base}
-    (d/consume-top-of :code :as :arg)
-    (d/calculate [:arg] #(if (coll? %1) (rest %1) (list)) :as :result)
-    (d/push-onto :code :result)))
+(def code-rest (t/basic-1-in-1-out-instruction 
+                    :code 
+                    "rest" 
+                    #(if (coll? %1) 
+                         (rest %1) 
+                         (list))))
 
 
 (def classic-code-type

@@ -89,6 +89,21 @@
       `(d/push-onto ~stackname :result)))))
 
 
+(defn basic-1-in-predicate
+  "returns a standard :typed arity-1 function, where the output is
+  a :boolean and inputs are the same type"
+  [type word operation]
+  (let [stackname (keyword type)
+        instruction-name (str (name stackname) "-" word)]
+    (eval (list
+      'core/build-instruction
+      instruction-name
+      :tags #{:arithmetic :base}
+      `(d/consume-top-of ~stackname :as :arg1)
+      `(d/calculate [:arg1] #(~operation %1) :as :result)
+      '(d/push-onto :boolean :result)))))
+
+
 ;; :visible
 
 
