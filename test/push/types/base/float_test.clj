@@ -32,7 +32,3 @@
   (keys (:instructions classic-float-type)) =>
     (contains [:float-shove :float-pop :float-dup :float-rotate :float-yank :float-yankdup :float-flush :float-swap] :in-any-order :gaps-ok))
 
-
-(future-fact "classic-float-type knows all the :float-specific stuff"
-  (keys (:instructions classic-float-type)) =>
-  (contains [] :in-any-order :gaps-ok))

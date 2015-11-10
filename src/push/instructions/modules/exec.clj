@@ -20,13 +20,8 @@
 ; exec_fromziprights
 
 
-(def exec-k
-  (core/build-instruction
-    exec-k
-    :tags #{:complex :base}
-    (d/consume-top-of :exec :as :arg1)
-    (d/consume-top-of :exec :as :arg2)
-    (d/push-onto :exec :arg1)))
+(def exec-k 
+  (t/simple-2-in-1-out-instruction :exec "k" (fn [a b] b)))
 
 
 (def exec-if

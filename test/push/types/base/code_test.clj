@@ -50,9 +50,3 @@
 (fact "classic-code-type knows the :movable instructions"
   (keys (:instructions classic-code-type)) =>
     (contains [:code-shove :code-pop :code-dup :code-rotate :code-yank :code-yankdup :code-flush :code-swap] :in-any-order :gaps-ok))
-
-
-(future-fact "classic-code-type knows all the :code-specific stuff"
-  (keys (:instructions classic-code-type)) =>
-  (contains [] :in-any-order :gaps-ok))
-

@@ -32,8 +32,3 @@
 (fact "classic-char-type knows the :movable instructions"
   (keys (:instructions classic-char-type)) =>
     (contains [:char-shove :char-pop :char-dup :char-rotate :char-yank :char-yankdup :char-flush :char-swap] :in-any-order :gaps-ok))
-
-
-(future-fact "classic-char-type knows a few things about characters"
-  (keys (:instructions classic-char-type)) =>
-  (contains [:char-letter? :char-digit? :char-whitespace? :char-lowercase? :char-uppercase?] :in-any-order :gaps-ok))

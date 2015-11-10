@@ -32,8 +32,3 @@
 (fact "classic-exec-module knows the :movable instructions"
   (keys (:instructions classic-exec-module)) =>
     (contains [:exec-shove :exec-pop :exec-dup :exec-rotate :exec-yank :exec-yankdup :exec-flush :exec-swap] :in-any-order :gaps-ok))
-
-
-(future-fact "classic-exec-module knows all the :exec-specific stuff"
-  (keys (:instructions classic-exec-module)) =>
-  (contains [] :in-any-order :gaps-ok))

@@ -31,8 +31,3 @@
 (fact "classic-string-type knows the :movable instructions"
   (keys (:instructions classic-string-type)) =>
     (contains [:string-shove :string-pop :string-dup :string-rotate :string-yank :string-yankdup :string-flush :string-swap] :in-any-order :gaps-ok))
-
-
-(future-fact "classic-string-type knows a few things about string"
-  (keys (:instructions classic-string-type)) =>
-    (contains [] :in-any-order :gaps-ok))
