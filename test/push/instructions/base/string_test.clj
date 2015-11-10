@@ -12,24 +12,16 @@
 ;; work in progress
 ;; these instructions from Clojush are yet to be implemented:
 
-; assemblers and disassemblers
-
 ; string_frominteger
 ; string_fromfloat
 ; string_fromboolean
 ; string_fromchar
 ; string_parse_to_chars
 ; string_conjchar
-
-; getters and setters
-
 ; string_setchar
 ; string_nth
 ; string_take
 ; string_substring
-
-; string methods qua methods
-
 ; string_split
 ; string_contains
 ; string_containschar

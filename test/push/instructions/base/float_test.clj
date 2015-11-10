@@ -113,6 +113,25 @@
     :float    '()            :float-sign    :float     '())
 
 
+(tabular
+  (fact ":float-subtract returns the difference"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-float-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items      ?instruction  ?get-stack   ?expected
+    ;; subtracting
+    :float    '(11.0 -5.0)  :float-subtract   :float     '(-16.0)
+    :float    '(-3.0 -5.0)  :float-subtract   :float     '(-2.0)
+    ;; missing args
+    :float    '(11.0)       :float-subtract   :float     '(11.0)
+    :float    '()           :float-subtract   :float     '()
+    ;; bigness
+    :float    '(3.1e12 2.4e13)
+                            :float-subtract   :float     '(2.09E13)
+    ;; smallness
+    :float    '(3.0e-88M 2.5e-88M)
+                            :float-subtract   :float     '(-5E-89M))
+
 
 ;; visible
 

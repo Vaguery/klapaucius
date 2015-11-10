@@ -8,7 +8,6 @@
 ;; float-specific
 
 
-; float_sub
 ; float_mult
 ; float_div
 ; float_mod
@@ -22,6 +21,9 @@
 
 
 (def float-add (t/simple-2-in-1-out-instruction :float "add" '+'))
+
+
+(def float-subtract (t/simple-2-in-1-out-instruction :float "subtract" '-'))
 
 
 (def float-inc (t/simple-1-in-1-out-instruction :float "inc" 'inc'))
@@ -45,5 +47,6 @@
         (t/attach-instruction , float-inc)
         (t/attach-instruction , float-sign)
         (t/attach-instruction , float-sine)
+        (t/attach-instruction , float-subtract)
         ))
 
