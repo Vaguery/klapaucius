@@ -159,6 +159,20 @@
      :code '(true)}            :code-quote            {:exec '()
                                                        :code '(true)})
 
+(tabular
+  (fact ":code-rest pushes all but the first item of a :code list; if the item is not a list, pushes an empty list"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-code-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items            ?instruction      ?get-stack     ?expected
+    ;; stick 'em together
+    :code    '((1 2 3) (8 9))     :code-rest        :code        '((2 3) (8 9))
+    :code    '((2))               :code-rest        :code        '(())
+    :code    '(() 3)              :code-rest        :code        '(() 3)
+    :code    '(2)                 :code-rest        :code        '(())
+    :code    '((2 (3)))           :code-rest        :code        '(((3)))
+    :code    '()                  :code-rest        :code        '())
+
 
 ;; visible
 

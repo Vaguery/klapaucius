@@ -9,7 +9,6 @@
 
 ;; code-specific
 
-; code_cdr
 ; code_cons
 ; code_container
 ; code_contains
@@ -66,6 +65,15 @@
     (d/push-onto :boolean :unlisted)))
 
 
+(def code-rest
+  (core/build-instruction
+    code-rest
+    :tags #{:complex :base}
+    (d/consume-top-of :code :as :arg)
+    (d/calculate [:arg] #(if (seq? %1) (rest %1) (list)) :as :result)
+    (d/push-onto :code :result)))
+
+
 (def code-first
   (core/build-instruction
     code-first
@@ -111,5 +119,6 @@
         (t/attach-instruction , code-noop)
         (t/attach-instruction , code-null?)
         (t/attach-instruction , code-quote)
+        (t/attach-instruction , code-rest)
         ))
 
