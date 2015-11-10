@@ -114,7 +114,7 @@
         ?set-stack ?items classic-code-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
-    ;; stick 'em together
+    ;; pick a card
     :code    '((1.1) (8 9))       :code-first        :code        '(1.1 (8 9))
     :code    '((2 3))             :code-first        :code        '(2)
     :code    '(() 3)              :code-first        :code        '(3)
@@ -130,7 +130,7 @@
         ?set-stack ?items classic-code-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
-    ;; be very quiet
+    ;; be vewwy quiet
     :code    '(1.1 '(8 9))         :code-noop        :code        '(1.1 '(8 9))
     :code    '()                   :code-noop        :code        '())
      
@@ -179,7 +179,7 @@
         ?set-stack ?items classic-code-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
-    ;; stick 'em together
+    ;; what's left for me now?
     :code    '((1 2 3) (8 9))     :code-rest        :code        '((2 3) (8 9))
     :code    '((2))               :code-rest        :code        '(())
     :code    '(() 3)              :code-rest        :code        '(() 3)

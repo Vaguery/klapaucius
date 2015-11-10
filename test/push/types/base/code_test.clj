@@ -55,3 +55,4 @@
 (future-fact "classic-code-type knows all the :code-specific stuff"
   (keys (:instructions classic-code-type)) =>
   (contains [] :in-any-order :gaps-ok))
+
