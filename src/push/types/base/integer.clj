@@ -8,23 +8,13 @@
 ;; arithmetic
 
 
-(def int-add
-  (core/build-instruction
-    integer-add
-    :tags #{:arithmetic :base}
-    (d/consume-top-of :integer :as :arg1)
-    (d/consume-top-of :integer :as :arg2)
-    (d/calculate [:arg1 :arg2] #(+' %1 %2) :as :sum)
-    (d/push-onto :integer :sum)))
+(defn sign [i] (compare i 0))
 
 
-(def int-dec
-  (core/build-instruction
-    integer-dec
-    :tags #{:arithmetic :base}
-    (d/consume-top-of :integer :as :arg1)
-    (d/calculate [:arg1] #(dec' %1) :as :next)
-    (d/push-onto :integer :next)))
+(def int-add (t/basic-2-in-1-out-instruction :integer "add" '+'))
+
+
+(def int-dec (t/basic-1-in-1-out-instruction :integer "dec" 'dec'))
 
 
 (def int-divide
@@ -40,13 +30,7 @@
     (d/push-these-onto :integer [:replacement :quotient])))
 
 
-(def int-inc
-  (core/build-instruction
-    integer-inc
-    :tags #{:arithmetic :base}
-    (d/consume-top-of :integer :as :arg1)
-    (d/calculate [:arg1] #(inc' %1) :as :next)
-    (d/push-onto :integer :next)))
+(def int-inc (t/basic-1-in-1-out-instruction :integer "inc" 'inc'))
 
 
 (def int-mod
@@ -62,33 +46,13 @@
     (d/push-these-onto :integer [:replacement :remainder])))
 
 
-(def int-multiply
-  (core/build-instruction
-    integer-multiply
-    :tags #{:arithmetic :base}
-    (d/consume-top-of :integer :as :arg1)
-    (d/consume-top-of :integer :as :arg2)
-    (d/calculate [:arg1 :arg2] #(*' %1 %2) :as :prod)
-    (d/push-onto :integer :prod)))
+(def int-multiply (t/basic-2-in-1-out-instruction :integer  "multiply" '*'))
 
 
-(def int-sign
-  (core/build-instruction
-    integer-sign
-    :tags #{:arithmetic :base}
-    (d/consume-top-of :integer :as :arg1)
-    (d/calculate [:arg1] #(compare %1 0) :as :sign)
-    (d/push-onto :integer :sign)))
+(def int-sign (t/basic-1-in-1-out-instruction :integer  "sign" 'sign))
 
 
-(def int-subtract
-  (core/build-instruction
-    integer-subtract
-    :tags #{:arithmetic :base}
-    (d/consume-top-of :integer :as :arg2)
-    (d/consume-top-of :integer :as :arg1)
-    (d/calculate [:arg1 :arg2] #(-' %1 %2) :as :diff)
-    (d/push-onto :integer :diff)))
+(def int-subtract (t/basic-2-in-1-out-instruction :integer "subtract" '-'))
 
 
 ;; conversion

@@ -9,36 +9,20 @@
 (defn xor2 [p q] (or (and p (not q)) (and q (not p))))
 
 
-(defn basic-boolean-instruction
-  "returns a standard :boolean arity-2 function"
-  [operation]
-  (let [instruction-name (str "boolean-" operation)]
-    (eval (list
-      'core/build-instruction
-      instruction-name
-      :tags #{:logic :base}
-      '(d/consume-top-of :boolean :as :arg1)
-      '(d/consume-top-of :boolean :as :arg2)
-      `(d/calculate [:arg1 :arg2] #(~operation %1 %2) :as :result)
-      '(d/push-onto :boolean :result)))))
-
-
-(def bool-and (basic-boolean-instruction 'and))
+(def bool-and
+  (t/basic-2-in-1-out-instruction :boolean "and" 'and))
 
   
-(def bool-or (basic-boolean-instruction 'or))
+(def bool-or
+  (t/basic-2-in-1-out-instruction :boolean "or" 'or))
 
 
-(def bool-xor (basic-boolean-instruction 'xor2))
+(def bool-xor
+  (t/basic-2-in-1-out-instruction :boolean "xor" 'xor2))
 
 
-(def bool-not
-  (core/build-instruction
-    boolean-not
-    :tags #{:logic :base}
-    (d/consume-top-of :boolean :as :arg1)
-    (d/calculate [:arg1] #(not %1) :as :nope)
-    (d/push-onto :boolean :nope)))
+(def bool-not 
+  (t/basic-1-in-1-out-instruction :boolean "not" 'not))
 
 
 (def classic-boolean-type

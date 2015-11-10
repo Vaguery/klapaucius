@@ -9,14 +9,7 @@
 ;; string-specific
 
 
-(def string-concat
-  (core/build-instruction
-    string-concat
-    :tags #{:string :base}
-    (d/consume-top-of :string :as :arg2)
-    (d/consume-top-of :string :as :arg1)
-    (d/calculate [:arg1 :arg2] #(str %1 %2) :as :both)
-    (d/push-onto :string :both)))
+(def string-concat (t/basic-2-in-1-out-instruction :string "concat" 'str))
 
 
 (def string-length
@@ -28,13 +21,7 @@
     (d/push-onto :integer :len)))
 
 
-(def string-reverse
-  (core/build-instruction
-    string-reverse
-    :tags #{:string :base}
-    (d/consume-top-of :string :as :arg1)
-    (d/calculate [:arg1] #(strings/reverse %1) :as :sdrawkcab)
-    (d/push-onto :string :sdrawkcab)))
+(def string-reverse (t/basic-1-in-1-out-instruction :string "reverse" 'strings/reverse))
 
 
 (def classic-string-type

@@ -44,8 +44,8 @@
     :tags #{:complex :base}
     (d/consume-top-of :code :as :arg2)
     (d/consume-top-of :code :as :arg1)
-    (d/calculate [:arg1] #(if (seq? %1) %1 (list %1)) :as :list1)
-    (d/calculate [:arg2] #(if (seq? %1) %1 (list %1)) :as :list2)
+    (d/calculate [:arg1] #(if (coll? %1) %1 (list %1)) :as :list1)
+    (d/calculate [:arg2] #(if (coll? %1) %1 (list %1)) :as :list2)
     (d/calculate [:list1 :list2] #(concat %1 %2) :as :both)
     (d/push-onto :code :both)))
 
@@ -55,7 +55,7 @@
     code-atom?
     :tags #{:complex :predicate :base}
     (d/consume-top-of :code :as :c)
-    (d/calculate [:c] #(not (seq? %1)) :as :unlisted)
+    (d/calculate [:c] #(not (coll? %1)) :as :unlisted)
     (d/push-onto :boolean :unlisted)))
 
 
@@ -65,7 +65,7 @@
     :tags #{:complex :base}
     (d/consume-top-of :code :as :arg1)
     (d/consume-top-of :code :as :arg2)
-    (d/calculate [:arg1 :arg2] #(if (seq? %1) (conj %1 %2) (conj (list %1) %2)) :as :result)
+    (d/calculate [:arg1 :arg2] #(if (coll? %1) (conj %1 %2) (conj (list %1) %2)) :as :result)
     (d/push-onto :code :result)))
 
 
@@ -83,7 +83,7 @@
     code-length
     :tags #{:complex :base}
     (d/consume-top-of :code :as :arg)
-    (d/calculate [:arg] #(if (seq? %1) (count %1) 1) :as :len)
+    (d/calculate [:arg] #(if (coll? %1) (count %1) 1) :as :len)
     (d/push-onto :integer :len)))
 
 
@@ -103,7 +103,7 @@
     :tags #{:complex :predicate :base}
     (d/consume-top-of :code :as :arg1)
     (d/consume-top-of :code :as :arg2)
-    (d/calculate [:arg1] #(if (seq? %1) %1 (list %1)) :as :list1)
+    (d/calculate [:arg1] #(if (coll? %1) %1 (list %1)) :as :list1)
     (d/calculate [:list1 :arg2] #(not (not-any? #{%2} %1)) :as :present)
     (d/push-onto :boolean :present)))
 
@@ -119,7 +119,7 @@
     code-null?
     :tags #{:complex :predicate :base}
     (d/consume-top-of :code :as :c)
-    (d/calculate [:c] #(and (seq? %1) (empty? %1)) :as :empty)
+    (d/calculate [:c] #(and (coll? %1) (empty? %1)) :as :empty)
     (d/push-onto :boolean :empty)))
 
 
@@ -136,7 +136,7 @@
     code-rest
     :tags #{:complex :base}
     (d/consume-top-of :code :as :arg)
-    (d/calculate [:arg] #(if (seq? %1) (rest %1) (list)) :as :result)
+    (d/calculate [:arg] #(if (coll? %1) (rest %1) (list)) :as :result)
     (d/push-onto :code :result)))
 
 
