@@ -7,9 +7,62 @@
 
 
 ;; string-specific
+; assemblers and disassemblers
+
+; exec_string_iterate
+; string_conjchar
+; string_contains
+; string_containschar
+; string_fromboolean
+; string_fromchar
+; string_fromfloat
+; string_frominteger
+; string_indexofchar
+; string_nth
+; string_occurrencesofchar
+; string_parse_to_chars
+; string_readchar
+; string_readline
+; string_removechar
+; string_replace
+; string_replacechar
+; string_replacefirst
+; string_replacefirstchar
+; string_rest
+; string_setchar
+; string_split
+; string_substring
+; string_take
+; string_whitespace
+
 
 
 (def string-concat (t/simple-2-in-1-out-instruction :string "concat" 'str))
+
+
+(def string-butlast (t/simple-1-in-1-out-instruction :string "butlast"
+                      #(clojure.string/join (butlast %1))))
+
+
+(def string-emptystring? (t/simple-1-in-predicate :string "emptystring?" empty?))
+
+
+(def string-first
+  (core/build-instruction
+    string-first
+    :tags #{:string :base}
+    (d/consume-top-of :string :as :arg1)
+    (d/calculate [:arg1] #(first %1) :as :c)
+    (d/push-onto :char :c)))
+
+
+(def string-last
+  (core/build-instruction
+    string-last
+    :tags #{:string :base}
+    (d/consume-top-of :string :as :arg1)
+    (d/calculate [:arg1] #(last %1) :as :c)
+    (d/push-onto :char :c)))
 
 
 (def string-length
@@ -32,7 +85,11 @@
         t/make-equatable
         t/make-comparable
         t/make-movable
+        (t/attach-instruction , string-butlast)
         (t/attach-instruction , string-concat)
+        (t/attach-instruction , string-emptystring?)
+        (t/attach-instruction , string-first)
+        (t/attach-instruction , string-last)
         (t/attach-instruction , string-length)
         (t/attach-instruction , string-reverse)
         ))

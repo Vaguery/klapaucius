@@ -55,6 +55,22 @@
 
 
 (tabular
+  (fact ":string-butlast removes the last char from a string argument"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items         ?instruction  ?get-stack   ?expected
+    ;; lost the tail
+    :string    '("foo")         :string-butlast  :string     '("fo")
+    :string    '(" foo ")       :string-butlast  :string     '(" foo")
+    :string    '("\n\t\t\n")    :string-butlast  :string     '("\n\t\t")
+    :string    '("\"\"")        :string-butlast  :string     '("\"")
+    :string    '("")            :string-butlast  :string     '("")
+    ;; missing args
+    :string    '()              :string-butlast  :string     '())
+
+
+(tabular
   (fact ":string-concat returns the second :string item tacked to the end of the first"
     (register-type-and-check-instruction
         ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
@@ -68,9 +84,58 @@
     ;; because Java is weird enough to let you inline backspace characters
     :string    '("\b8" "\n" )
                                 :string-concat  :string     '("\n\b8")
-   ;; missing args
+    ;; missing args
     :string    '("foo")         :string-concat  :string     '("foo"))
 
+
+(tabular
+  (fact ":string-emptystring? removes the last char from a string argument"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items         ?instruction  ?get-stack   ?expected
+    ;; anything?
+    :string    '("foo")         :string-emptystring?  :boolean     '(false)
+    :string    '("")            :string-emptystring?  :boolean     '(true)
+    :string    '("\n")          :string-emptystring?  :boolean     '(false)
+    ;; missing args
+    :string    '()              :string-emptystring?  :boolean     '())
+
+
+(tabular
+  (fact ":string-first returns the 1st :char of the string"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items         ?instruction  ?get-stack   ?expected
+    ;; initial
+    :string    '("foo")         :string-first  :char     '(\f)
+    :string    '(" foo ")       :string-first  :char     '(\space)
+    :string    '("\n\t\t\n")    :string-first  :char     '(\newline)
+    :string    '("\u2665\u2666")
+                                :string-first  :char     '(\u2665)
+    ;; because Java is weird enough to let you inline backspace characters
+    :string    '("\b8" )        :string-first  :char     '(\backspace)
+    ;; missing args
+    :string    '()              :string-first  :char     '())
+
+
+(tabular
+  (fact ":string-last returns the last :char of the string"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items         ?instruction  ?get-stack   ?expected
+    ;; final
+    :string    '("foo")         :string-last  :char     '(\o)
+    :string    '(" foo ")       :string-last  :char     '(\space)
+    :string    '("\n\t\t\n")    :string-last  :char     '(\newline)
+    :string    '("\u2665\u2666")
+                                :string-last  :char     '(\u2666)
+    ;; because Java is weird enough to let you inline backspace characters
+    :string    '("\b8" )        :string-last  :char     '(\8)
+    ;; missing args
+    :string    '()              :string-last  :char     '())
 
 
 (tabular
@@ -86,7 +151,7 @@
     :string    '("\u2665")      :string-length  :integer     '(1)
     ;; because Java is weird enough to let you inline backspace characters
     :string    '("\b8" )        :string-length  :integer     '(2)
-   ;; missing args
+    ;; missing args
     :string    '()              :string-length  :integer     '())
 
 
@@ -104,7 +169,7 @@
                                 :string-reverse  :string     '("\u2666\u2665")
     ;; because Java is weird enough to let you inline backspace characters
     :string    '("\b8" )        :string-reverse  :string     '("8\b")
-   ;; missing args
+    ;; missing args
     :string    '()              :string-reverse  :string     '())
 
 ; ;; visible
