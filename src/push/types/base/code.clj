@@ -29,10 +29,7 @@
 ; code_fromziproot
 ; code_if
 ; code_insert
-; code_length
-; code_list
 ; code_map
-; code_member
 ; code_nth
 ; code_nthcdr
 ; code_overlap
@@ -40,8 +37,6 @@
 ; code_size
 ; code_subst
 ; code_wrap
-
-
 
 
 (def code-append
@@ -75,6 +70,24 @@
     (d/push-onto :code :result)))
 
 
+(def code-first
+  (core/build-instruction
+    code-first
+    :tags #{:complex :base}
+    (d/consume-top-of :code :as :arg)
+    (d/calculate [:arg] #(if (seq? %1) (first %1) %1) :as :item)
+    (d/push-onto :code :item)))
+
+
+(def code-length
+  (core/build-instruction
+    code-length
+    :tags #{:complex :base}
+    (d/consume-top-of :code :as :arg)
+    (d/calculate [:arg] #(if (seq? %1) (count %1) 1) :as :len)
+    (d/push-onto :integer :len)))
+
+
 (def code-list
   (core/build-instruction
     code-list
@@ -85,22 +98,15 @@
     (d/push-onto :code :both)))
 
 
-(def code-rest
+(def code-member?
   (core/build-instruction
-    code-rest
-    :tags #{:complex :base}
-    (d/consume-top-of :code :as :arg)
-    (d/calculate [:arg] #(if (seq? %1) (rest %1) (list)) :as :result)
-    (d/push-onto :code :result)))
-
-
-(def code-first
-  (core/build-instruction
-    code-first
-    :tags #{:complex :base}
-    (d/consume-top-of :code :as :arg)
-    (d/calculate [:arg] #(if (seq? %1) (first %1) %1) :as :item)
-    (d/push-onto :code :item)))
+    code-member?
+    :tags #{:complex :predicate :base}
+    (d/consume-top-of :code :as :arg1)
+    (d/consume-top-of :code :as :arg2)
+    (d/calculate [:arg1] #(if (seq? %1) %1 (list %1)) :as :list1)
+    (d/calculate [:list1 :arg2] #(not (not-any? #{%2} %1)) :as :present)
+    (d/push-onto :boolean :present)))
 
 
 (def code-noop
@@ -126,6 +132,15 @@
     (d/push-onto :code :arg1)))
 
 
+(def code-rest
+  (core/build-instruction
+    code-rest
+    :tags #{:complex :base}
+    (d/consume-top-of :code :as :arg)
+    (d/calculate [:arg] #(if (seq? %1) (rest %1) (list)) :as :result)
+    (d/push-onto :code :result)))
+
+
 (def classic-code-type
   ( ->  (t/make-type  :code
                       :recognizer push-code?
@@ -137,7 +152,9 @@
         (t/attach-instruction , code-atom?)
         (t/attach-instruction , code-cons)
         (t/attach-instruction , code-first)
+        (t/attach-instruction , code-length)
         (t/attach-instruction , code-list)
+        (t/attach-instruction , code-member?)
         (t/attach-instruction , code-noop)
         (t/attach-instruction , code-null?)
         (t/attach-instruction , code-quote)

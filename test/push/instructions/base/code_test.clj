@@ -118,6 +118,21 @@
 
 
 (tabular
+  (fact ":code-length pushes the count of the top :code item (1 if a literal) onto :integer"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-code-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items            ?instruction      ?get-stack     ?expected
+    ;; pick a number
+    :code    '((1 2 3) (8 9))     :code-length        :integer        '(3)
+    :code    '((2))               :code-length        :integer        '(1)
+    :code    '(() 3)              :code-length        :integer        '(0)
+    :code    '(2)                 :code-length        :integer        '(1)
+    :code    '((2 (3)))           :code-length        :integer        '(2)
+    :code    '()                  :code-length        :integer        '())
+
+
+(tabular
   (fact ":code-list puts the top 2 :code items into a list on the :code stack"
     (register-type-and-check-instruction
         ?set-stack ?items classic-code-type ?instruction ?get-stack) => ?expected)
@@ -130,6 +145,22 @@
     :code    '(2 ())                :code-list        :code        '((() 2))
     :code    '(() ())               :code-list        :code        '((() ()))
     :code    '(2)                   :code-list        :code        '(2))
+
+
+(tabular
+  (fact ":code-member? pushes true if the second item is found in the root of the first"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-code-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items            ?instruction      ?get-stack     ?expected
+    ;; 
+    :code    '((1 2) 2)           :code-member?        :boolean        '(true)
+    :code    '((2 3) 4)           :code-member?        :boolean        '(false)
+    :code    '(() 3)              :code-member?        :boolean        '(false)
+    :code    '(((3) 3) (3))       :code-member?        :boolean        '(true)
+    :code    '(3 (3 4))           :code-member?        :boolean        '(false)
+    :code    '(() ())             :code-member?        :boolean        '(false)
+    :code    '()                  :code-member?        :boolean        '())
 
 
 (tabular
