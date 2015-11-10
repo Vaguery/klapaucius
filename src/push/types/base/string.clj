@@ -17,7 +17,6 @@
 ; string_fromchar
 ; string_fromfloat
 ; string_frominteger
-; string_nth
 ; string_parse_to_chars
 ; string_readchar
 ; string_readline
@@ -82,6 +81,17 @@
     (d/push-onto :integer :len)))
 
 
+(def string-nth
+  (core/build-instruction
+    string-nth
+    :tags #{:string :base}
+    (d/consume-top-of :string :as :s)
+    (d/consume-top-of :integer :as :where)
+    (d/calculate [:s :where] #(mod %2 (count %1)) :as :idx)
+    (d/calculate [:s :idx] #(nth %1 %2) :as :result)
+    (d/push-onto :char :result)))
+
+
 (def string-occurrencesofchar
   (core/build-instruction
     string-occurrencesofchar
@@ -110,6 +120,7 @@
         (t/attach-instruction , string-indexofchar)
         (t/attach-instruction , string-last)
         (t/attach-instruction , string-length)
+        (t/attach-instruction , string-nth)
         (t/attach-instruction , string-occurrencesofchar)
         (t/attach-instruction , string-reverse)
         ))

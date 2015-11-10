@@ -202,6 +202,51 @@
 
 
 (tabular
+  (fact ":string-nth returns the indexed character (modulo length)"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks classic-string-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction       ?expected
+
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:integer '(0)
+     :string  '("ere he was able")}           
+                                :string-nth       
+                                                  {:char '(\e)
+                                                   :string '()
+                                                   :integer '()} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:integer '(-2)
+     :string '("ere he was able")}           
+                                :string-nth       
+                                                  {:char '(\l)
+                                                   :string '()
+                                                   :integer '()} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:integer '(16)
+     :string '("ere he was able")}           
+                                :string-nth       
+                                                  {:char '(\r)
+                                                   :string '()
+                                                   :integer '()} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;; missing arguments
+    {:integer '()
+     :string '("ere he was able")}           
+                                :string-nth       
+                                                  {:char '()
+                                                   :string '("ere he was able")
+                                                   :integer '()} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:integer '(0)
+     :string '()}           
+                                :string-nth       
+                                                  {:char '()
+                                                   :string '()
+                                                   :integer '(0)})
+
+
+(tabular
   (fact ":string-occurrencesofchar counts :char in :string (as :int)"
     (check-instruction-with-all-kinds-of-stack-stuff
         ?new-stacks classic-string-type ?instruction) => (contains ?expected))
