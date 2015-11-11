@@ -20,7 +20,6 @@
 ; string_parse_to_chars
 ; string_setchar
 ; string_substring
-; string_take
 
 
 
@@ -172,6 +171,17 @@
                           #(boolean (re-matches #"\s+" %1))))
 
 
+(def string-take
+  (core/build-instruction
+    string-take
+    :tags #{:string :base}
+    (d/consume-top-of :string :as :s1)
+    (d/consume-top-of :integer :as :where)
+    (d/calculate [:s1 :where] #(if (empty? %1) 0 (mod %2 (count %1))) :as :idx)
+    (d/calculate [:s1 :idx] #(strings/join (take %2 %1)) :as :leftovers)
+    (d/push-onto :string :leftovers)))
+
+
 (def classic-string-type
   ( ->  (t/make-type  :string
                       :recognizer string?
@@ -199,5 +209,6 @@
         (t/attach-instruction , string-solid?)
         (t/attach-instruction , string-splitonspaces)
         (t/attach-instruction , string-spacey?)
+        (t/attach-instruction , string-take)
         ))
 

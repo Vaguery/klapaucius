@@ -20,7 +20,6 @@
 ; string_conjchar
 ; string_setchar
 ; string_nth
-; string_take
 ; string_substring
 ; string_split
 ; string_contains
@@ -528,6 +527,51 @@
     :string    '("")            :string-splitonspaces  :string     '("")
     ;; missing args
     :string    '()              :string-splitonspaces  :string     '())
+
+
+(tabular
+  (fact ":string-take returns first (mod idx (count string)) characters"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks classic-string-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction       ?expected
+
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:integer   '(8)
+     :string '("ere he was able")}           
+                                :string-take       
+                                                  {:string '("ere he w")
+                                                   :integer '()} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:integer   '(-3)
+     :string '("ere he was able")}           
+                                :string-take       
+                                                  {:string '("ere he was a")
+                                                   :integer '()} 
+    ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:integer   '(99)
+     :string '("ere he was able")}           
+                                :string-take       
+                                                  {:string '("ere he wa")
+                                                   :integer '()} 
+    ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:integer   '(99)
+     :string '("")}           
+                                :string-take       
+                                                  {:string '("")
+                                                   :integer '()} 
+    ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:integer   '()
+     :string '("ere he was able")}           
+                                :string-take       
+                                                  {:string '("ere he was able")
+                                                   :integer '()} 
+    ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:integer   '(99)
+     :string '()}           
+                                :string-take       
+                                                  {:string '()
+                                                   :integer '(99)})
 
 
 ; ;; visible
