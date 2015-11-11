@@ -5,15 +5,6 @@
   )
 
 
-;; exec-specific
-
-; exec_fromzipnode
-; exec_fromziproot
-; exec_fromzipchildren
-; exec_fromziplefts
-; exec_fromziprights
-
-
 (def exec-do*count
   (core/build-instruction
     exec-do*count

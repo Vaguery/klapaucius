@@ -21,14 +21,11 @@
 ; code_position
 ; code_subst
 
+
 ; code_fromboolean
 ; code_fromfloat
 ; code_frominteger
-; code_fromzipchildren
-; code_fromziplefts
-; code_fromzipnode
-; code_fromziprights
-; code_fromziproot
+
 
 
 (def code-append
