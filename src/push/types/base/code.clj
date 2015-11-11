@@ -13,7 +13,6 @@
 ; code_container
 ; code_contains
 ; code_discrepancy
-; code_do*count
 ; code_extract
 ; code_insert
 ; code_map
@@ -72,6 +71,21 @@
     (d/push-onto :exec :do-this)))
 
 
+(def code-do*count
+  (core/build-instruction
+    code-do*count
+    :tags #{:complex :base}
+    (d/consume-top-of :code :as :do-this)
+    (d/consume-top-of :integer :as :counter)
+    (d/calculate [:counter] #(pos? %1) :as :go?)
+    (d/calculate
+      [:do-this :counter :go?] 
+      #(if %3 
+        (list %2 0 :code-quote %1 :code-do*range) 
+        (list %2 :code-quote %1)) :as :continuation)
+    (d/push-onto :exec :continuation)))
+
+
 (def code-do*range
   (core/build-instruction
     code-do*range
@@ -84,8 +98,8 @@
     (d/calculate
       [:do-this :start :end :next :done?] 
       #(if %5
-           %1
-           (list %1 (list %4 %3 :code-quote %1 :code-do*range))) :as :continuation)
+           (list %3 %1)
+           (list %2 %1 (list %4 %3 :code-quote %1 :code-do*range))) :as :continuation)
     (d/push-onto :exec :continuation)))
 
 
@@ -191,6 +205,7 @@
         (t/attach-instruction , code-cons)
         (t/attach-instruction , code-do)
         (t/attach-instruction , code-do*)
+        (t/attach-instruction , code-do*count)
         (t/attach-instruction , code-do*range)
         (t/attach-instruction , code-do*times)
         (t/attach-instruction , code-first)

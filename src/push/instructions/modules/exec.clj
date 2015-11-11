@@ -7,7 +7,6 @@
 
 ;; exec-specific
 
-; exec_do*while  ;; ???
 ; exec_fromzipnode
 ; exec_fromziproot
 ; exec_fromzipchildren
@@ -112,6 +111,15 @@
     (d/push-onto :exec :continuation)))
 
 
+(def exec-do*while
+  (core/build-instruction
+    exec-do*while
+    :tags #{:complex :base}
+    (d/consume-top-of :exec :as :do-this)
+    (d/calculate [:do-this] #(list %1 :exec-while %1) :as :continuation)
+    (d/push-onto :exec :continuation)))
+
+
 (def exec-while
   (core/build-instruction
     exec-while
@@ -145,6 +153,7 @@
         (t/attach-instruction , exec-noop)
         (t/attach-instruction , exec-s)
         (t/attach-instruction , exec-if)
+        (t/attach-instruction , exec-do*while)
         (t/attach-instruction , exec-when)
         (t/attach-instruction , exec-while)
         (t/attach-instruction , exec-y)

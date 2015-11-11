@@ -166,6 +166,27 @@
 
 
 (tabular
+  (fact ":exec-do*while does complicated things involving continuations (see tests)"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks classic-exec-module ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction             ?expected
+
+    {:exec     '(:foo :bar)
+     :boolean  '(true)}         :exec-do*while    {:exec '((:foo :exec-while :foo) :bar)
+                                                :boolean '(true)} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec     '(:foo :bar)
+     :boolean  '(false)}        :exec-do*while    {:exec '((:foo :exec-while :foo) :bar)
+                                                :boolean '(false)} 
+    ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ; ; ; ;; missing arguments
+    {:exec     '()
+     :boolean  '(true)}         :exec-do*while    {:exec '()
+                                                :boolean '(true)})
+
+
+(tabular
   (fact ":exec-when does complicated things involving continuations (see tests)"
     (check-instruction-with-all-kinds-of-stack-stuff
         ?new-stacks classic-exec-module ?instruction) => (contains ?expected))

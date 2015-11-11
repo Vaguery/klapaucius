@@ -87,6 +87,41 @@
 
 
 (tabular
+  (fact ":code-do*count does complicated things involving continuations (see tests)"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks classic-code-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction             ?expected
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code     '(:foo :bar)
+     :integer  '(2 9)}         :code-do*count     {:exec '(
+                                                      (2 0 :code-quote :foo :code-do*range))
+                                                   :integer '(9)
+                                                   :code '(:bar)} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code     '(:foo :bar)
+     :integer  '(-2 -9)}         :code-do*count     {:exec '((-2 :code-quote :foo))
+                                                   :integer '(-9)
+                                                   :code '(:bar)} 
+    ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code     '(:foo :bar)
+     :integer  '(0 -9)}         :code-do*count     {:exec '((0 :code-quote :foo))
+                                                   :integer '(-9)
+                                                   :code '(:bar)} 
+    ; ; ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ; ; ;; missing arguments
+    {:code     '()
+     :integer  '(0 -9)}         :code-do*count     {:exec '()
+                                                   :integer '(0 -9)
+                                                   :code '()} 
+    ; ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code     '(:foo)
+     :integer  '()}             :code-do*count     {:exec '()
+                                                   :integer '()
+                                                   :code '(:foo)})
+
+
+(tabular
   (fact ":code-do*range does complicated things involving continuations (see tests)"
     (check-instruction-with-all-kinds-of-stack-stuff
         ?new-stacks classic-code-type ?instruction) => (contains ?expected))
@@ -94,19 +129,19 @@
     ?new-stacks                ?instruction             ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo :bar)
-     :integer  '(2 9)}         :code-do*range     {:exec '((:foo 
+     :integer  '(2 9)}         :code-do*range     {:exec '((9 :foo 
                                                     (8 2 :code-quote :foo :code-do*range)))
                                                    :integer '()
                                                    :code '(:bar)} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo :bar)
-     :integer  '(-2 -9)}         :code-do*range     {:exec '((:foo 
+     :integer  '(-2 -9)}         :code-do*range     {:exec '((-9 :foo 
                                                     (-8 -2 :code-quote :foo :code-do*range)))
                                                    :integer '()
                                                    :code '(:bar)} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo :bar)
-     :integer  '(2 2)}         :code-do*range     {:exec '(:foo)
+     :integer  '(2 2)}         :code-do*range     {:exec '((2 :foo))
                                                    :integer '()
                                                    :code '(:bar)} 
     ; ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
