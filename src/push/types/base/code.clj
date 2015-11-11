@@ -26,7 +26,6 @@
 ; code_fromzipnode
 ; code_fromziprights
 ; code_fromziproot
-; code_if
 ; code_insert
 ; code_map
 ; code_nth
@@ -62,6 +61,17 @@
 
 
 (def code-first (t/simple-1-in-1-out-instruction :code "first" #(if (seq? %) (first %) %)))
+
+
+(def code-if
+  (core/build-instruction
+    code-if
+    :tags #{:complex :base}
+    (d/consume-top-of :code :as :arg2)
+    (d/consume-top-of :code :as :arg1)
+    (d/consume-top-of :boolean :as :which)
+    (d/calculate [:which :arg1 :arg2] #(if %1 %2 %3) :as :that)
+    (d/push-onto :exec :that)))
 
 
 (def code-length
@@ -123,6 +133,7 @@
         (t/attach-instruction , code-atom?)
         (t/attach-instruction , code-cons)
         (t/attach-instruction , code-first)
+        (t/attach-instruction , code-if)
         (t/attach-instruction , code-length)
         (t/attach-instruction , code-list)
         (t/attach-instruction , code-member?)

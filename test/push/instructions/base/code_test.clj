@@ -9,52 +9,6 @@
 ;; these are tests of an Interpreter with the classic-code-type registered
 ;; the instructions under test are those stored IN THAT TYPE
 
-;; work in progress
-;; these instructions from Clojush are yet to be implemented:
-
-; assemblers and disassemblers
-
-; code_fromboolean
-; code_fromfloat
-; code_frominteger
-; code_quote
-; code_wrap
-; code_fromzipnode
-; code_fromziproot
-; code_fromzipchildren
-; code_fromziplefts
-; code_fromziprights
-
-
-; getters and setters
-
-
-; code_length
-; code_nth
-; code_nthcdr
-; code_size
-; code_extract
-; code_insert
-; code_container
-
-
-; code methods qua methods
-
-
-; code_discrepancy
-; code_overlap
-; code_do
-; code_do*
-; code_do*range
-; code_do*count
-; code_do*times
-; code_map
-; code_if
-; code_member
-; code_subst
-; code_contains
-; code_position
-
 
 (tabular
   (fact ":code-append concats two :code items, wrapping them in lists first if they aren't already"
@@ -272,6 +226,35 @@
     :code    '()                :code-equal?      :boolean        '()
     :code    '()                :code-equal?      :code           '())
 
+
+(tabular
+  (fact ":code-if pushes the second :code item to :exec if true, otherwise the first"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks classic-code-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction             ?expected
+
+    {:code     '(:foo :bar)
+     :boolean  '(true)}         :code-if            {:code '()
+                                                     :boolean '()
+                                                     :exec '(:bar)} 
+    ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code     '(:foo :bar)
+     :boolean  '(false)}         :code-if            {:code '()
+                                                     :boolean '()
+                                                     :exec '(:foo)} 
+    ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ; ; ;; missing arguments
+    {:code     '(:foo)
+     :boolean  '(false)}         :code-if            {:code '(:foo)
+                                                     :boolean '(false)
+                                                     :exec '()} 
+    ; ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code     '(:foo :bar)
+     :boolean  '()}         :code-if                {:code '(:foo :bar)
+                                                     :boolean '()
+                                                     :exec '()} 
+                                                   )
 
 (tabular
   (fact ":code-notequal? returns a :boolean indicating whether :first ≠ :second"
