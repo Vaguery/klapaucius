@@ -1,4 +1,5 @@
-(ns push.util.code-wrangling)
+(ns push.util.code-wrangling
+  )
 
 
 (defn count-points
@@ -16,6 +17,19 @@
       (reduce #(+ %1 (count-points %2)) (inc counter) item)
     :else
       (inc counter)))
+
+
+
+; (defn all-code-points
+;   "Takes a nested collection or flat item and collects every
+;   collections or item in it, recursively."
+;   [item & {:keys [collector] :or {collector []}}]
+;   (cond
+;     (coll? item)
+;       (reduce #(concat %1 (all-code-points %2 :collector collector)) (conj collector item) item)
+;     :else
+;       (conj collector item)))
+
 
 
 (defn contains-anywhere?

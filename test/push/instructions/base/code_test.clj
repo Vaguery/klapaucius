@@ -57,6 +57,36 @@
 
 
 (tabular
+  (fact ":code-do executes the top :code item and :code-pop"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-code-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items            ?instruction      ?get-stack     ?expected
+    ;; do it
+    :code    '((1.1) (8 9))         :code-do        :exec        '(((1.1) :code-pop))
+    :code    '((1.1) (8 9))         :code-do        :code        '((1.1) (8 9))
+    :code    '(2 3)                 :code-do        :exec        '((2 :code-pop))
+    :code    '(2 3)                 :code-do        :code        '(2 3)
+    :code    '(() 3)                :code-do        :exec        '((() :code-pop))
+    :code    '()                    :code-do        :exec        '())
+
+
+(tabular
+  (fact ":code-do executes the top :code item and :code-pop"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-code-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items            ?instruction      ?get-stack     ?expected
+    ;; JUST do it
+    :code    '((1.1) (8 9))         :code-do*        :exec        '((1.1))
+    :code    '((1.1) (8 9))         :code-do*        :code        '((8 9))
+    :code    '(2 3)                 :code-do*        :exec        '(2)
+    :code    '(2 3)                 :code-do*        :code        '(3)
+    :code    '(() 3)                :code-do*        :exec        '(())
+    :code    '()                    :code-do*        :exec        '())
+
+
+(tabular
   (fact ":code-first pushes the first item of the top :code item, if it's a list"
     (register-type-and-check-instruction
         ?set-stack ?items classic-code-type ?instruction ?get-stack) => ?expected)

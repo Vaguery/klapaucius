@@ -13,7 +13,6 @@
 ; code_container
 ; code_contains
 ; code_discrepancy
-; code_do
 ; code_do*
 ; code_do*count
 ; code_do*range
@@ -57,6 +56,22 @@
                     "cons" #(if (seq? %2) 
                                 (conj %2 %1) 
                                 (conj (list %2) %1))))
+
+(def code-do
+  (core/build-instruction
+    code-do
+    :tags #{:complex :base}
+    (d/save-top-of :code :as :do-this)
+    (d/calculate [:do-this] #(list %1 :code-pop) :as :continuation)
+    (d/push-onto :exec :continuation)))
+
+
+(def code-do*
+  (core/build-instruction
+    code-do*
+    :tags #{:complex :base}
+    (d/consume-top-of :code :as :do-this)
+    (d/push-onto :exec :do-this)))
 
 
 (def code-first (t/simple-1-in-1-out-instruction :code "first" #(if (seq? %) (first %) %)))
@@ -143,6 +158,8 @@
         (t/attach-instruction , code-append)
         (t/attach-instruction , code-atom?)
         (t/attach-instruction , code-cons)
+        (t/attach-instruction , code-do)
+        (t/attach-instruction , code-do*)
         (t/attach-instruction , code-first)
         (t/attach-instruction , code-if)
         (t/attach-instruction , code-length)
