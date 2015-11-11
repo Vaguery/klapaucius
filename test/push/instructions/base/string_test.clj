@@ -207,6 +207,13 @@
                                                    :string '()
                                                    :integer '()} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:integer '(16)
+     :string '("")}           
+                                :string-nth       
+                                                  {:char '()
+                                                   :string '()
+                                                   :integer '()} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;; missing arguments
     {:integer '()
      :string '("ere he was able")}           
@@ -474,6 +481,23 @@
     :string    '("\b8" )        :string-reverse  :string     '("8\b")
     ;; missing args
     :string    '()              :string-reverse  :string     '())
+
+
+(tabular
+  (fact ":string-shatter pushes all the letters as individual strings"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items         ?instruction  ?get-stack   ?expected
+    ;; shatter
+    :string    '("foo")         :string-shatter  :string     '("f" "o" "o")
+    :string    '("foo\n\t")     :string-shatter  :string     '("f" "o" "o" "\n" "\t")
+    :string    '("\u2665")      :string-shatter  :string     '("\u2665")
+    :string    '("" "x")        :string-shatter  :string     '("x")
+    ;; missing args
+    :string    '()              :string-shatter  :string     '())
+
+
 
 
 (tabular

@@ -17,7 +17,6 @@
 ; string_fromchar
 ; string_fromfloat
 ; string_frominteger
-; string_parse_to_chars
 ; string_setchar
 ; string_substring
 
@@ -76,8 +75,8 @@
     :tags #{:string :base}
     (d/consume-top-of :string :as :s)
     (d/consume-top-of :integer :as :where)
-    (d/calculate [:s :where] #(mod %2 (count %1)) :as :idx)
-    (d/calculate [:s :idx] #(nth %1 %2) :as :result)
+    (d/calculate [:s :where] #(if (empty? %1) 0 (mod %2 (count %1))) :as :idx)
+    (d/calculate [:s :idx] #(if (empty? %1) nil (nth %1 %2)) :as :result)
     (d/push-onto :char :result)))
 
 
@@ -152,6 +151,17 @@
 (def string-reverse (t/simple-1-in-1-out-instruction :string "reverse" 'strings/reverse))
 
 
+(def string-shatter   ;; string-parse-into-chars
+  (core/build-instruction
+    string-shatter
+    :tags #{:string :base}
+    (d/consume-top-of :string :as :s1)
+    (d/consume-stack :string :as :old)
+    (d/calculate [:s1] #(reverse (map str (seq %1))) :as :letters)
+    (d/calculate [:old :letters] #(into %1 %2) :as :new)
+    (d/replace-stack :string :new)))
+
+
 (def string-solid? (t/simple-1-in-predicate :string "solid?"
                           #(boolean (re-matches #"\S+" %1))))
 
@@ -206,6 +216,7 @@
         (t/attach-instruction , string-replacefirstchar)
         (t/attach-instruction , string-rest)
         (t/attach-instruction , string-reverse)
+        (t/attach-instruction , string-shatter)
         (t/attach-instruction , string-solid?)
         (t/attach-instruction , string-splitonspaces)
         (t/attach-instruction , string-spacey?)
