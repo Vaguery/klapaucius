@@ -40,6 +40,35 @@
                                                    :integer '()} )
 
 
+
+(tabular
+  (fact ":exec-do*times does complicated things involving continuations (see tests)"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks classic-exec-module ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction             ?expected
+
+    {:exec     '(:foo :bar)
+     :integer  '(0)}         :exec-do*times    {:exec '(:foo :bar)
+                                                :integer '()} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec     '(:foo :bar)
+     :integer  '(2)}        :exec-do*times     {:exec '((:foo (1 :exec-do*times :foo)) :bar)
+                                                :integer '()} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec     '(:foo :bar)
+     :integer  '(-10)}        :exec-do*times    {:exec '((:foo (-9 :exec-do*times :foo)) :bar)
+                                                :integer '()} 
+    ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ; ; ;; missing arguments
+    {:exec     '()
+     :integer  '(-2 -10)}      :exec-do*times     {:exec '()
+                                                   :integer '(-2 -10)} 
+    ; ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec     '(:foo)
+     :integer  '()}      :exec-do*times     {:exec '(:foo)
+                                                   :integer '()} )
+
 (tabular
   (fact ":exec-do*range does complicated things involving continuations (see tests)"
     (check-instruction-with-all-kinds-of-stack-stuff
@@ -134,6 +163,56 @@
     :exec    '(1.1 2.2 3.3 4.4)  :exec-s          :exec         '(1.1 3.3 (2.2 3.3) 4.4) 
     :exec    '(1.1 2.2)          :exec-s          :exec         '(1.1 2.2)     
     :exec    '()                 :exec-s          :exec         '())
+
+
+(tabular
+  (fact ":exec-when does complicated things involving continuations (see tests)"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks classic-exec-module ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction             ?expected
+
+    {:exec     '(:foo :bar)
+     :boolean  '(true)}         :exec-when    {:exec '(:foo :bar)
+                                               :boolean '()} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec     '(:foo :bar)
+     :boolean  '(false)}        :exec-when    {:exec '(() :bar)
+                                               :boolean '()} 
+    ; ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ; ; ; ; ;; missing arguments
+    {:exec     '()
+     :boolean  '(true)}         :exec-when    {:exec '()
+                                               :boolean '(true)} 
+    ; ; ; ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec     '(:foo :bar)
+     :boolean  '()}             :exec-when    {:exec '(:foo :bar)
+                                               :boolean '()})
+
+
+(tabular
+  (fact ":exec-while does complicated things involving continuations (see tests)"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks classic-exec-module ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction             ?expected
+
+    {:exec     '(:foo :bar)
+     :boolean  '(true)}         :exec-while    {:exec '((:foo :exec-while :foo) :bar)
+                                                :boolean '()} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec     '(:foo :bar)
+     :boolean  '(false)}        :exec-while    {:exec '(() :bar)
+                                                :boolean '()} 
+    ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ; ; ; ;; missing arguments
+    {:exec     '()
+     :boolean  '(true)}         :exec-while    {:exec '()
+                                                :boolean '(true)} 
+    ; ; ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec     '(:foo :bar)
+     :boolean  '()}             :exec-while    {:exec '(:foo :bar)
+                                                :boolean '()})
 
 
 (tabular
