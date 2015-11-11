@@ -56,6 +56,25 @@
     :code    '(2)                   :code-cons        :code        '(2))
 
 
+
+(tabular
+  (fact ":code-contains? returns true if the second item contains (or is) the first anywhere"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-code-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items            ?instruction      ?get-stack     ?expected
+    ;; stick 'em together
+    :code    '(8 (8 9))          :code-contains?        :boolean        '(true)
+    :code    '(2 2)              :code-contains?        :boolean        '(true)
+    :code    '(2 3)              :code-contains?        :boolean        '(false)
+    :code    '(() (()))          :code-contains?        :boolean        '(true)
+    :code    '(2 ((1 2) (3 4)))  :code-contains?        :boolean        '(true)
+    :code    '((1 (2)) (1 (2) 3))
+                                 :code-contains?        :boolean        '(false)
+    :code    '(2)                :code-contains?        :boolean        '())
+
+
+
 (tabular
   (fact ":code-do executes the top :code item and :code-pop"
     (register-type-and-check-instruction

@@ -11,7 +11,6 @@
 ;; code-specific
 
 ; code_container
-; code_contains
 ; code_discrepancy
 ; code_extract
 ; code_insert
@@ -53,6 +52,16 @@
                     "cons" #(if (seq? %2) 
                                 (conj %2 %1) 
                                 (conj (list %2) %1))))
+
+(def code-contains?
+  (core/build-instruction
+    code-contains?
+    :tags #{:complex :base}
+    (d/consume-top-of :code :as :arg2)
+    (d/consume-top-of :code :as :arg1)
+    (d/calculate [:arg1 :arg2] #(u/contains-anywhere? %1 %2) :as :found)
+    (d/push-onto :boolean :found)))
+
 
 (def code-do
   (core/build-instruction
@@ -203,6 +212,7 @@
         (t/attach-instruction , code-append)
         (t/attach-instruction , code-atom?)
         (t/attach-instruction , code-cons)
+        (t/attach-instruction , code-contains?)
         (t/attach-instruction , code-do)
         (t/attach-instruction , code-do*)
         (t/attach-instruction , code-do*count)
