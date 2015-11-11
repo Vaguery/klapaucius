@@ -47,21 +47,6 @@
   (count-points #{1 2 #{3 4 5}}) => 7)
 
 
-;; all-code-points
-
-
-(future-fact "`all-code-points` returns a seq with every item in every list and sub-list (including root)"
-  (all-code-points 88) => [88]
-  (all-code-points '()) => ['()]
-  (all-code-points '(1 2 3)) => ['(1 2 3) 1 2 3]
-  (all-code-points '(1 (2 3))) => [(1 (2 3)) 1 (2 3) 2 3]
-  ; (all-code-points '((1) (2) (3))) => 7
-  ; (all-code-points '()) => 1
-  ; (all-code-points '(())) => 2
-  ; (all-code-points '((((((()))))))) => 7
-  )
-
-
 ;; contains-anywhere?
 
 

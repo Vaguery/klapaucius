@@ -19,19 +19,6 @@
       (inc counter)))
 
 
-
-; (defn all-code-points
-;   "Takes a nested collection or flat item and collects every
-;   collections or item in it, recursively."
-;   [item & {:keys [collector] :or {collector []}}]
-;   (cond
-;     (coll? item)
-;       (reduce #(concat %1 (all-code-points %2 :collector collector)) (conj collector item) item)
-;     :else
-;       (conj collector item)))
-
-
-
 (defn contains-anywhere?
   "Takes an item that is probably a nested collection, and returns true if the
   second argument appears 'in' it: are they equal? does the first contain the 2nd?

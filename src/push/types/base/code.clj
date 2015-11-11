@@ -13,11 +13,17 @@
 ; code_container
 ; code_contains
 ; code_discrepancy
-; code_do*
 ; code_do*count
-; code_do*range
 ; code_do*times
 ; code_extract
+; code_insert
+; code_map
+; code_nth
+; code_nthcdr
+; code_overlap
+; code_position
+; code_subst
+
 ; code_fromboolean
 ; code_fromfloat
 ; code_frominteger
@@ -26,13 +32,6 @@
 ; code_fromzipnode
 ; code_fromziprights
 ; code_fromziproot
-; code_insert
-; code_map
-; code_nth
-; code_nthcdr
-; code_overlap
-; code_position
-; code_subst
 
 
 (def code-append
@@ -72,6 +71,23 @@
     :tags #{:complex :base}
     (d/consume-top-of :code :as :do-this)
     (d/push-onto :exec :do-this)))
+
+
+(def code-do*range
+  (core/build-instruction
+    code-do*range
+    :tags #{:complex :base}
+    (d/consume-top-of :code :as :do-this)
+    (d/consume-top-of :integer :as :end)
+    (d/consume-top-of :integer :as :start)
+    (d/calculate [:start :end] #(= %1 %2) :as :done?)
+    (d/calculate [:start :end] #(+ %1 (compare %2 %1)) :as :next)
+    (d/calculate
+      [:do-this :start :end :next :done?] 
+      #(if %5
+           %1
+           (list %1 (list %4 %3 :code-quote %1 :code-do*range))) :as :continuation)
+    (d/push-onto :exec :continuation)))
 
 
 (def code-first (t/simple-1-in-1-out-instruction :code "first" #(if (seq? %) (first %) %)))
@@ -160,6 +176,7 @@
         (t/attach-instruction , code-cons)
         (t/attach-instruction , code-do)
         (t/attach-instruction , code-do*)
+        (t/attach-instruction , code-do*range)
         (t/attach-instruction , code-first)
         (t/attach-instruction , code-if)
         (t/attach-instruction , code-length)

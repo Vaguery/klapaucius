@@ -72,7 +72,7 @@
 
 
 (tabular
-  (fact ":code-do executes the top :code item and :code-pop"
+  (fact ":code-do* executes the top :code item and :code-pop"
     (register-type-and-check-instruction
         ?set-stack ?items classic-code-type ?instruction ?get-stack) => ?expected)
 
@@ -85,6 +85,42 @@
     :code    '(() 3)                :code-do*        :exec        '(())
     :code    '()                    :code-do*        :exec        '())
 
+
+(tabular
+  (fact ":code-do*range does complicated things involving continuations (see tests)"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks classic-code-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction             ?expected
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code     '(:foo :bar)
+     :integer  '(2 9)}         :code-do*range     {:exec '((:foo 
+                                                    (8 2 :code-quote :foo :code-do*range)))
+                                                   :integer '()
+                                                   :code '(:bar)} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code     '(:foo :bar)
+     :integer  '(-2 -9)}         :code-do*range     {:exec '((:foo 
+                                                    (-8 -2 :code-quote :foo :code-do*range)))
+                                                   :integer '()
+                                                   :code '(:bar)} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code     '(:foo :bar)
+     :integer  '(2 2)}         :code-do*range     {:exec '(:foo)
+                                                   :integer '()
+                                                   :code '(:bar)} 
+    ; ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ; ;; missing arguments
+    {:code     '()
+     :integer  '(-2 -9)}         :code-do*range     {:exec '()
+                                                     :integer '(-2 -9)
+                                                     :code '()} 
+    ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code     '(:foo)
+     :integer  '(-2)}         :code-do*range     {:exec '()
+                                                     :integer '(-2)
+                                                     :code '(:foo)} 
+    )
 
 (tabular
   (fact ":code-first pushes the first item of the top :code item, if it's a list"
