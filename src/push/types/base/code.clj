@@ -2,6 +2,7 @@
   (:require [push.instructions.core :as core])
   (:require [push.types.core :as t])
   (:require [push.instructions.dsl :as d])
+  (:require [push.util.code-wrangling :as u])
   )
 
 (defn push-code? [item] (and (list? item) (= (first item) 'quote)))
@@ -32,9 +33,7 @@
 ; code_nthcdr
 ; code_overlap
 ; code_position
-; code_size
 ; code_subst
-; code_wrap
 
 
 (def code-append
@@ -122,6 +121,18 @@
                          (list))))
 
 
+(def code-size
+  (core/build-instruction
+    code-size
+    :tags #{:complex :base}
+    (d/consume-top-of :code :as :arg1)
+    (d/calculate [:arg1] #(u/count-points %1) :as :size)
+    (d/push-onto :integer :size)))
+
+
+(def code-wrap (t/simple-1-in-1-out-instruction :code "wrap" #(list %1)))
+
+
 (def classic-code-type
   ( ->  (t/make-type  :code
                       :recognizer push-code?
@@ -141,5 +152,7 @@
         (t/attach-instruction , code-null?)
         (t/attach-instruction , code-quote)
         (t/attach-instruction , code-rest)
+        (t/attach-instruction , code-size)
+        (t/attach-instruction , code-wrap)
         ))
 

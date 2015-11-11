@@ -72,6 +72,35 @@
 
 
 (tabular
+  (fact ":code-if pushes the second :code item to :exec if true, otherwise the first"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks classic-code-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction             ?expected
+
+    {:code     '(:foo :bar)
+     :boolean  '(true)}         :code-if            {:code '()
+                                                     :boolean '()
+                                                     :exec '(:bar)} 
+    ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code     '(:foo :bar)
+     :boolean  '(false)}         :code-if            {:code '()
+                                                     :boolean '()
+                                                     :exec '(:foo)} 
+    ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ; ; ;; missing arguments
+    {:code     '(:foo)
+     :boolean  '(false)}         :code-if            {:code '(:foo)
+                                                     :boolean '(false)
+                                                     :exec '()} 
+    ; ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code     '(:foo :bar)
+     :boolean  '()}         :code-if                {:code '(:foo :bar)
+                                                     :boolean '()
+                                                     :exec '()} )
+
+
+(tabular
   (fact ":code-length pushes the count of the top :code item (1 if a literal) onto :integer"
     (register-type-and-check-instruction
         ?set-stack ?items classic-code-type ?instruction ?get-stack) => ?expected)
@@ -181,6 +210,37 @@
     :code    '()                  :code-rest        :code        '())
 
 
+(tabular
+  (fact ":code-size counts the number of points in the top :code item"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-code-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items            ?instruction      ?get-stack     ?expected
+    ;; how many?
+    :code    '((1 2 3) (8 9))     :code-size        :integer        '(4)
+    :code    '((2))               :code-size        :integer        '(2)
+    :code    '(() 3)              :code-size        :integer        '(1)
+    :code    '(2)                 :code-size        :integer        '(1)
+    :code    '((1 (2 (3))))       :code-size        :integer        '(6)
+    :code    '([1 2 3])           :code-size        :integer        '(4)
+    :code    '(#{1 2 3})          :code-size        :integer        '(4)
+    :code    '({1 2 3 4})         :code-size        :integer        '(7)
+    :code    '()                  :code-size        :integer        '())
+
+
+(tabular
+  (fact ":code-wrap returns a :the top :code item in an extra list layer"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-code-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items         ?instruction      ?get-stack     ?expected
+    ;; wrap
+    :code    '(1)               :code-wrap      :code        '((1))
+    :code    '((3 4))           :code-wrap      :code        '(((3 4)))
+    :code    '(())              :code-wrap      :code        '((()))
+    ;; missing args     
+    :code    '()                :code-wrap      :code          '())
+
 ;; visible
 
 
@@ -228,35 +288,6 @@
 
 
 (tabular
-  (fact ":code-if pushes the second :code item to :exec if true, otherwise the first"
-    (check-instruction-with-all-kinds-of-stack-stuff
-        ?new-stacks classic-code-type ?instruction) => (contains ?expected))
-
-    ?new-stacks                ?instruction             ?expected
-
-    {:code     '(:foo :bar)
-     :boolean  '(true)}         :code-if            {:code '()
-                                                     :boolean '()
-                                                     :exec '(:bar)} 
-    ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:code     '(:foo :bar)
-     :boolean  '(false)}         :code-if            {:code '()
-                                                     :boolean '()
-                                                     :exec '(:foo)} 
-    ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ; ; ;; missing arguments
-    {:code     '(:foo)
-     :boolean  '(false)}         :code-if            {:code '(:foo)
-                                                     :boolean '(false)
-                                                     :exec '()} 
-    ; ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:code     '(:foo :bar)
-     :boolean  '()}         :code-if                {:code '(:foo :bar)
-                                                     :boolean '()
-                                                     :exec '()} 
-                                                   )
-
-(tabular
   (fact ":code-notequal? returns a :boolean indicating whether :first ≠ :second"
     (register-type-and-check-instruction
         ?set-stack ?items classic-code-type ?instruction ?get-stack) => ?expected)
@@ -271,5 +302,6 @@
     :code    '((88))           :code-notequal?      :code         '((88))
     :code    '()               :code-notequal?      :boolean      '()
     :code    '()               :code-notequal?      :code         '())
+
 
 ; ;; movable
