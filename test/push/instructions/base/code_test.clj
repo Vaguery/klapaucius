@@ -119,8 +119,45 @@
     {:code     '(:foo)
      :integer  '(-2)}         :code-do*range     {:exec '()
                                                      :integer '(-2)
-                                                     :code '(:foo)} 
-    )
+                                                     :code '(:foo)})
+
+
+
+(tabular
+  (fact ":code-do*times does complicated things involving continuations (see tests)"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks classic-code-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction             ?expected
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code     '(:foo :bar)
+     :integer  '(2 9)}         :code-do*times     {:exec '((:foo 
+                                                     (1 :code-quote :foo :code-do*times)))
+                                                   :integer '(9)
+                                                   :code '(:bar)} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code     '(:foo :bar)
+     :integer  '(-2 -9)}       :code-do*times     {:exec '((:foo 
+                                                    (-1 :code-quote :foo :code-do*times)))
+                                                   :integer '(-9)
+                                                   :code '(:bar)} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code     '(:foo :bar)
+     :integer  '(0 2)}          :code-do*times     {:exec '(:foo)
+                                                   :integer '(2)
+                                                   :code '(:bar)} 
+    ; ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ; ;; missing arguments
+    {:code     '()
+     :integer  '(-2 -9)}        :code-do*times      {:exec '()
+                                                     :integer '(-2 -9)
+                                                     :code '()} 
+    ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code     '(:foo)
+     :integer  '()}           :code-do*times        {:exec '()
+                                                     :integer '()
+                                                     :code '(:foo)})
+
 
 (tabular
   (fact ":code-first pushes the first item of the top :code item, if it's a list"
