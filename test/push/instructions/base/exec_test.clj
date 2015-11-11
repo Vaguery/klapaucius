@@ -10,29 +10,67 @@
 ;; these are tests of an Interpreter with the classic-exec-module registered
 ;; the instructions under test are those stored IN THAT TYPE
 
-;; work in progress
-;; these instructions from Clojush are yet to be implemented:
 
-; assemblers and disassemblers
+(tabular
+  (fact ":exec-do*count does complicated things involving continuations (see tests)"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks classic-exec-module ?instruction) => (contains ?expected))
 
-; exec_fromzipnode
-; exec_fromziproot
-; exec_fromzipchildren
-; exec_fromziplefts
-; exec_fromziprights
+    ?new-stacks                ?instruction             ?expected
+
+    {:exec     '(:foo :bar)
+     :integer  '(0)}         :exec-do*count    {:exec '(:foo :bar)
+                                                :integer '(0)} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec     '(:foo :bar)
+     :integer  '(2)}        :exec-do*count     {:exec '((:foo (1 :exec-do*count :foo)) :bar)
+                                                :integer '(1)} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec     '(:foo :bar)
+     :integer  '(-10)}        :exec-do*count    {:exec '((:foo (-9 :exec-do*count :foo)) :bar)
+                                                :integer '(-9)} 
+    ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ; ; ;; missing arguments
+    {:exec     '()
+     :integer  '(-2 -10)}      :exec-do*count     {:exec '()
+                                                   :integer '(-2 -10)} 
+    ; ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec     '(:foo)
+     :integer  '()}      :exec-do*count     {:exec '(:foo)
+                                                   :integer '()} )
 
 
-; exec methods qua methods
+(tabular
+  (fact ":exec-do*range does complicated things involving continuations (see tests)"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks classic-exec-module ?instruction) => (contains ?expected))
 
+    ?new-stacks                ?instruction             ?expected
 
-; exec_do*range
-; exec_do*count
-; exec_do*times
-; exec_while
-; exec_do*while
-; exec_when
-
-
+    {:exec     '(:foo :bar)
+     :integer  '(2 2)}         :exec-do*range     {:exec '(:foo :bar)
+                                                     :integer '(2)} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec     '(:foo :bar)
+     :integer  '(2 10)}        :exec-do*range     {:exec '((:foo (9 2 :exec-do*range :foo)) :bar)
+                                                     :integer '(9)} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec     '(:foo :bar)
+     :integer  '(10 10)}        :exec-do*range     {:exec '(:foo :bar)
+                                                     :integer '(10)} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec     '(:foo :bar)
+     :integer  '(-2 -10)}      :exec-do*range     {:exec '((:foo (-9 -2 :exec-do*range :foo)) :bar)
+                                                     :integer '(-9)} 
+    ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ; ;; missing arguments
+    {:exec     '()
+     :integer  '(-2 -10)}      :exec-do*range     {:exec '()
+                                                   :integer '(-2 -10)} 
+    ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec     '(:foo)
+     :integer  '(-2)}      :exec-do*range     {:exec '(:foo)
+                                                   :integer '(-2)} )
 
 
 
@@ -44,21 +82,21 @@
     ?new-stacks                ?instruction       ?expected
 
     {:exec '(1 2 3)
-     :bool '(false)}           :exec-if            {:exec '(2 3)
-                                                    :bool '()} 
+     :boolean '(false)}           :exec-if            {:exec '(2 3)
+                                                    :boolean '()} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec '(1 2 3)
-     :bool '(true)}            :exec-if            {:exec '(1 3)
-                                                    :bool '()} 
+     :boolean '(true)}            :exec-if            {:exec '(1 3)
+                                                    :boolean '()} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;; missing arguments
     {:exec '(1)
-     :bool '(true)}            :exec-if            {:exec '(1)
-                                                    :bool '(true)} 
+     :boolean '(true)}            :exec-if            {:exec '(1)
+                                                    :boolean '(true)} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec '(1 2 3)
-     :bool '()}                :exec-if            {:exec '(1 2 3)
-                                                    :bool '()})
+     :boolean '()}                :exec-if            {:exec '(1 2 3)
+                                                    :boolean '()})
 
 
 (tabular

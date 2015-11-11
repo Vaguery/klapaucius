@@ -9,27 +9,6 @@
 ;; these are tests of an Interpreter with the classic-float-type registered
 ;; the instructions under test are those stored IN THAT TYPE
 
-;; work in progress
-;; these instructions from Clojush are yet to be implemented:
-
-; assemblers and disassemblers
-
-; float_fromboolean
-; float_frominteger
-; float_fromstring
-; float_fromchar
-
-; getters and setters
-
-
-; float methods qua methods
-
-
-; float_mod
-; float_cos
-; float_tan
-; float_dec
-
 
 (tabular
   (fact ":float-add returns the sum, auto-promoting overflows"

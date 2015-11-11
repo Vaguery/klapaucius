@@ -7,8 +7,6 @@
 
 ;; exec-specific
 
-; exec_do*range
-; exec_do*count
 ; exec_do*times
 ; exec_while
 ; exec_do*while
@@ -20,6 +18,42 @@
 ; exec_fromziprights
 
 
+(def exec-do*count
+  (core/build-instruction
+    exec-do*count
+    :tags #{:complex :base}
+    (d/consume-top-of :exec :as :do-this)
+    (d/consume-top-of :integer :as :counter)
+    (d/calculate [:counter] #(zero? %1) :as :done?)
+    (d/calculate [:counter] #(+ %1 (compare 0 %1)) :as :next)
+    (d/push-onto :integer :next)
+    (d/calculate
+      [:do-this :counter :next :done?] 
+      #(if %4
+           %1
+           (list %1 (list %3 :exec-do*count %1))) :as :continuation)
+    (d/push-onto :exec :continuation)))
+
+
+(def exec-do*range
+  (core/build-instruction
+    exec-do*range
+    :tags #{:complex :base}
+    (d/consume-top-of :exec :as :do-this)
+    (d/consume-top-of :integer :as :end)
+    (d/consume-top-of :integer :as :start)
+    (d/calculate [:start :end] #(= %1 %2) :as :done?)
+    (d/calculate [:start :end] #(+ %1 (compare %2 %1)) :as :next)
+    (d/push-onto :integer :next)
+    (d/calculate
+      [:do-this :start :end :next :done?] 
+      #(if %5
+           %1
+           (list %1 (list %4 %3 :exec-do*range %1))) :as :continuation)
+    (d/push-onto :exec :continuation)))
+
+
+
 (def exec-k 
   (t/simple-2-in-1-out-instruction :exec "k" (fn [a b] b)))
 
@@ -28,7 +62,7 @@
   (core/build-instruction
     exec-if
     :tags #{:complex :base}
-    (d/consume-top-of :bool :as :decider)
+    (d/consume-top-of :boolean :as :decider)
     (d/consume-top-of :exec :as :option1)
     (d/consume-top-of :exec :as :option2)
     (d/calculate [:decider :option1 :option2] #(if %1 %2 %3) :as :result)
@@ -70,6 +104,8 @@
         t/make-visible 
         t/make-equatable
         t/make-movable
+        (t/attach-instruction , exec-do*count)
+        (t/attach-instruction , exec-do*range)
         (t/attach-instruction , exec-k)
         (t/attach-instruction , exec-noop)
         (t/attach-instruction , exec-s)
