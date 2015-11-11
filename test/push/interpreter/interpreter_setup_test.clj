@@ -391,7 +391,7 @@
   (let [benchmarker (make-classic-interpreter)]
     (println (str "[Classic interpreter knows "
                   (count (keys (:instructions benchmarker)))
-                  " different instructions and "
+                  " different instructions and recognizes "
                   (count (:router benchmarker))
                   " types.]"))
     (keys (:instructions benchmarker)) =>  ;; just a sampling as a rough check
