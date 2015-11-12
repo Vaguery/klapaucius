@@ -104,6 +104,19 @@
       '(d/push-onto :boolean :result)))))
 
 
+(defn simple-item-to-code-instruction
+  "returns a standard arity-1 function, which moves the top item from the named stack to the :code stack"
+  [type]
+  (let [stackname (keyword type)
+        instruction-name (str "code-from" (name stackname))]
+    (eval (list
+      'core/build-instruction
+      instruction-name
+      :tags #{:complex :base :conversion}
+      `(d/consume-top-of ~stackname :as :arg)
+      '(d/push-onto :code :arg)))))
+
+
 ;; :visible
 
 

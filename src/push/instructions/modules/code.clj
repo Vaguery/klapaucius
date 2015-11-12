@@ -22,12 +22,6 @@
 ; code_subst
 
 
-; code_fromboolean
-; code_fromfloat
-; code_frominteger
-
-
-
 (def code-append
   (core/build-instruction
     code-append
@@ -135,6 +129,29 @@
 (def code-first (t/simple-1-in-1-out-instruction :code "first" #(if (seq? %) (first %) %)))
 
 
+(def code-fromboolean (t/simple-item-to-code-instruction :boolean))
+
+
+(def code-fromchar (t/simple-item-to-code-instruction :char))
+
+
+(def code-fromfloat (t/simple-item-to-code-instruction :float))
+
+
+(def code-frominteger (t/simple-item-to-code-instruction :integer))
+
+
+(def code-fromstring (t/simple-item-to-code-instruction :string))
+
+
+(def code-frominteger
+  (core/build-instruction
+    code-frominteger
+    :tags #{:complex :base :conversion}
+    (d/consume-top-of :integer :as :arg)
+    (d/push-onto :code :arg)))
+
+
 (def code-if
   (core/build-instruction
     code-if
@@ -223,6 +240,11 @@
         (t/attach-instruction , code-do*range)
         (t/attach-instruction , code-do*times)
         (t/attach-instruction , code-first)
+        (t/attach-instruction , code-fromboolean)
+        (t/attach-instruction , code-fromchar)
+        (t/attach-instruction , code-frominteger)
+        (t/attach-instruction , code-fromstring)
+        (t/attach-instruction , code-fromfloat)
         (t/attach-instruction , code-if)
         (t/attach-instruction , code-length)
         (t/attach-instruction , code-list)

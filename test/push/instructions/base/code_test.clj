@@ -10,6 +10,33 @@
 ;; the instructions under test are those stored IN THAT MODULE
 
 
+;; all the basic conversions
+
+(tabular
+  (fact ":code-fromboolean move the top :boolean item to :code;
+         :code-frominteger
+         :code-fromfloat
+         :code-fromstring
+         :code-fromchar"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-code-module ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items            ?instruction      ?get-stack     ?expected
+    ;; move it!
+    :boolean    '(false)        :code-fromboolean      :code        '(false)
+    :boolean    '()             :code-fromboolean      :code        '()
+    :char       '(\y)           :code-fromchar         :code        '(\y)
+    :char       '()             :code-fromchar         :code        '()
+    :float      '(0.)           :code-fromfloat        :code        '(0.)
+    :float      '()             :code-fromfloat        :code        '()
+    :integer    '(88)           :code-frominteger      :code        '(88)
+    :integer    '()             :code-frominteger      :code        '()
+    :string     '("88")         :code-fromstring       :code        '("88")    
+    :string     '()             :code-fromstring       :code        '()
+    )
+
+
+
 (tabular
   (fact ":code-append concats two :code items, wrapping them in lists first if they aren't already"
     (register-type-and-check-instruction
