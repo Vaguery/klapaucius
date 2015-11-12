@@ -12,10 +12,6 @@
 ;; work in progress
 ;; these instructions from Clojush are yet to be implemented:
 
-; string_frominteger
-; string_fromfloat
-; string_fromboolean
-; string_fromchar
 ; string_parse_to_chars
 ; string_conjchar
 ; string_setchar
@@ -26,6 +22,41 @@
 ; string_containschar
 ; string_indexofchar
 ; exec_string_iterate
+
+
+;; all the conversions
+
+(tabular
+  (fact ":string-frominteger, :string-fromboolean, :string-fromcode, :string-fromexec, :string-fromfloat"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items         ?instruction           ?get-stack     ?expected
+    :boolean    '(false)       :string-fromboolean      :string       '("false")
+    :boolean    '(true)        :string-fromboolean      :string       '("true")
+    :boolean    '()            :string-fromboolean      :string       '()
+
+    :integer    '(11)          :string-frominteger      :string       '("11")
+    :integer    '(-11)         :string-frominteger      :string       '("-11")
+    :integer    '()            :string-frominteger      :string       '()
+
+    :float      '(117.0)       :string-fromfloat        :string       '("117.0")
+    :float      '(-0.3)        :string-fromfloat        :string       '("-0.3")
+    :float      '()            :string-fromfloat        :string       '()
+
+    :code     '((88 :code-do)) :string-fromcode         :string       '("(88 :code-do)")
+    :code     '([1 [3 5]])     :string-fromcode         :string       '("[1 [3 5]]")
+    :code     '(''99)          :string-fromcode         :string       '("(quote (quote 99))")
+    :code     '(1/8)           :string-fromcode         :string       '("1/8")
+    :code     '({:a [1 2]})    :string-fromcode         :string       '("{:a [1 2]}")
+    :code     '()              :string-fromcode         :string       '()
+
+    :exec     '((88 :code-do)) :string-fromexec         :string       '("(88 :code-do)")
+    :exec     '([1 [3 5]])     :string-fromexec         :string       '("[1 [3 5]]")
+    :exec     '(''99)          :string-fromexec         :string       '("(quote (quote 99))")
+    :exec     '(1/8)           :string-fromexec         :string       '("1/8")
+    :exec     '({:a [1 2]})    :string-fromexec         :string       '("{:a [1 2]}")
+    :exec     '()              :string-fromexec         :string       '())
 
 
 ;; specific string behavior

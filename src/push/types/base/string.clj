@@ -13,12 +13,22 @@
 ; string_conjchar
 ; string_contains
 ; string_containschar
-; string_fromboolean
-; string_fromchar
-; string_fromfloat
-; string_frominteger
 ; string_setchar
 ; string_substring
+
+
+(defn simple-item-to-string-instruction
+  "returns a standard arity-1 function, which moves the string representation of the top item from the named stack to the :string stack"
+  [type]
+  (let [stackname (keyword type)
+        instruction-name (str "string-from" (name stackname))]
+    (eval (list
+      'core/build-instruction
+      instruction-name
+      :tags #{:string :base :conversion}
+      `(d/consume-top-of ~stackname :as :arg)
+      '(d/calculate [:arg] #(pr-str %1) :as :printed)
+      '(d/push-onto :string :printed)))))
 
 
 
@@ -39,6 +49,13 @@
     (d/consume-top-of :string :as :arg1)
     (d/calculate [:arg1] #(first %1) :as :c)
     (d/push-onto :char :c)))
+
+
+(def string-fromboolean (simple-item-to-string-instruction :boolean))
+(def string-fromcode    (simple-item-to-string-instruction :code   ))
+(def string-fromexec    (simple-item-to-string-instruction :exec   ))
+(def string-fromfloat   (simple-item-to-string-instruction :float  ))
+(def string-frominteger (simple-item-to-string-instruction :integer))
 
 
 (def string-indexofchar
@@ -204,6 +221,11 @@
         (t/attach-instruction , string-concat)
         (t/attach-instruction , string-emptystring?)
         (t/attach-instruction , string-first)
+        (t/attach-instruction , string-fromboolean)
+        (t/attach-instruction , string-fromcode)
+        (t/attach-instruction , string-fromexec)
+        (t/attach-instruction , string-frominteger)
+        (t/attach-instruction , string-fromfloat)
         (t/attach-instruction , string-indexofchar)
         (t/attach-instruction , string-last)
         (t/attach-instruction , string-length)

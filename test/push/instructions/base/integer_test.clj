@@ -215,8 +215,7 @@
     :string     '("1.2 8")     :integer-fromstring        :integer       '()
     :string     '("1/17")      :integer-fromstring        :integer       '()
     :string     '("")          :integer-fromstring        :integer       '()
-    :string     '()            :integer-fromstring        :integer       '()
-    )
+    :string     '()            :integer-fromstring        :integer       '())
 
 
 (tabular
