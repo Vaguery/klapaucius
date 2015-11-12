@@ -74,9 +74,24 @@
   (contains-anywhere? monster [8,9]) => false))
 
 
-;; container-in
+;; containers-in
 
 
-(future-fact "`container-in` traverses a collection and returns the collection (if any) containing that item"
-  (container-in '(1 2 3) 3) => '( (1 2 3) )
-  (container-in '(1 2 3) 4) => '())
+(fact "`containers-in` traverses a collection and returns the collection (if any) containing that item"
+  (containers-in '(1 2 3) 6) => ['()]
+  (containers-in '(1 2 3) 2) => ['(1 2 3)]
+  (containers-in '(1 2 3) '(1 2 3)) => ['()]
+
+  (containers-in '(1 (2 3)) 2) => ['(2 3)]
+  (containers-in '(1 (2 3)) 2) => ['(2 3)]
+  (containers-in '(1 (2 3) (2 3 4)) 2) => ['(2 3) '(2 3 4)]
+  (containers-in '(1 (2 3) (2 3 4)) 3) => ['(2 3) '(2 3 4)]
+
+  (containers-in '(1 (2 3) ((2) 3 (4 2))) 2) => ['(2 3) '(2) '(4 2)]
+
+  (containers-in '(1 (2 2) ((2) 3 (4 (3 3)))) '(3 3)) => ['(4 (3 3))]
+  (containers-in '(1 (2 2) ((2) 3 (4 (3 3)))) '(2)) =>  ['((2) 3 (4 (3 3)))]
+  (containers-in '(1 (2 (2)) ((2) 3 (4 (3 3)))) '(2)) =>  ['(2 (2)) '((2) 3 (4 (3 3)))]
+
+  (containers-in '(1 [2 3 4]) [2 3 4]) => ['(1 [2 3 4])]
+  ; (containers-in '(1 [2 3 4]) 2) => [[2 3 4]])

@@ -58,6 +58,28 @@
 
 
 (tabular
+  (fact ":code-container returns the smallest, first container of code/1 in code/2"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-code-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items            ?instruction      ?get-stack     ?expected
+    ;; stick 'em together
+    :code    '(8 (8 9))          :code-container        :code        '((8 9))
+    :code    '(2 2)              :code-container        :code        '(())
+    :code    '(2 (1 (2 (3))))    :code-container        :code        '((2 (3)))
+    :code    '(() (()))          :code-container        :code        '((()))
+    :code    '((3) (0 ((1 2) ((3) 4))))  
+                                 :code-container        :code        '(((3) 4))
+    :code    '((3) (0 ((1 (3)) ((3) 4))))  
+                                 :code-container        :code        '((1 (3)))
+    :code    '((1 (2)) (1 (2) 3))
+                                 :code-container        :code        '(())
+    :code    '(2)                :code-container        :code        '(2)
+    )
+
+
+
+(tabular
   (fact ":code-contains? returns true if the second item contains (or is) the first anywhere"
     (register-type-and-check-instruction
         ?set-stack ?items classic-code-type ?instruction ?get-stack) => ?expected)

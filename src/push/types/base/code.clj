@@ -10,7 +10,6 @@
 
 ;; code-specific
 
-; code_container
 ; code_discrepancy
 ; code_extract
 ; code_insert
@@ -49,6 +48,13 @@
                     "cons" #(if (seq? %2) 
                                 (conj %2 %1) 
                                 (conj (list %2) %1))))
+
+
+
+(def code-container (t/simple-2-in-1-out-instruction
+                      :code 
+                      "container" #(first (u/containers-in %1 %2))))
+
 
 (def code-contains?
   (core/build-instruction
@@ -209,6 +215,7 @@
         (t/attach-instruction , code-append)
         (t/attach-instruction , code-atom?)
         (t/attach-instruction , code-cons)
+        (t/attach-instruction , code-container)
         (t/attach-instruction , code-contains?)
         (t/attach-instruction , code-do)
         (t/attach-instruction , code-do*)

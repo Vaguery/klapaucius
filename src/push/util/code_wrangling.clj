@@ -1,4 +1,5 @@
 (ns push.util.code-wrangling
+  (:require [clojure.zip :as zip])
   )
 
 
@@ -33,3 +34,31 @@
     :else false
     ))
 
+
+(defn find-in-tree [tree target]
+  (loop [loc (zip/seq-zip (seq tree))
+         collector []]
+    (if (zip/end? loc)
+      collector
+      (recur (zip/next loc)                                   ;; next loc
+             (if (= (zip/node loc) target)                    ;; next collector
+                 (conj collector (zip/node (zip/up loc)))
+                 collector)))))
+
+
+(defn containers-in
+  "Takes two items, and searches for a copy of the second item in the first. Returns
+  a vector (filled in depth-first order) of all the _containers_ of that item. 
+  If the target is not found in the tree (or if they are identical) a vector containing
+  an empty list will be returned.
+
+  Does not work with vectors, apparently?"
+  [item target]
+  (cond
+    (not (coll? item)) ['()]
+    (= item target) ['()]
+    (not (contains-anywhere? item target)) ['()]
+    (some #(= target %) item) [item]
+    :else
+      (let [t (zip/seq-zip (seq item))]
+        (find-in-tree t target))))
