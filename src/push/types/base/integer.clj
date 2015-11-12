@@ -67,6 +67,15 @@
     (d/push-onto :integer :logic)))
 
 
+(def int-signfromboolean
+  (core/build-instruction
+    integer-signfromboolean
+    :tags #{:base :conversion}
+    (d/consume-top-of :boolean :as :arg1)
+    (d/calculate [:arg1] #(if %1 1 -1) :as :logic)
+    (d/push-onto :integer :logic)))
+
+
 (def int-fromfloat
   (core/build-instruction
     integer-fromfloat
@@ -105,6 +114,7 @@
         (t/attach-instruction , int-mod)
         (t/attach-instruction , int-multiply)
         (t/attach-instruction , int-sign)
+        (t/attach-instruction , int-signfromboolean)
         (t/attach-instruction , int-subtract)
         ))
 

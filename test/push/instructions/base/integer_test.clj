@@ -156,6 +156,20 @@
     :boolean    '()              :integer-fromboolean      :boolean       '())
 
 
+
+(tabular
+  (fact ":integer-signfromboolean takes a :boolean value, and returns 1 if true, -1 if false"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items          ?instruction      ?get-stack     ?expected
+    :boolean    '(false true)    :integer-signfromboolean      :integer       '(-1)
+    :boolean    '(true false)    :integer-signfromboolean      :integer       '(1)
+    ;; missing args 
+    :boolean    '()              :integer-signfromboolean      :integer       '()
+    :boolean    '()              :integer-signfromboolean      :boolean       '())
+
+
 (tabular
   (fact ":integer-fromfloat takes a :float value, and truncates it to an :integer"
     (register-type-and-check-instruction
