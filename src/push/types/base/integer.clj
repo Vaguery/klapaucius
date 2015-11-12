@@ -94,6 +94,16 @@
     (d/push-onto :integer :int)))
 
 
+(def integer-fromstring
+  (core/build-instruction
+    integer-fromstring
+    :tags #{:conversion :base :numeric}
+    (d/consume-top-of :string :as :arg)
+    (d/calculate [:arg] 
+      #(try (Long/parseLong %1) (catch NumberFormatException _ nil))
+        :as :result)
+    (d/push-onto :integer :result)))
+
 
 
 (def classic-integer-type
@@ -110,6 +120,7 @@
         (t/attach-instruction , int-fromboolean)
         (t/attach-instruction , int-fromchar)
         (t/attach-instruction , int-fromfloat)
+        (t/attach-instruction , integer-fromstring)
         (t/attach-instruction , int-inc)
         (t/attach-instruction , int-mod)
         (t/attach-instruction , int-multiply)

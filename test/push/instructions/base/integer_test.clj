@@ -195,6 +195,28 @@
     :float    '()             :integer-fromfloat      :float         '())
 
 
+(tabular
+  (fact ":integer-fromstring"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items         ?instruction           ?get-stack     ?expected
+
+    :string     '("123")       :integer-fromstring        :integer       '(123)
+    :string     '("-123")      :integer-fromstring        :integer       '(-123)
+    :string     '("  52")      :integer-fromstring        :integer       '()
+    :string     '("52  ")      :integer-fromstring        :integer       '()
+    :string     '("\t\n52")    :integer-fromstring        :integer       '()
+    :string     '("-52e3")     :integer-fromstring        :integer       '()
+    :string     '("2.3e-4")    :integer-fromstring        :integer       '()
+
+    :string     '("foo")       :integer-fromstring        :integer       '()
+    :string     '("1.2.3")     :integer-fromstring        :integer       '()
+    :string     '("1.2 8")     :integer-fromstring        :integer       '()
+    :string     '("1/17")      :integer-fromstring        :integer       '()
+    :string     '("")          :integer-fromstring        :integer       '()
+    :string     '()            :integer-fromstring        :integer       '()
+    )
 
 
 (tabular
