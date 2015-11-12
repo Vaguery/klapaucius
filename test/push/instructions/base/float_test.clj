@@ -30,11 +30,6 @@
                             :float-add   :float     '(5.5E-88))
 
 
-
-(future-fact ":float-add deals with overflows")
-(future-fact ":float-add deals with underflows")
-
-
 (tabular
   (fact ":float-cosine returns the cosine(x)"
     (register-type-and-check-instruction
@@ -126,9 +121,6 @@
       '(1.000000000000000000000000000000000000000000000000000000000000000000000000000031M)
     :float    '(3.1e-88)     :float-inc   :float     '(1.0)) ;; hmm
 
-
-(future-fact ":float-inc deals with overflows")
-(future-fact ":float-inc deals with underflows")
 
 
 (tabular

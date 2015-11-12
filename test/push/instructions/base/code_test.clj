@@ -26,7 +26,7 @@
 
 
 (tabular
-  (future-fact ":code-atom? pushes true to :boolean if the top :code is not a list"
+  (fact ":code-atom? pushes true to :boolean if the top :code is not a list"
     (register-type-and-check-instruction
         ?set-stack ?items classic-code-type ?instruction ?get-stack) => ?expected)
 
@@ -34,9 +34,6 @@
     ;; are you alone?
     :code    '(1.1 '(8 9))         :code-atom?        :boolean        '(true)
     :code    '(() 8)               :code-atom?        :boolean        '(false)
-    
-;;;;; PROBLEM HERE
-    :code    '('() 8)              :code-atom?        :boolean        '(true)
     ;; …except in silence
     :code    '()                   :code-atom?        :boolean        '())
 
@@ -339,17 +336,17 @@
 
 
 (tabular
-  (future-fact ":code-null? pushes true to :boolean if the top :code item is an empty list, false otherwise"
+  (fact ":code-null? pushes true to :boolean if the top :code item is an empty list, false otherwise"
     (register-type-and-check-instruction
         ?set-stack ?items classic-code-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; an echoing sound is heard
-    :code    '(1.1 '(8 9))         :code-null?        :boolean        '(false)
+    :code    '(1.1 (8 9))         :code-null?        :boolean        '(false)
     :code    '(() 8)               :code-null?        :boolean        '(true)
     
 ;;;;; PROBLEM HERE
-    :code    '('() 8)              :code-null?        :boolean        '(true)
+    :code    '(() 8)              :code-null?        :boolean        '(true)
     ;; …except in silence
     :code    '()                   :code-null?        :boolean        '())
 
