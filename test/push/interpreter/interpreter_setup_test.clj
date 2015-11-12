@@ -353,14 +353,14 @@
     (contains push.types.base.float/classic-float-type))
 
 
-(fact "`make-classic-interpreter` has `classic-code-type` registered"
-  (:types (make-classic-interpreter)) =>
-    (contains push.types.base.code/classic-code-type))
+(fact "`make-classic-interpreter` has `classic-code-module` registered"
+  (keys (:instructions (make-classic-interpreter))) =>
+    (contains :code-stackdepth)) ;; there's probably a more appropriate check
 
 
 (fact "`make-classic-interpreter` has `classic-exec-module` registered"
   (keys (:instructions (make-classic-interpreter))) =>
-    (contains :exec-stackdepth))
+    (contains :exec-stackdepth))  ;; there's probably a more appropriate check
 
 
 (fact "`make-classic-interpreter` can have its :stacks set"

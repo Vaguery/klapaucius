@@ -22,7 +22,6 @@
   (count-points []) => 1)
 
 
-
 (fact "`count-points` counts items as 1"
   (count-points '()) => 1
   (count-points nil) => 1

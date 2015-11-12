@@ -2,7 +2,7 @@
   (:require [push.util.stack-manipulation :as u])
   (:require [push.types.base.boolean])
   (:require [push.types.base.char])
-  (:require [push.types.base.code])
+  (:require [push.instructions.modules.code])
   (:require [push.instructions.modules.exec])
   (:require [push.types.base.float])
   (:require [push.types.base.integer])
@@ -175,8 +175,8 @@
   
   - classic-boolean-type
   - classic-char-type
-  - classic-code-type
-  - classic-exec-setup
+  - classic-code-module
+  - classic-exec-module
   - classic-integer-type
   - classic-float-type
   - classic-string-type
@@ -213,11 +213,11 @@
         (register-types [push.types.base.integer/classic-integer-type
                          push.types.base.boolean/classic-boolean-type
                          push.types.base.char/classic-char-type
-                         push.types.base.code/classic-code-type
                          push.types.base.float/classic-float-type
                          push.types.base.string/classic-string-type
                          ])
-        (register-module push.instructions.modules.exec/classic-exec-module)
+        (register-modules [push.instructions.modules.exec/classic-exec-module
+                           push.instructions.modules.code/classic-code-module])
         (register-inputs inputs)
         )))
 
