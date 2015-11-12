@@ -77,7 +77,7 @@
 
 
 (tabular
-  (fact ":char-float drops the top :float down to an integer value in [0..128] and pushes that ASCII character"
+  (fact ":char-fromfloat drops the top :float down to an integer value in [0..128] and pushes that ASCII character"
     (register-type-and-check-instruction
         ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
 

@@ -5,12 +5,6 @@
   )
 
 
-; float_fromboolean
-; float_frominteger
-; float_fromstring
-; float_fromchar
-
-
 (def float-add (t/simple-2-in-1-out-instruction :float "add" '+'))
 
 
@@ -31,6 +25,53 @@
     (d/calculate [:denominator :numerator]
       #(if (zero? %1) %1 (/ %2 %1)) :as :quotient)
     (d/push-these-onto :float [:replacement :quotient])))
+
+
+(def float-fromboolean
+  (core/build-instruction
+    float-fromboolean
+    :tags #{:conversion :base :numeric}
+    (d/consume-top-of :boolean :as :arg)
+    (d/calculate [:arg] #(if %1 1.0 0.0) :as :result)
+    (d/push-onto :float :result)))
+
+
+(def float-fromchar
+  (core/build-instruction
+    float-fromchar
+    :tags #{:conversion :base :numeric}
+    (d/consume-top-of :char :as :arg)
+    (d/calculate [:arg] #(double (int %1)) :as :result)
+    (d/push-onto :float :result)))
+
+
+(def float-frominteger
+  (core/build-instruction
+    float-frominteger
+    :tags #{:conversion :base :numeric}
+    (d/consume-top-of :integer :as :arg)
+    (d/calculate [:arg] #(double %1) :as :result)
+    (d/push-onto :float :result)))
+
+
+(def float-fromstring
+  (core/build-instruction
+    float-fromstring
+    :tags #{:conversion :base :numeric}
+    (d/consume-top-of :string :as :arg)
+    (d/calculate [:arg] 
+      #(try (Double/parseDouble %1) (catch NumberFormatException _ nil))
+        :as :result)
+    (d/push-onto :float :result)))
+
+
+(def float-signfromboolean
+  (core/build-instruction
+    float-signfromboolean
+    :tags #{:conversion :base :numeric}
+    (d/consume-top-of :boolean :as :arg)
+    (d/calculate [:arg] #(if %1 1.0 -1.0) :as :result)
+    (d/push-onto :float :result)))
 
 
 (def float-inc (t/simple-1-in-1-out-instruction :float "inc" 'inc'))
@@ -78,11 +119,16 @@
         (t/attach-instruction , float-cosine)
         (t/attach-instruction , float-dec)
         (t/attach-instruction , float-divide)
+        (t/attach-instruction , float-fromboolean)
+        (t/attach-instruction , float-fromchar)
+        (t/attach-instruction , float-frominteger)
+        (t/attach-instruction , float-fromstring)
         (t/attach-instruction , float-inc)
         (t/attach-instruction , float-mod)
         (t/attach-instruction , float-multiply)
         (t/attach-instruction , float-sine)
         (t/attach-instruction , float-sign)
+        (t/attach-instruction , float-signfromboolean)
         (t/attach-instruction , float-subtract)
         (t/attach-instruction , float-tangent)
         ))

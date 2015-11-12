@@ -10,6 +10,47 @@
 ;; the instructions under test are those stored IN THAT TYPE
 
 
+;; all the conversions
+
+(tabular
+  (fact ":float-frominteger, :float-fromboolean, :float-fromstring, :float-fromchar;
+    also :float-signfromboolean"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-float-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items         ?instruction           ?get-stack     ?expected
+    :boolean    '(false)       :float-fromboolean       :float       '(0.0)
+    :boolean    '(true)        :float-fromboolean       :float       '(1.0)
+    :boolean    '()            :float-fromboolean       :float       '()
+
+    :boolean    '(false)       :float-signfromboolean   :float       '(-1.0)
+    :boolean    '(true)        :float-signfromboolean   :float       '(1.0)
+    :boolean    '()            :float-signfromboolean   :float       '()
+    
+    :integer    '(11)          :float-frominteger       :float       '(11.0)
+    :integer    '(-11)         :float-frominteger       :float       '(-11.0)
+    :integer    '()            :float-frominteger       :float       '()
+
+    :char       '(\u)          :float-fromchar          :float       '(117.0)
+    :char       '(\4)          :float-fromchar          :float       '(52.0)
+    :char       '()            :float-fromchar          :float       '()
+
+    :string     '("1.23")      :float-fromstring        :float       '(1.23)
+    :string     '("  52")      :float-fromstring        :float       '(52.0)
+    :string     '("\t\n52")    :float-fromstring        :float       '(52.0)
+    :string     '("-52e3")     :float-fromstring        :float       '(-52000.0)
+    :string     '("2.3e-4")    :float-fromstring        :float       '(2.3e-4)
+
+    :string     '("foo")       :float-fromstring        :float       '()
+    :string     '("1.2.3")     :float-fromstring        :float       '()
+    :string     '("1.2 8")     :float-fromstring        :float       '()
+    :string     '("1/17")      :float-fromstring        :float       '()
+    :string     '("")          :float-fromstring        :float       '()
+    :string     '()            :float-fromstring        :float       '()
+    )
+
+
+
 (tabular
   (fact ":float-add returns the sum, auto-promoting overflows"
     (register-type-and-check-instruction
