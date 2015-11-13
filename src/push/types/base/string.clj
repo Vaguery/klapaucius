@@ -5,13 +5,7 @@
   (:require [clojure.string :as strings])
   )
 
-
-;; string-specific
-; assemblers and disassemblers
-
-; exec_string_iterate
-; string_contains
-; string_containschar
+; 
 
 
 (defn simple-item-to-string-instruction
@@ -27,6 +21,23 @@
       '(d/calculate [:arg] #(pr-str %1) :as :printed)
       '(d/push-onto :string :printed)))))
 
+;;;;;;;;;;;;
+
+
+(def exec-string-iterate
+  (core/build-instruction
+    exec-string-iterate
+    :tags #{:string :base}
+    (d/consume-top-of :string :as :s)
+    (d/consume-top-of :exec :as :fn)
+    (d/calculate [:s] #(first %1) :as :head)
+    (d/calculate [:s] #(strings/join (rest %1)) :as :tail)
+    (d/calculate [:fn :tail]
+        #(if (empty? %2)
+            %1
+            (list %1 %2 :exec-string-iterate)) :as :continuation)
+    (d/push-onto :char :head)
+    (d/push-onto :exec :continuation)))
 
 
 (def string-concat (t/simple-2-in-1-out-instruction :string "concat" 'str))
@@ -44,6 +55,28 @@
 
 (def string-butlast (t/simple-1-in-1-out-instruction :string "butlast"
                       #(clojure.string/join (butlast %1))))
+
+
+(def string-contains?
+  (core/build-instruction
+    string-contains?
+    :tags #{:string :base}
+    (d/consume-top-of :string :as :host)
+    (d/consume-top-of :string :as :target)
+    (d/calculate [:host :target] #(boolean (re-find (re-pattern %2) %1)) :as :found?)
+    (d/push-onto :boolean :found?)))
+
+
+
+(def string-containschar?
+  (core/build-instruction
+    string-containschar?
+    :tags #{:string :base}
+    (d/consume-top-of :string :as :s)
+    (d/consume-top-of :char :as :c)
+    (d/calculate [:s :c] #(boolean (some #{%2} (vec %1))) :as :found?)
+    (d/push-onto :boolean :found?)))
+
 
 
 (def string-emptystring? (t/simple-1-in-predicate :string "emptystring?" empty?))
@@ -252,9 +285,12 @@
         t/make-equatable
         t/make-comparable
         t/make-movable
+        (t/attach-instruction , exec-string-iterate)
         (t/attach-instruction , string-butlast)
         (t/attach-instruction , string-concat)
         (t/attach-instruction , string-conjchar)
+        (t/attach-instruction , string-contains?)
+        (t/attach-instruction , string-containschar?)
         (t/attach-instruction , string-emptystring?)
         (t/attach-instruction , string-first)
         (t/attach-instruction , string-fromboolean)

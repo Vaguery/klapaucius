@@ -49,6 +49,40 @@
 
 
 (tabular
+  (fact ":exec-string-iterate chops off characters from a string and 'applies' the top :exec item to them"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks classic-string-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction       ?expected
+
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec   '(:integer-add)
+     :string '("ere he was able")}           
+                            :exec-string-iterate       
+                                                  {:char   '(\e)
+                                                   :string '()
+                                                   :exec   '((:integer-add 
+                                                              "re he was able" 
+                                                              :exec-string-iterate))} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec   '(:integer-add)
+     :string '("e")}           
+                            :exec-string-iterate       
+                                                  {:char   '(\e)
+                                                   :string '()
+                                                   :exec   '(:integer-add)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec   '(:integer-add)
+     :string '("")}           
+                            :exec-string-iterate       
+                                                  {:char   '()
+                                                   :string '()
+                                                   :exec   '(:integer-add)})
+
+
+
+
+(tabular
   (fact ":string-butlast removes the last char from a string argument"
     (register-type-and-check-instruction
         ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
@@ -92,6 +126,43 @@
     {:string  '("foo")
      :char    '(\w)}         :string-conjchar      {:string '("foow")
                                                     :char '()}         )
+
+(tabular
+  (fact ":string-containschar? returns the true if the :char is in :string"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks classic-string-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction       ?expected
+
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:char   '(\e)
+     :string '("ere he was able")}           
+                                :string-containschar?       
+                                                  {:char '()
+                                                   :string '()
+                                                   :boolean '(true)} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:char   '(\q)
+     :string '("ere he was able")}           
+                                :string-containschar?       
+                                                  {:char '()
+                                                   :string '()
+                                                   :boolean '(false)} )
+
+
+(tabular
+  (fact ":string-contains? returns true if the second string is in the first"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items            ?instruction  ?get-stack   ?expected
+    :string    '("foo" "bar")       :string-contains?  :boolean     '(false)
+    :string    '("foo" "barfoobar") :string-contains?  :boolean     '(false)
+    :string    '("barfoobar" "foo") :string-contains?  :boolean     '(true)
+    :string    '("foo" "foo")       :string-contains?  :boolean     '(true)
+    :string    '("" "foo")          :string-contains?  :boolean     '(false)
+    :string    '("foo" "")          :string-contains?  :boolean     '(true)
+    :string    '("" "")             :string-contains?  :boolean     '(true))
 
 
 (tabular
@@ -639,11 +710,7 @@
     {:integer  '(4 4)                    
      :string   '("ere he was able")}           
                                 :string-substring       
-                                                  {:string '("")} 
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
- 
-
-                                                    )
+                                                  {:string '("")})
 
 
 (tabular
