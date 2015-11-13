@@ -46,17 +46,18 @@
       (first (-> [~interpreter {}] ~@transactions))))))
 
 
-(defrecord Instruction [token tags needs transaction])
+(defrecord Instruction [token docstring tags needs transaction])
 
 
 (defn make-instruction
   "creates a new Instruction record instance"
   [token & {
-    :keys [tags needs transaction] 
-    :or { tags #{}
+    :keys [docstring tags needs transaction] 
+    :or { docstring "This really should have docs"
+          tags #{}
           needs {}
           transaction identity }}]
-  (->Instruction token tags needs transaction))
+  (->Instruction token docstring tags needs transaction))
 
 
 (defmacro build-instruction
