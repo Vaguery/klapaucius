@@ -5,9 +5,6 @@
   (:use [push.types.base.integer])  ;; sets up classic-integer-type
   )
 
-;; these are tests of an Interpreter with the classic-integer-type registered
-;; the instructions under test are those stored IN THAT TYPE
-
 
 ;; integer-specific instructions
 

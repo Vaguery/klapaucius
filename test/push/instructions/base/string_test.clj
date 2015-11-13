@@ -6,10 +6,6 @@
   )
 
 
-;; these are tests of an Interpreter with the classic-string-type registered
-;; the instructions under test are those stored IN THAT TYPE
-
-
 ;; all the conversions
 
 (tabular

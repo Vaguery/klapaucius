@@ -7,10 +7,6 @@
 
 
 
-;; these are tests of an Interpreter with the classic-exec-module registered
-;; the instructions under test are those stored IN THAT TYPE
-
-
 (tabular
   (fact ":exec-do*count does complicated things involving continuations (see tests)"
     (check-instruction-with-all-kinds-of-stack-stuff

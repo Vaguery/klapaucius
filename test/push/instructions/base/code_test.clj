@@ -6,10 +6,6 @@
   )
 
 
-;; these are tests of an Interpreter with the classic-code-module registered
-;; the instructions under test are those stored IN THAT MODULE
-
-
 ;; all the basic conversions
 
 (tabular

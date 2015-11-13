@@ -6,9 +6,6 @@
   )
 
 
-;; these are tests of an Interpreter with the classic-char-type registered
-;; the instructions under test are those stored IN THAT TYPE
-
 
 ;; specific char behavior
 

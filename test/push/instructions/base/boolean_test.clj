@@ -5,11 +5,6 @@
   (:use [push.types.base.boolean])  ;; sets up classic-boolean-type
   )
 
-
-;; these are tests of an Interpreter with the classic-boolean-type registered
-;; the instructions under test are those stored IN THAT TYPE
-
-
 ;; all the conversions
 
 (tabular

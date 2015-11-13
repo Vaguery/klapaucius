@@ -212,3 +212,10 @@
   (is-done? knows-some-things) => false
   (:done? knows-some-things) => false
   (:done? (step knows-some-things)) => true)
+
+
+;; interrogating an Interpreter instance
+
+(future-fact "calling `produce-gazetteer` prints a list of all registered instructions, all bound inputs, all registered types and modules"
+  (produce-gazetteer (make-classic-interpreter :inputs [1 2 false 6.3 '(:code-do)])) => ""
+  )

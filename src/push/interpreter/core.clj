@@ -412,3 +412,15 @@
             (set-doneness)))
       interpreter)))
 
+
+
+;;;; Gazetteer
+
+(defn produce-gazetteer
+  "Produces a list of all registered instructions (keys only), inputs (and mapped values) and registered types, modules and stacks."
+  [interpreter]
+  {:instructions (sort (keys (:instructions interpreter)))
+   :inputs (:inputs interpreter)
+   :stacks (sort (keys (:stacks interpreter)))
+   :types (sort (map :name (:types interpreter)))}
+  )

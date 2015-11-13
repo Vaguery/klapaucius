@@ -6,10 +6,6 @@
   )
 
 
-;; these are tests of an Interpreter with the classic-float-type registered
-;; the instructions under test are those stored IN THAT TYPE
-
-
 ;; all the conversions
 
 (tabular
