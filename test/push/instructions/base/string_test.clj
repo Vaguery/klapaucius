@@ -9,20 +9,6 @@
 ;; these are tests of an Interpreter with the classic-string-type registered
 ;; the instructions under test are those stored IN THAT TYPE
 
-;; work in progress
-;; these instructions from Clojush are yet to be implemented:
-
-; string_parse_to_chars
-; string_conjchar
-; string_setchar
-; string_nth
-; string_substring
-; string_split
-; string_contains
-; string_containschar
-; string_indexofchar
-; exec_string_iterate
-
 
 ;; all the conversions
 
@@ -94,6 +80,18 @@
                                 :string-concat  :string     '("\n\b8")
     ;; missing args
     :string    '("foo")         :string-concat  :string     '("foo"))
+
+
+(tabular
+  (fact ":string-conjchar attaches the top :char the end of the top :string"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks classic-string-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction             ?expected
+
+    {:string  '("foo")
+     :char    '(\w)}         :string-conjchar      {:string '("foow")
+                                                    :char '()}         )
 
 
 (tabular
@@ -514,6 +512,36 @@
     :string    '()              :string-reverse  :string     '())
 
 
+
+(tabular
+  (fact ":string-setchar changes the char in position :int to :char, modulo :string's length"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks classic-string-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction             ?expected
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:string  '("foo")
+     :integer '(1)
+     :char    '(\O)}          :string-setchar        {:string '("fOo")
+                                                     :char '()}         
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:string  '("foo")
+     :integer '(6)
+     :char    '(\O)}          :string-setchar        {:string '("Ooo")
+                                                     :char '()}         
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:string  '("foo")
+     :integer '(-2)
+     :char    '(\O)}          :string-setchar        {:string '("fOo")
+                                                     :char '()}         
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:string  '("")
+     :integer '(11)
+     :char    '(\O)}          :string-setchar        {:string '("O")
+                                                     :char '()})
+
+
+
 (tabular
   (fact ":string-shatter pushes all the letters as individual strings"
     (register-type-and-check-instruction
@@ -582,6 +610,40 @@
     :string    '("")            :string-splitonspaces  :string     '("")
     ;; missing args
     :string    '()              :string-splitonspaces  :string     '())
+
+
+
+(tabular
+  (fact ":string-substring clips out the substring determined by two :int args (with cropping and sorting)"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks classic-string-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction       ?expected
+
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:integer  '(2 12)
+     :string   '("ere he was able")}           
+                                :string-substring       
+                                                  {:string '("e he was a")} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:integer  '(12 2)
+     :string   '("ere he was able")}           
+                                :string-substring       
+                                                  {:string '("e he was a")} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:integer  '(33 -712)                    ;; these get cropped to 0, count s
+     :string   '("ere he was able")}           
+                                :string-substring       
+                                                  {:string '("ere he was able")} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:integer  '(4 4)                    
+     :string   '("ere he was able")}           
+                                :string-substring       
+                                                  {:string '("")} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ 
+
+                                                    )
 
 
 (tabular

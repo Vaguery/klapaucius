@@ -10,11 +10,8 @@
 ; assemblers and disassemblers
 
 ; exec_string_iterate
-; string_conjchar
 ; string_contains
 ; string_containschar
-; string_setchar
-; string_substring
 
 
 (defn simple-item-to-string-instruction
@@ -33,6 +30,16 @@
 
 
 (def string-concat (t/simple-2-in-1-out-instruction :string "concat" 'str))
+
+
+(def string-conjchar
+  (core/build-instruction
+    string-conjchar
+    :tags #{:string :base}
+    (d/consume-top-of :char :as :c)
+    (d/consume-top-of :string :as :s)
+    (d/calculate [:s :c] #(strings/join (list %1 %2)) :as :longer)
+    (d/push-onto :string :longer)))
 
 
 (def string-butlast (t/simple-1-in-1-out-instruction :string "butlast"
@@ -168,6 +175,19 @@
 (def string-reverse (t/simple-1-in-1-out-instruction :string "reverse" 'strings/reverse))
 
 
+(def string-setchar
+  (core/build-instruction
+    string-setchar
+    :tags #{:string :base}
+    (d/consume-top-of :string :as :s)
+    (d/consume-top-of :char :as :c)
+    (d/consume-top-of :integer :as :where)
+    (d/calculate [:s :where] #(if (empty? %1) 0 (mod %2 (count %1))) :as :idx)
+    (d/calculate [:s :idx :c] #(strings/join (assoc (vec %1) %2 %3)) :as :result)
+    (d/push-onto :string :result)))
+
+
+
 (def string-shatter   ;; string-parse-into-chars
   (core/build-instruction
     string-shatter
@@ -198,6 +218,21 @@
                           #(boolean (re-matches #"\s+" %1))))
 
 
+(def string-substring
+  (core/build-instruction
+    string-substring
+    :tags #{:string :base}
+    (d/consume-top-of :string :as :s)
+    (d/consume-top-of :integer :as :a)
+    (d/consume-top-of :integer :as :b)
+    (d/calculate [:s :a] #(min (count %1) (max 0 %2)) :as :cropped-a)
+    (d/calculate [:s :b] #(min (count %1) (max 0 %2)) :as :cropped-b)
+    (d/calculate [:s :cropped-a :cropped-b]
+        #(subs %1 (min %2 %3) (max %2 %3)) :as :result)
+    (d/push-onto :string :result)))
+
+
+
 (def string-take
   (core/build-instruction
     string-take
@@ -219,6 +254,7 @@
         t/make-movable
         (t/attach-instruction , string-butlast)
         (t/attach-instruction , string-concat)
+        (t/attach-instruction , string-conjchar)
         (t/attach-instruction , string-emptystring?)
         (t/attach-instruction , string-first)
         (t/attach-instruction , string-fromboolean)
@@ -238,10 +274,12 @@
         (t/attach-instruction , string-replacefirstchar)
         (t/attach-instruction , string-rest)
         (t/attach-instruction , string-reverse)
+        (t/attach-instruction , string-setchar)
         (t/attach-instruction , string-shatter)
         (t/attach-instruction , string-solid?)
         (t/attach-instruction , string-splitonspaces)
         (t/attach-instruction , string-spacey?)
+        (t/attach-instruction , string-substring)
         (t/attach-instruction , string-take)
         ))
 
