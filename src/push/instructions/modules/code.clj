@@ -14,7 +14,6 @@
 ; code_discrepancy
 ; code_extract
 ; code_insert
-; code_map
 ; code_nth
 ; code_nthcdr
 ; code_overlap
@@ -175,6 +174,22 @@
 (def code-list (t/simple-2-in-1-out-instruction :code "list" #(list %1 %2)))
 
 
+(def code-map
+  (core/build-instruction
+    code-map
+    :tags #{:complex :predicate :base}
+    (d/consume-top-of :code :as :arg)
+    (d/consume-top-of :exec :as :fn)
+    (d/calculate [:arg] #(if (seq? %1) %1 (list %1)) :as :collection)
+    (d/calculate [:collection :fn] 
+      #(reduce
+        (fn [cont item] (concat cont (list (list :code-quote item %2) :code-cons))) 
+        (list :code-quote '()) 
+        %1)
+      :as :continuation)
+    (d/push-onto :exec :continuation)))
+
+
 (def code-member?
   (core/build-instruction
     code-member?
@@ -248,6 +263,7 @@
         (t/attach-instruction , code-if)
         (t/attach-instruction , code-length)
         (t/attach-instruction , code-list)
+        (t/attach-instruction , code-map)
         (t/attach-instruction , code-member?)
         (t/attach-instruction , code-noop)
         (t/attach-instruction , code-null?)

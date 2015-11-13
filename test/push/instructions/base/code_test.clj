@@ -329,6 +329,28 @@
     :code    '(2)                   :code-list        :code        '(2))
 
 
+
+(tabular
+  (fact ":code-map does complicated things involving continuations (see tests)"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks classic-code-module ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction             ?expected
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code  '((1 2 3) :bar)
+     :exec  '(:code-length)}   :code-map     {:exec '((:code-quote () 
+                                               (:code-quote 1 :code-length) :code-cons
+                                               (:code-quote 2 :code-length) :code-cons
+                                               (:code-quote 3 :code-length) :code-cons))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code  '(1 :bar)
+     :exec  '(:code-length)}   :code-map     {:exec '((:code-quote () 
+                                               (:code-quote 1 :code-length) :code-cons))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code  '(() :bar)
+     :exec  '(99)}             :code-map     {:exec '((:code-quote ()))})
+
+
 (tabular
   (fact ":code-member? pushes true if the second item is found in the root of the first"
     (register-type-and-check-instruction
