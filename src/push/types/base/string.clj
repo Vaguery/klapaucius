@@ -30,10 +30,10 @@
     (d/consume-top-of :exec :as :fn)
     (d/calculate [:s] #(first %1) :as :head)
     (d/calculate [:s] #(strings/join (rest %1)) :as :tail)
-    (d/calculate [:fn :tail]
-        #(if (empty? %2)
-            %1
-            (list %1 %2 :exec-string-iterate %1)) :as :continuation)
+    (d/calculate [:fn :s :tail]
+        #(cond (empty? %2) nil
+               (empty? %3) %1
+               :else (list %1 %3 :exec-string-iterate %1)) :as :continuation)
     (d/push-onto :char :head)
     (d/push-onto :exec :continuation)))
 
