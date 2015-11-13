@@ -30,6 +30,10 @@
     :float      '(-0.3)        :string-fromfloat        :string       '("-0.3")
     :float      '()            :string-fromfloat        :string       '()
 
+    :char       '(\Y)          :string-fromchar         :string       '("Y")
+    :char       '(\u262F)      :string-fromchar         :string       '("☯")
+    :char       '()            :string-fromchar         :string       '()
+
     :code     '((88 :code-do)) :string-fromcode         :string       '("(88 :code-do)")
     :code     '([1 [3 5]])     :string-fromcode         :string       '("[1 [3 5]]")
     :code     '(''99)          :string-fromcode         :string       '("(quote (quote 99))")

@@ -5,8 +5,6 @@
   (:require [clojure.string :as strings])
   )
 
-; 
-
 
 (defn simple-item-to-string-instruction
   "returns a standard arity-1 function, which moves the string representation of the top item from the named stack to the :string stack"
@@ -18,7 +16,7 @@
       instruction-name
       :tags #{:string :base :conversion}
       `(d/consume-top-of ~stackname :as :arg)
-      '(d/calculate [:arg] #(pr-str %1) :as :printed)
+      '(d/calculate [:arg] #(str %1) :as :printed)
       '(d/push-onto :string :printed)))))
 
 ;;;;;;;;;;;;
@@ -92,6 +90,7 @@
 
 
 (def string-fromboolean (simple-item-to-string-instruction :boolean))
+(def string-fromchar    (simple-item-to-string-instruction :char   ))
 (def string-fromcode    (simple-item-to-string-instruction :code   ))
 (def string-fromexec    (simple-item-to-string-instruction :exec   ))
 (def string-fromfloat   (simple-item-to-string-instruction :float  ))
@@ -294,6 +293,7 @@
         (t/attach-instruction , string-emptystring?)
         (t/attach-instruction , string-first)
         (t/attach-instruction , string-fromboolean)
+        (t/attach-instruction , string-fromchar)
         (t/attach-instruction , string-fromcode)
         (t/attach-instruction , string-fromexec)
         (t/attach-instruction , string-frominteger)
