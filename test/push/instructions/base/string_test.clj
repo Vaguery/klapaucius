@@ -66,6 +66,16 @@
                                                               :exec-string-iterate
                                                               :integer-add))} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec   '(:integer-add :foo)
+     :string '("ere he was able")}           
+                            :exec-string-iterate       
+                                                  {:char   '(\e)
+                                                   :string '()
+                                                   :exec   '((:integer-add 
+                                                              "re he was able" 
+                                                              :exec-string-iterate
+                                                              :integer-add) :foo)} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec   '((2 :integer-add (7)))
      :string '("ere he was able")}           
                             :exec-string-iterate       
@@ -88,7 +98,14 @@
                             :exec-string-iterate       
                                                   {:char   '()
                                                    :string '()
-                                                   :exec   '(:integer-add)})
+                                                   :exec   '(:integer-add)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec   '(:integer-add :foo)
+     :string '("")}           
+                            :exec-string-iterate       
+                                                  {:char   '()
+                                                   :string '()
+                                                   :exec   '(:integer-add :foo)})
 
 
 
