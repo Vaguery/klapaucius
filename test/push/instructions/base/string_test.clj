@@ -65,6 +65,16 @@
                                                               "re he was able" 
                                                               :exec-string-iterate
                                                               :integer-add))} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec   '((2 :integer-add (7)))
+     :string '("ere he was able")}           
+                            :exec-string-iterate       
+                                                  {:char   '(\e)
+                                                   :string '()
+                                                   :exec   '(((2 :integer-add (7))
+                                                              "re he was able" 
+                                                              :exec-string-iterate
+                                                              (2 :integer-add (7))))} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec   '(:integer-add)
      :string '("e")}           
