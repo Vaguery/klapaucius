@@ -33,7 +33,7 @@
     (d/calculate [:fn :tail]
         #(if (empty? %2)
             %1
-            (list %1 %2 :exec-string-iterate)) :as :continuation)
+            (list %1 %2 :exec-string-iterate %1)) :as :continuation)
     (d/push-onto :char :head)
     (d/push-onto :exec :continuation)))
 
