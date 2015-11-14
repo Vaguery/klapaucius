@@ -276,7 +276,8 @@
       :tags #{:comparison}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
       `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
-      '(push.instructions.dsl/calculate [:arg1 :arg2] #(min %1 %2) :as :winner)
+      '(push.instructions.dsl/calculate [:arg1 :arg2]
+          #(if (pos? (compare %1 %2)) %2 %1) :as :winner)
       `(push.instructions.dsl/push-onto ~typename :winner)))))
 
 
@@ -291,7 +292,8 @@
       :tags #{:comparison}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
       `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
-      '(push.instructions.dsl/calculate [:arg1 :arg2] #(max %1 %2) :as :winner)
+      '(push.instructions.dsl/calculate [:arg1 :arg2] 
+          #(if (neg? (compare %1 %2)) %2 %1) :as :winner)
       `(push.instructions.dsl/push-onto ~typename :winner)))))
 
 

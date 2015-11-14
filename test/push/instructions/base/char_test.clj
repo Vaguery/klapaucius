@@ -341,4 +341,36 @@
     :char    '()            :char>?      :char           '())
 
 
+(tabular
+  (fact ":char-max returns the 'larger' of the top two :char items"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items    ?instruction  ?get-stack     ?expected
+    ;; note: these use (compare A B), not (< A B)
+    :char    '(\r \s)       :char-max      :char        '(\s)
+    :char    '(\s \r)       :char-max      :char        '(\s)
+    :char    '(\r \r)       :char-max      :char        '(\r)
+    ; ;; missing args    
+    :char    '(\s)          :char-max      :char        '(\s)
+    :char    '()            :char-max      :char        '()
+    )
+
+
+(tabular
+  (fact ":char-min returns the 'smaller' of the top two :char items"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items    ?instruction  ?get-stack     ?expected
+    ;; note: these use (compare A B), not (< A B)
+    :char    '(\r \s)       :char-min      :char        '(\r)
+    :char    '(\s \r)       :char-min      :char        '(\r)
+    :char    '(\r \r)       :char-min      :char        '(\r)
+    ; ;; missing args    
+    :char    '(\s)          :char-min      :char        '(\s)
+    :char    '()            :char-min      :char        '()
+    )
+
+
 ;; movable

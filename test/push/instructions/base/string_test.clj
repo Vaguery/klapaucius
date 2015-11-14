@@ -945,4 +945,35 @@
     :string    '()                  :string>?      :string         '())
 
 
+(tabular
+  (fact ":string-max returns the 'larger' of the top two :string items"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items          ?instruction  ?get-stack     ?expected
+    ;; note: these use (compare A B), not (< A B)
+    :string    '("foo" "bar")   :string-max      :string        '("foo")
+    :string    '("bar" "foo")   :string-max      :string        '("foo")
+    :string    '("foo" "foo")   :string-max      :string        '("foo")
+    ; ;; missing args    
+    :string    '("bar")         :string-max      :string        '("bar")
+    :string    '()              :string-max      :string        '()
+    )
+
+
+(tabular
+  (fact ":string-min returns the 'smaller' of the top two :string items"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items           ?instruction  ?get-stack     ?expected
+    ;; note: these use (compare A B), not (< A B)
+    :string    '("foo" "bar")    :string-min      :string        '("bar")
+    :string    '("bar" "foo")    :string-min      :string        '("bar")
+    :string    '("foo" "foo")    :string-min      :string        '("foo")
+    ; ;; missing args    
+    :string    '("bar")          :string-min      :string        '("bar")
+    :string    '()               :string-min      :string        '()
+    )
+
 ; ;; movable

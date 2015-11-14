@@ -20,3 +20,8 @@
   [interpreter stack]
   (assoc-in interpreter [:stacks stack] (list)))
 
+
+(defn peek-at-stack
+  "Returns the top item on the named stack."
+  [interpreter stack]
+  (peek (get-in interpreter [:stacks stack])))

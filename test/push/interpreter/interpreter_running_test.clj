@@ -359,4 +359,6 @@
   (:counter (run-until-done simple-things)) => (:counter (run simple-things 1000))
 
   (:counter (run-until-done forever-8)) => 0 ; because it's step-limit isn't set explicitly!
+
+  (:counter (run-until-done (assoc-in forever-8 [:config :step-limit] 1300))) => 1300
 )
