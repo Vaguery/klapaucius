@@ -2,6 +2,7 @@
   (:require [push.instructions.core :as core])
   (:require [push.types.core :as t])
   (:require [push.instructions.dsl :as d])
+  (:require [push.util.stack-manipulation :as u])
   )
 
 
@@ -15,7 +16,8 @@
     (d/consume-top-of :string :as :arg)
     (d/consume-stack :char :as :old-stack)
     (d/calculate [:arg :old-stack]
-      #(if (empty? %1) %2 (concat (seq %1) %2)) :as :new-stack)
+      #(if (empty? %1) %2 
+        (u/make-it-a-real-list (concat (seq %1) %2))) :as :new-stack)
     (d/calculate [:new-stack] #(into '() (reverse %1)) :as :kludged)
     (d/replace-stack :char :kludged)))
 

@@ -85,7 +85,9 @@
         (loop [s rando]
           (if (is-done? s)
             (println (:counter s))
-            (recur (do (println (u/peek-at-stack s :log)) (step s)))))
+            (recur (do 
+              ;;(println (u/peek-at-stack s :log)) 
+              (step s)))))
         (catch Exception e (println 
                               (str "caught exception: " 
                                  (.getMessage e)

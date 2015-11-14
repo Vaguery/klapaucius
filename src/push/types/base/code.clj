@@ -3,6 +3,7 @@
   (:require [push.types.core :as t])
   (:require [push.instructions.dsl :as d])
   (:require [push.util.code-wrangling :as u])
+  (:require [push.util.stack-manipulation :as s])
   )
 
 (defn push-code? [item] (and (list? item) (= (first item) 'quote)))
@@ -35,7 +36,7 @@
     (d/consume-top-of :code :as :arg1)
     (d/calculate [:arg1] #(if (coll? %1) %1 (list %1)) :as :list1)
     (d/calculate [:arg2] #(if (coll? %1) %1 (list %1)) :as :list2)
-    (d/calculate [:list1 :list2] #(concat %1 %2) :as :both)
+    (d/calculate [:list1 :list2] #(s/make-it-a-real-list (concat %1 %2)) :as :both)
     (d/push-onto :code :both)))
 
 
