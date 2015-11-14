@@ -141,7 +141,8 @@
       :program [1.1 2.2 :intProductToFloat]
       :counter 22
       :stacks {:integer '(1 2 3)
-               :exec '(:intProductToFloat)})
+               :exec '(:intProductToFloat)}
+      :config {:step-limit 23})
     intProductToFloat))
 
 
@@ -186,23 +187,37 @@
 
 (fact "`is-done?` checks the Interpreter for various halting states"
   (is-done? (basic-interpreter)) => true
-  (is-done? knows-some-things) => false)
+  (is-done? knows-some-things) => false) ;; counter 22, limit 23
 
+
+(fact "`is-done?` checks the [:config :step-limit] against the :counter"
+  (is-done? (basic-interpreter)) => true
+  (is-done? (basic-interpreter :stacks {:exec '()}  :config {:step-limit 99})) => true
+  (is-done? (basic-interpreter :stacks {:exec '(2)} :config {:step-limit 99})) => false
+  )
+
+
+;; logging
+
+(fact "calling `log-routed-item` adds an item to the `:log` stack with a 'timestamp'"
+  (u/get-stack (log-routed-item knows-some-things :exec-foo) :log) => 
+    '({:item :exec-foo, :step 22})
+  )
 
 ;; step
 
 
-(fact "calling `step` consumes one item from the :exec stack (if any)"
+(fact "calling `step` consumes one item from the :exec stack (if any, and if not done)"
   (u/get-stack knows-some-things :exec) => '(:intProductToFloat)
   (u/get-stack (step knows-some-things) :exec) => '())
 
 
-(fact "calling `step` increments the counter if something happens"
+(fact "calling `step` increments the counter (if something happens)"
   (:counter knows-some-things) => 22
   (:counter (step knows-some-things)) => 23)
 
 
-(fact "calling `step` doesn't affect the counter if :exec is empty"
+(fact "calling `step` doesn't affect the counter if :exec is empty of :done? is true"
   (:counter (basic-interpreter)) => 0
   (:counter (step (basic-interpreter))) => 0
   (:counter (step (u/clear-stack knows-some-things :exec))) => 22)
@@ -214,8 +229,134 @@
   (:done? (step knows-some-things)) => true)
 
 
+(fact "calling `step` won't advance the counter if `:done?` is true at the beginning"
+  (:step-limit (:config knows-some-things)) => 23
+  (:counter knows-some-things) => 22
+  (:done? (step knows-some-things)) => true
+  (inc (:counter knows-some-things)) => (:counter (step knows-some-things))
+  (:counter (step knows-some-things)) => (:counter (step (step knows-some-things))))
+
+
+(fact "calling `step` (usually) writes to the :log stack"
+  (u/get-stack (step knows-some-things) :log) => 
+    '({:item :intProductToFloat, :step 23}))
+
+
+(fact "calling `step` doesn't log anything if no step was taken"
+  (u/get-stack (step (step knows-some-things)) :log) =>
+    '({:item :intProductToFloat, :step 23}))
+
+
 ;; interrogating an Interpreter instance
 
+
 (future-fact "calling `produce-gazetteer` prints a list of all registered instructions, all bound inputs, all registered types and modules"
-  (produce-gazetteer (make-classic-interpreter :inputs [1 2 false 6.3 '(:code-do)])) => ""
-  )
+  (produce-gazetteer (make-classic-interpreter :inputs [1 2 false 6.3 '(:code-do)])) => "")
+
+
+;; `run`
+
+;; a fixture or two
+
+
+(def simple-things (make-classic-interpreter 
+                      :program [1 2 false :integer-add true :boolean-or]
+                      :config {:step-limit 1000}))
+
+
+(fact "calling `run` with an Interpreter and a step argument returns the Interpreter at that step"
+  (:stacks (run simple-things 0)) => (contains
+                              {:boolean '(), 
+                               :char    '(), 
+                               :code    '(), 
+                               :error   '(), 
+                               :exec    '(1 2 false :integer-add true :boolean-or), 
+                               :float   '(), 
+                               :integer '(),
+                               :print   '(), 
+                               :string  '(), 
+                               :unknown '()})
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (:stacks (run simple-things 1)) => (contains
+                              {:boolean '(), 
+                               :char    '(), 
+                               :code    '(), 
+                               :error   '(), 
+                               :exec    '(2 false :integer-add true :boolean-or), 
+                               :float   '(), 
+                               :integer '(1), 
+                               :print   '(), 
+                               :string  '(), 
+                               :unknown '()})
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (:stacks (run simple-things 5)) => (contains
+                              {:boolean '(true false), 
+                               :char    '(), 
+                               :code    '(), 
+                               :error   '(), 
+                               :exec    '(:boolean-or), 
+                               :float   '(), 
+                               :integer '(3), 
+                               :print   '(), 
+                               :string  '(), 
+                               :unknown '()}))
+
+
+(def forever-8
+  (make-classic-interpreter :program [1 :exec-y 8]))
+
+
+(fact "`run` doesn't care about halting conditions"
+  (:stacks (run forever-8 0)) => (contains
+                              {:boolean '(), 
+                               :char    '(), 
+                               :code    '(), 
+                               :error   '(), 
+                               :exec    '(1 :exec-y 8), 
+                               :float   '(), 
+                               :integer '(), 
+                               :print   '(), 
+                               :string  '(), 
+                               :unknown '()})
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (:stacks (run forever-8 33)) => (contains
+                              {:boolean '(), 
+                               :char    '(), 
+                               :code    '(), 
+                               :error   '(), 
+                               :exec    '((:exec-y 8)), 
+                               :float   '(), 
+                               :integer '(8 8 8 8 8 8 8 8 8 8 8 1), 
+                               :print   '(), 
+                               :string  '(), 
+                               :unknown '()})
+  (count (u/get-stack (run forever-8 12000) :integer)) => 4001
+  (count (u/get-stack (run forever-8 50000) :integer)) => 16667
+
+  (:done? (run simple-things 0)) =>           false
+  (:done? (run simple-things 5)) =>           true
+  (:done? (run simple-things 111)) =>         true
+  (:done? (run simple-things 6)) =>           true
+  (:done? (run forever-8 0)) =>               false
+  (:done? (run forever-8 5)) =>               true
+  (:done? (run forever-8 111)) =>             true
+  (:done? (run (basic-interpreter) 1926)) =>  false)
+
+
+(fact "`run` produces a log"
+    (u/get-stack (run simple-things 111) :log) => '({:item :boolean-or, :step 6}
+                                                    {:item true, :step 5} 
+                                                    {:item :integer-add, :step 4} 
+                                                    {:item false, :step 3} 
+                                                    {:item 2, :step 2} 
+                                                    {:item 1, :step 1}))
+
+
+(fact "`run-until-done` runs an Interpreter until it reaches the first step when `:done?` is true"
+  (:counter (run-until-done (basic-interpreter))) => 0
+  (u/get-stack (run-until-done (basic-interpreter)) :log) => '()
+
+  (:counter (run-until-done simple-things)) => (:counter (run simple-things 1000))
+
+  (:counter (run-until-done forever-8)) => 0 ; because it's step-limit isn't set explicitly!
+)

@@ -31,6 +31,12 @@
   (:program (basic-interpreter :program [1 2 3])) => [1 2 3])
 
 
+;; config defaults
+
+
+(fact "a `basic-interpreter` has its :step-limit set to 0 by default"
+  (:step-limit (:config (basic-interpreter))) => 0)
+
 ; a fixture or two 
 
 
@@ -262,11 +268,12 @@
 
 
 (fact "a new Interpreter will have a :config map"
-  (:config (basic-interpreter)) => {})
+  (:config (basic-interpreter)) => {:lenient? false, :step-limit 0})
 
 
-(fact "a new Interpreter can have :config items set at creation"
-  (:config (basic-interpreter :config {:lenient? true})) => {:lenient? true})
+(fact "a new Interpreter can have :config items set or overridden at creation"
+  (:config (basic-interpreter :config {:lenient? true :foo 8})) =>
+    {:lenient? true, :step-limit 0, :foo 8})
 
 
 ;; counter
@@ -300,6 +307,7 @@
                                     :exec 
                                     :float 
                                     :integer
+                                    :log
                                     :print
                                     :string
                                     :unknown] :in-any-order))
@@ -365,7 +373,7 @@
 
 (fact "`make-classic-interpreter` can have its :stacks set"
   (keys (:stacks (make-classic-interpreter))) => (contains
-    [:boolean :char :code :error :exec :float :integer :print :string :unknown]
+    [:boolean :char :code :error :exec :float :integer :log :print :string :unknown]
     :in-any-order)
   (:integer (:stacks (make-classic-interpreter :stacks {:integer '(8)}))) => '(8)
   (:boolean (:stacks (make-classic-interpreter :stacks {:boolean '(:test)}))) => '(:test))
@@ -376,6 +384,7 @@
   (:inputs (make-classic-interpreter :inputs [1 2 3])) => {:input!1 1, :input!2 2, :input!3 3}
   (:inputs (make-classic-interpreter :inputs {:a 8 :b false})) => {:a 8, :b false})
   
+
 
 (fact "`make-classic-interpreter` can have its :config set"
   (:config (make-classic-interpreter)) => {}

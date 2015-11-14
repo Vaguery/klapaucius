@@ -32,6 +32,7 @@
     :integer '() 
     :exec '()
     :float '()
+    :log '()
     :string '()
     :print '()
     :unknown '()
@@ -132,6 +133,11 @@
       (add-instruction interpreter instruction)))
 
 
+(def basic-interpreter-default-config
+  { :lenient? false
+    :step-limit 0      })
+
+
 (defn basic-interpreter
   "creates a new Interpreter record
   With no arguments, it has an empty :program, the :stacks include
@@ -145,6 +151,7 @@
   registered.
 
   Valid :config items include:
+  - `step-limit`, which defaults to 0
   - `:lenient?` if true, the :unknown stack is used for unrecognized items"
   [& {:keys [program types router stacks inputs instructions config counter done?]
       :or {program []
@@ -157,8 +164,15 @@
            counter 0
            done? false}}]
   (let [all-stacks (merge core-stacks stacks)]
-    (-> (->Interpreter program '() router all-stacks {} 
-                       instructions config counter done?)
+    (-> (->Interpreter program 
+                      '()
+                      router
+                      all-stacks
+                      {} 
+                      instructions
+                      (merge basic-interpreter-default-config config)
+                      counter
+                      done?)
         (register-types types)
         (register-inputs inputs)
         )))
@@ -383,11 +397,21 @@
   (assoc interpreter :counter (inc (:counter interpreter))))
 
 
+(defn step-limit
+  "reads the [:config :step-limit] value of an Interpreter; returns 0 if nil"
+  [interpreter]
+  (if-let [stop (get-in interpreter [:config :step-limit])]
+    stop
+    0))
+
+
 (defn is-done?
   "Takes and Interpreter and checks various halting conditions.
   Returns true if any is true. Does not change interpreter state."
   [interpreter]
-  (and (empty? (u/get-stack interpreter :exec))))
+  (let [limit (step-limit interpreter)]
+    (or  (empty? (u/get-stack interpreter :exec))
+         (>= (:counter interpreter) limit))))
 
 
 (defn- set-doneness
@@ -396,21 +420,52 @@
   (assoc interpreter :done? (is-done? interpreter)))
 
 
+(defn log-routed-item
+  "Takes an Interpreter and any item, and pushes a 'time-stamped' map
+  of that item on the Interpreter's :log stack. The 'time-stamp' is the
+  counter of the Interpreter when called."
+  [interpreter item]
+  (push-item interpreter :log {:step (:counter interpreter) :item item}))
+
+
 (defn step
   "Takes an Interpreter, pops one item off :exec, routes it to the
   router, increments the counter. If the :exec stack is empty, does
   nothing."
   [interpreter]
   (let [old-exec (u/get-stack interpreter :exec)]
-    (if (seq old-exec)
+    (if-not (is-done? interpreter)
       (let [next-item (first old-exec)
             new-exec (pop old-exec)]
         (-> interpreter
             (increment-counter)
             (u/set-stack :exec new-exec)
             (handle-item next-item)
+            (log-routed-item next-item)
             (set-doneness)))
       interpreter)))
+
+
+(defn run
+  "Takes an Interpreter, calls `reset` on it, and calls `step`
+  on that reset state for `tick` iterations. Returns the Interpreter
+  state at the end.
+
+  Can be called for any non-negative integer `tick` value, regardless
+  of halting state."
+  [interpreter tick]
+  (let [start (assoc-in (reset-interpreter interpreter) [:config :step-limit] tick)]
+    (nth (iterate step start) tick)))
+
+
+(defn run-until-done
+  "Takes an Interpreter, calls `reset` on it, and calls `step`
+  on that reset state until :done? is true.
+
+  Does not check for infinite loops."
+  [interpreter]
+  (let [start (reset-interpreter interpreter)]
+    (first (filter is-done? (iterate step start)))))
 
 
 
@@ -422,5 +477,4 @@
   {:instructions (sort (keys (:instructions interpreter)))
    :inputs (:inputs interpreter)
    :stacks (sort (keys (:stacks interpreter)))
-   :types (sort (map :name (:types interpreter)))}
-  )
+   :types (sort (map :name (:types interpreter)))})
