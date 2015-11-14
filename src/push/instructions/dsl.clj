@@ -17,7 +17,7 @@
   {:pre  [(seq coll)
           (not (neg? idx))
           (< idx (count coll))]}
-  (concat (take idx coll) (drop 1 (drop idx coll))))
+  (into '() (reverse (concat (take idx coll) (drop 1 (drop idx coll))))))
 
 
 (defn- insert-as-nth

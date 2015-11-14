@@ -249,7 +249,13 @@
 
   (fact "`delete-nth-of` throws up if the stack is empty"
     (delete-nth-of [afew {}] :boolean :at 7) => 
-      (throws #"stack :boolean is empty")))
+      (throws #"stack :boolean is empty"))
+
+
+  (fact "`delete-nth-of` returns a list, just like the original was"
+    (type (get-stack-from-dslblob :integer
+      (delete-nth-of [afew {:foo 1}] :integer :at :foo))) =>
+      (type (get-stack-from-dslblob :integer [afew {:foo 1}])))) 
 
 
 ;; `replace-stack [stackname local]`

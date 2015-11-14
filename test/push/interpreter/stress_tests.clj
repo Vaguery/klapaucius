@@ -66,7 +66,7 @@
   [i len]
   (let [some-junk (into [] (remove nil? (bunch-a-junk (make-classic-interpreter) i)))
         interpreter (make-classic-interpreter 
-                      :config {:step-limit 500}
+                      :config {:step-limit 1000}
                       :inputs some-junk)]
     (assoc interpreter :program (into [] (bunch-a-junk interpreter len)))))
 
@@ -77,10 +77,10 @@
 ;   (count (repeatedly 10000 #(random-program-interpreter 10 1000))) => 10000)
 
 
-(fact "I can create 10000 random programs without an exception"
+(fact "I can create 100 random programs without an exception"
   :slow :acceptance
-  (dotimes [n 5] 
-    (let [rando (reset-interpreter (random-program-interpreter 10 100))] 
+  (dotimes [n 100] 
+    (let [rando (reset-interpreter (random-program-interpreter 10 200))] 
       (try
         (loop [s rando]
           (if (is-done? s)

@@ -109,6 +109,17 @@
   (u/get-stack (handle-item (make-classic-interpreter) '()) :exec) => '())
 
 
+(fact "the :exec stack stays a list when a list is unwrapped onto it"
+  (list? (u/get-stack (handle-item (make-classic-interpreter) '(1 2 3)) :exec)) => 
+    true
+  (list? (u/get-stack (handle-item (make-classic-interpreter) '(1 (2) (3))) :exec)) => 
+    true
+  (list? (u/get-stack (handle-item (make-classic-interpreter) '(1 () ())) :exec)) => 
+    true
+  (list? (u/get-stack (handle-item (make-classic-interpreter) '()) :exec)) => 
+    true)
+
+
 (fact "handle-item will execute a registered instruction"
  (let [foo (instr/make-instruction :foo :transaction (fn [a] 761))
        registry {:foo foo}
