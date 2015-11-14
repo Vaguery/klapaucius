@@ -2,6 +2,7 @@
   (:require [push.instructions.core :as core])
   (:require [push.types.core :as t])
   (:require [push.instructions.dsl :as d])
+  (:require [push.util.stack-manipulation :as stacks])
   (:require [push.util.code-wrangling :as u])
   )
 
@@ -183,7 +184,9 @@
     (d/calculate [:arg] #(if (seq? %1) %1 (list %1)) :as :collection)
     (d/calculate [:collection :fn] 
       #(reduce
-        (fn [cont item] (concat cont (list (list :code-quote item %2) :code-cons))) 
+        (fn [cont item] 
+          (stacks/make-it-a-real-list
+            (concat cont (list (list :code-quote item %2) :code-cons))))
         (list :code-quote '()) 
         %1)
       :as :continuation)

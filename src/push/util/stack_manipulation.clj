@@ -25,3 +25,11 @@
   "Returns the top item on the named stack."
   [interpreter stack]
   (peek (get-in interpreter [:stacks stack])))
+
+
+(defn make-it-a-real-list
+  "Takes some collection (typically the result of a cons or concat)
+  and puts it into an actual list structure. In the right order."
+  [collection]
+  (into '() (reverse collection)))
+

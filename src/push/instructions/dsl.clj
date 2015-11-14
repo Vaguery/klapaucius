@@ -17,7 +17,7 @@
   {:pre  [(seq coll)
           (not (neg? idx))
           (< idx (count coll))]}
-  (into '() (reverse (concat (take idx coll) (drop 1 (drop idx coll))))))
+  (u/make-it-a-real-list (concat (take idx coll) (drop 1 (drop idx coll)))))
 
 
 (defn- insert-as-nth
@@ -27,9 +27,7 @@
   {:pre  [(list? coll)
           (not (neg? idx))
           (<= idx (count coll))]}
-  (into '()
-    (reverse
-      (concat (take idx coll) (list item) (drop idx coll)))))
+  (u/make-it-a-real-list (concat (take idx coll) (list item) (drop idx coll))))
 
 
 
