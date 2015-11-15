@@ -39,7 +39,7 @@
     char-fromfloat
     :tags #{:string :conversion :base}
     (d/consume-top-of :float :as :arg)
-    (d/calculate [:arg] #(char (mod (long %1) 128)) :as :c)
+    (d/calculate [:arg] #(char (mod (bigint %1) 128)) :as :c)
     (d/push-onto :char :c)))
 
 

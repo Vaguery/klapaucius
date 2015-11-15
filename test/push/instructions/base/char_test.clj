@@ -73,6 +73,9 @@
     :integer    '()           :char-frominteger   :char         '())
 
 
+;; silly fixture for a weird edge-case
+
+
 (tabular
   (fact ":char-fromfloat drops the top :float down to an integer value in [0..128] and pushes that ASCII character"
     (register-type-and-check-instruction
@@ -89,6 +92,10 @@
     :float    '(128.2)        :char-fromfloat   :char         zerochar-list
     :float    '(256.2)        :char-fromfloat   :char         zerochar-list
     :float    '(-128.2)       :char-fromfloat   :char         zerochar-list
+    ;; bounds for internal typecast (huge bigint mod 128 -> 0)
+    :float    '(1.1e88M)      :char-fromfloat   :char         zerochar-list
+    :float    '(111111111111111111111111111111111111111111.0M)
+                              :char-fromfloat   :char         '(\G)
     ;; missing args
     :float    '()             :char-fromfloat   :char         '())
 
