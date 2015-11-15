@@ -122,7 +122,7 @@
     :tags #{:string :base}
     (d/consume-top-of :string :as :s)
     (d/consume-top-of :char :as :c)
-    (d/calculate [:s :c] #(.indexOf %1 (int %2)) :as :where)
+    (d/calculate [:s :c] #(.indexOf %1 (long %2)) :as :where)
     (d/push-onto :integer :where)))
 
 

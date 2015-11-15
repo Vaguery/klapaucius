@@ -11,13 +11,13 @@
 (defn sign [i] (compare i 0))
 
 
-(def int-add (t/simple-2-in-1-out-instruction :integer "add" '+'))
+(def integer-add (t/simple-2-in-1-out-instruction :integer "add" '+'))
 
 
-(def int-dec (t/simple-1-in-1-out-instruction :integer "dec" 'dec'))
+(def integer-dec (t/simple-1-in-1-out-instruction :integer "dec" 'dec'))
 
 
-(def int-divide
+(def integer-divide
   (core/build-instruction
     integer-divide
     :tags #{:arithmetic :base :dangerous}
@@ -26,14 +26,14 @@
     (d/calculate [:denominator :numerator]
       #(if (zero? %1) %2 nil) :as :replacement)
     (d/calculate [:denominator :numerator]
-      #(if (zero? %1) %1 (int (/ %2 %1))) :as :quotient)
+      #(if (zero? %1) %1 (long (/ %2 %1))) :as :quotient)
     (d/push-these-onto :integer [:replacement :quotient])))
 
 
-(def int-inc (t/simple-1-in-1-out-instruction :integer "inc" 'inc'))
+(def integer-inc (t/simple-1-in-1-out-instruction :integer "inc" 'inc'))
 
 
-(def int-mod
+(def integer-mod
   (core/build-instruction
     integer-mod
     :tags #{:arithmetic :base :dangerous}
@@ -46,19 +46,19 @@
     (d/push-these-onto :integer [:replacement :remainder])))
 
 
-(def int-multiply (t/simple-2-in-1-out-instruction :integer  "multiply" '*'))
+(def integer-multiply (t/simple-2-in-1-out-instruction :integer  "multiply" '*'))
 
 
-(def int-sign (t/simple-1-in-1-out-instruction :integer  "sign" 'sign))
+(def integer-sign (t/simple-1-in-1-out-instruction :integer  "sign" 'sign))
 
 
-(def int-subtract (t/simple-2-in-1-out-instruction :integer "subtract" '-'))
+(def integer-subtract (t/simple-2-in-1-out-instruction :integer "subtract" '-'))
 
 
 ;; conversion
 
 
-(def int-fromboolean
+(def integer-fromboolean
   (core/build-instruction
     integer-fromboolean
     :tags #{:base :conversion}
@@ -67,7 +67,7 @@
     (d/push-onto :integer :logic)))
 
 
-(def int-signfromboolean
+(def integer-signfromboolean
   (core/build-instruction
     integer-signfromboolean
     :tags #{:base :conversion}
@@ -76,7 +76,7 @@
     (d/push-onto :integer :logic)))
 
 
-(def int-fromfloat
+(def integer-fromfloat
   (core/build-instruction
     integer-fromfloat
     :tags #{:numeric :base :conversion}
@@ -85,12 +85,12 @@
     (d/push-onto :integer :int)))
 
 
-(def int-fromchar
+(def integer-fromchar
   (core/build-instruction
     integer-fromchar
     :tags #{:base :conversion}
     (d/consume-top-of :char :as :arg1)
-    (d/calculate [:arg1] #(int %1) :as :int)
+    (d/calculate [:arg1] #(long %1) :as :int)
     (d/push-onto :integer :int)))
 
 
@@ -114,18 +114,18 @@
         t/make-equatable
         t/make-comparable
         t/make-movable
-        (t/attach-instruction , int-add)
-        (t/attach-instruction , int-dec)
-        (t/attach-instruction , int-divide)
-        (t/attach-instruction , int-fromboolean)
-        (t/attach-instruction , int-fromchar)
-        (t/attach-instruction , int-fromfloat)
+        (t/attach-instruction , integer-add)
+        (t/attach-instruction , integer-dec)
+        (t/attach-instruction , integer-divide)
+        (t/attach-instruction , integer-fromboolean)
+        (t/attach-instruction , integer-fromchar)
+        (t/attach-instruction , integer-fromfloat)
         (t/attach-instruction , integer-fromstring)
-        (t/attach-instruction , int-inc)
-        (t/attach-instruction , int-mod)
-        (t/attach-instruction , int-multiply)
-        (t/attach-instruction , int-sign)
-        (t/attach-instruction , int-signfromboolean)
-        (t/attach-instruction , int-subtract)
+        (t/attach-instruction , integer-inc)
+        (t/attach-instruction , integer-mod)
+        (t/attach-instruction , integer-multiply)
+        (t/attach-instruction , integer-sign)
+        (t/attach-instruction , integer-signfromboolean)
+        (t/attach-instruction , integer-subtract)
         ))
 

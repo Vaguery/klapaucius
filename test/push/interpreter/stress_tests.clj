@@ -79,7 +79,7 @@
 
 (fact "I can create and run 1000 random programs without an exception"
   :slow :acceptance
-  (dotimes [n 1000] 
+  (dotimes [n 10000] 
     (let [rando (reset-interpreter (random-program-interpreter 10 200))] 
       (try
         (loop [s rando]
