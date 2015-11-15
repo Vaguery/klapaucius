@@ -90,7 +90,7 @@
     integer-fromchar
     :tags #{:base :conversion}
     (d/consume-top-of :char :as :arg1)
-    (d/calculate [:arg1] #(bigint %1) :as :int)
+    (d/calculate [:arg1] #(long %1) :as :int)
     (d/push-onto :integer :int)))
 
 
