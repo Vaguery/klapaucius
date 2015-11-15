@@ -70,10 +70,20 @@
       (d/push-onto :bar :in)))) => true)
 
 
-(future-fact "`build-instruction` captures the docstring")
+(fact "`build-instruction` captures a keyword-specified docstring"
+  (:docstring 
+    (build-instruction foobar
+      :docstring "foobar really?"
+      (d/consume-top-of :foo :as :in)
+      (d/push-onto :bar :in))) => "foobar really?")
 
 
-(future-fact "`build-instruction` raises an exception if there is no docstring associated with the built instruction")
+(fact "`build-instruction` lacking a docstring will get default"
+  (:docstring 
+    (build-instruction foobar
+      (d/consume-top-of :foo :as :in)
+      (d/push-onto :bar :in))) => "`:foobar` needs a docstring!")
+
 
 
 ;; a bit of a test

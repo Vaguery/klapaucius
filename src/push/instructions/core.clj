@@ -1,5 +1,6 @@
 (ns push.instructions.core
   (:require [push.util.exceptions :as oops])
+  (:require [push.util.general :as util])
   (:use [push.instructions.dsl])
   )
 
@@ -61,17 +62,21 @@
 
 
 (defmacro build-instruction
-  "Takes a token and zero or more transaction steps, and
-  creates the named instruction from those steps."
-  [new-name & steps]
-  (if (= :tags (first steps))
-    (let [tags (second steps)
-          steps (drop 2 steps)]
-    `(make-instruction (keyword ~(name new-name))
-      :tags ~tags
-      :needs ~(total-needs steps)
-      :transaction (def-function-from-dsl ~@steps)))
-    `(make-instruction (keyword ~(name new-name))
+  "Takes a token and zero or more transaction steps in DSL form, and
+  creates the named instruction from those steps. Keyword arguments
+  must appear before DSL steps."
+  [instruction & args]
+  (let [new-kwd (keyword (name instruction))
+        tags    (util/extract-keyword-argument :tags args)
+        docs    (util/extract-keyword-argument :docstring args)
+        steps   (util/extract-splat-argument args)]
+    `(make-instruction
+      ~new-kwd
+      :docstring ~(or docs (str "`" new-kwd "` needs a docstring!"))
+      ;; TODO: can't seem to pass in `nil` here ^^^^^ and
+      ;;       get a default string from `make-instruction`
+      :tags ~(or tags #{})
       :needs ~(total-needs steps)
       :transaction (def-function-from-dsl ~@steps))))
+
 
