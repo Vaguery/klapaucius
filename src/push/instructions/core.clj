@@ -53,7 +53,7 @@
   "creates a new Instruction record instance"
   [token & {
     :keys [docstring tags needs transaction] 
-    :or { docstring "This really should have docs"
+    :or { docstring (str "`" token "` needs a docstring!")
           tags #{}
           needs {}
           transaction identity }}]

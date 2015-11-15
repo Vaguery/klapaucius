@@ -30,6 +30,10 @@
      (:transaction (make-instruction :foo :transaction fake_fn)) => fake_fn))
 
 
+(fact "`make-instruction` sets the docstring field to a default value"
+  (:docstring (make-instruction :foo)) => "`:foo` needs a docstring!")
+
+
 ;; build-instruction
 
 
