@@ -47,4 +47,8 @@
 
   (re-pattern "+̠Sʠńə˧¶˧ſǺε") => (throws #"Dangling")
   (re-pattern (str-to-pattern "+̠Sʠńə˧¶˧ſǺε")) => #"\+̠Sʠńə˧¶˧ſǺε"
+
+  (re-pattern "́\\") => (throws #"Unexpected internal error")
+  (re-pattern (str-to-pattern "́\\")) => #"́\\"
+  
 )

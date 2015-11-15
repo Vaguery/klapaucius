@@ -25,7 +25,7 @@
 ;;   http://stackoverflow.com/questions/11671898/escaping-brackets-in-clojure)
 
 (def regex-char-esc-smap
-  (let [esc-chars "()*&^%$#!{}+[]|~.?"]
+  (let [esc-chars "()*&^%$#!{}+[]|~.?\\"]
     (zipmap esc-chars
             (map #(str "\\" %) esc-chars))))
 
@@ -65,7 +65,7 @@
     :tags #{:string :base}
     (d/consume-top-of :char :as :c)
     (d/consume-top-of :string :as :s)
-    (d/calculate [:s :c] #(strings/join (list %1 %2)) :as :longer)
+    (d/calculate [:s :c] #(strings/join (list %1 (str %2))) :as :longer)
     (d/push-onto :string :longer)))
 
 

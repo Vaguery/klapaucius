@@ -17,7 +17,7 @@
     (d/consume-stack :char :as :old-stack)
     (d/calculate [:arg :old-stack]
       #(if (empty? %1) %2 
-        (u/make-it-a-real-list (concat (seq %1) %2))) :as :new-stack)
+        (u/make-it-a-real-list (concat (vec %1) %2))) :as :new-stack)
     (d/calculate [:new-stack] #(into '() (reverse %1)) :as :kludged)
     (d/replace-stack :char :kludged)))
 
