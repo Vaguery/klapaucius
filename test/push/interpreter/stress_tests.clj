@@ -73,6 +73,23 @@
 
 
 
+(defn run-with-wordy-try-block
+  [interpreter]
+  (try
+    (do
+      (println (str (:counter (run interpreter 10000)))))
+    (catch Exception e 
+      (do 
+        (println
+          (str "caught exception: " 
+             (.getMessage e)
+             " running "
+             (pr-str (:program interpreter)) "\n" (pr-str (:inputs interpreter))))
+          (throw (Exception. (.getMessage e)))))))
+
+
+;; actual tests; they will run hot!
+
 (future-fact "I can create 10000 random programs without an exception"
   :slow :acceptance 
   (count (repeatedly 10000 #(random-program-interpreter 10 100))) => 10000)
@@ -106,25 +123,17 @@
                                   (throw (Exception. (.getMessage e)))))))) =not=> (throws))
 
 
+
+
 ;; the following monstrosity is an "acceptance test" for hand-running, at the moment.
 ;; it's intended to give a bit more info about the inevitable bugs that
 ;; only appear when random programs are executed by an interpreter, in a
 ;; bit more of a complex context; by the time you read this, it might be
 ;; commented out. If you want to run it, be warned it will spew all kinds
 ;; of literally random text to the STDOUT stream.
-(fact "I can create & run 10000 large random programs for 5000 steps each without an exception"
+(fact "I can create & run 10000 large random programs for up to 5000 steps each without an exception"
   :slow :acceptance
-  (dotimes [n 10000] 
-    (let [rando (reset-interpreter (random-program-interpreter 10 1000))] 
-      (try
-        (do
-          (println (str n " " (:counter (run rando 50000)))))
-        (catch Exception e 
-          (do 
-            (println 
-              (str "caught exception: " 
-                 (.getMessage e)
-                 " running "
-                 (pr-str (:program rando)) "\n" (pr-str (:inputs rando))))
-              (throw (Exception. (.getMessage e)))))))) =not=> (throws))
-
+  (let [my-interpreters 
+    (repeatedly 10000 #(reset-interpreter (random-program-interpreter 10 1000))) ]
+      (doall (pmap run-with-wordy-try-block my-interpreters))
+    ))
