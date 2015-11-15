@@ -52,14 +52,15 @@
 
 (defn bunch-a-junk
   [interpreter how-much-junk]
-  (repeatedly how-much-junk #(condp = (rand-int 10)
+  (remove nil? (repeatedly how-much-junk #(condp = (rand-int 20)
                                      0 (random-integer)
                                      1 (random-float)
                                      2 (random-boolean)
                                      3 (any-input interpreter)
                                      4 (random-char)
                                      5 (random-string)
-                                     (any-instruction interpreter))))
+                                     6 (into '() (bunch-a-junk interpreter 5))
+                                     (any-instruction interpreter)))))
 
 
 (defn random-program-interpreter
@@ -79,7 +80,7 @@
 
 (fact "I can create and run 1000 random programs without an exception"
   :slow :acceptance
-  (dotimes [n 10000] 
+  (dotimes [n 1000] 
     (let [rando (reset-interpreter (random-program-interpreter 10 200))] 
       (try
         (loop [s rando]
@@ -93,4 +94,5 @@
                                  (.getMessage e)
                                  " running "
                                  (pr-str (:program rando))
+                                 "\n" (pr-str (:inputs rando))
                                  )))))))
