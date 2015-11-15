@@ -41,7 +41,7 @@
     float-fromchar
     :tags #{:conversion :base :numeric}
     (d/consume-top-of :char :as :arg)
-    (d/calculate [:arg] #(double (long %1)) :as :result)
+    (d/calculate [:arg] #(double (bigint %1)) :as :result)
     (d/push-onto :float :result)))
 
 
