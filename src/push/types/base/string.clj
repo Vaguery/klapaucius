@@ -21,6 +21,24 @@
 
 ;;;;;;;;;;;;
 
+;; utilities (cadged from 
+;;   http://stackoverflow.com/questions/11671898/escaping-brackets-in-clojure)
+
+(def regex-char-esc-smap
+  (let [esc-chars "()*&^%$#!{}+[]|~.?"]
+    (zipmap esc-chars
+            (map #(str "\\" %) esc-chars))))
+
+
+(defn str-to-pattern
+  [string]
+  (->> string
+       (replace regex-char-esc-smap)
+       (reduce str)
+       re-pattern))
+
+;;;;;;;;;;;;
+
 
 (def exec-string-iterate
   (core/build-instruction
@@ -61,7 +79,8 @@
     :tags #{:string :base}
     (d/consume-top-of :string :as :host)
     (d/consume-top-of :string :as :target)
-    (d/calculate [:host :target] #(boolean (re-find (re-pattern %2) %1)) :as :found?)
+    (d/calculate [:host :target]
+      #(boolean (re-find (re-pattern (str-to-pattern %2)) %1)) :as :found?)
     (d/push-onto :boolean :found?)))
 
 

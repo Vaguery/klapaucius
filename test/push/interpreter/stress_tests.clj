@@ -37,7 +37,7 @@
 
 
 (defn random-string
-  [] (s/join (repeatedly (inc (random-integer 20)) #(random-char))))
+  [] (str (s/join (repeatedly (inc (random-integer 20)) #(random-char)))))
 
 
 (defn any-input
@@ -77,14 +77,14 @@
 ;   (count (repeatedly 10000 #(random-program-interpreter 10 1000))) => 10000)
 
 
-(fact "I can create 100 random programs without an exception"
+(fact "I can create and run 1000 random programs without an exception"
   :slow :acceptance
-  (dotimes [n 100] 
+  (dotimes [n 1000] 
     (let [rando (reset-interpreter (random-program-interpreter 10 200))] 
       (try
         (loop [s rando]
           (if (is-done? s)
-            (println (:counter s))
+            (println (str n "  " (:counter s)))
             (recur (do 
               ;;(println (u/peek-at-stack s :log)) 
               (step s)))))
@@ -92,5 +92,5 @@
                               (str "caught exception: " 
                                  (.getMessage e)
                                  " running "
-                                 (:program rando)
+                                 (pr-str (:program rando))
                                  )))))))

@@ -132,6 +132,16 @@
     (#'push.instructions.dsl/insert-as-nth '(0 1 2 3 4 5) \X 6) => '(0 1 2 3 4 5 \X))
 
 
+  (fact "`insert-as-nth` doesn't change the type of the damned collection"
+    (type (#'push.instructions.dsl/insert-as-nth '(0 1 2 3 4 5) \X 3)) => 
+      (type '(0 1 2 \X 3 4 5))
+    (type (#'push.instructions.dsl/insert-as-nth '(0 1 2 3 4 5) \X 0)) =>
+      (type '(\X 0 1 2 3 4 5))
+    (type (#'push.instructions.dsl/insert-as-nth '(0 1 2 3 4 5) \X 6)) =>
+      (type '(0 1 2 3 4 5 \X)))
+
+
+
   (fact "`insert-as-nth` returns a PersistentList"
     (class (#'push.instructions.dsl/insert-as-nth '(1 2 3 4) \X 3)) => 
     clojure.lang.PersistentList)
