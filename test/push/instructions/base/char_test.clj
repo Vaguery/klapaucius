@@ -73,7 +73,25 @@
     :integer    '()           :char-asciifrominteger   :char         '())
 
 
-;; silly fixture for a weird edge-case
+(tabular
+  (fact ":char-frominteger drops the top :integer into [0..65535] and pushes that unicode character"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items          ?instruction  ?get-stack         ?expected
+    ;; all the letters
+    :integer    '(88)         :char-frominteger   :char         '(\X)
+    :integer    '(37)         :char-frominteger   :char         '(\%)
+    :integer    '(382)        :char-frominteger   :char         '(\ž)
+    :integer    '(-17212)     :char-frominteger   :char         '(\볃)
+    :integer    '(2764)       :char-frominteger   :char         '(\ૌ)
+    ;; edge cases
+    :integer    '(0)          :char-frominteger   :char         zerochar-list
+    :integer    '(65535)      :char-frominteger   :char         zerochar-list
+    :integer    '(256)        :char-frominteger   :char         '(\Ā)
+    :integer    '(-128)       :char-frominteger   :char         '(\ｿ)
+    ;; missing args
+    :integer    '()           :char-frominteger   :char         '())
 
 
 (tabular

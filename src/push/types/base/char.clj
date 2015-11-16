@@ -38,6 +38,16 @@
     (d/push-onto :char :c)))
 
 
+(def char-frominteger
+  (core/build-instruction
+    char-frominteger
+    "`:char-frominteger` pops the top `:integer` value, reduces it modulo 65535, and pushes the `:char` that is represented by that unicode value"
+    :tags #{:string :conversion :base}
+    (d/consume-top-of :integer :as :arg)
+    (d/calculate [:arg] #(char (mod %1 65535)) :as :c)
+    (d/push-onto :char :c)))
+
+
 (def char-fromfloat
   (core/build-instruction
     char-fromfloat
@@ -80,6 +90,7 @@
         (t/attach-instruction , char-digit?)
         (t/attach-instruction , char-whitespace?)
         (t/attach-instruction , char-asciifrominteger)
+        (t/attach-instruction , char-frominteger)
         (t/attach-instruction , char-fromfloat)
         (t/attach-instruction , char-lowercase?)
         (t/attach-instruction , char-uppercase?)
