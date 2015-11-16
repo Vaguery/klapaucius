@@ -14,7 +14,9 @@
 (def integer-add (t/simple-2-in-1-out-instruction :integer "add" '+'))
 
 
-(def integer-dec (t/simple-1-in-1-out-instruction :integer "dec" 'dec'))
+(def integer-dec (t/simple-1-in-1-out-instruction
+  "`:integer-dec` subtracts 1 from the top `:integer` item"
+  :integer "dec" 'dec'))
 
 
 (def integer-divide
@@ -30,7 +32,9 @@
     (d/push-these-onto :integer [:replacement :quotient])))
 
 
-(def integer-inc (t/simple-1-in-1-out-instruction :integer "inc" 'inc'))
+(def integer-inc (t/simple-1-in-1-out-instruction
+  "`:integer-inc` adds 1 to the top `:integer` item"
+  :integer "inc" 'inc'))
 
 
 (def integer-mod
@@ -49,7 +53,9 @@
 (def integer-multiply (t/simple-2-in-1-out-instruction :integer  "multiply" '*'))
 
 
-(def integer-sign (t/simple-1-in-1-out-instruction :integer  "sign" 'sign))
+(def integer-sign (t/simple-1-in-1-out-instruction
+  "`:integer-sign` examines the top `:integer` item, and returns -1 if negative, 0 if zero, and 1 if positive"
+  :integer  "sign" 'sign))
 
 
 (def integer-subtract (t/simple-2-in-1-out-instruction :integer "subtract" '-'))

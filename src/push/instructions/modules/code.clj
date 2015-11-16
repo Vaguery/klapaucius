@@ -132,7 +132,10 @@
     (d/push-onto :exec :continuation)))
 
 
-(def code-first (t/simple-1-in-1-out-instruction :code "first" #(if (seq? %) (first %) %)))
+(def code-first (t/simple-1-in-1-out-instruction 
+  "`:code-first` examines the top `:code` item to determine if it's a Collection. If 
+  it is, the function returns its first item, otherwise the item itself it returned."
+  :code "first" #(if (coll? %) (first %) %)))
 
 
 (def code-fromboolean (t/simple-item-to-code-instruction :boolean))
@@ -229,7 +232,10 @@
     (d/push-onto :code :arg1)))
 
 
-(def code-rest (t/simple-1-in-1-out-instruction 
+(def code-rest (t/simple-1-in-1-out-instruction
+  "`:code-rest` examines the top `:code` item; if it's a Collection, it removes
+  the first item and returns the reduced list; if it's not a Collection, it returns
+  the original item"
                     :code 
                     "rest" 
                     #(if (coll? %1) 
@@ -246,7 +252,9 @@
     (d/push-onto :integer :size)))
 
 
-(def code-wrap (t/simple-1-in-1-out-instruction :code "wrap" #(list %1)))
+(def code-wrap (t/simple-1-in-1-out-instruction
+  "`:code-wrap` puts the top item on the `:code` stack into a one-element list"
+  :code "wrap" #(list %1)))
 
 
 (def classic-code-module

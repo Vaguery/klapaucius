@@ -69,8 +69,9 @@
     (d/push-onto :string :longer)))
 
 
-(def string-butlast (t/simple-1-in-1-out-instruction :string "butlast"
-                      #(clojure.string/join (butlast %1))))
+(def string-butlast (t/simple-1-in-1-out-instruction
+  "`:string-butlast` returns the top `:string` item lacking its last character"
+    :string "butlast" #(clojure.string/join (butlast %1))))
 
 
 (def string-contains?
@@ -221,11 +222,14 @@
     (d/push-onto :string :different)))
 
 
-(def string-rest (t/simple-1-in-1-out-instruction :string "rest"
-                      #(clojure.string/join (rest %1))))
+(def string-rest (t/simple-1-in-1-out-instruction
+  "`:string-rest` returns the top `:string` item, lacking its first character"
+  :string "rest" #(clojure.string/join (rest %1))))
 
 
-(def string-reverse (t/simple-1-in-1-out-instruction :string "reverse" 'strings/reverse))
+(def string-reverse (t/simple-1-in-1-out-instruction
+  "`:string-reverse` returns the top `:string` item with its characters reversed"
+  :string "reverse" 'strings/reverse))
 
 
 (def string-setchar

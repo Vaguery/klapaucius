@@ -58,7 +58,10 @@
 
 
 (def bool-not 
-  (t/simple-1-in-1-out-instruction :boolean "not" 'not))
+  (t/simple-1-in-1-out-instruction
+  "`:bool_not returns the logical negation of the top item on the `:boolean`
+  stack"
+  :boolean "not" 'not))
 
 
 (def classic-boolean-type
