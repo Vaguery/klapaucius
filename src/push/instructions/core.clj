@@ -58,7 +58,7 @@
           tags #{}
           needs {}
           transaction identity }}]
-  (->Instruction token docstring tags needs transaction))
+  (with-meta (->Instruction token docstring tags needs transaction) {:doc docstring}))
 
 
 (defmacro build-instruction

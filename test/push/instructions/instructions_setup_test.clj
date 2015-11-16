@@ -206,3 +206,7 @@
 (fact "a generated yankdup-instruction has a reasonable docstring"
   (:docstring (t/yankdup-instruction i-know-foo)) =>
     "`:foo-yankdup` pops the top `:integer`. The `:integer` is brought into range as an index by applying `(mod integer (count stack))`, and then the item _currently_ found in the indexed position in the `:foo` stack is _copied_ so that a duplicate of it is on top.")
+
+(fact "the docstring is associated with an instance"
+  (:doc (meta (t/yankdup-instruction i-know-foo))) =>
+    (:docstring (t/yankdup-instruction i-know-foo)))
