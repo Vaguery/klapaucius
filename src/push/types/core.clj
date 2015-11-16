@@ -89,15 +89,25 @@
       `(d/push-onto ~stackname :result)))))
 
 
+(defn predicate-docstring
+  [instruction-name fxn stackname]
+  (str "`" instruction-name 
+       "` pushes true to the `:boolean` stack if the predicate `" fxn
+       "` returns true when applied to the top `" 
+       stackname
+       "` item, false otherwise."))
+
+
 (defn simple-1-in-predicate
-  "returns a standard :typed arity-1 function, where the output is
+  "returns a standard :typed arity-1 predicate function, where the output is
   a :boolean and inputs are the same type"
   [type word operation]
   (let [stackname (keyword type)
         instruction-name (str (name stackname) "-" word)]
     (eval (list
-      'core/build-instruction
+      'push.instructions.core/build-instruction
       instruction-name
+      `~(predicate-docstring (keyword instruction-name) word stackname)
       :tags #{:arithmetic :base}
       `(d/consume-top-of ~stackname :as :arg1)
       `(d/calculate [:arg1] #(~operation %1) :as :result)

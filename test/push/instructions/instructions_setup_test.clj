@@ -70,10 +70,11 @@
       (d/push-onto :bar :in)))) => true)
 
 
-(fact "`build-instruction` captures a keyword-specified docstring"
+(fact "`build-instruction` captures an un-keyworded docstring if it's after the token"
   (:docstring 
-    (build-instruction foobar
-      :docstring "foobar really?"
+    (build-instruction
+      foobar
+      "foobar really?"
       (d/consume-top-of :foo :as :in)
       (d/push-onto :bar :in))) => "foobar really?")
 
@@ -98,3 +99,5 @@
                   foobar)]
   (u/get-stack (i/execute-instruction context :foobar) :bar ) => '(1 4 5 6)
   (u/get-stack (i/execute-instruction context :foobar) :foo ) => '(2 3)))
+
+

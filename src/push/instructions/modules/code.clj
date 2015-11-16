@@ -25,6 +25,8 @@
 (def code-append
   (core/build-instruction
     code-append
+    "`code-append` concatenates the top :code item to the end of the second :code item.
+    If either isn't a list, it's made into one first."
     :tags #{:complex :base}
     (d/consume-top-of :code :as :arg2)
     (d/consume-top-of :code :as :arg1)

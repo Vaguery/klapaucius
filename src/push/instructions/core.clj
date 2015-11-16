@@ -68,7 +68,7 @@
   [instruction & args]
   (let [new-kwd (keyword (name instruction))
         tags    (util/extract-keyword-argument :tags args)
-        docs    (util/extract-keyword-argument :docstring args)
+        docs    (util/extract-docstring args)
         steps   (util/extract-splat-argument args)]
     `(make-instruction
       ~new-kwd

@@ -69,3 +69,21 @@
 (fact "modules can have individual instructions assigned"
   (keys (:instructions (attach-instruction (make-module :foo) foo-barbaz))) =>
     '(:foo-barbaz))
+
+
+;; generic functions
+
+(fact "`predicate-docstring` produces the appropriate string when asked"
+  (predicate-docstring :foo-pos? "pos?" :foo) => 
+  "`:foo-pos?` pushes true to the `:boolean` stack if the predicate `pos?` returns true when applied to the top `:foo` item, false otherwise.")
+
+
+(fact "`simple-1-in-predicate` has the right docstring"
+  (:docstring (push.types.core/simple-1-in-predicate :foo "pos?" pos?)) => 
+    "`:foo-pos?` pushes true to the `:boolean` stack if the predicate `pos?` returns true when applied to the top `:foo` item, false otherwise."
+  (:docstring (push.types.core/simple-1-in-predicate :baz "qux?" #(+ % 7))) => 
+    "`:baz-qux?` pushes true to the `:boolean` stack if the predicate `qux?` returns true when applied to the top `:baz` item, false otherwise."
+
+
+  )
+
