@@ -15,13 +15,12 @@ A Push program is an arbitrary ordered list composed of _inputs_, _instructions_
 - if an `input`, then the bound value is looked up and pushed to the `:exec` stack
 - if an `instruction`, the indicated changes are made to the interpreter state, usually by popping arguments from the various stacks
 - if a `literal` (of a recognized type), the item is pushed to a specified stack, which in the "basic model" includes
-  - `:boolean`
-  - `:char`
-  - `:code`
-  - `:float`
-  - `:integer`
-  - `:string`
-- numbers to the `:float` stack, and so forth
+  - `:boolean` (`true` and `false`)
+  - `:char` (single Clojure `char` items)
+  - `:code` (any items; not a "type", but a place certain instructions send things)
+  - `:float` 
+  - `:integer` 
+  - `:string` 
 - if a list of items, the list is "unwrapped" and pushed back onto the `:exec` stack so the items inside it will be executed in turn
 
 And that's about it. There are a few other special-purpose stacks, mainly used for IO and logging. It's possible to extend the language easily by defining new types (which in Push means little more than "literals that are recognized and sent to a stack"), the stacks that go with them, and instructions to manipulate them usefully.
