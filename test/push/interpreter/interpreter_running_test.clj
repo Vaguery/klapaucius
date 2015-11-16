@@ -335,13 +335,13 @@
                                :char    '(), 
                                :code    '(), 
                                :error   '(), 
-                               :exec    '((:exec-y 8)), 
+                               :exec    '(8 :exec-y 8), 
                                :float   '(), 
-                               :integer '(8 8 8 8 8 8 8 8 8 8 8 1), 
+                               :integer '(8 8 8 8 8 8 8 8 8 8 1), 
                                :print   '(), 
                                :string  '(), 
                                :unknown '()})
-  (count (u/get-stack (run forever-8 12000) :integer)) => 4001
+  (count (u/get-stack (run forever-8 12000) :integer)) => 4000
   (count (u/get-stack (run forever-8 50000) :integer)) => 16667
 
   (:done? (run simple-things 0)) =>           false

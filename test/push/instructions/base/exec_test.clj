@@ -194,7 +194,7 @@
                                                :boolean '()} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec     '(:foo :bar)
-     :boolean  '(false)}        :exec-when    {:exec '(() :bar)
+     :boolean  '(false)}        :exec-when    {:exec '(:bar)
                                                :boolean '()} 
     ; ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ; ; ; ; ;; missing arguments
@@ -239,8 +239,8 @@
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; forever
-    :exec    '(1.1 2.2)          :exec-y          :exec         '(1.1 (:exec-y 1.1) 2.2) 
-    :exec    '(1.0)              :exec-y          :exec         '(1.0 (:exec-y 1.0))     
+    :exec    '(1.1 2.2)          :exec-y          :exec         '((1.1 :exec-y 1.1) 2.2) 
+    :exec    '(1.0)              :exec-y          :exec         '((1.0 :exec-y 1.0))     
     :exec    '()                 :exec-y          :exec         '())
 
 

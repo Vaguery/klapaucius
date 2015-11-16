@@ -67,6 +67,7 @@
 (def exec-if
   (core/build-instruction
     exec-if
+    "`:exec-if` pops the top `:boolean` item and the top two `:exec` items (call the top one `A` and the second `B`). If the `:boolean` is `true`, it pushes `A` onto `:exec`, otherwise it pushes `B` onto `:exec`."
     :tags #{:complex :base}
     (d/consume-top-of :boolean :as :decider)
     (d/consume-top-of :exec :as :option1)
@@ -78,12 +79,20 @@
 (def exec-noop
   (core/build-instruction
     exec-noop
+    "`:exec-noop does not affect the stacks"
     :tags #{:complex :base}))
 
 
 (def exec-s
   (core/build-instruction
     exec-s
+    "`:exec-s` pops three items off the `:exec` stack; call them `A, `B` and `C`, from top to third items. It then pushes three items, onto `:exec`:
+
+    1. the list `'(B C)`
+    2. `C`
+    3. `A`
+
+    As a result, the top of the `:exec` stack will read: `'(A C (B C) ...)`"
     :tags #{:complex :base}
     (d/consume-top-of :exec :as :a)
     (d/consume-top-of :exec :as :b)
@@ -97,16 +106,19 @@
 (def exec-when
   (core/build-instruction
     exec-when
+    "`:exec-when` pops the top of the `:exec` and `:boolean` stacks. If the `:boolean` is `true`, it pushes the item back onto `:exec` (otherwise nothing is pushed)."
+
     :tags #{:complex :base}
     (d/consume-top-of :exec :as :do-this)
     (d/consume-top-of :boolean :as :really?)
-    (d/calculate [:do-this :really?] #(if %2 %1 '()) :as :continuation)
+    (d/calculate [:do-this :really?] #(if %2 %1 nil) :as :continuation)
     (d/push-onto :exec :continuation)))
 
 
 (def exec-do*while
   (core/build-instruction
     exec-do*while
+    "`:exec-do*while` pops the top of the `:exec` stack. It builds and pushes a continuation to the `:exec` stack which is `'([item] :exec-while [item])` (_Note_ the instruction is `:exec-while` in the continuation form)."
     :tags #{:complex :base}
     (d/consume-top-of :exec :as :do-this)
     (d/calculate [:do-this] #(list %1 :exec-while %1) :as :continuation)
@@ -116,6 +128,10 @@
 (def exec-while
   (core/build-instruction
     exec-while
+    "`:exec-while` pops the top of the `:exec` stack, and the top `:boolean`. It builds and pushes a continuation to the `:exec` stack based on the `:boolean` value:
+
+      - `true`: `'([item] :exec-while [item])`
+      - `false`: `'()`"
     :tags #{:complex :base}
     (d/consume-top-of :exec :as :do-this)
     (d/consume-top-of :boolean :as :again?)
@@ -126,11 +142,11 @@
 (def exec-y
   (core/build-instruction
     exec-y
+    "`:exec-y` pops the top item from the `:exec` stack, and pushes a continuation in the form `'([item] :exec-y [item])` to the `:exec` stack."
     :tags #{:complex :base}
     (d/consume-top-of :exec :as :arg)
-    (d/calculate [:arg] #(list :exec-y %1) :as :result)
-    (d/push-onto :exec :result)
-    (d/push-onto :exec :arg)))
+    (d/calculate [:arg] #(list %1 :exec-y %1) :as :continuation)
+    (d/push-onto :exec :continuation)))
 
 
 (def classic-exec-module

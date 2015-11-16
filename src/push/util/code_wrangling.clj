@@ -3,7 +3,7 @@
   )
 
 
-(defn count-points
+(defn count-collection-points
   "Takes a nested list (or any other nested collection or item) and counts the total
   number of collections and items in those collections. Literal 'nil' is 1;
   an empty list '() or #{} or {} is 1; each hash-map is itself 1 and each key
@@ -13,9 +13,9 @@
   [item & {:keys [counter] :or {counter 0}}]
   (cond
     (map? item)
-      (reduce #(+ %1 (count-points %2)) (inc counter) (vec item))
+      (reduce #(+ %1 (count-collection-points %2)) (inc counter) (vec item))
     (coll? item)
-      (reduce #(+ %1 (count-points %2)) (inc counter) item)
+      (reduce #(+ %1 (count-collection-points %2)) (inc counter) item)
     :else
       (inc counter)))
 

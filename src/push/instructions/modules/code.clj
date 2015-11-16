@@ -173,17 +173,10 @@
 (def code-fromstring (t/simple-item-to-code-instruction :string))
 
 
-(def code-frominteger
-  (core/build-instruction
-    code-frominteger
-    :tags #{:complex :base :conversion}
-    (d/consume-top-of :integer :as :arg)
-    (d/push-onto :code :arg)))
-
-
 (def code-if
   (core/build-instruction
     code-if
+    "`:code-if` pops two items from the `:code` stack and one from the `:boolean` stack. If the `:boolean` is `true`, it pushes the second `:code` item back; if false, the first `:code` item. The other popped `:code` item is discarded."
     :tags #{:complex :base}
     (d/consume-top-of :code :as :arg2)
     (d/consume-top-of :code :as :arg1)
@@ -195,6 +188,7 @@
 (def code-length
   (core/build-instruction
     code-length
+    "`:code-length` pops the top `:code` item, and if it is a Collection it counts the number of items in its root and pushes that value to the `:integer` stack. 1 is pushed to `:integer` for items that are not Collections."
     :tags #{:complex :base}
     (d/consume-top-of :code :as :arg)
     (d/calculate [:arg] #(if (coll? %1) (count %1) 1) :as :len)
@@ -227,6 +221,7 @@
 (def code-member?
   (core/build-instruction
     code-member?
+    "`:code-member?` pops two items from the `:code` stack; call them `A` (the top one) and `B` (the second one). First, if `A` is not a Collection, it is wrapped in a list. The result of `true` is pushed to the `:boolean` stack if `B` is a member of this modified `A`, or `false` if not."
     :tags #{:complex :predicate :base}
     (d/consume-top-of :code :as :arg1)
     (d/consume-top-of :code :as :arg2)
@@ -238,12 +233,13 @@
 (def code-noop
   (core/build-instruction
     code-noop
+    "`:code-noop` has no effect on the stacks."
     :tags #{:complex :base}))
 
 
 (def code-null? (t/simple-1-in-predicate
-                  "`:code-null?` pushes `true` if the top `:code` item is an empty collection"
-                  :code "null?" #(and (coll? %) (empty? %))))
+  "`:code-null?` pushes `true` if the top `:code` item is an empty collection"
+  :code "null?" #(and (coll? %) (empty? %))))
 
 
 (def code-quote
@@ -258,19 +254,16 @@
   "`:code-rest` examines the top `:code` item; if it's a Collection, it removes
   the first item and returns the reduced list; if it's not a Collection, it returns
   the original item"
-                    :code 
-                    "rest" 
-                    #(if (coll? %1) 
-                         (rest %1) 
-                         (list))))
+  :code "rest" #(if (coll? %1) (rest %1) (list))))
 
 
 (def code-size
   (core/build-instruction
     code-size
+    "`:code-size` pops the top item from the `:code` stack, and totals the number of items it contains anywhere, in any nested Collection of any type. The root of the item counts as 1, and every element (including sub-Collections) nested inside that add 1 more. Items in lists, vectors, sets, and maps are counted. Maps are counted as a collection of key-value pairs, each key and value are an item in a pair, and if they themselves are nested items those are traversed as well. (_Note_ that this differs from `:code-points` by counting the contents of Collections, as opposed to lists only.) The result is pushed to the `:integer` stack."
     :tags #{:complex :base}
     (d/consume-top-of :code :as :arg1)
-    (d/calculate [:arg1] #(u/count-points %1) :as :size)
+    (d/calculate [:arg1] #(u/count-collection-points %1) :as :size)
     (d/push-onto :integer :size)))
 
 
