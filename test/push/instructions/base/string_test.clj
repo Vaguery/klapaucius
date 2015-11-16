@@ -59,9 +59,9 @@
     {:exec   '(:integer-add)
      :string '("ere he was able")}           
                             :exec-string-iterate       
-                                                  {:char   '(\e)
+                                                  {:char   '()
                                                    :string '()
-                                                   :exec   '((:integer-add 
+                                                   :exec   '((\e :integer-add 
                                                               "re he was able" 
                                                               :exec-string-iterate 
                                                               :integer-add))}
@@ -69,9 +69,9 @@
     {:exec   '(:integer-add :foo)
      :string '("ere he was able")}           
                             :exec-string-iterate       
-                                                  {:char   '(\e)
+                                                  {:char   '()
                                                    :string '()
-                                                   :exec   '((:integer-add 
+                                                   :exec   '((\e :integer-add 
                                                               "re he was able" 
                                                               :exec-string-iterate
                                                               :integer-add) :foo)} 
@@ -79,9 +79,9 @@
     {:exec   '((2 :integer-add (7)))
      :string '("ere he was able")}           
                             :exec-string-iterate       
-                                                  {:char   '(\e)
+                                                  {:char   '()
                                                    :string '()
-                                                   :exec   '(((2 :integer-add (7))
+                                                   :exec   '((\e (2 :integer-add (7))
                                                               "re he was able" 
                                                               :exec-string-iterate
                                                               (2 :integer-add (7))))} 
@@ -89,9 +89,9 @@
     {:exec   '(:integer-add)
      :string '("e")}           
                             :exec-string-iterate       
-                                                  {:char   '(\e)
+                                                  {:char   '()
                                                    :string '()
-                                                   :exec   '(:integer-add)}
+                                                   :exec   '((\e :integer-add))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec   '(:integer-add)
      :string '("")}           

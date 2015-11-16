@@ -14,6 +14,8 @@
     (eval (list
       'core/build-instruction
       instruction-name
+      (str "`:" instruction-name "` pops the top item from the `" stackname
+           "` stack and converts it to a `:string` (using Clojure's `str` function)")
       :tags #{:string :base :conversion}
       `(d/consume-top-of ~stackname :as :arg)
       '(d/calculate [:arg] #(str %1) :as :printed)
@@ -43,16 +45,20 @@
 (def exec-string-iterate
   (core/build-instruction
     exec-string-iterate
+    "`:exec-string-iterate` pops the top `:exec` item and the `:string`, and pushes a continuation form to the `:exec` stack that is either:
+
+    - when the string is empty: nil [nothing is pushed]
+    - when there is 1 character: `'([head] [item])`
+    - when there are more characters, say `tail` is the string lacking its first character, and `head` is the first character: `'([head] [item] [tail] :exec-string-iterate [item])`"
     :tags #{:string :base}
     (d/consume-top-of :string :as :s)
     (d/consume-top-of :exec :as :fn)
     (d/calculate [:s] #(first %1) :as :head)
     (d/calculate [:s] #(strings/join (rest %1)) :as :tail)
-    (d/calculate [:fn :s :tail]
+    (d/calculate [:fn :s :head :tail]
         #(cond (empty? %2) nil
-               (empty? %3) %1
-               :else (list %1 %3 :exec-string-iterate %1)) :as :continuation)
-    (d/push-onto :char :head)
+               (empty? %4) (list %3 %1)
+               :else (list %3 %1 %4 :exec-string-iterate %1)) :as :continuation)
     (d/push-onto :exec :continuation)))
 
 

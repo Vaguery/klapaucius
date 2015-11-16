@@ -24,6 +24,7 @@
 (def integer-divide
   (core/build-instruction
     integer-divide
+    "`:integer-divide` pops the top two `:integer` values (call them `denominator` and `numerator`, respectively). If `denominator` is 0, it replaces the two `:integer` values; if not, it pushes their (integer) quotient."
     :tags #{:arithmetic :base :dangerous}
     (d/consume-top-of :integer :as :denominator)
     (d/consume-top-of :integer :as :numerator)
@@ -42,6 +43,7 @@
 (def integer-mod
   (core/build-instruction
     integer-mod
+    "`:integer-mod` pops the top two `:integer` values (call them `denominator` and `numerator`, respectively). If `denominator` is 0, it replaces the two `:integer` values; if not, it pushes `(mod numerator denominator)`."
     :tags #{:arithmetic :base :dangerous}
     (d/consume-top-of :integer :as :denominator)
     (d/consume-top-of :integer :as :numerator)
@@ -72,6 +74,7 @@
 (def integer-fromboolean
   (core/build-instruction
     integer-fromboolean
+    "`:integer-fromboolean` pops the top `:boolean`. If it's `true`, it pushes 1; if `false`, it pushes 0."
     :tags #{:base :conversion}
     (d/consume-top-of :boolean :as :arg1)
     (d/calculate [:arg1] #(if %1 1 0) :as :logic)
@@ -81,6 +84,7 @@
 (def integer-signfromboolean
   (core/build-instruction
     integer-signfromboolean
+    "`:integer-signfromboolean` pops the top `:boolean`. If it's `true`, it pushes 1; if `false`, it pushes -1."
     :tags #{:base :conversion}
     (d/consume-top-of :boolean :as :arg1)
     (d/calculate [:arg1] #(if %1 1 -1) :as :logic)
@@ -90,6 +94,7 @@
 (def integer-fromfloat
   (core/build-instruction
     integer-fromfloat
+    "`:integer-fromfloat` pops the top `:float` item, and converts it to an `:integer` value (using CLojure's `bigint` function)"
     :tags #{:numeric :base :conversion}
     (d/consume-top-of :float :as :arg1)
     (d/calculate [:arg1] #(bigint %1) :as :int)
@@ -99,6 +104,7 @@
 (def integer-fromchar
   (core/build-instruction
     integer-fromchar
+    "`:integer-fromchar` pops the top `:char` item, and converts it to an (integer) index"
     :tags #{:base :conversion}
     (d/consume-top-of :char :as :arg1)
     (d/calculate [:arg1] #(long %1) :as :int)
@@ -108,6 +114,7 @@
 (def integer-fromstring
   (core/build-instruction
     integer-fromstring
+    "`:integer-fromstring` pops the top `:string` item, and applies `Long/parseLong` to attempt to convert it to a fixed-point value. If successful (that is, if no exception is raised), the result is pushed to `:integer`"
     :tags #{:conversion :base :numeric}
     (d/consume-top-of :string :as :arg)
     (d/calculate [:arg] 
