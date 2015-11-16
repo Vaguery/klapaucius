@@ -29,25 +29,39 @@
 (def exec-do*range
   (core/build-instruction
     exec-do*range
+      "`:exec-do*count` pops the top item of `:exec` and the top two `:integer` values (call them `end` and `start`, respectively). It constructs a continuation depending on whether the relation between `start` and `end`, which will (when interpreted) send the current `start` value to the `:integer` stack, execute the `:exec` item, send updated indices to the `:integer` stack, and then repeat the loop:
+
+      - `start` < `end`: `'([start] [item] ([start+1] [end] :exec-do*range [item]))`
+      - `start` > `end`: `'([start] [item] ([start-1] [end] :exec-do*range [item]))`
+      - `start` = `end`: `'([end] [item])`
+
+    This continuation is pushed to the `:exec` stack. "
+
     :tags #{:complex :base}
     (d/consume-top-of :exec :as :do-this)
     (d/consume-top-of :integer :as :end)
     (d/consume-top-of :integer :as :start)
     (d/calculate [:start :end] #(= %1 %2) :as :done?)
     (d/calculate [:start :end] #(+ %1 (compare %2 %1)) :as :next)
-    (d/push-onto :integer :next)
     (d/calculate
       [:do-this :start :end :next :done?] 
       #(if %5
-           %1
-           (list %1 (list %4 %3 :exec-do*range %1))) :as :continuation)
+           (list %3 %1)
+           (list %2 %1 (list %4 %3 :exec-do*range %1))) :as :continuation)
     (d/push-onto :exec :continuation)))
-
 
 
 (def exec-do*times
   (core/build-instruction
     exec-do*times
+      "`:exec-do*times` pops the top item of `:exec` and the top two `:integer` values (call them `end` and `start`, respectively). It constructs a continuation depending on whether the relation between `start` and `end`, which will (when interpreted) execute the `:exec` item, send updated indices to the `:integer` stack, and then repeat the loop:
+
+      - `start` < `end`: `'([item] ([start+1] [end] :exec-do*range [item]))`
+      - `start` > `end`: `'([item] ([start-1] [end] :exec-do*range [item]))`
+      - `start` = `end`: `'[item]` (not in a list)
+
+    This continuation is pushed to the `:exec` stack. "
+
     :tags #{:complex :base}
     (d/consume-top-of :exec :as :do-this)
     (d/consume-top-of :integer :as :counter)

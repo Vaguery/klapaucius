@@ -73,20 +73,27 @@
     ?new-stacks                ?instruction             ?expected
 
     {:exec     '(:foo :bar)
-     :integer  '(2 2)}         :exec-do*range     {:exec '(:foo :bar)
-                                                     :integer '(2)} 
+     :integer  '(3 2)}        :exec-do*range     {:exec '((2 :foo
+                                                      (3 3 :exec-do*range :foo)) :bar)
+                                                   :integer '()} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec     '(:foo :bar)
-     :integer  '(2 10)}        :exec-do*range     {:exec '((:foo (9 2 :exec-do*range :foo)) :bar)
-                                                     :integer '(9)} 
+     :integer  '(3 3)}         :exec-do*range     {:exec '((3 :foo) :bar)
+                                                     :integer '()} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec     '(:foo :bar)
-     :integer  '(10 10)}        :exec-do*range     {:exec '(:foo :bar)
-                                                     :integer '(10)} 
+     :integer  '(2 10)}        :exec-do*range     {:exec '((10 :foo
+                                                      (9 2 :exec-do*range :foo)) :bar)
+                                                   :integer '()} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec     '(:foo :bar)
-     :integer  '(-2 -10)}      :exec-do*range     {:exec '((:foo (-9 -2 :exec-do*range :foo)) :bar)
-                                                     :integer '(-9)} 
+     :integer  '(10 10)}        :exec-do*range     {:exec '((10 :foo) :bar)
+                                                     :integer '()} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec     '(:foo :bar)
+     :integer  '(-2 -10)}      :exec-do*range     {:exec '((-10 :foo 
+                                                      (-9 -2 :exec-do*range :foo)) :bar)
+                                                   :integer '()} 
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ; ;; missing arguments
     {:exec     '()

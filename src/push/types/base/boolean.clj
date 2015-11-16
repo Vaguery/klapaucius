@@ -9,6 +9,7 @@
 (def boolean-frominteger
   (core/build-instruction
     boolean-frominteger
+    "`:boolean-frominteger` pops the top `:integer` item, and pushes `false` if it is 0, or `true` if it is any other value"
     :tags #{:boolean :conversion :base}
     (d/consume-top-of :integer :as :arg)
     (d/calculate [:arg] #(not (zero? %1)) :as :result)
@@ -18,6 +19,7 @@
 (def boolean-fromintsign
   (core/build-instruction
     boolean-fromintsign
+    "`:boolean-fromintsign` pops the top `:integer` item, and pushes `true` if it positive, or `false` if it is zero or negative"
     :tags #{:boolean :conversion :base}
     (d/consume-top-of :integer :as :arg)
     (d/calculate [:arg] #(not (neg? %1)) :as :result)
@@ -27,6 +29,7 @@
 (def boolean-fromfloat
   (core/build-instruction
     boolean-fromfloat
+    "`:boolean-fromfloat` pops the top `:float` item, and pushes `false` if it is 0.0, or `true` if it is any other value"
     :tags #{:boolean :conversion :base}
     (d/consume-top-of :float :as :arg)
     (d/calculate [:arg] #(not (zero? %1)) :as :result)
@@ -36,6 +39,7 @@
 (def boolean-fromfloatsign
   (core/build-instruction
     boolean-fromfloatsign
+    "`:boolean-fromfloatsign` pops the top `:float` item, and pushes `true` if it positive, or `false` if it is zero or negative"
     :tags #{:boolean :conversion :base}
     (d/consume-top-of :float :as :arg)
     (d/calculate [:arg] #(not (neg? %1)) :as :result)

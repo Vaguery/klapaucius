@@ -54,23 +54,23 @@
 (def zerochar-list (list (char 0)))
 
 (tabular
-  (fact ":char-frominteger drops the top :integer into [0..128] and pushes that ASCII character"
+  (fact ":char-asciifrominteger drops the top :integer into [0..128] and pushes that ASCII character"
     (register-type-and-check-instruction
         ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction  ?get-stack         ?expected
     ;; all the letters
-    :integer    '(88)         :char-frominteger   :char         '(\X)
-    :integer    '(37)         :char-frominteger   :char         '(\%)
-    :integer    '(-37)        :char-frominteger   :char         '(\[)
-    :integer    '(200)        :char-frominteger   :char         '(\H)
+    :integer    '(88)         :char-asciifrominteger   :char         '(\X)
+    :integer    '(37)         :char-asciifrominteger   :char         '(\%)
+    :integer    '(-37)        :char-asciifrominteger   :char         '(\[)
+    :integer    '(200)        :char-asciifrominteger   :char         '(\H)
     ;; edge cases
-    :integer    '(0)          :char-frominteger   :char         zerochar-list
-    :integer    '(128)        :char-frominteger   :char         zerochar-list
-    :integer    '(256)        :char-frominteger   :char         zerochar-list
-    :integer    '(-128)       :char-frominteger   :char         zerochar-list
+    :integer    '(0)          :char-asciifrominteger   :char         zerochar-list
+    :integer    '(128)        :char-asciifrominteger   :char         zerochar-list
+    :integer    '(256)        :char-asciifrominteger   :char         zerochar-list
+    :integer    '(-128)       :char-asciifrominteger   :char         zerochar-list
     ;; missing args
-    :integer    '()           :char-frominteger   :char         '())
+    :integer    '()           :char-asciifrominteger   :char         '())
 
 
 ;; silly fixture for a weird edge-case

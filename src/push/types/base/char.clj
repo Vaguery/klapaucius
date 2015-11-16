@@ -12,6 +12,7 @@
 (def char-allfromstring
   (core/build-instruction
     char-allfromstring
+    "`:char-allfromstring` pops the top `:string` item, and pushes every character (in the same order as the string) onto the `:char` stack. Thus a string \"foo\" will be pushed onto the `:char` stack as `'(\\f \\o \\o ...)`"
     :tags #{:string :conversion :base}
     (d/consume-top-of :string :as :arg)
     (d/consume-stack :char :as :old-stack)
@@ -27,9 +28,10 @@
   :char "digit?" #(Character/isDigit %1)))
 
 
-(def char-frominteger
+(def char-asciifrominteger
   (core/build-instruction
-    char-frominteger
+    char-asciifrominteger
+    "`:char-asciifrominteger` pops the top `:integer` value, reduces it modulo 128, and pushes the `:char` that is represented by that ASCII value"
     :tags #{:string :conversion :base}
     (d/consume-top-of :integer :as :arg)
     (d/calculate [:arg] #(char (mod %1 128)) :as :c)
@@ -77,7 +79,7 @@
         (t/attach-instruction , char-letter?)
         (t/attach-instruction , char-digit?)
         (t/attach-instruction , char-whitespace?)
-        (t/attach-instruction , char-frominteger)
+        (t/attach-instruction , char-asciifrominteger)
         (t/attach-instruction , char-fromfloat)
         (t/attach-instruction , char-lowercase?)
         (t/attach-instruction , char-uppercase?)
