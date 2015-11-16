@@ -132,8 +132,8 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`:" instruction-name "` pushes an `:integer` which is the number of items in the "
-        pushtype " stack.")
+      (str "`:" instruction-name "` pushes an `:integer` which is the number of items in the `"
+        typename "` stack.")
       :tags #{:visible}
       `(push.instructions.dsl/count-of ~typename :as :depth)
       '(push.instructions.dsl/push-onto :integer :depth)))))
@@ -147,8 +147,8 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`:" instruction-name "` pushes a `:boolean`, `true` if the "
-        pushtype " stack is empty, `false` otherwise.")
+      (str "`:" instruction-name "` pushes a `:boolean`, `true` if the `"
+        typename "` stack is empty, `false` otherwise.")
       :tags #{:visible}
       `(push.instructions.dsl/count-of ~typename :as :depth)
       '(push.instructions.dsl/calculate [:depth] #(zero? %1) :as :check)
@@ -177,7 +177,7 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`:" instruction-name "` pops the top two `" pushtype
+      (str "`:" instruction-name "` pops the top two `" typename
         "` items and pushes `true` if they are equal, `false` otherwise.")
       :tags #{:equatable}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
@@ -194,7 +194,7 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`:" instruction-name "` pops the top two `" pushtype
+      (str "`:" instruction-name "` pops the top two `" typename
         "` items and pushes `false` if they are equal, `true` otherwise.")
       :tags #{:equatable}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
@@ -225,7 +225,7 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`:" instruction-name "` pops the top two `" pushtype
+      (str "`:" instruction-name "` pops the top two `" typename
         "` items and pushes `true` if the top item is less than the second, `false` otherwise.")
       :tags #{:comparison}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
@@ -242,7 +242,7 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`:" instruction-name "` pops the top two `" pushtype
+      (str "`:" instruction-name "` pops the top two `" typename
         "` items and pushes `true` if the top item is less than or equal to the second, `false` otherwise.")
       :tags #{:comparison}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
@@ -259,7 +259,7 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`:" instruction-name "` pops the top two `" pushtype
+      (str "`:" instruction-name "` pops the top two `" typename
         "` items and pushes `true` if the top item is greater than or equal to the second, `false` otherwise.")
       :tags #{:comparison}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
@@ -276,7 +276,7 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`:" instruction-name "` pops the top two `" pushtype
+      (str "`:" instruction-name "` pops the top two `" typename
         "` items and pushes `true` if the top item is greater than the second, `false` otherwise.")
       :tags #{:comparison}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
@@ -293,7 +293,7 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`:" instruction-name "` pops the top two `" pushtype
+      (str "`:" instruction-name "` pops the top two `" typename
         "` items and pushes the _smaller_ of the two.")
       :tags #{:comparison}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
@@ -311,7 +311,7 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`:" instruction-name "` pops the top two `" pushtype
+      (str "`:" instruction-name "` pops the top two `" typename
         "` items and pushes the _larger_ of the two.")
       :tags #{:comparison}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
@@ -347,7 +347,7 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`:" instruction-name "` examines the top `" pushtype
+      (str "`:" instruction-name "` examines the top `" typename
         "` item and pushes a duplicate to the same stack.")
       :tags #{:combinator}
       `(push.instructions.dsl/save-top-of ~typename :as :arg1)
@@ -362,7 +362,7 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`:" instruction-name "` discards all items from the `" pushtype
+      (str "`:" instruction-name "` discards all items from the `" typename
         "` stack.")
       :tags #{:combinator}
       `(push.instructions.dsl/delete-stack ~typename)))))
@@ -376,7 +376,7 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`:" instruction-name "` discards the top item from the `" pushtype
+      (str "`:" instruction-name "` discards the top item from the `" typename
         "` stack.")
       :tags #{:combinator}
       `(push.instructions.dsl/delete-top-of ~typename)))))
@@ -390,7 +390,7 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`:" instruction-name "` pops the top three items from the `" pushtype
+      (str "`:" instruction-name "` pops the top three items from the `" typename
         "` stack; call them `A`, `B` and `C`, respectively. It pushes them back so that top-to-bottom order is now `'(C A B ...)`")
       :tags #{:combinator}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
@@ -409,7 +409,7 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`:" instruction-name "` pops the top item from the `" pushtype
+      (str "`:" instruction-name "` pops the top item from the `" typename
         "` stack and the top `:integer`. The `:integer` is brought into range as an index by applying `(mod integer (count stack))`, and then the top item is _moved_ so that it is in that position in the resulting stack.")
       :tags #{:combinator}
       '(push.instructions.dsl/consume-top-of :integer :as :index)
@@ -426,7 +426,7 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`:" instruction-name "` swaps the positions of the top two `" pushtype
+      (str "`:" instruction-name "` swaps the positions of the top two `" typename
         "` items.")
       :tags #{:combinator}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
@@ -443,7 +443,7 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`:" instruction-name "` pops the top `:integer`. The `:integer` is brought into range as an index by applying `(mod integer (count stack))`, and then the item _currently_ found in the indexed position in the `" pushtype "` stack is _moved_ so that it is on top.")
+      (str "`:" instruction-name "` pops the top `:integer`. The `:integer` is brought into range as an index by applying `(mod integer (count stack))`, and then the item _currently_ found in the indexed position in the `" typename "` stack is _moved_ so that it is on top.")
       :tags #{:combinator}
       '(push.instructions.dsl/consume-top-of :integer :as :index)
       `(push.instructions.dsl/count-of ~typename :as :how-many)
@@ -459,7 +459,7 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`:" instruction-name "` pops the top `:integer`. The `:integer` is brought into range as an index by applying `(mod integer (count stack))`, and then the item _currently_ found in the indexed position in the `" pushtype "` stack is _copied_ so that a duplicate of it is on top.")
+      (str "`:" instruction-name "` pops the top `:integer`. The `:integer` is brought into range as an index by applying `(mod integer (count stack))`, and then the item _currently_ found in the indexed position in the `" typename "` stack is _copied_ so that a duplicate of it is on top.")
       :tags #{:combinator}
       '(push.instructions.dsl/consume-top-of :integer :as :index)
       `(push.instructions.dsl/count-of ~typename :as :how-many)
