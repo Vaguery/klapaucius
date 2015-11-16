@@ -120,6 +120,30 @@
 
 
 (tabular
+  (fact ":char-fromfloat drops the top :float down to an integer value in [0..65535] and pushes that ASCII character"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items          ?instruction  ?get-stack         ?expected
+    ;; all the letters
+    :float    '(88.9)         :char-fromfloat   :char         '(\X)
+    :float    '(37.2)         :char-fromfloat   :char         '(\%)
+    :float    '(-22771.9)     :char-fromfloat   :char         '(\꜌)
+    :float    '(200.2)        :char-fromfloat   :char         '(\È)
+    ;; comparison to :char-fromfloat
+    :float    '(0.2)          :char-fromfloat   :char         zerochar-list
+    :float    '(65535.3)      :char-fromfloat   :char         zerochar-list
+    :float    '(256.9)        :char-fromfloat   :char         '(\Ā)
+    :float    '(-128.2)       :char-fromfloat   :char         '(\ｿ)
+    ;; bounds for internal typecast (huge bigint mod 65535 -> 0)
+    :float    '(1.1e88M)      :char-fromfloat   :char         '(\뗖)
+    :float    '(111111111111111111111111111111111111111.0M)
+                              :char-fromfloat   :char         '(\㓂)
+    ;; missing args
+    :float    '()             :char-fromfloat   :char         '())
+
+
+(tabular
   (fact ":char-letter? returns true when the :char item is an alphabetic letter (LC or UC)"
     (register-type-and-check-instruction
         ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
