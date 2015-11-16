@@ -15,16 +15,16 @@
     ?new-stacks                ?instruction             ?expected
 
     {:exec     '(:foo :bar)
-     :integer  '(0)}         :exec-do*count    {:exec '(:foo :bar)
-                                                :integer '(0)} 
+     :integer  '(0)}         :exec-do*count    {:exec '((0 :foo) :bar)
+                                                :integer '()} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec     '(:foo :bar)
-     :integer  '(2)}        :exec-do*count     {:exec '((:foo (1 :exec-do*count :foo)) :bar)
-                                                :integer '(1)} 
+     :integer  '(2)}        :exec-do*count     {:exec '((0 2 :exec-do*range :foo) :bar)
+                                                :integer '()} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec     '(:foo :bar)
-     :integer  '(-10)}        :exec-do*count    {:exec '((:foo (-9 :exec-do*count :foo)) :bar)
-                                                :integer '(-9)} 
+     :integer  '(-10)}        :exec-do*count    {:exec '((-10 :foo) :bar)
+                                                :integer '()} 
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ; ; ;; missing arguments
     {:exec     '()

@@ -8,17 +8,21 @@
 (def exec-do*count
   (core/build-instruction
     exec-do*count
+    "`:exec-do*count` pops the top item of `:exec` and the top `:integer`. It constructs a continuation depending on whether the `:integer` is positive:
+
+      - `[int]` positive?: `'([int] 0 :code-quote [code] :code-do*range)`
+      - `[int]` zero or negative?: `'([int] :code-quote [code])`
+
+    This continuation is pushed to the `:exec` stack."
     :tags #{:complex :base}
     (d/consume-top-of :exec :as :do-this)
     (d/consume-top-of :integer :as :counter)
-    (d/calculate [:counter] #(zero? %1) :as :done?)
-    (d/calculate [:counter] #(+ %1 (compare 0 %1)) :as :next)
-    (d/push-onto :integer :next)
+    (d/calculate [:counter] #((complement pos?) %1) :as :done?)
     (d/calculate
-      [:do-this :counter :next :done?] 
-      #(if %4
-           %1
-           (list %1 (list %3 :exec-do*count %1))) :as :continuation)
+      [:do-this :counter :done?] 
+      #(if %3
+        (list %2 %1)
+        (list 0 %2 :exec-do*range %1)) :as :continuation)
     (d/push-onto :exec :continuation)))
 
 
