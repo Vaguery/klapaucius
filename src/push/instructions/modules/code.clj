@@ -15,7 +15,6 @@
 ; code_discrepancy
 ; code_extract
 ; code_insert
-; code_nthcdr
 ; code_overlap
 ; code_position
 ; code_subst
@@ -149,6 +148,20 @@
            %1
            (list %1 (list %3 :code-quote %1 :code-do*times))) :as :continuation)
     (d/push-onto :exec :continuation)))
+
+
+(def code-drop               ;; Clojush: code-nthcdr
+  (core/build-instruction
+    code-drop
+    "`:code-drop` pops the top `:code` and `:integer` items. It wraps the `:code` item in a list if it isn't one, and forces the integer into an index range by taking `(mod integer (count code)`. It then pushes the result of `(drop index code)`."
+    :tags #{:complex :base}
+    (d/consume-top-of :code :as :c)
+    (d/consume-top-of :integer :as :i)
+    (d/calculate [:c] #(if (seq? %1) %1 (list %1)) :as :list)
+    (d/calculate [:list :i] #(if (empty? %1) 0 (mod %2 (count %1))) :as :idx)
+    (d/calculate [:list :idx] #(drop %2 %1) :as :result)
+    (d/push-onto :code :result)))
+
 
 
 (def code-first (t/simple-1-in-1-out-instruction 
@@ -300,6 +313,7 @@
         (t/attach-instruction , code-do*count)
         (t/attach-instruction , code-do*range)
         (t/attach-instruction , code-do*times)
+        (t/attach-instruction , code-drop)
         (t/attach-instruction , code-first)
         (t/attach-instruction , code-fromboolean)
         (t/attach-instruction , code-fromchar)

@@ -255,6 +255,41 @@
 
 
 (tabular
+  (fact ":code-drop drops the first n elements of a code item, using that modulo trick"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks classic-code-module ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction             ?expected
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code    '((1 2 3) :bar)
+     :integer '(1)}            :code-drop     {:code '((2 3) :bar)
+                                              :integer '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code    '((1 2 3) :bar)
+     :integer '(5)}            :code-drop     {:code '((3) :bar)
+                                              :integer '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code    '((1 2 3) :bar)
+     :integer '(-3)}            :code-drop     {:code '((1 2 3) :bar)
+                                              :integer '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code    '(() :bar)
+     :integer '(-3)}            :code-drop     {:code '(() :bar)
+                                              :integer '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code    '(77)
+     :integer '(1)}            :code-drop     {:code '((77))     ;; wrapped in list
+                                              :integer '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code    '()
+     :integer '(1)}            :code-drop     {:code '()
+                                              :integer '(1)})
+
+
+
+
+
+(tabular
   (fact ":code-first pushes the first item of the top :code item, if it's a list"
     (register-type-and-check-instruction
         ?set-stack ?items classic-code-module ?instruction ?get-stack) => ?expected)
@@ -403,8 +438,6 @@
     {:code    '()
      :integer '(1)}            :code-nth     {:code '()
                                               :integer '(1)})
-
-
 
 
 (tabular
