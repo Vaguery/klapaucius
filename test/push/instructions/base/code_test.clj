@@ -377,6 +377,34 @@
     :code    '()                   :code-noop        :code        '())
      
 
+(tabular
+  (fact ":code-nth takes the nth item of :code, using that modulo trick"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks classic-code-module ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction             ?expected
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code    '((1 2 3) :bar)
+     :integer '(1)}            :code-nth     {:code '(2 :bar)
+                                              :integer '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code    '((1 2 3) :bar)
+     :integer '(10)}            :code-nth     {:code '(2 :bar)
+                                              :integer '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code    '((1 2 3) :bar)
+     :integer '(-4)}            :code-nth     {:code '(3 :bar)
+                                              :integer '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code    '(77)
+     :integer '(1)}            :code-nth     {:code '(77)
+                                              :integer '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code    '()
+     :integer '(1)}            :code-nth     {:code '()
+                                              :integer '(1)})
+
+
 
 
 (tabular

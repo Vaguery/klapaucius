@@ -15,7 +15,6 @@
 ; code_discrepancy
 ; code_extract
 ; code_insert
-; code_nth
 ; code_nthcdr
 ; code_overlap
 ; code_position
@@ -237,6 +236,19 @@
     :tags #{:complex :base}))
 
 
+(def code-nth
+  (core/build-instruction
+    code-nth
+    "`:code-nth` pops the top `:code` and `:integer` items. It wraps the `:code` item in a list if it isn't one, and forces the integer into an index range by taking `(mod integer (count code)`. It then pushes the indexed item of the (listified) `:code` item onto the `:code` stack."
+    :tags #{:complex :base}
+    (d/consume-top-of :code :as :c)
+    (d/consume-top-of :integer :as :i)
+    (d/calculate [:c] #(if (seq? %1) %1 (list %1)) :as :list)
+    (d/calculate [:list :i] #(mod %2 (count %1)) :as :idx)
+    (d/calculate [:list :idx] #(nth %1 %2) :as :result)
+    (d/push-onto :code :result)))
+
+
 (def code-null? (t/simple-1-in-predicate
   "`:code-null?` pushes `true` if the top `:code` item is an empty collection"
   :code "null?" #(and (coll? %) (empty? %))))
@@ -300,6 +312,7 @@
         (t/attach-instruction , code-map)
         (t/attach-instruction , code-member?)
         (t/attach-instruction , code-noop)
+        (t/attach-instruction , code-nth)
         (t/attach-instruction , code-null?)
         (t/attach-instruction , code-quote)
         (t/attach-instruction , code-rest)
