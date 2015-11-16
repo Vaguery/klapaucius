@@ -398,14 +398,14 @@
 
 (fact "`make-classic-interpreter` knows all kinds of instructions already"
   (let [benchmarker (make-classic-interpreter)]
-    (println (str "«Classic interpreter knows "
+    (println (str "Classic interpreter knows "
                   (count (keys (:instructions benchmarker)))
-                  " different instructions (of which "
+                  " different instructions,\n  of which "
                   (count (remove #(re-find #"docstring!" (:docstring %))
                     (vals (:instructions benchmarker))))
-                  " have docstrings), and recognizes "
+                  " have docstrings,\n  and recognizes "
                   (count (:router benchmarker))
-                  " types.»"))
+                  " types."))
     (keys (:instructions benchmarker)) =>  ;; just a sampling as a rough check
       (contains [:integer-add :boolean-and :char≥? :string-concat] :in-any-order :gaps-ok)))
 

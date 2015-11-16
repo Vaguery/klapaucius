@@ -233,8 +233,7 @@
                                                    :code '(:bar)} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo :bar)
-     :integer  '(-2 -9)}       :code-do*times     {:exec '((:foo 
-                                                    (-1 :code-quote :foo :code-do*times)))
+     :integer  '(-2 -9)}       :code-do*times     {:exec '(:foo)
                                                    :integer '(-9)
                                                    :code '(:bar)} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

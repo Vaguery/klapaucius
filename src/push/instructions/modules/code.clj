@@ -37,26 +37,21 @@
 
 
 
-(def code-atom? (t/simple-1-in-predicate
-                  "`:code-atom?` pushes `true` if the top `:code` item is not a collection"
-                  :code 
-                  "atom?"
-                  #(not (coll? %1))))
+(def code-atom?
+  (t/simple-1-in-predicate
+    "`:code-atom?` pushes `true` if the top `:code` item is not a collection"
+      :code "atom?" #(not (coll? %1))))
 
 
 (def code-cons (t/simple-2-in-1-out-instruction
   "`:code-cons` pops the top two `:code` items. If the first one is a list, it conjoins the second item to that; if it's not a list, it makes it one, then conjoins."
-                    :code 
-                    "cons" #(if (seq? %2) 
-                                (conj %2 %1) 
+    :code "cons" #(if (seq? %2) (conj %2 %1) 
                                 (conj (list %2) %1))))
-
 
 
 (def code-container (t/simple-2-in-1-out-instruction
   "`:code-container` pops the top two `:code` items. It performs a depth-first traversal of the second code item (if it is a list or not), looking for duplicates of the first item. If it finds one, then the _parent_ node of the tree is returned as a list. If the item is not found, or there is no parent (the two items are identical), there is no return value."
-                      :code 
-                      "container" #(first (u/containers-in %1 %2))))
+  :code "container" #(first (u/containers-in %1 %2))))
 
 
 (def code-contains?
@@ -72,6 +67,9 @@
 (def code-do
   (core/build-instruction
     code-do
+    "`:code-do` makes a copy of the top `:code` item, and builds a continuation
+      `'([top code item] :code-pop)`
+      which is pushed to the `:exec` stack"
     :tags #{:complex :base}
     (d/save-top-of :code :as :do-this)
     (d/calculate [:do-this] #(list %1 :code-pop) :as :continuation)
@@ -81,6 +79,7 @@
 (def code-do*
   (core/build-instruction
     code-do*
+    "`:code-do*` pops the top `:code` item, and pushes it onto the `:exec` stack"
     :tags #{:complex :base}
     (d/consume-top-of :code :as :do-this)
     (d/push-onto :exec :do-this)))
@@ -89,6 +88,12 @@
 (def code-do*count
   (core/build-instruction
     code-do*count
+    "`:code-do*count` pops the top item of `:code` and the top `:integer`. It constructs a continuation depending on whether the `:integer` is positive:
+
+      - `[int]` positive?: `'([int] 0 :code-quote [code] :code-do*range)`
+      - `[int]` zero or negative?: `'([int] :code-quote [code])`
+
+    This continuation is pushed to the `:exec` stack."
     :tags #{:complex :base}
     (d/consume-top-of :code :as :do-this)
     (d/consume-top-of :integer :as :counter)
@@ -104,6 +109,13 @@
 (def code-do*range
   (core/build-instruction
     code-do*range
+    "`:code-do*range` pops the top item of `:code` and the top two `:integer` values (call them `end` and `start`, respectively, with `end` being the top `:integer` item). It constructs a continuation depending on the relation between the `end` and `start` values:
+
+      - `end` > `start`: `'([start] [code] ([start+1] [end] :code-quote [code] :code-do*Range))`
+      - `end` < `start`: `'([start] [code] ([start-1] [end] :code-quote [code] :code-do*Range))`
+      - `end` = `start`: `'(end [code])`
+
+    This continuation is pushed to the `:exec` stack."
     :tags #{:complex :base}
     (d/consume-top-of :code :as :do-this)
     (d/consume-top-of :integer :as :end)
@@ -121,11 +133,17 @@
 (def code-do*times
   (core/build-instruction
     code-do*times
+    "`:code-do*times` pops the top item of `:code` and the top `:integer` value (call it `counter`). It constructs a continuation depending on whether `counter` is positive, zero or negative:
+
+      - `counter` ≤ 0: `[code]` (the popped `:code` item)
+      - `counter` > 0: `'([code] ([counter-1] :code-quote [code] :code-do*times))`
+
+    This continuation is pushed to the `:exec` stack."
     :tags #{:complex :base}
     (d/consume-top-of :code :as :do-this)
     (d/consume-top-of :integer :as :count)
-    (d/calculate [:count] #(zero? %1) :as :done?)
-    (d/calculate [:count] #(+ %1 (compare 0 %1)) :as :next)
+    (d/calculate [:count] #((complement pos?) %1) :as :done?)
+    (d/calculate [:count] #(dec %1) :as :next)
     (d/calculate
       [:do-this :count :next :done?] 
       #(if %4
