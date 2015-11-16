@@ -48,9 +48,9 @@
     (d/push-onto :char :c)))
 
 
-(def char-fromfloat
+(def char-asciifromfloat
   (core/build-instruction
-    char-fromfloat
+    char-asciifromfloat
     :tags #{:string :conversion :base}
     (d/consume-top-of :float :as :arg)
     (d/calculate [:arg] #(char (mod (bigint %1) 128)) :as :c)
@@ -91,7 +91,7 @@
         (t/attach-instruction , char-whitespace?)
         (t/attach-instruction , char-asciifrominteger)
         (t/attach-instruction , char-frominteger)
-        (t/attach-instruction , char-fromfloat)
+        (t/attach-instruction , char-asciifromfloat)
         (t/attach-instruction , char-lowercase?)
         (t/attach-instruction , char-uppercase?)
         ))
