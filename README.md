@@ -14,10 +14,19 @@ A Push program is an arbitrary ordered list composed of _inputs_, _instructions_
 
 - if an `input`, then the bound value is looked up and pushed to the `:exec` stack
 - if an `instruction`, the indicated changes are made to the interpreter state, usually by popping arguments from the various stacks
-- if a `literal` (of a recognized type), the item is pushed to a specified stack; boolean values are pushed onto the `:boolean` stack, floating-point numbers to the `:float` stack, and so forth
+- if a `literal` (of a recognized type), the item is pushed to a specified stack, which in the "basic model" includes
+  - `:boolean`
+  - `:char`
+  - `:code`
+  - `:float`
+  - `:integer`
+  - `:string`
+- numbers to the `:float` stack, and so forth
 - if a list of items, the list is "unwrapped" and pushed back onto the `:exec` stack so the items inside it will be executed in turn
 
-And that's about it. The interpreter (generally) will run until the `:exec` stack has been emptied. This can happen if all the items have been popped and pushed onto other stacks, or when instructions consume arguments or make more dramatic changes to the type and number of items on the stacks. That said, some of the instructions _add_ items to the stacks, including adding new items to the `:exec` stack, and thus the program can end up running quite a while... or forever. (That's common enough, frankly, that it's pretty unwise to run a Push program without some additional halting condition—for example, a maximum number of steps to take.)
+And that's about it. There are a few other special-purpose stacks, mainly used for IO and logging. It's possible to extend the language easily by defining new types (which in Push means little more than "literals that are recognized and sent to a stack"), the stacks that go with them, and instructions to manipulate them usefully.
+
+The interpreter (generally) will run until the `:exec` stack has been emptied. This can happen if all the items have been popped and pushed onto other stacks, or when instructions consume arguments or make more dramatic changes to the type and number of items on the stacks. That said, some of the instructions _add_ items to the stacks, including adding new items to the `:exec` stack, and thus the program can end up running quite a while... or forever. (That's common enough, frankly, that it's pretty unwise to run a Push program without some additional halting condition—for example, a maximum number of steps to take.)
 
 By convention, Push programs have no "return value" as such. They are simply ambiguous dynamical processes manipulating the values on the stacks, and whatever meaning a particular program has for a user depends entirely on how they intend to interrogate that dynamical state. For example, when Push programs are used in [symbolic regression](https://en.wikipedia.org/wiki/Symbolic_regression) projects, the common convention is to let the program "finish" (see above), and then look at the top number on one of the number stacks as "the answer". That said, a lot is happening in most interesting Push programs, and "the right answer" may not be where you're looking.
 
