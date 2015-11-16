@@ -5,11 +5,13 @@
   )
 
 
-(def float-add (t/simple-2-in-1-out-instruction :float "add" '+'))
+(def float-add (t/simple-2-in-1-out-instruction
+  "`:float-add` pops the top two `:float` values, and pushes their sum"
+  :float "add" '+'))
 
 
 (def float-cosine (t/simple-1-in-1-out-instruction
-  "`:float-cosine` returns the cosine of the top `:float` item, read as radians"
+  "`:float-cosine` pushes the cosine of the top `:float` item, read as radians"
   :float "cosine" #(Math/cos %1)))
 
 
@@ -96,26 +98,28 @@
     (d/push-these-onto :float [:replacement :quotient])))
 
 
-(def float-subtract (t/simple-2-in-1-out-instruction :float "subtract" '-'))
+(def float-subtract (t/simple-2-in-1-out-instruction
+  "`:float-subtract` pops the top two `:float` items, and pushes the difference of the top item subtracted from the second"
+  :float "subtract" '-'))
 
 
-
-
-(def float-multiply (t/simple-2-in-1-out-instruction :float "multiply" '*'))
+(def float-multiply (t/simple-2-in-1-out-instruction
+  "`:float-multiply` pops the top two `:float` items, and pushes the product"
+  :float "multiply" '*'))
 
 
 (def float-sign (t/simple-1-in-1-out-instruction
-  "`:float-sign` returns examines the top `:float` item and returns -1.0 if it's negative, 0.0 if it's zero, and 1.0 if it's positive"
+  "`:float-sign` pops the top `:float` item and pushes -1.0 if it's negative, 0.0 if it's zero, and 1.0 if it's positive"
   :float "sign" #(float (compare %1 0.0))))
 
 
 (def float-sine (t/simple-1-in-1-out-instruction
-  "`:float-sine` returns the trigonometric sine of the top `:float` item, read as an angle in radians"
+  "`:float-sine` pushes the sine of the top `:float` item, read as an angle in radians"
   :float "sine" #(Math/sin %1)))
 
 
 (def float-tangent (t/simple-1-in-1-out-instruction
-  "`:float-tangent` returns the tangent of the top `:float` item, read as an angle in radians"
+  "`:float-tangent` pushes the tangent of the top `:float` item, read as an angle in radians"
   :float "tangent" #(Math/tan %1)))
 
 

@@ -46,15 +46,21 @@
 
 
 (def bool-and
-  (t/simple-2-in-1-out-instruction :boolean "and" 'and))
+  (t/simple-2-in-1-out-instruction
+    "`:boolean-and` pops the top two `:boolean` items, and pushes `true` if they're both `true`, `false` otherwise"
+    :boolean "and" 'and))
 
   
 (def bool-or
-  (t/simple-2-in-1-out-instruction :boolean "or" 'or))
+  (t/simple-2-in-1-out-instruction
+    "`:boolean-or` pops the top two `:boolean` items, and pushes `true` if either one is `true, `false` otherwise"
+    :boolean "or" 'or))
 
 
 (def bool-xor
-  (t/simple-2-in-1-out-instruction :boolean "xor" 'xor2))
+  (t/simple-2-in-1-out-instruction
+    "`:boolean-or` pops the top two `:boolean` items, and pushes `true` if exactly one of them is `true`, or `false` otherwise"
+    :boolean "xor" 'xor2))
 
 
 (def bool-not 

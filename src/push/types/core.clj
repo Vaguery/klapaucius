@@ -77,12 +77,13 @@
 (defn simple-2-in-1-out-instruction
   "returns a standard :typed arity-2 function, where the output
   and inputs are all the same type"
-  [type word operation]
+  [docstring type word operation]
   (let [stackname (keyword type)
         instruction-name (str (name stackname) "-" word)]
     (eval (list
       'core/build-instruction
       instruction-name
+      docstring
       :tags #{:arithmetic :base}
       `(d/consume-top-of ~stackname :as :arg2)
       `(d/consume-top-of ~stackname :as :arg1)

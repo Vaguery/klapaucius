@@ -11,7 +11,9 @@
 (defn sign [i] (compare i 0))
 
 
-(def integer-add (t/simple-2-in-1-out-instruction :integer "add" '+'))
+(def integer-add (t/simple-2-in-1-out-instruction
+  "`:integer-add` pops the top two `:integer` items, and pushes their sum"
+  :integer "add" '+'))
 
 
 (def integer-dec (t/simple-1-in-1-out-instruction
@@ -50,15 +52,18 @@
     (d/push-these-onto :integer [:replacement :remainder])))
 
 
-(def integer-multiply (t/simple-2-in-1-out-instruction :integer  "multiply" '*'))
+(def integer-multiply (t/simple-2-in-1-out-instruction
+  "`:integer-multiply` pops the top two `:integer` items, and pushes their product"
+  :integer  "multiply" '*'))
 
 
 (def integer-sign (t/simple-1-in-1-out-instruction
-  "`:integer-sign` examines the top `:integer` item, and returns -1 if negative, 0 if zero, and 1 if positive"
+  "`:integer-sign` examines the top `:integer` item, and pushes -1 if negative, 0 if zero, and 1 if positive"
   :integer  "sign" 'sign))
 
 
-(def integer-subtract (t/simple-2-in-1-out-instruction :integer "subtract" '-'))
+(def integer-subtract (t/simple-2-in-1-out-instruction
+  "`:integer-subtract` pops the top two `:integer` items, and pushes their difference, subtracting the top from the second" :integer "subtract" '-'))
 
 
 ;; conversion

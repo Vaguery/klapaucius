@@ -44,7 +44,8 @@
                   #(not (coll? %1))))
 
 
-(def code-cons (t/simple-2-in-1-out-instruction 
+(def code-cons (t/simple-2-in-1-out-instruction
+  "`:code-cons` pops the top two `:code` items. If the first one is a list, it conjoins the second item to that; if it's not a list, it makes it one, then conjoins."
                     :code 
                     "cons" #(if (seq? %2) 
                                 (conj %2 %1) 
@@ -53,6 +54,7 @@
 
 
 (def code-container (t/simple-2-in-1-out-instruction
+  "`:code-container` pops the top two `:code` items. It performs a depth-first traversal of the second code item (if it is a list or not), looking for duplicates of the first item. If it finds one, then the _parent_ node of the tree is returned as a list. If the item is not found, or there is no parent (the two items are identical), there is no return value."
                       :code 
                       "container" #(first (u/containers-in %1 %2))))
 
@@ -181,7 +183,9 @@
     (d/push-onto :integer :len)))
 
 
-(def code-list (t/simple-2-in-1-out-instruction :code "list" #(list %1 %2)))
+(def code-list (t/simple-2-in-1-out-instruction
+  "`:code-list` pops the top two items from the `:code` stack, returning a list of two elements: of the first item, then the second"
+  :code "list" #(list %1 %2)))
 
 
 (def code-map

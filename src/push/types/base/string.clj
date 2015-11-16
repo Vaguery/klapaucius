@@ -56,7 +56,9 @@
     (d/push-onto :exec :continuation)))
 
 
-(def string-concat (t/simple-2-in-1-out-instruction :string "concat" 'str))
+(def string-concat (t/simple-2-in-1-out-instruction
+  "`:string-concat` pops the top two `:string` items, and pushes the result of concatenating the top item at the end of the second item"
+  :string "concat" 'str))
 
 
 (def string-conjchar
