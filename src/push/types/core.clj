@@ -113,9 +113,9 @@
   (let [stackname (keyword type)
         instruction-name (str "code-from" (name stackname))]
     (eval (list
-      'core/build-instruction
+      'push.instructions.core/build-instruction
       instruction-name
-      (str "`" instruction-name "` pops the top `" stackname "` item and pushes it to `:code`")
+      (str "`:" instruction-name "` pops the top `" stackname "` item and pushes it to `:code`")
       :tags #{:complex :base :conversion}
       `(d/consume-top-of ~stackname :as :arg)
       '(d/push-onto :code :arg)))))

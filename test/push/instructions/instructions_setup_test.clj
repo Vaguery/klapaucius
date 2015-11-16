@@ -3,6 +3,7 @@
   (:require [push.util.stack-manipulation :as u])
   (:require [push.instructions.dsl :as d])
   (:require [push.interpreter.core :as i])
+  (:require [push.types.core :as t])
   (:use [push.instructions.core])
   )
 
@@ -101,3 +102,9 @@
   (u/get-stack (i/execute-instruction context :foobar) :foo ) => '(2 3)))
 
 
+;; automatic docstrings
+
+(fact "a generated code-fromX instruction has a reasonable docstring"
+  (:docstring (t/simple-item-to-code-instruction :char)) =>
+    "`:code-fromchar` pops the top `:char` item and pushes it to `:code`"
+  )
