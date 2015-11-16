@@ -41,7 +41,9 @@
 
 
 
-(def code-atom? (t/simple-1-in-predicate :code "atom?" #(not (coll? %1))))
+(def code-atom? (t/simple-1-in-predicate
+  "`:code-atom? pushes `true` if the top `:code` item is not a collection"
+  :code "atom?" #(not (coll? %1))))
 
 
 (def code-cons (t/simple-2-in-1-out-instruction 
@@ -175,7 +177,9 @@
     :tags #{:complex :base}))
 
 
-(def code-null? (t/simple-1-in-predicate :code "null?" #(and (coll? %) (empty? %))))
+(def code-null? (t/simple-1-in-predicate
+  "`:code-atom? pushes `true` if the top `:code` item is an empty collection"
+  :code "null?" #(and (coll? %) (empty? %))))
 
 
 (def code-quote

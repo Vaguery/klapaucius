@@ -96,7 +96,9 @@
 
 
 
-(def string-emptystring? (t/simple-1-in-predicate :string "emptystring?" empty?))
+(def string-emptystring? (t/simple-1-in-predicate
+  "`:string-emptystring? pushes `true` if the top `:string` has no characters"
+  :string "emptystring?" empty?))
 
 
 (def string-first
@@ -250,8 +252,9 @@
     (d/replace-stack :string :new)))
 
 
-(def string-solid? (t/simple-1-in-predicate :string "solid?"
-                          #(boolean (re-matches #"\S+" %1))))
+(def string-solid? (t/simple-1-in-predicate
+    "`:string-solid? pushes `true` if the top `:string` contains no whitespace"
+    :string "solid?" #(boolean (re-matches #"\S+" %1))))
 
 
 (def string-splitonspaces
@@ -265,8 +268,9 @@
     (d/replace-stack :string :new)))
 
 
-(def string-spacey? (t/simple-1-in-predicate :string "spacey?"
-                          #(boolean (re-matches #"\s+" %1))))
+(def string-spacey? (t/simple-1-in-predicate
+  "`:string-spacey? pushes `true` if the top `:string` has any whitespace"
+  :string "spacey?" #(boolean (re-matches #"\s+" %1))))
 
 
 (def string-substring

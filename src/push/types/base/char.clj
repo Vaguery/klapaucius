@@ -22,7 +22,9 @@
     (d/replace-stack :char :kludged)))
 
 
-(def char-digit? (t/simple-1-in-predicate :char "digit?" #(Character/isDigit %1)))
+(def char-digit? (t/simple-1-in-predicate
+  "`:char-digit? pushes `true` if the top `:char` is a digit (per Java `Character/isDigit`)"
+  :char "digit?" #(Character/isDigit %1)))
 
 
 (def char-frominteger
@@ -43,16 +45,24 @@
     (d/push-onto :char :c)))
 
 
-(def char-letter? (t/simple-1-in-predicate :char "letter?" #(Character/isLetter %1)))
+(def char-letter? (t/simple-1-in-predicate
+  "`:char-letter? pushes `true` if the top `:char` is a letter (per Java `Character/isLetter`)"
+  :char "letter?" #(Character/isLetter %1)))
 
 
-(def char-lowercase? (t/simple-1-in-predicate :char "lowercase?" #(Character/isLowerCase %1)))
+(def char-lowercase? (t/simple-1-in-predicate
+  "`:char-lowercase? pushes `true` if the top `:char` is lowercase (per Java `Character/isLowerCase`)"
+  :char "lowercase?" #(Character/isLowerCase %1)))
 
 
-(def char-uppercase? (t/simple-1-in-predicate :char "uppercase?" #(Character/isUpperCase %1)))
+(def char-uppercase? (t/simple-1-in-predicate
+  "`:char-uppercase? pushes `true` if the top `:char` is uppercase (per Java `Character/isUpperCase`)"
+  :char "uppercase?" #(Character/isUpperCase %1)))
 
 
-(def char-whitespace? (t/simple-1-in-predicate :char "whitespace?" #(Character/isWhitespace %1)))
+(def char-whitespace? (t/simple-1-in-predicate
+  "`:char-whitespace? pushes `true` if the top `:char` is a whitespace (per Java `Character/isWhitespace`)"
+  :char "whitespace?" #(Character/isWhitespace %1)))
 
 
 (def classic-char-type
