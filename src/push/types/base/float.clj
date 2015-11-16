@@ -23,6 +23,7 @@
 (def float-divide
   (core/build-instruction
     float-divide
+    "`:float-divide` pops the top two `:float` values (call them `denominator` and `numerator`, respectively). If `denominator` is 0.0, it replaces the two `:float` values; if not, it pushes their quotient."
     :tags #{:arithmetic :base :dangerous}
     (d/consume-top-of :float :as :denominator)
     (d/consume-top-of :float :as :numerator)
@@ -36,6 +37,7 @@
 (def float-fromboolean
   (core/build-instruction
     float-fromboolean
+    "`:float-fromboolean` pops the top `:boolean` value; if it is `true`, it pushes 1.0, and if `false` it pushes `0.0`"
     :tags #{:conversion :base :numeric}
     (d/consume-top-of :boolean :as :arg)
     (d/calculate [:arg] #(if %1 1.0 0.0) :as :result)
@@ -45,6 +47,7 @@
 (def float-fromchar
   (core/build-instruction
     float-fromchar
+    "`:float-fromchar` pops the top `:char`, converts this to an integer, and pushes that value typecast to a `:float`"
     :tags #{:conversion :base :numeric}
     (d/consume-top-of :char :as :arg)
     (d/calculate [:arg] #(double (long %1)) :as :result)
@@ -54,6 +57,7 @@
 (def float-frominteger
   (core/build-instruction
     float-frominteger
+    "`:float-frominteger` pops the top `:integer`, and typecasts it to a (double) `:float` value"
     :tags #{:conversion :base :numeric}
     (d/consume-top-of :integer :as :arg)
     (d/calculate [:arg] #(double %1) :as :result)
@@ -63,6 +67,7 @@
 (def float-fromstring
   (core/build-instruction
     float-fromstring
+    "`:float-fromstring` pops the top `:string` item, and applies `Double/parseDouble` to attempt to convert it to a floating-point value. If successful (that is, if no exception is raised), the result is pushed to `:float`"
     :tags #{:conversion :base :numeric}
     (d/consume-top-of :string :as :arg)
     (d/calculate [:arg] 
@@ -74,6 +79,7 @@
 (def float-signfromboolean
   (core/build-instruction
     float-signfromboolean
+    "`:float-signfromboolean` pops the top `:boolean` value; if it is `true`, it pushes 1.0, and if `false` it pushes `-1.0`"
     :tags #{:conversion :base :numeric}
     (d/consume-top-of :boolean :as :arg)
     (d/calculate [:arg] #(if %1 1.0 -1.0) :as :result)
@@ -88,6 +94,7 @@
 (def float-mod
   (core/build-instruction
     float-mod
+    "`:float-modulo` pops the top two `:float` values (call them `denominator` and `numerator`, respectively). If `denominator` is 0.0, it replaces the two `:float` values; if not, it pushes `(mod numerator denominator)`."
     :tags #{:arithmetic :base :dangerous}
     (d/consume-top-of :float :as :denominator)
     (d/consume-top-of :float :as :numerator)
