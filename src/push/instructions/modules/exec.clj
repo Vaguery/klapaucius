@@ -59,7 +59,9 @@
 
 
 (def exec-k 
-  (t/simple-2-in-1-out-instruction :exec "k" (fn [a b] b)))
+  (t/simple-2-in-1-out-instruction
+    "`:exec-k` pops the top two `:exec` items, and pushes the top one back onto `:exec` (discarding the second one, in other words)"
+    :exec "k" (fn [a b] b)))
 
 
 (def exec-if

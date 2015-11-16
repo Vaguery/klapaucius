@@ -115,6 +115,7 @@
     (eval (list
       'core/build-instruction
       instruction-name
+      (str "`" instruction-name "` pops the top `" stackname "` item and pushes it to `:code`")
       :tags #{:complex :base :conversion}
       `(d/consume-top-of ~stackname :as :arg)
       '(d/push-onto :code :arg)))))
