@@ -106,5 +106,9 @@
 
 (fact "a generated code-fromX instruction has a reasonable docstring"
   (:docstring (t/simple-item-to-code-instruction :char)) =>
-    "`:code-fromchar` pops the top `:char` item and pushes it to `:code`"
-  )
+    "`:code-fromchar` pops the top `:char` item and pushes it to `:code`")
+
+
+(fact "a generated string-fromX instruction has a reasonable docstring"
+  (:docstring (push.types.base.string/simple-item-to-string-instruction :foo)) =>
+    "`:string-fromfoo` pops the top item from the `:foo` stack and converts it to a `:string` (using Clojure's `str` function)")
