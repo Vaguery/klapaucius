@@ -1,4 +1,4 @@
-(ns push.interpreter.stress-tests
+(ns acceptance.stress-tests
   (:use midje.sweet)
   (:require [push.instructions.dsl :as dsl])
   (:require [push.instructions.core :as instr])
@@ -90,7 +90,7 @@
 
 ;; actual tests; they will run hot!
 
-(future-fact "I can create 10000 random programs without an exception"
+(fact "I can create 10000 random programs without an exception"
   :slow :acceptance 
   (count (repeatedly 10000 #(random-program-interpreter 10 100))) => 10000)
 
@@ -101,7 +101,7 @@
 ;; bit more of a complex context; by the time you read this, it might be
 ;; commented out. If you want to run it, be warned it will spew all kinds
 ;; of literally random text to the STDOUT stream.
-(future-fact "I can create and step through 10000 random programs without an exception"
+(fact "I can create and step through 10000 random programs without an exception"
   :slow :acceptance
   (dotimes [n 10000] 
     (let [rando (assoc-in (reset-interpreter (random-program-interpreter 10 200))
@@ -137,4 +137,4 @@
   (let [my-interpreters 
     (repeatedly 10000 #(reset-interpreter (random-program-interpreter 10 1000))) ]
       (doall (pmap run-with-wordy-try-block my-interpreters))
-    ))
+    ) =not=> (throws))
