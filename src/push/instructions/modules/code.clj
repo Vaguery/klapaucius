@@ -13,8 +13,6 @@
 ;; code-specific instructions
 
 ; code_discrepancy
-; code_extract
-; code_insert
 ; code_overlap
 
 
@@ -209,6 +207,21 @@
     (d/push-onto :exec :that)))
 
 
+(def code-insert
+  (core/build-instruction
+    code-insert
+    "`:code-insert` pops the top two `:code` items (call them `A` and `B` respectively), and the top `:integer`. It counts the number of code points in `B` (that is, lists and items in lists, not other collections), then forces the `:integer` to a suitable index range using `(mod integer (points B))`. It then pushes the result when the indexed node of `B` is replaced with `A`."
+    :tags #{:complex :base}
+    (d/consume-top-of :code :as :a)
+    (d/consume-top-of :code :as :b)
+    (d/consume-top-of :integer :as :i)
+    (d/calculate [:b] #(u/count-code-points %1) :as :size)
+    (d/calculate [:i :size] #(mod %1 %2) :as :idx)
+    (d/calculate [:a :b :idx] #(u/replace-nth-in-code %2 %1 %3) :as :result)
+    (d/push-onto :code :result)))
+
+
+
 (def code-length
   (core/build-instruction
     code-length
@@ -379,6 +392,7 @@
         (t/attach-instruction , code-fromstring)
         (t/attach-instruction , code-fromfloat)
         (t/attach-instruction , code-if)
+        (t/attach-instruction , code-insert)
         (t/attach-instruction , code-length)
         (t/attach-instruction , code-list)
         (t/attach-instruction , code-map)

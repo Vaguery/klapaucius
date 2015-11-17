@@ -101,5 +101,15 @@
 (defn replace-in-code
   "Takes three Push :code items, and traverses the first argument in a depth-first order, replacing every occurrence of the second arg (if any) with the third."
   [code old new]
-  (w/postwalk-replace {old new} code)
-  )
+  (w/postwalk-replace {old new} code))
+
+
+(defn replace-nth-in-code
+  "Takes two Push :code items and an integer, and replaces the node (counted in depth-first order) of the first code with the second code item."
+  [code1 code2 idx]
+  (loop [loc (list-zip code1)
+         counter 0]
+    (if (= counter idx)
+        (zip/root (zip/replace loc code2))
+      (recur (zip/next loc)                                   
+             (inc counter)))))

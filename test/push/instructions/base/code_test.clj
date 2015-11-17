@@ -374,6 +374,51 @@
                                                      :exec '()} )
 
 
+
+(tabular
+  (fact ":code-insert pops an :integer and two :code items, and replaces the node at the indicated position in the second code with the first"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks classic-code-module ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction             ?expected
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code     '(99 (1 2 3))
+     :integer  '(1)}            :code-insert                 {:code '((99 2 3))} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code     '(99 (1 2 3))
+     :integer  '(0)}            :code-insert                 {:code '(99)} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code     '(99 (1 2 3))
+     :integer  '(3)}            :code-insert                 {:code '((1 2 99))} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ; wrapping index
+    {:code     '(99 (1 2 3))
+     :integer  '(11)}            :code-insert                 {:code '((1 2 99))} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code     '(99 (1 2 3))
+     :integer  '(12)}            :code-insert                 {:code '(99)} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code     '(99 (1 2 3))
+     :integer  '(-1)}            :code-insert                 {:code '((1 2 99))} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ; traverses trees
+    {:code     '(99 ((1 (2)) ( ()) (3 4)))
+     :integer  '(1)}            :code-insert                 {:code '((99 (()) (3 4)))} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code     '(99 ((1 (2)) ( ()) (3 4)))
+     :integer  '(2)}            :code-insert                 {:code '(((99 (2)) (()) (3 4)))} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code     '(99 ((1 (2)) ( ()) (3 4)))
+     :integer  '(3)}            :code-insert                 {:code '(((1 99) (()) (3 4)))} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code     '(99 ((1 (2)) ( ()) (3 4)))
+     :integer  '(4)}            :code-insert                 {:code '(((1 (99)) (()) (3 4)))} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code     '(99 ((1 (2)) ( ()) (3 4)))
+     :integer  '(5)}            :code-insert                 {:code '(((1 (2)) 99 (3 4)))} )
+
+
+
 (tabular
   (fact ":code-length pushes the count of the top :code item (1 if a literal) onto :integer"
     (register-type-and-check-instruction

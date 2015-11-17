@@ -190,5 +190,26 @@
 
 
 (future-fact "`replace-in-code` doesn't get mixed up about vectors"
-  (replace-in-code '(1 (2 [1 2] 3) (4 (1 2) 3) 4) '(1 2) 99) => '(1 (2 [1 2] 3) (4 99 3) 4)
-)
+  (replace-in-code '(1 (2 [1 2] 3) (4 (1 2) 3) 4) '(1 2) 99) => '(1 (2 [1 2] 3) (4 99 3) 4))
+
+
+;; replace-nth-in-code
+
+
+(fact "`replace-nth-in-code` does simple stuff"
+  (replace-nth-in-code '(1 2 3 4) 99 3) => '(1 2 99 4)
+  (replace-nth-in-code '(1 2 3 4) 99 0) => 99
+  (replace-nth-in-code '(1 2 3 4) '(9 9 9) 2) => '(1 (9 9 9) 3 4))
+
+
+(fact "`replace-nth-in-code` gets up in yer tree"
+  (replace-nth-in-code '((1 (2)) (3 () (4))) 99 4) => '((1 (99)) (3 () (4)))
+  (replace-nth-in-code '((1 (2)) (3 () (4))) 99 5) => '((1 (2)) 99)
+  (replace-nth-in-code '((1 (2)) (3 () (4))) 99 6) => '((1 (2)) (99 () (4)))
+  (replace-nth-in-code '((1 (2)) (3 () (4))) 99 7) => '((1 (2)) (3 99 (4)))
+  (replace-nth-in-code '((1 (2)) (3 () (4))) 99 8) => '((1 (2)) (3 (99) (4)))
+  (replace-nth-in-code '((1 (2)) (3 () (4))) 99 9) => '((1 (2)) (3 () 99)))
+
+
+(fact "`replace-nth-in-code` can handle non-lists?"
+  (replace-nth-in-code 99 '(77) 0) => '(77))
