@@ -16,7 +16,6 @@
 ; code_extract
 ; code_insert
 ; code_overlap
-; code_position
 ; code_subst
 
 
@@ -267,6 +266,18 @@
   :code "null?" #(and (coll? %) (empty? %))))
 
 
+(def code-position
+  (core/build-instruction
+    code-position
+    "`:code-position` pops the top two `:code` items (call them `A` and `B`, respectively). It pushes the index of the first occurrence of `A` in `B`, or -1 if it is not found."
+    :tags #{:complex :base}
+    (d/consume-top-of :code :as :arg2)
+    (d/consume-top-of :code :as :arg1)
+    (d/calculate [:arg1] #(if (seq? %1) %1 (list %1)) :as :listed)
+    (d/calculate [:listed :arg2] #(.indexOf %1 %2) :as :idx)
+    (d/push-onto :integer :idx)))
+
+
 (def code-quote
   (core/build-instruction
     code-quote
@@ -328,6 +339,7 @@
         (t/attach-instruction , code-noop)
         (t/attach-instruction , code-nth)
         (t/attach-instruction , code-null?)
+        (t/attach-instruction , code-position)
         (t/attach-instruction , code-quote)
         (t/attach-instruction , code-rest)
         (t/attach-instruction , code-size)

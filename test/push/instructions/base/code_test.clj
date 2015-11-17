@@ -286,9 +286,6 @@
                                               :integer '(1)})
 
 
-
-
-
 (tabular
   (fact ":code-first pushes the first item of the top :code item, if it's a list"
     (register-type-and-check-instruction
@@ -454,6 +451,25 @@
     :code    '(() 8)              :code-null?        :boolean        '(true)
     ;; …except in silence
     :code    '()                   :code-null?        :boolean        '())
+
+
+(tabular
+  (fact ":code-position finds the top :code item index in the second item, if at all; coerces second item to list if needed"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-code-module ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items            ?instruction      ?get-stack     ?expected
+    ;; say where
+    :code    '(3 (1 2 3 4))      :code-position        :integer        '(2)
+    :code    '(6 (1 2 3 4))      :code-position        :integer        '(-1)
+    :code    '(3 (1 2 3 1 2 3 4)) 
+                                 :code-position        :integer        '(2)
+    :code    '((2) ((1) (2) (3) (4)))      
+                                 :code-position        :integer        '(1)
+    :code    '(2 2)              :code-position        :integer        '(0)
+    :code    '(2)                :code-position        :integer        '()
+    :code    '(2)                :code-position        :code           '(2))
+
 
 
 (tabular
