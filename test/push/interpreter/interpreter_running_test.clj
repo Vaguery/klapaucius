@@ -355,7 +355,7 @@
 
 
 (fact "`run` produces a log"
-    (u/get-stack (run simple-things 111) :log) => '({:item :boolean-or, :step 6}
+    (u/get-stack (run simple-things 177) :log) => '({:item :boolean-or, :step 6}
                                                     {:item true, :step 5} 
                                                     {:item :integer-add, :step 4} 
                                                     {:item false, :step 3} 

@@ -3,6 +3,7 @@
   (:require [push.types.core :as t])
   (:require [push.instructions.dsl :as d])
   (:require [push.util.stack-manipulation :as u])
+  (:require [push.util.code-wrangling :as fix])
   )
 
 
@@ -54,7 +55,7 @@
     "`:char-asciifromfloat` pops the top `:float` value, reduces it to an integer modulo 128, and pushes the `:char` that is represented by that ASCII value"
     :tags #{:string :conversion :base}
     (d/consume-top-of :float :as :arg)
-    (d/calculate [:arg] #(char (mod (bigint %1) 128)) :as :c)
+    (d/calculate [:arg] #(char (fix/safe-mod (bigint %1) 128)) :as :c)
     (d/push-onto :char :c)))
 
 
@@ -64,7 +65,7 @@
     "`:char-fromfloat` pops the top `:float` value, reduces it to an integer modulo 65535, and pushes the `:char` that is represented by that unicode value"
     :tags #{:string :conversion :base}
     (d/consume-top-of :float :as :arg)
-    (d/calculate [:arg] #(char (mod (bigint %1) 65535)) :as :c)
+    (d/calculate [:arg] #(char (fix/safe-mod (bigint %1) 65535)) :as :c)
     (d/push-onto :char :c)))
 
 

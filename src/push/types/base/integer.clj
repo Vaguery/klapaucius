@@ -2,6 +2,7 @@
   (:require [push.instructions.core :as core])
   (:require [push.types.core :as t])
   (:require [push.instructions.dsl :as d])
+  (:require [push.util.code-wrangling :as fix])
   )
 
 
@@ -49,8 +50,7 @@
     (d/consume-top-of :integer :as :numerator)
     (d/calculate [:denominator :numerator]
       #(if (zero? %1) %2 nil) :as :replacement)
-    (d/calculate [:denominator :numerator]
-      #(if (zero? %1) %1 (mod %2 %1)) :as :remainder)
+    (d/calculate [:denominator :numerator] #(fix/safe-mod %2 %1) :as :remainder)
     (d/push-these-onto :integer [:replacement :remainder])))
 
 

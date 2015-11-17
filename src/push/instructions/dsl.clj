@@ -1,5 +1,6 @@
 (ns push.instructions.dsl
   (:require [push.util.stack-manipulation :as u])
+  (:require [push.util.code-wrangling :as fix])
   (:require [push.util.exceptions :as oops])
   )
 
@@ -66,7 +67,7 @@
     (cond (nil? old-stack) (oops/throw-unknown-stack-exception stackname)
           (empty? old-stack) (oops/throw-empty-stack-exception stackname)
           :else (let [idx (valid-DSL-index at scratch)
-                      which (mod idx (count old-stack))]
+                      which (fix/safe-mod idx (count old-stack))]
                   [which old-stack]))))
 
 
@@ -211,7 +212,7 @@
   [[interpreter scratch] stackname kwd & {:keys [as at]}]
     (if-let [old-stack (u/get-stack interpreter stackname)]
       (let [idx (valid-DSL-index at scratch)
-            which (mod idx (inc (count old-stack)))
+            which (fix/safe-mod idx (inc (count old-stack)))
             new-item (kwd scratch)
             new-stack (insert-as-nth old-stack new-item which)]
         [(u/set-stack interpreter stackname new-stack) scratch])

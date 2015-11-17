@@ -113,3 +113,11 @@
         (zip/root (zip/replace loc code2))
       (recur (zip/next loc)                                   
              (inc counter)))))
+
+
+(defn safe-mod
+  "Takes two integers, and returns 0 if the second is 0, otherwise (mod A B)"
+  [a b]
+  (if (zero? b)
+      0
+      (mod a b)))
