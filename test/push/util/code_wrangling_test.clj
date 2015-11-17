@@ -1,5 +1,6 @@
 (ns push.util.code-wrangling-test
   (:use midje.sweet)
+  (:require [push.util.stack-manipulation :as fix])
   (:use push.util.code-wrangling)
   )
 
@@ -200,6 +201,13 @@
   (replace-nth-in-code '(1 2 3 4) 99 3) => '(1 2 99 4)
   (replace-nth-in-code '(1 2 3 4) 99 0) => 99
   (replace-nth-in-code '(1 2 3 4) '(9 9 9) 2) => '(1 (9 9 9) 3 4))
+
+
+(fact "`replace-nth-in-code` does simple stuff"
+  (type (replace-nth-in-code '(1 2 3 4) '(9 9 9) 2)) => clojure.lang.LazySeq
+  (type (fix/to-code-item (replace-nth-in-code '(1 2 3 4) '(9 9 9) 2))) =>
+    clojure.lang.PersistentList
+  )
 
 
 (fact "`replace-nth-in-code` gets up in yer tree"

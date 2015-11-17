@@ -27,14 +27,14 @@
   (peek (get-in interpreter [:stacks stack])))
 
 
-(defn make-it-a-real-list
+(defn to-code-item
   "Takes a LazySeq item (typically the result of a cons or concat)
   and puts it into an actual list structure. In the right order. Does
   not affect other collections."
   [collection]
-  (if (= (type collection) clojure.lang.LazySeq)
-      (into '() (reverse collection))
-      collection))
+  (cond (= (type collection) clojure.lang.LazySeq)
+          (into '() (reverse collection))
+        :else collection))
 
 
 

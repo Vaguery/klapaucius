@@ -8,7 +8,7 @@
   (:require [push.types.base.integer])
   (:require [push.types.base.string])
   (:require [push.util.exceptions :as oops])
-  (:use [push.util.type-checkers :only (boolean?)])
+  (:use [push.util.type-checkers])
   )
 
 
@@ -366,7 +366,7 @@
     (instruction? interpreter item)
       (execute-instruction interpreter item)
     (router-sees? interpreter item) (route-item interpreter item)
-    (list? item) (load-items interpreter :exec item)
+    (pushcode? item) (load-items interpreter :exec item)
     :else (handle-unknown-item interpreter item)))
 
 

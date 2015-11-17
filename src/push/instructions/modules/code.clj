@@ -26,7 +26,7 @@
     (d/consume-top-of :code :as :arg1)
     (d/calculate [:arg1] #(if (coll? %1) %1 (list %1)) :as :list1)
     (d/calculate [:arg2] #(if (coll? %1) %1 (list %1)) :as :list2)
-    (d/calculate [:list1 :list2] #(stacks/make-it-a-real-list (concat %1 %2)) :as :both)
+    (d/calculate [:list1 :list2] #(stacks/to-code-item (concat %1 %2)) :as :both)
     (d/push-onto :code :both)))
 
 
@@ -45,7 +45,7 @@
 
 (def code-container (t/simple-2-in-1-out-instruction
   "`:code-container` pops the top two `:code` items. It performs a depth-first traversal of the second code item (if it is a list or not), looking for duplicates of the first item. If it finds one, then the _parent_ node of the tree is returned as a list. If the item is not found, or there is no parent (the two items are identical), there is no return value."
-  :code "container" #(stacks/make-it-a-real-list (first (u/containers-in %1 %2)))))
+  :code "container" #(stacks/to-code-item (first (u/containers-in %1 %2)))))
 
 
 (def code-contains?
@@ -156,7 +156,7 @@
     (d/consume-top-of :integer :as :i)
     (d/calculate [:c] #(if (seq? %1) %1 (list %1)) :as :list)
     (d/calculate [:list :i] #(if (empty? %1) 0 (u/safe-mod %2 (count %1))) :as :idx)
-    (d/calculate [:list :idx] #(stacks/make-it-a-real-list (drop %2 %1)) :as :result)
+    (d/calculate [:list :idx] #(stacks/to-code-item (drop %2 %1)) :as :result)
     (d/push-onto :code :result)))
 
 
@@ -170,7 +170,7 @@
     (d/consume-top-of :integer :as :i)
     (d/calculate [:c] #(u/count-code-points %1) :as :size)
     (d/calculate [:size :i] #(u/safe-mod %2 %1) :as :idx)
-    (d/calculate [:c :idx] #(stacks/make-it-a-real-list (u/nth-code-point %1 %2)) :as :result)
+    (d/calculate [:c :idx] #(stacks/to-code-item (u/nth-code-point %1 %2)) :as :result)
     (d/push-onto :code :result)))
 
 
@@ -218,7 +218,7 @@
     (d/calculate [:b] #(u/count-code-points %1) :as :size)
     (d/calculate [:i :size] #(u/safe-mod %1 %2) :as :idx)
     (d/calculate [:a :b :idx]
-      #(stacks/make-it-a-real-list (u/replace-nth-in-code %2 %1 %3)) :as :result)
+      #(stacks/to-code-item (u/replace-nth-in-code %2 %1 %3)) :as :result)
     (d/push-onto :code :result)))
 
 
@@ -257,7 +257,7 @@
     (d/calculate [:collection :fn] 
       #(reduce
         (fn [cont item] 
-          (stacks/make-it-a-real-list
+          (stacks/to-code-item
             (concat cont (list (list :code-quote item %2) :code-cons))))
         (list :code-quote '()) 
         %1)
@@ -359,7 +359,7 @@
     (d/consume-top-of :code :as :arg2)
     (d/consume-top-of :code :as :arg1)
     (d/calculate [:arg1 :arg2 :arg3]
-      #(stacks/make-it-a-real-list (u/replace-in-code %1 %2 %3)) :as :replaced)
+      #(stacks/to-code-item (u/replace-in-code %1 %2 %3)) :as :replaced)
     (d/push-onto :code :replaced)))
 
 
