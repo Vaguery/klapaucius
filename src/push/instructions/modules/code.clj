@@ -53,6 +53,7 @@
 (def code-contains?
   (core/build-instruction
     code-contains?
+    "`:code-contains?` pops the top two items from the `:code` stack, and pushes `true` if the second one is contained (as any subtree) in the first, or if they are identical."
     :tags #{:complex :base}
     (d/consume-top-of :code :as :arg2)
     (d/consume-top-of :code :as :arg1)
@@ -213,6 +214,16 @@
 (def code-map
   (core/build-instruction
     code-map
+    "`:code-map` pops the top items of the `:code` and `:exec` stacks. If the `:code` item isn't a list, it's wrapped in one. Then the following continuation form is made:
+
+  ```
+    '(:code-quote ()
+      (:code-quote [1st item of code] :code-length) :code-cons
+      (:code-quote [2nd item of code] :code-length) :code-cons
+      ...
+      (:code-quote [last item of code] :code-length) :code-cons)
+  ```
+  and this is pushed to the `:exec` stack."
     :tags #{:complex :predicate :base}
     (d/consume-top-of :code :as :arg)
     (d/consume-top-of :exec :as :fn)
@@ -280,6 +291,7 @@
 (def code-quote
   (core/build-instruction
     code-quote
+    "`:code-quote` pops the top item from the `:exec` stack and puts it onto the `:code` stack."
     :tags #{:complex :base}
     (d/consume-top-of :exec :as :arg1)
     (d/push-onto :code :arg1)))
@@ -312,8 +324,6 @@
     (d/consume-top-of :code :as :arg1)
     (d/calculate [:arg1 :arg2 :arg3] #(u/replace-in-code %1 %2 %3) :as :replaced)
     (d/push-onto :code :replaced)))
-
-
 
 
 (def code-wrap (t/simple-1-in-1-out-instruction
