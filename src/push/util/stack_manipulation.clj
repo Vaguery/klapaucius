@@ -28,8 +28,13 @@
 
 
 (defn make-it-a-real-list
-  "Takes some collection (typically the result of a cons or concat)
-  and puts it into an actual list structure. In the right order."
+  "Takes a LazySeq item (typically the result of a cons or concat)
+  and puts it into an actual list structure. In the right order. Does
+  not affect other collections."
   [collection]
-  (into '() (reverse collection)))
+  (if (= (type collection) clojure.lang.LazySeq)
+      (into '() (reverse collection))
+      collection))
+
+
 
