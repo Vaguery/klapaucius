@@ -1,5 +1,6 @@
 (ns push.util.code-wrangling
   (:require [clojure.zip :as zip])
+  (:require [clojure.walk :as w])
   )
 
 
@@ -62,3 +63,10 @@
     :else
       (let [t (zip/seq-zip (seq item))]
         (find-in-tree t target))))
+
+
+(defn replace-in-code
+  "Takes three Push :code items, and traverses the first argument in a depth-first order, replacing every occurrence of the second arg (if any) with the third."
+  [code old new]
+  (w/postwalk-replace {old new} code)
+  )

@@ -471,7 +471,6 @@
     :code    '(2)                :code-position        :code           '(2))
 
 
-
 (tabular
   (fact ":code-quote moves the top :exec item to :code"
     (check-instruction-with-all-kinds-of-stack-stuff
@@ -523,6 +522,28 @@
     :code    '(#{1 2 3})          :code-size        :integer        '(4)
     :code    '({1 2 3 4})         :code-size        :integer        '(7)
     :code    '()                  :code-size        :integer        '())
+
+
+
+(tabular
+  (fact ":code-subst replaces all copies of arg2 in arg1 with arg3"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-code-module ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items            ?instruction      ?get-stack     ?expected
+    ;; changes…
+    :code    '(99 2 (1 2 3 4))      :code-subst        :code        '((1 99 3 4))
+    :code    '(99 2 2)              :code-subst        :code        '(99)
+    :code    '(99 88 (1 2 3 4))     :code-subst        :code        '((1 2 3 4))
+    :code    '(99 (2) (1 ((2) 3) 4))
+                                    :code-subst        :code        '((1 (99 3) 4))
+    :code    '((99 99) (2) (1 ((2) 3 (2)) (2) 4))
+                                    :code-subst        :code        '((1 ((99 99) 3
+                                                                      (99 99)) (99 99) 4))
+    :code    '(99 (1 2 3 4))        :code-subst        :code        '(99 (1 2 3 4))
+    :code    '(99)                  :code-subst        :code        '(99))
+
+
 
 
 (tabular

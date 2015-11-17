@@ -16,7 +16,6 @@
 ; code_extract
 ; code_insert
 ; code_overlap
-; code_subst
 
 
 (def code-append
@@ -303,6 +302,20 @@
     (d/push-onto :integer :size)))
 
 
+(def code-subst
+  (core/build-instruction
+    code-subst
+    "`:code-subst` pops the top three `:code` items (call them `A` `B` and `C`, respectively). It replaces all occurrences of `B` in `C` (in a depth-first traversal) with `A`."
+    :tags #{:complex :base}
+    (d/consume-top-of :code :as :arg3)
+    (d/consume-top-of :code :as :arg2)
+    (d/consume-top-of :code :as :arg1)
+    (d/calculate [:arg1 :arg2 :arg3] #(u/replace-in-code %1 %2 %3) :as :replaced)
+    (d/push-onto :code :replaced)))
+
+
+
+
 (def code-wrap (t/simple-1-in-1-out-instruction
   "`:code-wrap` puts the top item on the `:code` stack into a one-element list"
   :code "wrap" #(list %1)))
@@ -343,6 +356,7 @@
         (t/attach-instruction , code-quote)
         (t/attach-instruction , code-rest)
         (t/attach-instruction , code-size)
+        (t/attach-instruction , code-subst)
         (t/attach-instruction , code-wrap)
         ))
 

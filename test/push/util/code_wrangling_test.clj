@@ -95,3 +95,29 @@
   (containers-in '(1 [2 3 4]) [2 3 4]) => ['(1 [2 3 4])]
   ; (containers-in '(1 [2 3 4]) 2) => [[2 3 4]]
   )
+
+;; replace-in-code
+
+(fact "`replace-in-code` does simple stuff"
+  (replace-in-code '(1 2 3 4 1 2 3 4) 2 99) => '(1 99 3 4 1 99 3 4)
+  (replace-in-code '(1 2 3 4 1 2 3 4) 11 99) => '(1 2 3 4 1 2 3 4))
+
+
+(fact "`replace-in-code` works on trees"
+  (replace-in-code '(1 (2 3) (4 (1 2) 3) 4) 2 99) => '(1 (99 3) (4 (1 99) 3) 4)
+  (replace-in-code '(1 (2 3) (4 (1 2) 3) 4) 11 99) => '(1 (2 3) (4 (1 2) 3) 4))
+
+
+(fact "`replace-in-code` works with trees as arguments"
+  (replace-in-code '(1 (2 3) (4 (1 2) 3) 4) '(1 2) 99) => '(1 (2 3) (4 99 3) 4)
+  (replace-in-code '(1 (2 3) (4 (1 2) 3) 4) 4 '(99 99 99)) =>
+    '(1 (2 3) ((99 99 99) (1 2) 3) (99 99 99)))
+
+
+(fact "`replace-in-code` doesn't stumble over recursions"
+  (replace-in-code '(1 (2 3) (4 (1 2) 3) 4) 3 '(3 3 3)) => '(1 (2 (3 3 3)) (4 (1 2) (3 3 3)) 4))
+
+
+(future-fact "`replace-in-code` doesn't get mixed up about vectors"
+  (replace-in-code '(1 (2 [1 2] 3) (4 (1 2) 3) 4) '(1 2) 99) => '(1 (2 [1 2] 3) (4 99 3) 4)
+)
