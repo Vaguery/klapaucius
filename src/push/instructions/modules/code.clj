@@ -293,7 +293,7 @@
     (d/consume-top-of :integer :as :i)
     (d/calculate [:c] #(if (seq? %1) %1 (list %1)) :as :list)
     (d/calculate [:list :i] #(u/safe-mod %2 (count %1)) :as :idx)
-    (d/calculate [:list :idx] #(stacks/make-it-a-real-list (nth %1 %2)) :as :result)
+    (d/calculate [:list :idx] #(if (empty? %1) nil (nth %1 %2)) :as :result)
     (d/push-onto :code :result)))
 
 

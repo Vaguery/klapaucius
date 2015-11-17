@@ -90,7 +90,7 @@
 
 ;; actual tests; they will run hot!
 
-(fact "I can create 10000 random programs without an exception"
+(future-fact "I can create 10000 random programs without an exception"
   :slow :acceptance 
   (do (println "creating and discarding 10000 random programs")
       (count (repeatedly 10000 #(random-program-interpreter 10 100)))) => 10000)
