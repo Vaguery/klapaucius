@@ -18,8 +18,7 @@
     (d/consume-top-of :string :as :arg)
     (d/consume-stack :char :as :old-stack)
     (d/calculate [:arg :old-stack]
-      #(if (empty? %1) %2 
-        (u/to-code-item (concat (vec %1) %2))) :as :new-stack)
+      #(if (empty? %1) %2 (concat (vec %1) %2)) :as :new-stack)
     (d/calculate [:new-stack] #(into '() (reverse %1)) :as :kludged)
     (d/replace-stack :char :kludged)))
 

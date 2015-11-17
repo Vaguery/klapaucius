@@ -132,21 +132,6 @@
     (#'push.instructions.dsl/insert-as-nth '(0 1 2 3 4 5) \X 6) => '(0 1 2 3 4 5 \X))
 
 
-  (fact "`insert-as-nth` doesn't change the type of the damned collection"
-    (type (#'push.instructions.dsl/insert-as-nth '(0 1 2 3 4 5) \X 3)) => 
-      (type '(0 1 2 \X 3 4 5))
-    (type (#'push.instructions.dsl/insert-as-nth '(0 1 2 3 4 5) \X 0)) =>
-      (type '(\X 0 1 2 3 4 5))
-    (type (#'push.instructions.dsl/insert-as-nth '(0 1 2 3 4 5) \X 6)) =>
-      (type '(0 1 2 3 4 5 \X)))
-
-
-
-  (fact "`insert-as-nth` returns a PersistentList"
-    (class (#'push.instructions.dsl/insert-as-nth '(1 2 3 4) \X 3)) => 
-    clojure.lang.PersistentList)
-
-
   (fact "`insert-as-nth` DOES NOT throw an Exception when the list is empty"
     (#'push.instructions.dsl/insert-as-nth '() \X 0) =not=> (throws)
     (#'push.instructions.dsl/insert-as-nth '() \X 0) =not=> (throws))
@@ -259,13 +244,7 @@
 
   (fact "`delete-nth-of` throws up if the stack is empty"
     (delete-nth-of [afew {}] :boolean :at 7) => 
-      (throws #"stack :boolean is empty"))
-
-
-  (fact "`delete-nth-of` returns a list, just like the original was"
-    (type (get-stack-from-dslblob :integer
-      (delete-nth-of [afew {:foo 1}] :integer :at :foo))) =>
-      (type (get-stack-from-dslblob :integer [afew {:foo 1}])))) 
+      (throws #"stack :boolean is empty"))) 
 
 
 ;; `replace-stack [stackname local]`
