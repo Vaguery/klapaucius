@@ -287,6 +287,50 @@
 
 
 (tabular
+  (fact ":code-extract picks an indexed item out of a :code item"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks classic-code-module ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction             ?expected
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code     '((9 8 7 6))
+     :integer  '(2)}           :code-extract             {:code '(8)} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code     '((9 8 7 6))
+     :integer  '(0)}           :code-extract             {:code '((9 8 7 6))} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code     '((9 8 7 6))
+     :integer  '(-2)}           :code-extract            {:code '(7)} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code     '((9 8 7 6))
+     :integer  '(221)}           :code-extract           {:code '(9)} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;; nesting
+    {:code     '(((9) (8 (7 6))))
+     :integer  '(1)}           :code-extract           {:code '((9))} 
+    {:code     '(((9) (8 (7 6))))
+     :integer  '(2)}           :code-extract           {:code '(9)} 
+    {:code     '(((9) (8 (7 6))))
+     :integer  '(3)}           :code-extract           {:code '((8 (7 6)))} 
+    {:code     '(((9) (8 (7 6))))
+     :integer  '(4)}           :code-extract           {:code '(8)} 
+    {:code     '(((9) (8 (7 6))))
+     :integer  '(6)}           :code-extract           {:code '(7)} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;; does not traverse vectors
+    {:code     '(([9] (8 [7 6])))
+     :integer  '(1)}           :code-extract           {:code '([9])} 
+    {:code     '(([9] (8 [7 6])))
+     :integer  '(2)}           :code-extract           {:code '((8 [7 6]))} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;; does not traverse sets
+    {:code     '((#{9} (8 [7 6])))
+     :integer  '(1)}           :code-extract           {:code '(#{9})} 
+    {:code     '((#{9} (8 [7 6])))
+     :integer  '(2)}           :code-extract           {:code '((8 [7 6]))})
+
+
+(tabular
   (fact ":code-first pushes the first item of the top :code item, if it's a list"
     (register-type-and-check-instruction
         ?set-stack ?items classic-code-module ?instruction ?get-stack) => ?expected)

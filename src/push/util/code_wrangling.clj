@@ -60,6 +60,26 @@
                  collector)))))
 
 
+(defn list-zip
+  "Returns a zipper for nested lists (only), given a root list"
+  [root]
+    (zip/zipper list?
+                identity
+                (fn [node children] (with-meta children (meta node)))
+                root))
+
+
+(defn nth-code-point
+  "`nth-code-point` takes a :code item (any clojure form) and an integer index, and traverses the code item as a tree (of nested lists and items) in a depth-first order, returning the indexed node."
+  [code idx]
+  (loop [loc (list-zip code)
+         counter 0]
+    (if (= counter idx)
+      (zip/node loc)
+      (recur (zip/next loc)                                   
+             (inc counter)))))
+
+
 (defn containers-in
   "Takes two items, and searches for a copy of the second item in the first. Returns
   a vector (filled in depth-first order) of all the _containers_ of that item. 

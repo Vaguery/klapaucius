@@ -163,6 +163,19 @@
 
 
 
+(def code-extract
+  (core/build-instruction
+    code-extract
+    "`:code-extract` pops the top `:code` and `:integer` stacks. It counts the number of code points (that is, lists and items in lists, not other collections) in the `:code` item, then forces the `:integer` to a suitable index range using `(mod integer (points code))`. It then returns the indexed component of the `:code`, using a depth-first traversal."
+    :tags #{:complex :base}
+    (d/consume-top-of :code :as :c)
+    (d/consume-top-of :integer :as :i)
+    (d/calculate [:c] #(u/count-code-points %1) :as :size)
+    (d/calculate [:size :i] #(mod %2 %1) :as :idx)
+    (d/calculate [:c :idx] #(u/nth-code-point %1 %2) :as :result)
+    (d/push-onto :code :result)))
+
+
 (def code-first (t/simple-1-in-1-out-instruction 
   "`:code-first` examines the top `:code` item to determine if it's a Collection. If 
   it is, the function returns its first item, otherwise the item itself it returned."
@@ -358,6 +371,7 @@
         (t/attach-instruction , code-do*range)
         (t/attach-instruction , code-do*times)
         (t/attach-instruction , code-drop)
+        (t/attach-instruction , code-extract)
         (t/attach-instruction , code-first)
         (t/attach-instruction , code-fromboolean)
         (t/attach-instruction , code-fromchar)

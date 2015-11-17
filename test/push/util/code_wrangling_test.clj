@@ -92,6 +92,31 @@
   (count-code-points '( 1 2 #{1 2 #{3 4 5}})) => 4)
 
 
+;; nth-code-point
+
+
+(fact "`nth-code-point` returns the n+1th item of a flat list (because the list is a point!)"
+  (nth-code-point '(9 8 7 6 5 4) 2) => 8
+  (nth-code-point '(9 8 7 6 5 4) 0) => '(9 8 7 6 5 4)
+  (nth-code-point '(9 8 7 6 5 4) 6) => 4)
+
+
+(fact "`nth-code-point` is OK with non-list arguments, as long as you ask for 0th position"
+  (nth-code-point 77 0) => 77
+  (nth-code-point [1 2 3] 0) => [1 2 3]
+  (nth-code-point #{1 2 3} 0) => #{1 2 3}
+  (nth-code-point "[1 2 3]" 0) => "[1 2 3]")
+
+
+(fact "`nth-code-point` will return the item itself if you exceed its bouns"
+  (nth-code-point '(1 2) 112) => '(1 2))
+
+
+(fact "`nth-code-point` will count vectors as single items"
+  (nth-code-point '([1 2] [3 4]) 1) => [1 2]
+  (nth-code-point '([1 2] [3 4]) 2) => [3 4])
+
+
 ;; contains-anywhere?
 
 
