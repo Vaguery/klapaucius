@@ -276,6 +276,16 @@
   :code "null?" #(and (coll? %) (empty? %))))
 
 
+(def code-points
+  (core/build-instruction
+    code-points
+    "`:code-points` pops the top item from the `:code` stack, and treats it as a tree of seqs and non-seq items. If it is an empty list, or any literal (including a vector, map, set or other collection type), the result is 1; if it is a list containing items, they are also counted, including any contents of sub-lists, and so on. _Note_ the difference from `:code-size`, which counts contents of all Collections, not just (code) lists. The result is pushed to the `:integer` stack."
+    :tags #{:complex :base}
+    (d/consume-top-of :code :as :arg1)
+    (d/calculate [:arg1] #(u/count-code-points %1) :as :size)
+    (d/push-onto :integer :size)))
+
+
 (def code-position
   (core/build-instruction
     code-position
@@ -362,6 +372,7 @@
         (t/attach-instruction , code-noop)
         (t/attach-instruction , code-nth)
         (t/attach-instruction , code-null?)
+        (t/attach-instruction , code-points)
         (t/attach-instruction , code-position)
         (t/attach-instruction , code-quote)
         (t/attach-instruction , code-rest)

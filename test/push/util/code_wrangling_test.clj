@@ -46,6 +46,52 @@
   (count-collection-points #{1 2 #{3 4 5}}) => 7)
 
 
+;; count-code-points
+
+
+(fact "`count-code-points` counts every item in every list and sub-list"
+  (count-code-points '(1 2 3)) => 4
+  (count-code-points '()) => 1
+  (count-code-points '(1 (2 3))) => 5
+  (count-code-points '((1) (2) (3))) => 7
+  (count-code-points '()) => 1
+  (count-code-points '(())) => 2
+  (count-code-points '((((((()))))))) => 7)
+
+
+(fact "`count-code-points` ignores vectors and sub-vectors"
+  (count-code-points [1 2 3]) => 1
+  (count-code-points []) => 1)
+
+
+(fact "`count-code-points` counts items as 1"
+  (count-code-points '()) => 1
+  (count-code-points nil) => 1
+  (count-code-points false) => 1
+  (count-code-points 'integer?) => 1
+  (count-code-points '+) => 1
+  (count-code-points []) => 1
+  (count-code-points {}) => 1
+  (count-code-points #{}) => 1
+  (count-code-points :yup) => 1)
+
+
+(fact "`count-code-points` skips over map contents"
+  (count-code-points {:a 7}) => 1
+  (count-code-points {:a 7 :b 11}) => 1 
+  (count-code-points {[1 2] {:a 7 :b 11} [3 [5 [7]]] {[1 2] :c}}) => 1
+
+  (count-code-points '(1 2 {:a 7})) => 4)
+
+
+(fact "`count-code-points` ignores contents of sets"
+  (count-code-points #{}) => 1
+  (count-code-points #{1 2 3}) => 1
+  (count-code-points #{1 2 #{3 4 5}}) => 1
+
+  (count-code-points '( 1 2 #{1 2 #{3 4 5}})) => 4)
+
+
 ;; contains-anywhere?
 
 

@@ -21,6 +21,19 @@
       (inc counter)))
 
 
+(defn count-code-points
+  "Takes a nested list and counts the total number of seqs and non-seq items
+  in those collections. Literal 'nil' is 1; an empty list '() or #{} or {} is 1.
+  In other words, it only counts lists and things inside lists, not vectors, maps,
+  or other kinsd of collection (and is thus different from `count-collection-points`)."
+  [item & {:keys [counter] :or {counter 0}}]
+  (cond
+    (seq? item)
+      (reduce #(+ %1 (count-code-points %2)) (inc counter) item)
+    :else
+      (inc counter)))
+
+
 (defn contains-anywhere?
   "Takes an item that is probably a nested collection, and returns true if the
   second argument appears 'in' it: are they equal? does the first contain the 2nd?

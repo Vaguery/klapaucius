@@ -506,8 +506,28 @@
     :code    '()                  :code-rest        :code        '())
 
 
+
 (tabular
-  (fact ":code-size counts the number of points in the top :code item"
+  (fact ":code-points counts the number of points in the top :code item"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-code-module ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items            ?instruction      ?get-stack     ?expected
+    ;; how many?
+    :code    '((1 2 3) (8 9))     :code-points        :integer        '(4)
+    :code    '((2))               :code-points        :integer        '(2)
+    :code    '(() 3)              :code-points        :integer        '(1)
+    :code    '(2)                 :code-points        :integer        '(1)
+    :code    '((1 (2 (3))))       :code-points        :integer        '(6)
+    :code    '([1 2 3])           :code-points        :integer        '(1)
+    :code    '(#{1 2 3})          :code-points        :integer        '(1)
+    :code    '((1 2 {1 2 3 4}))   :code-points        :integer        '(4)
+    :code    '()                  :code-points        :integer        '())
+
+
+
+(tabular
+  (fact ":code-size counts the number of points in the top :code item, counting contents of every collection type"
     (register-type-and-check-instruction
         ?set-stack ?items classic-code-module ?instruction ?get-stack) => ?expected)
 
