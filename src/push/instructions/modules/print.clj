@@ -4,23 +4,58 @@
   (:require [push.instructions.dsl :as d])
   )
 
-; print_exec
-; print_integer
-; print_float
-; print_code
-; print_boolean
-; print_string
-; print_char
-; print_vector_integer
-; print_vector_float
-; print_vector_boolean
-; print_vector_string
-; print_newline
+
+(defn print-instruction
+  "returns a new x-print instruction for a PushType"
+  [pushtype]
+  (let [typename (:name pushtype)
+        instruction-name (str (name typename) "-print")]
+    (eval (list
+      'push.instructions.core/build-instruction
+      instruction-name
+      (str "`:" instruction-name "` pops the top `" typename
+        "` item and pushes it to the `:print` stack.")
+      :tags #{:io}
+      `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
+      `(push.instructions.dsl/push-onto :print :arg1)))))
+
+
+(def print-newline
+  (core/build-instruction
+    print-newline
+    "`:print-newline` pushes a single newline character to the `:print` stack"
+    :tags #{:print :io :base}
+    (d/calculate [] (fn [] \newline) :as :newline)
+    (d/push-onto :print :newline)))
+
+
+(def print-space
+  (core/build-instruction
+    print-space
+    "`:print-space` pushes a single space character to the `:print` stack"
+    :tags #{:print :io :base}
+    (d/calculate [] (fn [] \space) :as :space)
+    (d/push-onto :print :space)))
+
+
+(defn make-printable
+  "takes a PushType and adds the :printable attribute and the `:print-X` instruction"
+  [pushtype]
+  (-> pushtype
+      (t/attach-instruction (print-instruction pushtype))
+      (t/attach-instruction print-newline)
+      (t/attach-instruction print-space)
+      (assoc :attributes (conj (:attributes pushtype) :printable))))
+
+
+
+; print_space
 
 
 (def classic-print-module
   ( ->  (t/make-module  :print
                         :attributes #{:io :base})
-        t/make-visible 
+        (t/attach-instruction , print-newline)
+        (t/attach-instruction , print-space)
         ))
 
