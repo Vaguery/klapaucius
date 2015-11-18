@@ -2,6 +2,7 @@
   (:require [push.instructions.core :as core])
   (:require [push.types.core :as t])
   (:require [push.instructions.dsl :as d])
+  (:require [push.instructions.modules.print :as print])
   (:use [push.util.type-checkers :only (boolean?)])
   )
 
@@ -81,7 +82,7 @@
         t/make-visible 
         t/make-equatable
         t/make-movable
-        push.instructions.modules.print/make-printable
+        print/make-printable
         (t/attach-instruction , bool-and)
         (t/attach-instruction , boolean-frominteger)
         (t/attach-instruction , boolean-fromintsign)

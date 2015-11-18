@@ -3,6 +3,7 @@
   (:require [push.types.core :as t])
   (:require [push.instructions.dsl :as d])
   (:require [clojure.string :as strings])
+  (:require [push.instructions.modules.print :as print])
   )
 
 
@@ -338,7 +339,7 @@
         t/make-equatable
         t/make-comparable
         t/make-movable
-        push.instructions.modules.print/make-printable
+        print/make-printable
         (t/attach-instruction , exec-string-iterate)
         (t/attach-instruction , string-butlast)
         (t/attach-instruction , string-concat)

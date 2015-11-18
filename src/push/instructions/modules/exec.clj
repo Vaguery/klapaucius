@@ -2,6 +2,7 @@
   (:require [push.instructions.core :as core])
   (:require [push.types.core :as t])
   (:require [push.instructions.dsl :as d])
+  (:require [push.instructions.modules.print :as print])
   )
 
 
@@ -173,7 +174,7 @@
         t/make-visible 
         t/make-equatable
         t/make-movable
-        push.instructions.modules.print/make-printable
+        print/make-printable
         (t/attach-instruction , exec-do*count)
         (t/attach-instruction , exec-do*range)
         (t/attach-instruction , exec-do*times)

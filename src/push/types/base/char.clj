@@ -4,6 +4,7 @@
   (:require [push.instructions.dsl :as d])
   (:require [push.util.stack-manipulation :as u])
   (:require [push.util.code-wrangling :as fix])
+  (:require [push.instructions.modules.print :as print])
   )
 
 
@@ -96,7 +97,7 @@
         t/make-equatable
         t/make-comparable
         t/make-movable
-        push.instructions.modules.print/make-printable
+        print/make-printable
         (t/attach-instruction , char-allfromstring)
         (t/attach-instruction , char-letter?)
         (t/attach-instruction , char-digit?)

@@ -2,6 +2,7 @@
   (:require [push.instructions.core :as core])
   (:require [push.types.core :as t])
   (:require [push.instructions.dsl :as d])
+  (:require [push.instructions.modules.print :as print])
   )
 
 
@@ -138,7 +139,7 @@
         t/make-equatable
         t/make-comparable
         t/make-movable
-        push.instructions.modules.print/make-printable
+        print/make-printable
         (t/attach-instruction , float-add)
         (t/attach-instruction , float-cosine)
         (t/attach-instruction , float-dec)

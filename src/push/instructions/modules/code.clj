@@ -4,6 +4,7 @@
   (:require [push.instructions.dsl :as d])
   (:require [push.util.stack-manipulation :as stacks])
   (:require [push.util.code-wrangling :as u])
+  (:require [push.instructions.modules.print :as print])
   )
 
 
@@ -369,7 +370,7 @@
         t/make-visible 
         t/make-equatable
         t/make-movable
-        push.instructions.modules.print/make-printable
+        print/make-printable
         (t/attach-instruction , code-append)
         (t/attach-instruction , code-atom?)
         (t/attach-instruction , code-cons)

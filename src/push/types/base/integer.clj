@@ -3,6 +3,7 @@
   (:require [push.types.core :as t])
   (:require [push.instructions.dsl :as d])
   (:require [push.util.code-wrangling :as fix])
+  (:require [push.instructions.modules.print :as print])
   )
 
 
@@ -132,7 +133,7 @@
         t/make-equatable
         t/make-comparable
         t/make-movable
-        push.instructions.modules.print/make-printable
+        print/make-printable
         (t/attach-instruction , integer-add)
         (t/attach-instruction , integer-dec)
         (t/attach-instruction , integer-divide)
