@@ -369,6 +369,7 @@
         t/make-visible 
         t/make-equatable
         t/make-movable
+        push.instructions.modules.print/make-printable
         (t/attach-instruction , code-append)
         (t/attach-instruction , code-atom?)
         (t/attach-instruction , code-cons)

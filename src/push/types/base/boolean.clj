@@ -81,6 +81,7 @@
         t/make-visible 
         t/make-equatable
         t/make-movable
+        push.instructions.modules.print/make-printable
         (t/attach-instruction , bool-and)
         (t/attach-instruction , boolean-frominteger)
         (t/attach-instruction , boolean-fromintsign)

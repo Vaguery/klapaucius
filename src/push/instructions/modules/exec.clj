@@ -173,6 +173,7 @@
         t/make-visible 
         t/make-equatable
         t/make-movable
+        push.instructions.modules.print/make-printable
         (t/attach-instruction , exec-do*count)
         (t/attach-instruction , exec-do*range)
         (t/attach-instruction , exec-do*times)

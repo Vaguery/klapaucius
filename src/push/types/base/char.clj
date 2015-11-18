@@ -96,6 +96,7 @@
         t/make-equatable
         t/make-comparable
         t/make-movable
+        push.instructions.modules.print/make-printable
         (t/attach-instruction , char-allfromstring)
         (t/attach-instruction , char-letter?)
         (t/attach-instruction , char-digit?)

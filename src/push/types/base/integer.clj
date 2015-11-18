@@ -132,6 +132,7 @@
         t/make-equatable
         t/make-comparable
         t/make-movable
+        push.instructions.modules.print/make-printable
         (t/attach-instruction , integer-add)
         (t/attach-instruction , integer-dec)
         (t/attach-instruction , integer-divide)

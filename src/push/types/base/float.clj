@@ -138,6 +138,7 @@
         t/make-equatable
         t/make-comparable
         t/make-movable
+        push.instructions.modules.print/make-printable
         (t/attach-instruction , float-add)
         (t/attach-instruction , float-cosine)
         (t/attach-instruction , float-dec)
