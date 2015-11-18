@@ -60,19 +60,19 @@
                  collector)))))
 
 
-(defn list-zip
-  "Returns a zipper for nested lists (only), given a root list"
-  [root]
-    (zip/zipper list?
-                identity
-                (fn [node children] (with-meta children (meta node)))
-                root))
+; (defn list-zip
+;   "Returns a zipper for nested lists (only), given a root list"
+;   [root]
+;     (zip/zipper list?
+;                 identity
+;                 (fn [node children] (with-meta children (meta node)))
+;                 root))
 
 
 (defn nth-code-point
   "`nth-code-point` takes a :code item (any clojure form) and an integer index, and traverses the code item as a tree (of nested lists and items) in a depth-first order, returning the indexed node."
   [code idx]
-  (loop [loc (list-zip code)
+  (loop [loc (zip/seq-zip code)
          counter 0]
     (if (= counter idx)
       (zip/node loc)
@@ -107,7 +107,7 @@
 (defn replace-nth-in-code
   "Takes two Push :code items and an integer, and replaces the node (counted in depth-first order) of the first code with the second code item."
   [code1 code2 idx]
-  (loop [loc (list-zip code1)
+  (loop [loc (zip/seq-zip code1)
          counter 0]
     (if (= counter idx)
         (zip/root (zip/replace loc code2))

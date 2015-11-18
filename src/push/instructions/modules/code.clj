@@ -214,8 +214,7 @@
     (d/consume-top-of :integer :as :i)
     (d/calculate [:b] #(u/count-code-points %1) :as :size)
     (d/calculate [:i :size] #(u/safe-mod %1 %2) :as :idx)
-    (d/calculate [:a :b :idx]
-      #(u/replace-nth-in-code %2 %1 %3) :as :result)
+    (d/calculate [:a :b :idx] #(u/replace-nth-in-code %2 %1 %3) :as :result)
     (d/push-onto :code :result)))
 
 
