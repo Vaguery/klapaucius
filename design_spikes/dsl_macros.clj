@@ -295,7 +295,7 @@
 (defn replace-stack
   [[interpreter scratch] stackname kwd]
   (let [new-val (kwd scratch)
-        new-stack (if (list? new-val) new-val (list new-val))
+        new-stack (if (seq? new-val) new-val (list new-val))
         result (set-stack interpreter stackname new-stack)]
       (vector result scratch)))
 

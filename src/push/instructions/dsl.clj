@@ -11,6 +11,12 @@
 ;; utilities
 
 
+(defn- list!
+  "Jams the argument into a list."
+  [collection]
+  (into '() (reverse collection)))
+
+
 (defn- delete-nth
   "Removes an indexed item from a seq; raises an Exception if the seq
   is empty."
@@ -18,19 +24,17 @@
   {:pre  [(seq coll)
           (not (neg? idx))
           (< idx (count coll))]}
-  (concat (take idx coll) (drop 1 (drop idx coll))))
+  (list! (concat (take idx coll) (drop 1 (drop idx coll)))))
 
 
 (defn- insert-as-nth
   "Inserts the item so it is in the indicated position of the result. Note bounds
   of possible range are [0,length] (it can be placed last)."
   [coll item idx]
-  {:pre  [(list? coll)
+  {:pre  [(seq? coll)
           (not (neg? idx))
           (<= idx (count coll))]}
-  (concat (take idx coll) (list item) (drop idx coll)))
-
-
+  (list! (concat (take idx coll) (list item) (drop idx coll))))
 
 
 (defn- index-from-scratch-ref
@@ -233,7 +237,7 @@
   (if (some? (u/get-stack interpreter stackname))
     (let [replacement (kwd scratch)
           new-stack (cond (nil? replacement) (list)
-                          (list? replacement) replacement
+                          (seq? replacement) replacement
                           :else (list replacement))]
       [(u/set-stack interpreter stackname new-stack) scratch])
     (oops/throw-unknown-stack-exception stackname)))

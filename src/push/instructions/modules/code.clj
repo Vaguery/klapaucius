@@ -7,9 +7,6 @@
   )
 
 
-(defn push-code? [item] (and (list? item) (= (first item) 'quote)))
-
-
 ;; code-specific instructions
 
 ; code_discrepancy

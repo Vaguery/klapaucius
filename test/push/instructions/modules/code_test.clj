@@ -9,21 +9,6 @@
   (:name classic-code-module) => :code)
 
 
-(facts "about the `push-code?` recognizer for :code items"
-  (fact "it returns false for anything unquoted"
-    (push-code? 8) => false
-    (push-code? false) => false
-    (push-code? [1 2 3]) => false)
-  (fact "it returns false for single-quoted items, including lists"
-    (push-code? '8) => false
-    (push-code? 'false) => false
-    (push-code? '(1 2 3)) => false)
-  (fact "it returns false for double-quoted items, including lists"
-    (push-code? ''8) => true
-    (push-code? ''false) => true
-    (push-code? ''(1 2 3)) => true))
-
-
 (fact "classic-code-module has the expected :attributes"
   (:attributes classic-code-module) =>
     (contains #{:equatable :movable :complex :visible}))
