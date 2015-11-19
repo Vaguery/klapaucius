@@ -292,6 +292,12 @@
   ((:transaction (get-instruction interpreter token)) interpreter))
 
 
+(defn missing-args-message
+  [interpreter token]
+  (let [t (:counter interpreter)]
+    {:tick t :error (str token " missing arguments")}))
+
+
 (defn execute-instruction
   "Takes an Interpreter and a token, and executes the registered
   Instruction using the Interpreter as the (only) argument. Raises an
@@ -302,7 +308,10 @@
   (cond
     unrecognized (oops/throw-unknown-instruction-error token)
     ready (apply-instruction interpreter token)
-    :else interpreter)))
+    :else (push-item 
+            interpreter 
+            :error 
+            (missing-args-message interpreter token)))))
 
 
 (defn push-item

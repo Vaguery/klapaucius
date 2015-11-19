@@ -490,10 +490,11 @@
     (execute-instruction he-knows-foo :bar) => he-knows-foo))
 
 
-(fact "execute-instruction will not change the Interpreter if the needs aren't met"
+(fact "execute-instruction will add an :error message if the needs aren't met"
   (let [foo (i/make-instruction :foo :needs {:integer 3} :transaction (fn [a] 99))
       he-knows-foo (register-instruction (basic-interpreter) foo)]
-    (execute-instruction he-knows-foo :foo) => he-knows-foo ;; not enough integers
+    (u/get-stack (execute-instruction he-knows-foo :foo) :error) => 
+      '({:tick 0 :error ":foo missing arguments"})
     (execute-instruction
       (assoc-in he-knows-foo [:stacks :integer] '(1 2 3 4)) :foo) => 99))
 

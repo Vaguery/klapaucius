@@ -62,15 +62,25 @@ As it moves through successive stages of "done", you'll be able to
   - basic `:boolean` instructions
   - handle `:input` values
   - step counting
-2. complete core instruction coverage (`:float`, `:code`, `:exec`, `:string`, `:char` etc) [done]
-3. tracing and reporting [in progress]
+2. complete core instruction coverage
+  - `:char`
+  - `:code`
+  - `:environment` and `:return`
+  - `:exec`
+  - `:float`
+  - `:print`
+  - `:string`
+3. tracing and reporting
+  - `:log` stack
+  - `:error` stack
+  - `produce-gazetteer`
 3. performance restrictions
   - halting problem
   - numeric overflow and underflow
   - memory management
   - error handling
   - large value handling
-3. extensibility for "new" types via "experiment" interface:
+3. extensibility for "new" types and instructions:
   - standard library: vectors, printing, etc
   - adding a type or instruction
 4. interface(s) for experiments:
