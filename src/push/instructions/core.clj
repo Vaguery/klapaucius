@@ -13,7 +13,7 @@
   (let [cmd (first step)
         resolved (resolve cmd)]
     (condp = resolved
-      #'archive-all-stacks {}
+      #'archive-all-stacks {:environment 0}
       #'calculate {}
       #'consume-nth-of {(second step) 1}
       #'consume-stack {(second step) 0}

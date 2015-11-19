@@ -83,7 +83,6 @@
       (assoc :attributes (conj (:attributes pushtype) :returnable))))
 
 
-
 (def classic-environment-module
   ( ->  (t/make-module  :environment
                         :attributes #{:complex :base})

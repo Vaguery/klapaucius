@@ -28,8 +28,7 @@
       (i/execute-instruction
         (i/register-instruction (i/basic-interpreter :stacks {:foo '(2)}) foo-return)
         :foo-return)
-      :foo) => '()
-))
+      :foo) => '()))
 
 
 (fact "return-pop-instruction produces an Instruction with the correct stuff"
@@ -46,5 +45,4 @@
       (i/execute-instruction
         (i/register-instruction (i/basic-interpreter :stacks {:foo '(2)}) foo-return-pop)
         :foo-return-pop)
-      :foo) => '(2)
-))
+      :foo) => '(2)))
