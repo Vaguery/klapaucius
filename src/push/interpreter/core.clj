@@ -9,6 +9,8 @@
   (:require [push.types.base.string])
   (:require [push.instructions.modules.environment])
   (:require [push.instructions.modules.print])
+  (:require [push.instructions.modules.log])
+  (:require [push.instructions.modules.error])
   (:require [push.util.exceptions :as oops])
   (:use [push.util.type-checkers])
   )
@@ -198,6 +200,7 @@
   - classic-exec-module
   - classic-integer-type
   - classic-float-type
+  - classic-log-module
   - classic-print-module
   - classic-string-type
 
@@ -237,6 +240,8 @@
                          push.types.base.string/classic-string-type
                          ])
         (register-modules [push.instructions.modules.exec/classic-exec-module
+                           push.instructions.modules.log/classic-log-module
+                           push.instructions.modules.error/classic-error-module
                            push.instructions.modules.code/classic-code-module
                            push.instructions.modules.environment/classic-environment-module
                            push.instructions.modules.print/classic-print-module])
