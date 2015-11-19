@@ -754,3 +754,28 @@
     (get-stack-from-dslblob :boolean
       (insert-as-nth-of [afew {:foo 99}] :boolean :foo :at 8182)) =>
         '(99)))
+
+
+;; `archive-all-stacks`
+
+
+(fact "`archive-all-stacks` creates a single new :environment item from all the stacks"
+  (get-stack-from-dslblob :environment
+      (archive-all-stacks [afew {}])) => (list (:stacks afew))
+  (get-stack-from-dslblob :environment
+      (archive-all-stacks 
+        (archive-all-stacks [afew {}]))) =>
+          (list
+            (merge (:stacks afew) {:environment (list (:stacks afew))})
+            (:stacks afew)))
+
+
+(fact "`archive-all-stacks` works regardless of stack contents"
+  (get-stack-from-dslblob :environment
+      (archive-all-stacks [(i/basic-interpreter) {}])) => (list i/core-stacks))
+
+
+
+
+
+

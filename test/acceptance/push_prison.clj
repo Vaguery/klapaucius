@@ -8,6 +8,9 @@
   (:use [push.interpreter.core])
   )
 
+
+
+
 (defn check-on-prisoner
   [prisoner]
   (let [interpreter (reset-interpreter 

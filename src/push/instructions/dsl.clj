@@ -77,6 +77,15 @@
 
 ;; DSL instructions
 
+
+(defn archive-all-stacks
+  "Pushes the hash-map of all the stacks currently present in the Interpreter onto that Interpreter's `:environement` stack. Does not change any of the stack contents."
+  [[interpreter scratch]]
+  (let [old-env (or (u/get-stack interpreter :environment) '())
+        new-env (conj old-env (:stacks interpreter))] 
+    [(u/set-stack interpreter :environment new-env) scratch]))
+
+
 (defn consume-stack
   "Removes an entire named stack; if an `:as local` argument is given,
   it saves the stack in that scratch variable. If no local is given,

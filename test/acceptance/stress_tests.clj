@@ -63,6 +63,16 @@
                                      (any-instruction interpreter)))))
 
 
+(defn timeout [timeout-ms callback]
+ (let [fut (future (callback))
+       ret (deref fut timeout-ms ::timed-out)]
+   (when (= ret ::timed-out)
+     (do (future-cancel fut) (throw (Exception. "timed out"))))
+   ret))
+
+;; (timeout 100 #(do (Thread/sleep 1000) (println "I finished")))
+
+
 (defn random-program-interpreter
   [i len]
   (let [some-junk (into [] (remove nil? (bunch-a-junk (make-classic-interpreter) i)))
@@ -109,22 +119,21 @@
         (let [rando (assoc-in (reset-interpreter (random-program-interpreter 10 200))
                       [:config :step-limit] 5000)] 
           (try
-            (do
+            (timeout 10000 #(do
               ; (println (str "\n\n" n " : " (pr-str (:program rando)) "\n" (pr-str (:inputs rando))))
               (loop [s rando]
                 (if (is-done? s)
                   (println (str n "  " (:counter s)))
                   (recur (do 
                     ; (println (u/peek-at-stack s :log)) 
-                    (step s))))))
+                    (step s)))))))
               (catch Exception e (do 
                                     (println 
                                       (str "caught exception: " 
                                          (.getMessage e)
                                          " running "
                                          (pr-str (:program rando)) "\n" (pr-str (:inputs rando))))
-                                      (throw (Exception. (.getMessage e))))))))) =not=>
-                                                                                    (throws))
+                                      (throw (Exception. (.getMessage e))))))))) =not=> (throws))
 
 
 
