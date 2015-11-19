@@ -292,6 +292,15 @@
   ((:transaction (get-instruction interpreter token)) interpreter))
 
 
+(defn push-item
+  "Takes an Interpreter, a stack name and a Clojure expression, and
+  returns the Interpreter with the item pushed onto the specified
+  stack. If the stack doesn't already exist, it is created."
+  [interpreter stack item]
+  (let [old-stack (get-in interpreter [:stacks stack])]
+    (assoc-in interpreter [:stacks stack] (conj old-stack item))))
+
+
 (defn missing-args-message
   [interpreter token]
   (let [t (:counter interpreter)]
@@ -312,15 +321,6 @@
             interpreter 
             :error 
             (missing-args-message interpreter token)))))
-
-
-(defn push-item
-  "Takes an Interpreter, a stack name and a Clojure expression, and
-  returns the Interpreter with the item pushed onto the specified
-  stack. If the stack doesn't already exist, it is created."
-  [interpreter stack item]
-  (let [old-stack (get-in interpreter [:stacks stack])]
-    (assoc-in interpreter [:stacks stack] (conj old-stack item))))
 
 
 (defn load-items

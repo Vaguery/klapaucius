@@ -86,6 +86,7 @@
 (def classic-environment-module
   ( ->  (t/make-module  :environment
                         :attributes #{:complex :base})
+        t/make-visible
         (t/attach-instruction , environment-new)
         (t/attach-instruction , environment-begin)
         (t/attach-instruction , environment-end)

@@ -55,6 +55,7 @@
 (def classic-print-module
   ( ->  (t/make-module  :print
                         :attributes #{:io :base})
+        t/make-visible
         (t/attach-instruction , print-newline)
         (t/attach-instruction , print-space)
         ))
