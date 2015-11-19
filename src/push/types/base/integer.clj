@@ -4,6 +4,7 @@
   (:require [push.instructions.dsl :as d])
   (:require [push.util.code-wrangling :as fix])
   (:require [push.instructions.modules.print :as print])
+  (:require [push.instructions.modules.environment :as env])
   )
 
 
@@ -134,6 +135,7 @@
         t/make-comparable
         t/make-movable
         print/make-printable
+        env/make-returnable
         (t/attach-instruction , integer-add)
         (t/attach-instruction , integer-dec)
         (t/attach-instruction , integer-divide)

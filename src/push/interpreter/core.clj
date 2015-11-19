@@ -7,6 +7,8 @@
   (:require [push.types.base.float])
   (:require [push.types.base.integer])
   (:require [push.types.base.string])
+  (:require [push.instructions.modules.environment])
+  (:require [push.instructions.modules.print])
   (:require [push.util.exceptions :as oops])
   (:use [push.util.type-checkers])
   )
@@ -192,9 +194,11 @@
   - classic-boolean-type
   - classic-char-type
   - classic-code-module
+  - classic-environment-module
   - classic-exec-module
   - classic-integer-type
   - classic-float-type
+  - classic-print-module
   - classic-string-type
 
   and the counter is 0.
@@ -233,7 +237,9 @@
                          push.types.base.string/classic-string-type
                          ])
         (register-modules [push.instructions.modules.exec/classic-exec-module
-                           push.instructions.modules.code/classic-code-module])
+                           push.instructions.modules.code/classic-code-module
+                           push.instructions.modules.environment/classic-environment-module
+                           push.instructions.modules.print/classic-print-module])
         (register-inputs inputs)
         )))
 

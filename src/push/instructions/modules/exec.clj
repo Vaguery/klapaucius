@@ -3,6 +3,7 @@
   (:require [push.types.core :as t])
   (:require [push.instructions.dsl :as d])
   (:require [push.instructions.modules.print :as print])
+  (:require [push.instructions.modules.environment :as env])  
   )
 
 
@@ -175,6 +176,7 @@
         t/make-equatable
         t/make-movable
         print/make-printable
+        env/make-returnable
         (t/attach-instruction , exec-do*count)
         (t/attach-instruction , exec-do*range)
         (t/attach-instruction , exec-do*times)

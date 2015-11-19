@@ -5,6 +5,7 @@
   (:require [push.util.stack-manipulation :as stacks])
   (:require [push.util.code-wrangling :as u])
   (:require [push.instructions.modules.print :as print])
+  (:require [push.instructions.modules.environment :as env])
   )
 
 
@@ -364,6 +365,19 @@
   :code "wrap" #(list %1)))
 
 
+(def code-return
+  (core/build-instruction
+    code-return
+    "`:code-return` pops the top `:code` item, wraps it in a list with :code-quote, and pushes that form onto the :return stack"
+    :tags #{:complex :base}
+    (d/consume-top-of :code :as :arg)
+    (d/calculate [:arg] #(list :code-quote %1) :as :form)
+    (d/push-onto :return :form)))
+
+
+
+
+
 (def classic-code-module
   ( ->  (t/make-module  :code
                         :attributes #{:complex :base})
@@ -402,6 +416,7 @@
         (t/attach-instruction , code-position)
         (t/attach-instruction , code-quote)
         (t/attach-instruction , code-rest)
+        (t/attach-instruction , code-return)
         (t/attach-instruction , code-size)
         (t/attach-instruction , code-subst)
         (t/attach-instruction , code-wrap)

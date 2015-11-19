@@ -290,6 +290,18 @@
     (oops/throw-unknown-stack-exception stackname)))
 
 
+(defn retrieve-all-stacks
+  "The second argument (:using) is an `:environment` hash of stacks. Delete all stacks from the current Interpreter except :print, :log and :error, then merge in the archived stacks. Note: if the archived hash lacks some stacks present in the running stacks, too bad!"
+  [[interpreter scratch] & {:keys [using]}]
+  (let [seed  {:print (u/get-stack interpreter :print)
+               :log   (u/get-stack interpreter :log)
+               :error (u/get-stack interpreter :error)}]
+    (if (nil? using)
+      (oops/throw-missing-key-exception using)
+      [(assoc interpreter :stacks (merge seed (using scratch))) scratch])))
+
+
+
 (defn save-stack
   "Takes a PushDSL blob, a stackname (keyword) and a scratch key (also
   keyword), and copies that stack into the scratch variable (without

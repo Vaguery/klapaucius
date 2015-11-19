@@ -5,6 +5,7 @@
   (:require [push.util.stack-manipulation :as u])
   (:require [push.util.code-wrangling :as fix])
   (:require [push.instructions.modules.print :as print])
+  (:require [push.instructions.modules.environment :as env])
   )
 
 
@@ -98,6 +99,7 @@
         t/make-comparable
         t/make-movable
         print/make-printable
+        env/make-returnable
         (t/attach-instruction , char-allfromstring)
         (t/attach-instruction , char-letter?)
         (t/attach-instruction , char-digit?)

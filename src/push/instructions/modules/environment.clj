@@ -17,7 +17,25 @@
         "` item and pushes it to the `:return` stack.")
       :tags #{:io}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
-      `(push.instructions.dsl/push-onto :print :arg1)))))
+      `(push.instructions.dsl/push-onto :return :arg1)))))
+
+
+(defn return-pop-instruction
+  "returns a new x-return-pop instruction for a PushType or stackname"
+  [pushtype]
+  (let [typename (:name pushtype)
+        instruction-name (str (name typename) "-return-pop")
+        token (keyword (str (name typename) "-pop"))]
+    (eval (list
+      'push.instructions.core/build-instruction
+      instruction-name
+      (str "`:" instruction-name "` creates a new `" typename
+        "-pop` token shoves it to the _bottom_ of the `:return` stack.")
+      :tags #{:io}
+      `(push.instructions.dsl/consume-stack :return :as :old-stack)
+      `(push.instructions.dsl/calculate [:old-stack] 
+          #(concat %1 (list ~token)) :as :new-stack)
+      `(push.instructions.dsl/replace-stack :return :new-stack)))))
 
 
 (def environment-new
@@ -44,23 +62,16 @@
     (d/replace-stack :exec :old-exec)))
 
 
-; environment_end
-; return_fromexec
-; return_frominteger
-; return_fromfloat
-; return_fromboolean
-; return_fromstring
-; return_fromchar
-; return_fromcode
-; return_exec_pop
-; return_code_pop
-; return_integer_pop
-; return_float_pop
-; return_boolean_pop
-; return_zip_pop
-; return_string_pop
-; return_char_pop
-; return_tagspace
+(def environment-end
+  (core/build-instruction
+    environment-end
+    "`environment-end` pops the top `:environment` item, and records the current `:return` stack, then replaces all stacks _except_ the `:print`, `:log` and `:error` stacks with their archived counterparts. Then the items on the `:return` stack are pushed to `:exec` as a single list."
+    :tags #{:complex :base}
+    (d/save-stack :return :as :results)
+    (d/consume-top-of :environment :as :archive)
+    (d/retrieve-all-stacks :using :archive)
+    (d/push-onto :exec :results)
+    ))
 
 
 (defn make-returnable
@@ -68,6 +79,7 @@
   [pushtype]
   (-> pushtype
       (t/attach-instruction (return-instruction pushtype))
+      (t/attach-instruction (return-pop-instruction pushtype))
       (assoc :attributes (conj (:attributes pushtype) :returnable))))
 
 
@@ -77,5 +89,6 @@
                         :attributes #{:complex :base})
         (t/attach-instruction , environment-new)
         (t/attach-instruction , environment-begin)
+        (t/attach-instruction , environment-end)
 ))
 

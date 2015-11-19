@@ -3,6 +3,7 @@
   (:require [push.types.core :as t])
   (:require [push.instructions.dsl :as d])
   (:require [push.instructions.modules.print :as print])
+  (:require [push.instructions.modules.environment :as env])
   )
 
 
@@ -140,6 +141,7 @@
         t/make-comparable
         t/make-movable
         print/make-printable
+        env/make-returnable
         (t/attach-instruction , float-add)
         (t/attach-instruction , float-cosine)
         (t/attach-instruction , float-dec)

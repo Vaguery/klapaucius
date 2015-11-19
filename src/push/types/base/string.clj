@@ -4,6 +4,7 @@
   (:require [push.instructions.dsl :as d])
   (:require [clojure.string :as strings])
   (:require [push.instructions.modules.print :as print])
+  (:require [push.instructions.modules.environment :as env])
   )
 
 
@@ -340,6 +341,7 @@
         t/make-comparable
         t/make-movable
         print/make-printable
+        env/make-returnable
         (t/attach-instruction , exec-string-iterate)
         (t/attach-instruction , string-butlast)
         (t/attach-instruction , string-concat)

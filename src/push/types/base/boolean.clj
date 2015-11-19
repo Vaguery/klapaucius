@@ -3,6 +3,7 @@
   (:require [push.types.core :as t])
   (:require [push.instructions.dsl :as d])
   (:require [push.instructions.modules.print :as print])
+  (:require [push.instructions.modules.environment :as env])
   (:use [push.util.type-checkers :only (boolean?)])
   )
 
@@ -83,6 +84,7 @@
         t/make-equatable
         t/make-movable
         print/make-printable
+        env/make-returnable
         (t/attach-instruction , bool-and)
         (t/attach-instruction , boolean-frominteger)
         (t/attach-instruction , boolean-fromintsign)

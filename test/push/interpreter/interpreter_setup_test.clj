@@ -303,17 +303,19 @@
   (keys core-stacks) =>  (contains [:boolean
                                     :char
                                     :code
+                                    :environment
                                     :error
                                     :exec 
                                     :float 
                                     :integer
                                     :log
                                     :print
+                                    :return
                                     :string
                                     :unknown] :in-any-order))
 
 
-;; non-core but standard library core types: :tag, :genome, :return, :print, :puck, etc
+;; non-core but standard library core types: :tag, :genome, :puck, etc
 ; must be loaded after initialization
 
 
@@ -373,7 +375,7 @@
 
 (fact "`make-classic-interpreter` can have its :stacks set"
   (keys (:stacks (make-classic-interpreter))) => (contains
-    [:boolean :char :code :error :exec :float :integer :log :print :string :unknown]
+    [:boolean :char :code :environment :error :exec :float :integer :log :print :return :string :unknown]
     :in-any-order)
   (:integer (:stacks (make-classic-interpreter :stacks {:integer '(8)}))) => '(8)
   (:boolean (:stacks (make-classic-interpreter :stacks {:boolean '(:test)}))) => '(:test))
