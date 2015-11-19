@@ -23,15 +23,27 @@
 (def environment-new
   (core/build-instruction
     environment-new
-    "`environment-new` pops the top `:exec` item, archives all the remaining current stacks to a new :environment item, and then continues with only the popped item in place of the archived `:exec` stack."
+    "`environment-new` pops the top `:exec` item, archives all the remaining current stacks to a new :environment item, and then continues with only the popped item in place of the archived `:exec` stack, and an empty `:return` stack."
     :tags #{:complex :base}
     (d/consume-top-of :exec :as :run-this)
     (d/archive-all-stacks)
+    (d/delete-stack :return)
     (d/delete-stack :exec)
     (d/push-onto :exec :run-this)))
 
 
-; environment_begin
+(def environment-begin
+  (core/build-instruction
+    environment-begin
+    "`environment-begin` takes a snapshot of the current `:exec` stack, clears it, saves an archive of the stacks, clears the `:return` stack, and finally replaces the `:exec` stack. As a result, the archived stacks have the old `:return` stack and an empty `:exec` stack, and the running stacks have the old `:exec` stack and an empty `:return` stack."
+    :tags #{:complex :base}
+    (d/save-stack :exec :as :old-exec)
+    (d/delete-stack :exec)
+    (d/archive-all-stacks)
+    (d/delete-stack :return)
+    (d/replace-stack :exec :old-exec)))
+
+
 ; environment_end
 ; return_fromexec
 ; return_frominteger
@@ -64,5 +76,6 @@
   ( ->  (t/make-module  :environment
                         :attributes #{:complex :base})
         (t/attach-instruction , environment-new)
+        (t/attach-instruction , environment-begin)
 ))
 

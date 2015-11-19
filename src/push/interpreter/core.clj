@@ -28,6 +28,7 @@
     {:boolean '()
     :char '()
     :code '()
+    :environment '()
     :error '()
     :integer '() 
     :exec '()
@@ -35,6 +36,7 @@
     :log '()
     :string '()
     :print '()
+    :return '()
     :unknown '()
     })
 
