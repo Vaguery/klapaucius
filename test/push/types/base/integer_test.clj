@@ -41,3 +41,11 @@
 (fact "classic-integer-type knows arithmetic"
   (keys (:instructions classic-integer-type)) =>
   (contains [:integer-add :integer-subtract :integer-multiply :integer-divide] :in-any-order :gaps-ok))
+
+
+(fact "classic-integer-type knows the :printable instructions"
+  (keys (:instructions classic-integer-type)) => (contains [:integer-print]))
+
+
+(fact "classic-integer-type knows the :returnable instructions"
+  (keys (:instructions classic-integer-type)) => (contains [:integer-return]))

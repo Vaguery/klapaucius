@@ -32,3 +32,11 @@
 (fact "classic-char-type knows the :movable instructions"
   (keys (:instructions classic-char-type)) =>
     (contains [:char-shove :char-pop :char-dup :char-rotate :char-yank :char-yankdup :char-flush :char-swap] :in-any-order :gaps-ok))
+
+
+(fact "classic-char-type knows the :printable instructions"
+  (keys (:instructions classic-char-type)) => (contains [:char-print]))
+
+
+(fact "classic-char-type knows the :returnable instructions"
+  (keys (:instructions classic-char-type)) => (contains [:char-return]))

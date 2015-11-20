@@ -1,4 +1,4 @@
-(ns push.types.standard.vector
+(ns push.types.standard.vectorized
   (:require [push.instructions.core :as core])
   (:require [push.types.core :as t])
   (:require [push.instructions.dsl :as d])
@@ -32,11 +32,20 @@
 ; exec_do*vector_X
 
 
-(def standard-vector-type
-  ( ->  (t/make-type  :vector
-                      :recognizer vector?
-                      :attributes #{:collection})
-        t/make-visible 
+(defn vector-of-type?
+  [item type]
+  (let [checker (:recognizer type)]
+    (and  (vector? item)
+          (every? #(checker %) item))))
+
+
+(defn build-vectorized-type
+  "creates a vector [sub]type for another Push type"
+  [content-type]
+  ( ->  (t/make-type  (keyword (str (name (:name content-type)) "s"))
+                      :recognizer #(vector-of-type? % content-type)
+                      :attributes #{:vector})
+        t/make-visible
         t/make-equatable
         t/make-movable
         print/make-printable

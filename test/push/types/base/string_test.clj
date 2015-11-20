@@ -33,6 +33,14 @@
     (contains [:string-shove :string-pop :string-dup :string-rotate :string-yank :string-yankdup :string-flush :string-swap] :in-any-order :gaps-ok))
 
 
+(fact "classic-string-type knows the :printable instructions"
+  (keys (:instructions classic-string-type)) => (contains [:string-print]))
+
+
+(fact "classic-string-type knows the :returnable instructions"
+  (keys (:instructions classic-string-type)) => (contains [:string-return]))
+
+
 ;;; utilities
 
 (fact "I can escape a whole bunch of bad characters using `str-to-pattern`"

@@ -42,3 +42,11 @@
 (fact "classic-boolean-type knows logic"
   (keys (:instructions classic-boolean-type)) =>
   (contains [:boolean-and :boolean-not :boolean-or :boolean-xor] :in-any-order :gaps-ok))
+
+
+(fact "classic-boolean-type knows the :printable instructions"
+  (keys (:instructions classic-boolean-type)) => (contains [:boolean-print]))
+
+
+(fact "classic-boolean-type knows the :returnable instructions"
+  (keys (:instructions classic-boolean-type)) => (contains [:boolean-return]))

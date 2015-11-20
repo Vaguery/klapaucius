@@ -32,3 +32,11 @@
 (fact "classic-exec-module knows the :movable instructions"
   (keys (:instructions classic-exec-module)) =>
     (contains [:exec-shove :exec-pop :exec-dup :exec-rotate :exec-yank :exec-yankdup :exec-flush :exec-swap] :in-any-order :gaps-ok))
+
+
+(fact "classic-exec-module knows the :printable instructions"
+  (keys (:instructions classic-exec-module)) => (contains [:exec-print]))
+
+
+(fact "classic-exec-module knows the :returnable instructions"
+  (keys (:instructions classic-exec-module)) => (contains [:exec-return]))

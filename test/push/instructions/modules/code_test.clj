@@ -31,3 +31,11 @@
 (fact "classic-code-module knows the :movable instructions"
   (keys (:instructions classic-code-module)) =>
     (contains [:code-shove :code-pop :code-dup :code-rotate :code-yank :code-yankdup :code-flush :code-swap] :in-any-order :gaps-ok))
+
+
+(fact "classic-code-module knows the :printable instructions"
+  (keys (:instructions classic-code-module)) => (contains [:code-print]))
+
+
+(fact "classic-code-module knows the :returnable instructions"
+  (keys (:instructions classic-code-module)) => (contains [:code-return]))

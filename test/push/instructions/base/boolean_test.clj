@@ -141,27 +141,6 @@
     :boolean    '()                :boolean-rotate      :boolean       '())
 
 
-; (tabular
-;   (fact ":boolean-shove pops an index from :boolean, then MOVES
-;     the next item to a new position specified by the index; uses
-;     `(mod arg (inc (count :boolean)))` to place it in range [0,(count stack)]"
-;     (register-type-and-check-instruction
-;         ?set-stack ?items classic-boolean-type ?instruction ?get-stack) => ?expected)
-
-;     ?set-stack  ?items          ?instruction      ?get-stack     ?expected
-;     ;; just shifting things     
-;     :boolean    '(3 4 3 2 1)    :boolean-shove      :boolean       '(3 2 1 4)
-;     :boolean    '(1 1 2 3)      :boolean-shove      :boolean       '(2 1 3)
-;     ;; 0 index
-;     :boolean    '(0 1 2 3)      :boolean-shove      :boolean       '(1 2 3)
-;     ;; range handling
-;     :boolean    '(-1 1 2 3)     :boolean-shove      :boolean       '(2 3 1)
-;     :boolean    '(10 1 2 3)     :boolean-shove      :boolean       '(2 1 3)
-;     ;; missing args 
-;     :boolean    '(2)            :boolean-shove      :boolean       '(2)
-;     :boolean    '()             :boolean-shove      :boolean       '())
-
-
 (tabular
   (fact ":boolean-stackdepth saves (count :boolean) onto :boolean"
     (register-type-and-check-instruction
@@ -201,44 +180,3 @@
     ;; missing args 
     :boolean    '()             :boolean-flush      :boolean       '())
 
-
-
-; (tabular
-;   (fact ":boolean-yank takes its index from :boolean, then MOVES the (current)
-;     nth item up to the top of the stack; uses (mod arg (count :boolean))"
-;     (register-type-and-check-instruction
-;         ?set-stack ?items classic-boolean-type ?instruction ?get-stack) => ?expected)
-
-;     ?set-stack  ?items          ?instruction      ?get-stack     ?expected
-;     ;; just shifting things     
-;     :boolean    '(3 4 3 2 1)    :boolean-yank      :boolean       '(1 4 3 2)
-;     :boolean    '(1 1 2 3)      :boolean-yank      :boolean       '(2 1 3)
-;     ;; 0 index
-;     :boolean    '(0 1 2 3)      :boolean-yank      :boolean       '(1 2 3)
-;     ;; range handling
-;     :boolean    '(-2 1 2 3)     :boolean-yank      :boolean       '(2 1 3)
-;     :boolean    '(11 1 2 3)     :boolean-yank      :boolean       '(3 1 2)
-;     ;; missing args 
-;     :boolean    '(2)            :boolean-yank      :boolean       '(2)
-;     :boolean    '()             :boolean-yank      :boolean       '())
-
-
-
-; (tabular
-;   (fact ":boolean-yankdup takes its index from :boolean, then COPIES the (current)
-;     nth item up to the top of the stack; uses (mod arg (count :boolean))"
-;     (register-type-and-check-instruction
-;         ?set-stack ?items classic-boolean-type ?instruction ?get-stack) => ?expected)
-
-;     ?set-stack  ?items          ?instruction      ?get-stack     ?expected
-;     ;; just shifting things     
-;     :boolean    '(3 4 3 2 1)    :boolean-yankdup      :boolean       '(1 4 3 2 1)
-;     :boolean    '(1 1 2 3)      :boolean-yankdup      :boolean       '(2 1 2 3)
-;     ;; 0 index
-;     :boolean    '(0 1 2 3)      :boolean-yankdup      :boolean       '(1 1 2 3)
-;     ;; range handling
-;     :boolean    '(-2 1 2 3)     :boolean-yankdup      :boolean       '(2 1 2 3)
-;     :boolean    '(11 1 2 3)     :boolean-yankdup      :boolean       '(3 1 2 3)
-;     ;; missing args 
-;     :boolean    '(2)            :boolean-yankdup      :boolean       '(2)
-;     :boolean    '()             :boolean-yankdup      :boolean       '())

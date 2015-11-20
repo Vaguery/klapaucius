@@ -32,3 +32,10 @@
   (keys (:instructions classic-float-type)) =>
     (contains [:float-shove :float-pop :float-dup :float-rotate :float-yank :float-yankdup :float-flush :float-swap] :in-any-order :gaps-ok))
 
+
+(fact "classic-float-type knows the :printable instructions"
+  (keys (:instructions classic-float-type)) => (contains [:float-print]))
+
+
+(fact "classic-float-type knows the :returnable instructions"
+  (keys (:instructions classic-float-type)) => (contains [:float-return]))
