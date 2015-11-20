@@ -14,7 +14,6 @@
 ; vector_X_nth
 ; vector_X_pushall
 ; vector_X_emptyvector
-; vector_X_contains
 ; vector_X_indexof
 ; vector_X_occurrencesof
 ; vector_X_set
@@ -65,6 +64,22 @@
       '(push.instructions.dsl/calculate [:arg1 :arg2]
           #(conj %1 %2) :as :conjed)
       `(push.instructions.dsl/push-onto ~typename :conjed)))))
+
+
+(defn x-contains?-instruction
+  [typename rootname]
+  (let [instruction-name (str (name typename) "-contains?")]
+    (eval (list
+      'push.instructions.core/build-instruction
+      instruction-name
+      (str "`" typename "-contains?` pops the top `" typename "` item and the top `" rootname "` item, and pushes `true` to the `:boolean` stack if the latter is present in the former.")
+      :tags #{:vector}
+      `(push.instructions.dsl/consume-top-of ~rootname :as :arg2)
+      `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
+      '(push.instructions.dsl/calculate [:arg1 :arg2]
+          #(boolean (some (fn [i] (= i %2)) %1)) :as :found)
+      `(push.instructions.dsl/push-onto :boolean :found)))))
+
 
 
 (defn x-first-instruction
@@ -155,6 +170,7 @@
           (t/attach-instruction , (x-butlast-instruction typename))
           (t/attach-instruction , (x-concat-instruction typename))
           (t/attach-instruction , (x-conj-instruction typename rootname))
+          (t/attach-instruction , (x-contains?-instruction typename rootname))
           (t/attach-instruction , (x-first-instruction typename rootname))
           (t/attach-instruction , (x-last-instruction typename rootname))
           (t/attach-instruction , (x-length-instruction typename))

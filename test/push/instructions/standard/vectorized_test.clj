@@ -78,6 +78,38 @@
     )
 
 
+
+(tabular
+  (fact "`foos-contains?` pushes `true` if the top :foo item is present in the top :foos vector"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks foos-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction     ?expected
+
+    {:foos   '([1 2 3])
+     :foo    '(2)}            :foos-contains?    {:foos    '()
+                                                  :foo     '()
+                                                  :boolean '(true)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos   '([1 9 3])
+     :foo    '(2)}            :foos-contains?    {:foos    '()
+                                                  :foo     '()
+                                                  :boolean '(false)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos   '([])
+     :foo    '(2)}            :foos-contains?    {:foos    '()
+                                                  :foo     '()
+                                                  :boolean '(false)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos   '([1 2 3])
+     :foo    '([1 2 3])}      :foos-contains?    {:foos    '()
+                                                  :foo     '()
+                                                  :boolean '(false)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
 (tabular
   (fact "`foos-first` pushes the first item of the top :foos vector onto :foo"
     (check-instruction-with-all-kinds-of-stack-stuff
