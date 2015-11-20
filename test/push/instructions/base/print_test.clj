@@ -33,6 +33,5 @@
 
 (fact "`make-printable` takes adds appropriate instructions to a PushType record"
   (keys (:instructions
-    (make-printable (t/make-type :foo)))) =>
-      '(:foo-print :print-newline :print-space))
+    (make-printable (t/make-type :foo)))) => '(:foo-print))
 

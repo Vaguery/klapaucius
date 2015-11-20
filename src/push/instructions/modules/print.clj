@@ -43,8 +43,6 @@
   [pushtype]
   (-> pushtype
       (t/attach-instruction (print-instruction pushtype))
-      (t/attach-instruction print-newline)
-      (t/attach-instruction print-space)
       (assoc :attributes (conj (:attributes pushtype) :printable))))
 
 
@@ -56,7 +54,7 @@
   ( ->  (t/make-module  :print
                         :attributes #{:io :base})
         t/make-visible
-        (t/attach-instruction , print-newline)
-        (t/attach-instruction , print-space)
+        (t/attach-instruction print-newline)
+        (t/attach-instruction print-space)
         ))
 
