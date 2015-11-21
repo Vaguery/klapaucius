@@ -319,7 +319,7 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`" typename "-set` pops the top `" typename "` item, the top `:integer` and the the top `" rootname "` item. It pushes a new `" typename "` which has the indexed item (modulo length) replaced with the new element.")
+      (str "`" typename "-set` pops the top `" typename "` item, the top `:integer` and the the top `" rootname "` item. It pushes a new `" typename "` which has the indexed item (modulo length) replaced with the new element. If the `" typename "` is empty, it is returned but the other arguments are consumed.")
       :tags #{:vector}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg)
       `(push.instructions.dsl/consume-top-of ~rootname :as :subst)
@@ -327,7 +327,7 @@
       `(push.instructions.dsl/calculate 
         [:arg :which] #(fix/safe-mod %2 (count %1)) :as :idx)
       `(push.instructions.dsl/calculate 
-        [:arg :idx :subst] #(assoc %1 %2 %3) :as :result)
+        [:arg :idx :subst] #(if (empty? %1) %1 (assoc %1 %2 %3)) :as :result)
       `(push.instructions.dsl/push-onto ~typename :result)))))
 
 
