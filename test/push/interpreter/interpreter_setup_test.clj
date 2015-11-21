@@ -390,10 +390,10 @@
   (:inputs (make-classic-interpreter :inputs {:a 8 :b false})) => {:a 8, :b false})
   
 
-
 (fact "`make-classic-interpreter` can have its :config set"
-  (:config (make-classic-interpreter)) => {}
-  (:config (make-classic-interpreter :config {:weird-config 88})) => {:weird-config 88})
+  (:config (make-classic-interpreter)) => basic-interpreter-default-config
+  (:config (make-classic-interpreter :config {:weird-config 88})) => 
+    (contains {:weird-config 88}))
 
 
 (fact "`make-classic-interpreter` can have its :counter set"

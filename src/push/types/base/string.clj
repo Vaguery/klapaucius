@@ -215,8 +215,8 @@
     (d/consume-top-of :string :as :s2)
     (d/consume-top-of :string :as :s1)
     (d/calculate [:s1 :s2 :s3] #(strings/replace %1 %2 %3) :as :replaced)
-    (d/save-max-collection-size :as :max)
-    (d/calculate [:replaced :max] #(if (< (count %1) %2) %1 nil) :as :result)
+    (d/save-max-collection-size :as :limit)
+    (d/calculate [:replaced :limit] #(if (< (count %1) %2) %1 nil) :as :result)
     (d/push-onto :string :result)))
 
 

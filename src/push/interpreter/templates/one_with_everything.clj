@@ -92,7 +92,7 @@
                         all-stacks 
                         {}         ;; inputs
                         {}         ;; instructions
-                        config
+                        (merge basic-interpreter-default-config config)
                         counter
                         done?)
         (register-types all-kinds-of-types)

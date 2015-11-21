@@ -231,7 +231,7 @@
                         all-stacks 
                         {}         ;; inputs
                         {}         ;; instructions
-                        config
+                        (merge basic-interpreter-default-config config)
                         counter
                         done?)
         (register-types [push.types.base.integer/classic-integer-type
