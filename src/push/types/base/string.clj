@@ -23,6 +23,14 @@
       '(d/calculate [:arg] #(str %1) :as :printed)
       '(d/push-onto :string :printed)))))
 
+
+(defn explosive-replacement?
+  "takes three strings: `before`, `after` and `pattern`. Returns `true` if there are more copies of `pattern` in `after` than in `before`"
+  [before after pattern]
+  (< (count (re-seq (re-pattern pattern) before))
+     (count (re-seq (re-pattern pattern) after))))
+
+
 ;;;;;;;;;;;;
 
 ;; utilities (cadged from 
@@ -201,13 +209,19 @@
 (def string-replace
   (core/build-instruction
     string-replace
-    "`:string-replace` pops the top three `:string` values; call them `C`, `B` and `A`, respectively. It pushes the `:string` which results when `B` is replaced with `C` everywhere it occurs as a substring in `A`."
+    "`:string-replace` pops the top three `:string` values; call them `C`, `B` and `A`, respectively. It pushes the `:string` which results when `B` is replaced with `C` everywhere it occurs as a substring in `A`. If the instruction detects `explosive-replacement?`, it also writes a warning message to :error."
     :tags #{:string :base}
     (d/consume-top-of :string :as :s3)
     (d/consume-top-of :string :as :s2)
     (d/consume-top-of :string :as :s1)
     (d/calculate [:s1 :s2 :s3] #(strings/replace %1 %2 %3) :as :different)
-    (d/push-onto :string :different)))
+    (d/calculate [:s1 :different :s2] 
+      #(if (explosive-replacement? %1 %2 %3) 
+        (str "WARNING explosive replacement detected: "
+          (count (re-seq (re-pattern %3) %1)) "->"
+          (count (re-seq (re-pattern %3) %2))) nil) :as :warning)
+    (d/push-onto :string :different)
+    (d/push-onto :error :warning)))
 
 
 (def string-replacechar

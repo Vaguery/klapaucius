@@ -58,5 +58,13 @@
 
   (re-pattern "́\\") => (throws #"Unexpected internal error")
   (re-pattern (str-to-pattern "́\\")) => #"́\\"
-  
 )
+
+(fact "`explosive-replacement?` checks for more patterns after replacement than before"
+  (explosive-replacement? "abc" "abcabc" "ab") => true
+  (explosive-replacement? "abc" "abcabc" "x") => false
+  (explosive-replacement? "abc" "aabbcc" "abc") => false
+  (explosive-replacement? "aaa" "aaaa" "a") => true
+  (explosive-replacement? "aaa" "aaa" "a") => false
+  (explosive-replacement? "aaa" "aa" "a") => false
+  )
