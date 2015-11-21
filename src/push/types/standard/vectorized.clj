@@ -327,8 +327,6 @@
       `(push.instructions.dsl/calculate 
         [:arg :which] #(fix/safe-mod %2 (count %1)) :as :idx)
       `(push.instructions.dsl/calculate 
-        [:arg :idx :subst] #(println (str %1 " , " %2 " , " %3)) :as :DISCARD)
-      `(push.instructions.dsl/calculate 
         [:arg :idx :subst] #(if (empty? %1) %1 (into [] (assoc %1 %2 %3))) :as :result)
       `(push.instructions.dsl/push-onto ~typename :result)))))
 
