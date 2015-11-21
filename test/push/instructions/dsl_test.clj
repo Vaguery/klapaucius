@@ -22,6 +22,12 @@
 (def lots (i/basic-interpreter :stacks {:code (range 1 20)}))
 
 
+;; max-collection-size
+
+(fact "I can read the max-collection-size"
+  (get-max-collection-size nada) =>
+    (:max-collection-size i/basic-interpreter-default-config))
+
 ;; count-of
 
 
@@ -202,6 +208,19 @@
   (fact "index-from-scratch-ref throws up if the key is not present"
     (#'push.instructions.dsl/index-from-scratch-ref :bar {:foo 2}) => 
       (throws #":bar is not an integer")))
+
+
+;; `save-max-collection-size [as kwd]`
+
+
+(facts "about `save-max-collection-size`"
+
+  (fact "save-max-collection-size stores the max-collection-size"
+    (get-local-from-dslblob :max
+      (#'push.instructions.dsl/save-max-collection-size 
+        [afew {}] :as :max)) =>
+    (:max-collection-size i/basic-interpreter-default-config))
+)
 
 
 ;; `delete-nth-of [stackname :at where]`

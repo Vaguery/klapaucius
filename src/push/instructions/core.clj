@@ -27,6 +27,7 @@
       #'push-onto {(second step) 0}
       #'push-these-onto {(second step) 0}
       #'retrieve-all-stacks {}
+      #'save-max-collection-size {}
       #'save-nth-of {(second step) 1}
       #'save-stack {(second step) 0}
       #'save-top-of {(second step) 1}

@@ -11,6 +11,12 @@
 ;; utilities
 
 
+(defn get-max-collection-size
+  "returns the current :max-collection-size setting from the Interpreter"
+  [interpreter]
+  (get-in interpreter [:config :max-collection-size]))
+
+
 (defn- list!
   "Jams the argument into a list."
   [collection]
@@ -76,6 +82,15 @@
 
 
 ;; DSL instructions
+
+
+(defn save-max-collection-size
+  "stores the current max-collection-size in a named scratch variable"
+  [[interpreter scratch] & {:keys [as]}]
+  (let [value (get-in interpreter [:config :max-collection-size])]
+    (if (nil? as)
+      (oops/throw-missing-key-exception :as)
+      [interpreter (assoc scratch as value)])))
 
 
 (defn archive-all-stacks

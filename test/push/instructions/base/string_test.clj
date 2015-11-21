@@ -436,6 +436,9 @@
                                                    :string '()})
 
 
+;; fixture
+
+(def huge-string (apply str (repeat 131070 "*")))
 
 (tabular
   (fact ":string-replace replaces all occurrences of :str/2 with :str/1 in :str/3"
@@ -453,6 +456,11 @@
                                 :string-replace  :string     '("bbbbb")
     :string    '("X" "" "aabbaaabbb")
                                 :string-replace  :string     '("XaXaXbXbXaXaXaXbXbXbX")
+    ;; size limit  
+    :string    (list "XX" "-" huge-string) ;; no substitution
+                                :string-replace  :string     (list huge-string)
+    :string    (list "XX" "*" huge-string) ;; doubles length
+                                :string-replace  :string     '()
     ;; missing args
     :string    '("a" "b")       :string-replace  :string     '("a" "b")
     :string    '("a")           :string-replace  :string     '("a")

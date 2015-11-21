@@ -209,19 +209,15 @@
 (def string-replace
   (core/build-instruction
     string-replace
-    "`:string-replace` pops the top three `:string` values; call them `C`, `B` and `A`, respectively. It pushes the `:string` which results when `B` is replaced with `C` everywhere it occurs as a substring in `A`. If the instruction detects `explosive-replacement?`, it also writes a warning message to :error."
+    "`:string-replace` pops the top three `:string` values; call them `C`, `B` and `A`, respectively. It pushes the `:string` which results when `B` is replaced with `C` everywhere it occurs as a substring in `A`. The maximum :string length is 131072 (128k) characters; if this is exceeded, the result is discarded."
     :tags #{:string :base}
     (d/consume-top-of :string :as :s3)
     (d/consume-top-of :string :as :s2)
     (d/consume-top-of :string :as :s1)
-    (d/calculate [:s1 :s2 :s3] #(strings/replace %1 %2 %3) :as :different)
-    (d/calculate [:s1 :different :s2] 
-      #(if (explosive-replacement? %1 %2 %3) 
-        (str "WARNING explosive replacement detected: "
-          (count (re-seq (re-pattern %3) %1)) "->"
-          (count (re-seq (re-pattern %3) %2))) nil) :as :warning)
-    (d/push-onto :string :different)
-    (d/push-onto :error :warning)))
+    (d/calculate [:s1 :s2 :s3] #(strings/replace %1 %2 %3) :as :replaced)
+    (d/save-max-collection-size :as :max)
+    (d/calculate [:replaced :max] #(if (< (count %1) %2) %1 nil) :as :result)
+    (d/push-onto :string :result)))
 
 
 (def string-replacechar

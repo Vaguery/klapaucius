@@ -141,6 +141,7 @@
 
 (def basic-interpreter-default-config
   { :lenient? false
+    :max-collection-size 131072
     :step-limit 0      })
 
 
