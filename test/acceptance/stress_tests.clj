@@ -53,7 +53,7 @@
 
 (defn bunch-a-junk
   [interpreter how-much-junk]
-  (remove nil? (repeatedly how-much-junk #(condp = (rand-int 10)
+  (remove nil? (repeatedly how-much-junk #(condp = (rand-int 20)
                                      0 (random-integer)
                                      1 (random-float)
                                      2 (random-boolean)
