@@ -109,6 +109,35 @@
     )
 
 
+(tabular
+  (fact "`foos-do*each` constructs a complex continuation (see below)"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks foos-type ?instruction) => (contains ?expected))
+
+    ?new-stacks             ?instruction    ?expected
+
+    {:foos   '([1 2 3])
+     :exec   '(:bar)}       :foos-do*each   {:foos '()
+                                             :exec '((1 :bar [2 3]
+                                                    :foos-do*each :bar))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos   '([1])
+     :exec   '(:bar)}       :foos-do*each   {:foos '()
+                                             :exec '((1 :bar []
+                                                    :foos-do*each :bar))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos   '([1 2 3])
+     :exec   '( (9 99) )}   :foos-do*each   {:foos '()
+                                             :exec '((1 (9 99) [2 3]
+                                                    :foos-do*each (9 99)))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos   '([])
+     :exec   '( (9 99) )}   :foos-do*each   {:foos '()
+                                             :exec '((() (9 99) []
+                                                    :foos-do*each (9 99)))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
 
 (tabular
   (fact "`foos-emptyitem?` pushes an true to :boolean if the top :foos is empty"
@@ -146,6 +175,28 @@
     {:foos   '([1 2 3])
      :foo    '()}             :foos-first       {:foos   '()
                                                  :foo    '(1)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+(tabular
+  (fact "`foos-indexof` pushes an :integer indicating where :foo is in :foos (or -1)"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks foos-type ?instruction) => (contains ?expected))
+
+    ?new-stacks             ?instruction         ?expected
+
+    {:foos   '([1 2 3])
+     :foo    '(3)}          :foos-indexof       {:foos    '()
+                                                 :integer '(2)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos   '([1 2 3])
+     :foo    '(99)}         :foos-indexof       {:foos    '()
+                                                 :integer '(-1)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos   '([1 2 1])
+     :foo    '(1)}          :foos-indexof       {:foos    '()
+                                                 :integer '(0)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
 
@@ -233,6 +284,84 @@
                                                  :foo  '(3)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
+
+
+(tabular
+  (fact "`foos-occurrencesof` pushes an :integer how many :foo occur in :foos"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks foos-type ?instruction) => (contains ?expected))
+
+    ?new-stacks             ?instruction         ?expected
+
+    {:foos   '([1 2 3])
+     :foo    '(3)}         :foos-occurrencesof   {:foos    '()
+                                                  :integer '(1)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos   '([1 1 3])
+     :foo    '(1)}         :foos-occurrencesof   {:foos    '()
+                                                  :integer '(2)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos   '([1 2 1])
+     :foo    '(99)}        :foos-occurrencesof  {:foos    '()
+                                                  :integer '(0)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+(tabular
+  (fact "`foos-portion` pops two :integer values and does some crazy math to extract a subvector from the top `:foos item"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks foos-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction     ?expected
+
+    {:foos     '([1 2 3 4 5 6])
+     :integer  '(2 3)}          :foos-portion        {:foos '([3])}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos     '([1 2 3 4 5 6])
+     :integer  '(2 2)}          :foos-portion        {:foos '([])}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos     '([1 2 3 4 5 6])
+     :integer  '(11 2)}          :foos-portion        {:foos '([3 4 5 6])}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos     '([1 2 3 4 5 6])
+     :integer  '(22 -11)}          :foos-portion        {:foos '([1 2 3 4 5 6])}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos     '([1 2 3 4 5 6])
+     :integer  '(19 19)}          :foos-portion        {:foos '([])}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos     '([1 2 3 4 5 6])
+     :integer  '(0 1)}          :foos-portion        {:foos '([1])}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos     '([1 2 3 4 5 6])
+     :integer  '(0 3)}          :foos-portion        {:foos '([1 2 3])}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos     '([1 2 3 4 5 6])
+     :integer  '(3 0)}          :foos-portion        {:foos '([1 2 3])}
+    )
+
+
+(tabular
+  (fact "`foos-shatter` pushes the items from the first :foos vector onto :foos"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks foos-type ?instruction) => (contains ?expected))
+
+    ?new-stacks             ?instruction     ?expected
+
+    {:foos   '([1 2 3])
+     :foo    '(9.9)}       :foos-shatter       {:foos '()
+                                                :foo  '(1 2 3 9.9)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos   '([])
+     :foo    '(9.9)}       :foos-shatter       {:foos '()   
+                                                :foo  '(9.9)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos   '([1 2 3])
+     :foo    '()}          :foos-shatter       {:foos '()
+                                                :foo  '(1 2 3)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
 
 
 (tabular
@@ -351,6 +480,41 @@
     {:foos   '([])
      :foo    '(9.9)}          :foos-reverse       {:foos   '([])  
                                                  :foo    '(9.9)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+(tabular
+  (fact "`foos-set` pops an :integer to index the position in the top :foos item to replace with the top :foo"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks foos-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction     ?expected
+
+    {:foos     '([1 2 3])
+     :integer  '(0)
+     :foo      '(99)}          :foos-set        {:foos '([99 2 3])
+                                                 :foo  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos     '([1 2 3])
+     :integer  '(2)
+     :foo      '(99)}          :foos-set        {:foos '([1 2 99])
+                                                 :foo  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos     '([1 2 3])
+     :integer  '(-2)
+     :foo      '(99)}          :foos-set        {:foos '([1 99 3])
+                                                 :foo  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos     '([1 2 3])
+     :integer  '(11)
+     :foo      '(99)}          :foos-set        {:foos '([1 2 99])
+                                                 :foo  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos     '([1 2 3])
+     :integer  '(11)
+     :foo      '()}          :foos-set          {:foos '([1 2 3])
+                                                 :integer  '(11)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
 

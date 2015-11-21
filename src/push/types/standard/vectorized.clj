@@ -8,14 +8,7 @@
   )
 
 
-;; TODO
-
-; vector_X_subvec
-; vector_X_pushall
-; vector_X_indexof
-; vector_X_occurrencesof
-; vector_X_set
-; exec_do*vector_X
+;; helper
 
 
 (defn replacefirst
@@ -25,6 +18,30 @@
         [front back] (split-with (complement #{target}) coll)
         new-tail (if is-here (conj (rest back) substitute) back)]
     (into [] (concat front new-tail))))
+
+
+;; instructions
+
+
+(defn x-do*each-instruction
+  ;; NOTE as a side-effect of the continuation form, there will be an empty vector at the end of the iteration; this will be sent to the :vector stack or the :unknown stack by the router, depending on what types are registered
+  [typename]
+  (let [instruction-name (str (name typename) "-do*each")]
+    (eval (list
+      'push.instructions.core/build-instruction
+      instruction-name
+      (str "`" typename "-do*each` pops the top `" typename "` item and the top of the `:exec` stack, and pushes this continuation form to `:exec`: `([first vector] [exec item] [rest vector] " instruction-name " [exec item])`.")
+      :tags #{:vector}
+      `(push.instructions.dsl/consume-top-of ~typename :as :arg)
+      `(push.instructions.dsl/consume-top-of :exec :as :actor)
+      `(push.instructions.dsl/calculate [:arg :actor]
+          #(list (or (first %1) '())
+                 %2
+                 (into [] (rest %1))
+                 (keyword ~instruction-name)
+                 %2)
+          :as :continuation)
+      `(push.instructions.dsl/push-onto :exec :continuation)))))
 
 
 (defn x-butlast-instruction
@@ -112,6 +129,21 @@
       `(push.instructions.dsl/push-onto ~rootname :top)))))
 
 
+(defn x-indexof-instruction
+  [typename rootname]
+  (let [instruction-name (str (name typename) "-indexof")]
+    (eval (list
+      'push.instructions.core/build-instruction
+      instruction-name
+      (str "`" typename "-indexof` pops the top `" typename "` item and the top `" rootname "` item, and pushes an `:integer` indicating the first appearance of the latter in the former (or -1 if it's not found).")
+      :tags #{:vector}
+      `(push.instructions.dsl/consume-top-of ~rootname :as :arg2)
+      `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
+      '(push.instructions.dsl/calculate [:arg1 :arg2]
+          #(.indexOf %1 %2) :as :where)
+      `(push.instructions.dsl/push-onto :integer :where)))))
+
+
 (defn x-last-instruction
   [typename rootname]
   (let [instruction-name (str (name typename) "-last")]
@@ -165,6 +197,44 @@
       `(push.instructions.dsl/calculate 
         [:arg1 :idx] #(nth %1 %2) :as :result)
       `(push.instructions.dsl/push-onto ~rootname :result)))))
+
+
+
+(defn x-occurrencesof-instruction
+  [typename rootname]
+  (let [instruction-name (str (name typename) "-occurrencesof")]
+    (eval (list
+      'push.instructions.core/build-instruction
+      instruction-name
+      (str "`" typename "-occurrencesof` pops the top `" typename "` item and the the top `" rootname "`. It pushes an `:integer` indicating how many copies of the latter appear in the former.")
+      :tags #{:vector}
+      `(push.instructions.dsl/consume-top-of ~typename :as :vec)
+      `(push.instructions.dsl/consume-top-of ~rootname :as :item)
+      `(push.instructions.dsl/calculate 
+        [:vec :item] #(get (frequencies %1) %2 0) :as :result)
+      `(push.instructions.dsl/push-onto :integer :result)))))
+
+
+
+(defn x-portion-instruction
+  [typename]
+  (let [instruction-name (str (name typename) "-portion")]
+    (eval (list
+      'push.instructions.core/build-instruction
+      instruction-name
+      (str "`" typename "-portion` pops the top `" typename "` item and the the top two `:integer` values (call these `A` and `B`). It pushes a new `" typename "` which only includes items between `A` and `B` (which are coerced to fall in range by truncation; see code).")
+      :tags #{:vector}
+      `(push.instructions.dsl/consume-top-of ~typename :as :arg)
+      '(push.instructions.dsl/consume-top-of :integer :as :a)
+      '(push.instructions.dsl/consume-top-of :integer :as :b)
+      `(push.instructions.dsl/calculate [:arg :a]
+          #(min (count %1) (max 0 %2)) :as :cropped-a)
+      `(push.instructions.dsl/calculate [:arg :b]
+          #(min (count %1) (max 0 %2)) :as :cropped-b)
+      `(push.instructions.dsl/calculate [:arg :cropped-a :cropped-b]
+          #(into [] (drop (min %2 %3) (take (max %2 %3) %1))) :as :subvector)
+      `(push.instructions.dsl/push-onto ~typename :subvector)))))
+
 
 
 (defn x-remove-instruction
@@ -243,6 +313,40 @@
       `(push.instructions.dsl/push-onto ~typename :bw)))))
 
 
+(defn x-set-instruction
+  [typename rootname]
+  (let [instruction-name (str (name typename) "-set")]
+    (eval (list
+      'push.instructions.core/build-instruction
+      instruction-name
+      (str "`" typename "-set` pops the top `" typename "` item, the top `:integer` and the the top `" rootname "` item. It pushes a new `" typename "` which has the indexed item (modulo length) replaced with the new element.")
+      :tags #{:vector}
+      `(push.instructions.dsl/consume-top-of ~typename :as :arg)
+      `(push.instructions.dsl/consume-top-of ~rootname :as :subst)
+      `(push.instructions.dsl/consume-top-of :integer :as :which)
+      `(push.instructions.dsl/calculate 
+        [:arg :which] #(fix/safe-mod %2 (count %1)) :as :idx)
+      `(push.instructions.dsl/calculate 
+        [:arg :idx :subst] #(assoc %1 %2 %3) :as :result)
+      `(push.instructions.dsl/push-onto ~typename :result)))))
+
+
+(defn x-shatter-instruction  ;; was -pushall
+  [typename rootname]
+  (let [instruction-name (str (name typename) "-shatter")]
+    (eval (list
+      'push.instructions.core/build-instruction
+      instruction-name
+      (str "`" typename "-shatter` pops the top `" typename "` item and pushes each of its items in turn to the `" rootname "` stack (or nothing, if it's empty).")
+      :tags #{:vector}
+      `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
+      `(push.instructions.dsl/consume-stack ~rootname :as :old-stack)
+      `(push.instructions.dsl/calculate [:arg1 :old-stack]
+          #(into '() (reverse (concat %1 %2))) :as :new-stack)
+      `(push.instructions.dsl/replace-stack ~rootname :new-stack)))))
+
+
+
 (defn x-take-instruction
   [typename]
   (let [instruction-name (str (name typename) "-take")]
@@ -284,16 +388,22 @@
           (t/attach-instruction , (x-concat-instruction typename))
           (t/attach-instruction , (x-conj-instruction typename rootname))
           (t/attach-instruction , (x-contains?-instruction typename rootname))
+          (t/attach-instruction , (x-do*each-instruction typename))
           (t/attach-instruction , (x-emptyitem?-instruction typename))
           (t/attach-instruction , (x-first-instruction typename rootname))
+          (t/attach-instruction , (x-indexof-instruction typename rootname))
           (t/attach-instruction , (x-last-instruction typename rootname))
           (t/attach-instruction , (x-length-instruction typename))
           (t/attach-instruction , (x-new-instruction typename))
           (t/attach-instruction , (x-nth-instruction typename rootname))
+          (t/attach-instruction , (x-occurrencesof-instruction typename rootname))
+          (t/attach-instruction , (x-portion-instruction typename))
+          (t/attach-instruction , (x-shatter-instruction typename rootname))
           (t/attach-instruction , (x-remove-instruction typename rootname))
           (t/attach-instruction , (x-replace-instruction typename rootname))
           (t/attach-instruction , (x-replacefirst-instruction typename rootname))
           (t/attach-instruction , (x-rest-instruction typename))
+          (t/attach-instruction , (x-set-instruction typename rootname))
           (t/attach-instruction , (x-take-instruction typename))
           (t/attach-instruction , (x-reverse-instruction typename))
           )))
