@@ -6,6 +6,7 @@
   (:require [push.util.stack-manipulation :as u])
   (:require [clojure.string :as s])
   (:use [push.interpreter.core])
+  (:use [push.interpreter.templates.one-with-everything])
   )
 
 
@@ -75,8 +76,8 @@
 
 (defn random-program-interpreter
   [i len]
-  (let [some-junk (into [] (remove nil? (bunch-a-junk (make-classic-interpreter) i)))
-        interpreter (make-classic-interpreter 
+  (let [some-junk (into [] (remove nil? (bunch-a-junk (make-everything-interpreter) i)))
+        interpreter (make-everything-interpreter 
                       :config {:step-limit 50000}
                       :inputs some-junk)]
     (assoc interpreter :program (into [] (bunch-a-junk interpreter len)))))

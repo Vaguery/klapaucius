@@ -195,7 +195,7 @@
       `(push.instructions.dsl/calculate 
         [:arg1 :int] #(fix/safe-mod %2 (count %1)) :as :idx)
       `(push.instructions.dsl/calculate 
-        [:arg1 :idx] #(nth %1 %2) :as :result)
+        [:arg1 :idx] #(if (empty? %1) nil (nth %1 %2)) :as :result)
       `(push.instructions.dsl/push-onto ~rootname :result)))))
 
 
