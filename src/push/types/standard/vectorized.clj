@@ -53,7 +53,7 @@
       (str "`" typename "-butlast` pops the top `" typename "` item and pushes the same vector lacking its last item (or nothing, if it ends up empty).")
       :tags #{:vector}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
-      '(push.instructions.dsl/calculate [:arg1] #(butlast %1) :as :most)
+      '(push.instructions.dsl/calculate [:arg1] #(into [] (butlast %1)) :as :most)
       `(push.instructions.dsl/push-onto ~typename :most)))))
 
 
@@ -248,7 +248,7 @@
       `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
       `(push.instructions.dsl/consume-top-of ~rootname :as :purge)
       `(push.instructions.dsl/calculate 
-        [:arg1 :purge] #(remove #{%2} %1) :as :less)
+        [:arg1 :purge] #(into [] (remove #{%2} %1)) :as :less)
       `(push.instructions.dsl/push-onto ~typename :less)))))
 
 
@@ -265,7 +265,7 @@
       `(push.instructions.dsl/consume-top-of ~rootname :as :a)
       `(push.instructions.dsl/consume-top-of ~rootname :as :b)
       `(push.instructions.dsl/calculate 
-        [:arg1 :a :b] #(replace {%3 %2} %1) :as :result)
+        [:arg1 :a :b] #(into [] (replace {%3 %2} %1)) :as :result)
       `(push.instructions.dsl/push-onto ~typename :result)))))
 
 
@@ -309,7 +309,7 @@
       (str "`" typename "-first` pops the top `" typename "` item and pushes the reversed vector to the `" typename "` stack.")
       :tags #{:vector}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
-      '(push.instructions.dsl/calculate [:arg1] #(reverse %1) :as :bw)
+      '(push.instructions.dsl/calculate [:arg1] #(into [] (reverse %1)) :as :bw)
       `(push.instructions.dsl/push-onto ~typename :bw)))))
 
 
@@ -327,7 +327,9 @@
       `(push.instructions.dsl/calculate 
         [:arg :which] #(fix/safe-mod %2 (count %1)) :as :idx)
       `(push.instructions.dsl/calculate 
-        [:arg :idx :subst] #(if (empty? %1) %1 (assoc %1 %2 %3)) :as :result)
+        [:arg :idx :subst] #(println (str %1 " , " %2 " , " %3)) :as :DISCARD)
+      `(push.instructions.dsl/calculate 
+        [:arg :idx :subst] #(if (empty? %1) %1 (into [] (assoc %1 %2 %3))) :as :result)
       `(push.instructions.dsl/push-onto ~typename :result)))))
 
 
