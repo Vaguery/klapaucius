@@ -4,7 +4,9 @@
   (:require [push.instructions.core :as i])
   (:require [push.instructions.dsl :as d])
   (:require [push.types.core :as types])
+  (:require [push.interpreter.templates.one-with-everything :as everything])
   (:use [push.util.type-checkers :only (boolean?)])
+
   (:use [push.interpreter.core])
   )
 
@@ -400,12 +402,20 @@
 
 (fact "`make-classic-interpreter` knows all kinds of instructions already"
   (let [benchmarker (make-classic-interpreter)]
-    (println (str "Classic interpreter knows "
+    (println (str "Classic Interpreter: "
                   (count (keys (:instructions benchmarker)))
-                  " different instructions,\n  of which "
-                  (count (remove #(re-find #"docstring!" (:docstring %))
-                    (vals (:instructions benchmarker))))
-                  " have docstrings,\n  and recognizes "
+                  " instructions, "
+                  (count (:router benchmarker))
+                  " types."))
+    (keys (:instructions benchmarker)) =>  ;; just a sampling as a rough check
+      (contains [:integer-add :boolean-and :char≥? :string-concat] :in-any-order :gaps-ok)))
+
+
+(fact "`make-classic-interpreter` knows all kinds of instructions already"
+  (let [benchmarker (everything/make-everything-interpreter)]
+    (println (str "Interpreter with Everything: "
+                  (count (keys (:instructions benchmarker)))
+                  " instructions, "
                   (count (:router benchmarker))
                   " types."))
     (keys (:instructions benchmarker)) =>  ;; just a sampling as a rough check

@@ -412,6 +412,15 @@
         (load-items :exec (:program interpreter))))
 
 
+(defn recycle-interpreter
+  "takes an Interpreter instance, a program and new inputs; resets and runs the new setup"
+  [interpreter program & {:keys [inputs] :or {inputs []}}]
+    (-> interpreter
+        (assoc , :program program)
+        (register-inputs , inputs)
+        reset-interpreter))
+
+
 (defn increment-counter
   "takes an Interpreter and increments its :counter (without otherwise
   changing it)"

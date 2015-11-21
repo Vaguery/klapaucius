@@ -18,7 +18,32 @@
   )
 
 
-;;; make-everything-interpreter
+(def all-kinds-of-types
+  [ push.types.base.integer/classic-integer-type
+    push.types.base.boolean/classic-boolean-type
+    push.types.base.char/classic-char-type
+    push.types.base.float/classic-float-type
+    push.types.base.string/classic-string-type
+
+    (push.types.standard.vectorized/build-vectorized-type
+      push.types.base.boolean/classic-boolean-type)
+    (push.types.standard.vectorized/build-vectorized-type
+      push.types.base.char/classic-char-type)
+    (push.types.standard.vectorized/build-vectorized-type
+      push.types.base.float/classic-float-type)
+    (push.types.standard.vectorized/build-vectorized-type
+      push.types.base.integer/classic-integer-type)
+    (push.types.standard.vectorized/build-vectorized-type
+      push.types.base.string/classic-string-type)])
+
+
+(def all-kinds-of-modules
+  [push.instructions.modules.exec/classic-exec-module
+   push.instructions.modules.log/classic-log-module
+   push.instructions.modules.error/classic-error-module
+   push.instructions.modules.code/classic-code-module
+   push.instructions.modules.environment/classic-environment-module
+   push.instructions.modules.print/classic-print-module])
 
 
 (defn make-everything-interpreter
@@ -70,28 +95,7 @@
                         config
                         counter
                         done?)
-        (register-types [push.types.base.integer/classic-integer-type
-                         push.types.base.boolean/classic-boolean-type
-                         push.types.base.char/classic-char-type
-                         push.types.base.float/classic-float-type
-                         push.types.base.string/classic-string-type
-
-                         (push.types.standard.vectorized/build-vectorized-type
-                            push.types.base.boolean/classic-boolean-type)
-                         (push.types.standard.vectorized/build-vectorized-type
-                            push.types.base.char/classic-char-type)
-                         (push.types.standard.vectorized/build-vectorized-type
-                            push.types.base.float/classic-float-type)
-                         (push.types.standard.vectorized/build-vectorized-type
-                            push.types.base.integer/classic-integer-type)
-                         (push.types.standard.vectorized/build-vectorized-type
-                            push.types.base.string/classic-string-type)
-                         ])
-        (register-modules [push.instructions.modules.exec/classic-exec-module
-                           push.instructions.modules.log/classic-log-module
-                           push.instructions.modules.error/classic-error-module
-                           push.instructions.modules.code/classic-code-module
-                           push.instructions.modules.environment/classic-environment-module
-                           push.instructions.modules.print/classic-print-module])
+        (register-types all-kinds-of-types)
+        (register-modules all-kinds-of-modules)
         (register-inputs inputs)
         )))

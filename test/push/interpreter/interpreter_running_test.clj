@@ -185,6 +185,23 @@
     (:counter (reset-interpreter counted)) => 0))
 
 
+;; recycle-interpreter
+
+(fact "calling `recycle-interpreter` sets up a new program"
+  (:program knows-some-things) => [1.1 2.2 :intProductToFloat]
+  (:program (recycle-interpreter knows-some-things [1 2 3 4])) => [1 2 3 4])
+
+
+(fact "calling `recycle-interpreter` sets up new inputs (optionally)"
+  (:inputs knows-some-things) => {}
+  (:inputs (recycle-interpreter knows-some-things [])) => {}
+  (:inputs (recycle-interpreter knows-some-things [] :inputs [1 2 3])) =>
+    {:input!1 1, :input!2 2, :input!3 3}
+  (:inputs (recycle-interpreter knows-some-things [] :inputs {:a 8 :b 11})) =>
+    {:a 8, :b 11})
+
+
+
 ;; increment-counter
 
 
