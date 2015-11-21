@@ -46,3 +46,13 @@
 
 (fact "vector-of-integers knows the :returnable instructions"
   (keys (:instructions vector-of-integers)) => (contains [:integers-return]))
+
+
+(fact "replacefirst helper substitutes an item at the first position it occurs"
+  (replacefirst [1 2 3 4 3 2 1] 2 99) => [1 99 3 4 3 2 1]
+  (replacefirst [1 2 3 4 3 2 1] 88 99) => [1 2 3 4 3 2 1]
+  (replacefirst [1 2 3 4 3 2 1] 1 99) => [99 2 3 4 3 2 1]
+  (replacefirst [1 2 3 4 3 2 7] 7 99) => [1 2 3 4 3 2 99]
+  (replacefirst [1 2 3 4 3 2 7] 7 [6 6]) => [1 2 3 4 3 2 [6 6]] ;; it's generic
+  )
+

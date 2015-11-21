@@ -111,6 +111,24 @@
 
 
 (tabular
+  (fact "`foos-emptyitem?` pushes an true to :boolean if the top :foos is empty"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks foos-type ?instruction) => (contains ?expected))
+
+    ?new-stacks              ?instruction     ?expected
+
+    {:foos '([1 2 3])}        :foos-emptyitem?     { :foos '()
+                                                 :boolean '(false)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos '([])}             :foos-emptyitem?     { :foos '()
+                                                 :boolean '(true)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
+
+(tabular
   (fact "`foos-first` pushes the first item of the top :foos vector onto :foo"
     (check-instruction-with-all-kinds-of-stack-stuff
         ?new-stacks foos-type ?instruction) => (contains ?expected))
@@ -175,6 +193,126 @@
                                                    :integer '(0)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
+
+
+
+(tabular
+  (fact "`foos-new` pushes an empty :foos vector"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks foos-type ?instruction) => (contains ?expected))
+
+    ?new-stacks              ?instruction     ?expected
+
+    {:foos '([1 2 3])}        :foos-new        {:foos '([] [1 2 3])}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos '()}               :foos-new        {:foos '([])}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+(tabular
+  (fact "`foos-nth` pops an :integer to index the position in the nth :foos item to push to :foo"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks foos-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction     ?expected
+
+    {:foos     '([1 2 3])
+     :integer  '(0)
+     :foo      '()}           :foos-nth         {:foos '()
+                                                 :foo  '(1)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos     '([1 2 3])
+     :integer  '(3)
+     :foo      '()}           :foos-nth         {:foos '()
+                                                 :foo  '(1)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos     '([1 2 3])
+     :integer  '(-7)
+     :foo      '()}           :foos-nth         {:foos '()
+                                                 :foo  '(3)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+(tabular
+  (fact "`foos-remove` pops the top :foos and :foo items, pushing the former purged of all appearances of the latter"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks foos-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction     ?expected
+
+    {:foos     '([1 2 3])
+     :foo      '(2)}           :foos-remove     {:foos '([1 3])
+                                                 :foo  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos     '([1 2 1])
+     :foo      '(1)}           :foos-remove     {:foos '([2])
+                                                 :foo  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos     '([1 2 3])
+     :foo      '(9)}           :foos-remove     {:foos '([1 2 3])
+                                                 :foo  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos     '([1 1 1 1])
+     :foo      '(1)}           :foos-remove     {:foos '([])
+                                                 :foo  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
+(tabular
+  (fact "`foos-replace` replaces all occurrences of :foo/2 with :foo/1"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks foos-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction     ?expected
+
+    {:foos   '([1 2 3])
+     :foo    '(99 2)}          :foos-replace    {:foos    '([1 99 3])
+                                                  :foo     '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos   '([1 2 3])
+     :foo    '(99 8)}          :foos-replace    {:foos    '([1 2 3])
+                                                  :foo     '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos   '([2 2 2])
+     :foo    '(3 2)}          :foos-replace    {:foos    '([3 3 3])
+                                                  :foo     '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos   '([])
+     :foo    '(99 2)}          :foos-replace    {:foos    '([])
+                                                  :foo     '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+(tabular
+  (fact "`foos-replacefirst` replaces the first appearance of :foo/2 with :foo/1"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks foos-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction     ?expected
+
+    {:foos   '([1 2 1])
+     :foo    '(99 1)}       :foos-replacefirst    {:foos  '([99 2 1])
+                                                  :foo    '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos   '([1 2 1])
+     :foo    '(99 8)}       :foos-replacefirst    {:foos  '([1 2 1])
+                                                  :foo    '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos   '([2 2 2])
+     :foo    '(3 2)}        :foos-replacefirst    {:foos  '([3 2 2])
+                                                  :foo    '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos   '([])
+     :foo    '(99 2)}       :foos-replacefirst    {:foos  '([])
+                                                  :foo    '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
 
 (tabular
   (fact "`foos-rest` pushes the rest of the first :foos vector back onto :foos"
