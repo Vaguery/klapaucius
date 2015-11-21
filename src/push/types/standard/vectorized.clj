@@ -4,12 +4,12 @@
   (:require [push.instructions.dsl])
   (:require [push.instructions.modules.print :as print])
   (:require [push.instructions.modules.environment :as env])
+  (:require [push.util.code-wrangling :as fix])
   )
 
 
 ;; TODO
 
-; vector_X_take
 ; vector_X_subvec
 ; vector_X_nth
 ; vector_X_pushall
@@ -147,6 +147,23 @@
       `(push.instructions.dsl/push-onto ~typename :bw)))))
 
 
+(defn x-take-instruction
+  [typename]
+  (let [instruction-name (str (name typename) "-take")]
+    (eval (list
+      'push.instructions.core/build-instruction
+      instruction-name
+      (str "`" typename "-take` pops the top `" typename "` item and the the top `:integer`. It converts the `:integer` value into an index (modulo the vector's length) then pushes a new `" typename "` item containing only the items in the original from the start up to the indexed point.")
+      :tags #{:vector}
+      `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
+      `(push.instructions.dsl/consume-top-of :integer :as :int)
+      `(push.instructions.dsl/calculate 
+        [:arg1 :int] #(fix/safe-mod %2 (inc (count %1))) :as :idx)
+      '(push.instructions.dsl/calculate 
+        [:arg1 :idx] #(into [] (take %2 %1)) :as :result)
+      `(push.instructions.dsl/push-onto ~typename :result)))))
+
+
 (defn vector-of-type?
   [item type]
   (let [checker (:recognizer type)]
@@ -175,6 +192,7 @@
           (t/attach-instruction , (x-last-instruction typename rootname))
           (t/attach-instruction , (x-length-instruction typename))
           (t/attach-instruction , (x-rest-instruction typename))
+          (t/attach-instruction , (x-take-instruction typename))
           (t/attach-instruction , (x-reverse-instruction typename))
           )))
 

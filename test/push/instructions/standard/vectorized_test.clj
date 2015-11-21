@@ -215,3 +215,34 @@
                                                  :foo    '(9.9)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
+
+
+
+(tabular
+  (fact "`foos-take` pops an :integer to index the position in the top :foos item to trim to"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks foos-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction     ?expected
+
+    {:foos     '([1 2 3])
+     :integer  '(1)}           :foos-take        {:foos    '([1])
+                                                   :integer '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos     '([1 2])
+     :integer  '(0)}           :foos-take        {:foos    '([]) ;; NOTE empty
+                                                   :integer '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos     '([1 2 3])
+     :integer  '(10)}           :foos-take        {:foos    '([1 2])
+                                                   :integer '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos     '([1 2 3])
+     :integer  '(-11)}           :foos-take        {:foos    '([1])
+                                                   :integer '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos     '([1 2 3])
+     :integer  '(-12)}           :foos-take        {:foos    '([])
+                                                   :integer '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
