@@ -23,9 +23,20 @@
   ([range] (rand-int range)))
 
 
+(defn random-integers
+  ([] (random-integers 1000000000))
+  ([range] (into [] (repeatedly (random-integer 10) #(random-integer range)))))
+
+
+
 (defn random-boolean
   []
   (> 0.5 (rand)))
+
+
+(defn random-booleans
+  [] (into [] (repeatedly (random-integer 10) #(random-boolean))))
+
 
 
 (defn random-float
@@ -33,12 +44,26 @@
   ([r] (/ (double (random-integer r)) 256)))
 
 
+(defn random-floats
+  ([] (random-floats 100000))
+  ([range] (into [] (repeatedly (random-integer 10) #(random-float range)))))
+
+
+
 (defn random-char
   [] (char (+ 8 (random-integer 5000))))
 
 
+(defn random-chars
+  [] (into [] (repeatedly (random-integer 10) #(random-char))))
+
+
 (defn random-string
   [] (str (s/join (repeatedly (inc (random-integer 20)) #(random-char)))))
+
+
+(defn random-strings
+  [] (into [] (repeatedly (random-integer 10) #(random-string))))
 
 
 (defn any-input
@@ -61,6 +86,12 @@
                                      4 (random-char)
                                      5 (random-string)
                                      6 (into '() (bunch-a-junk interpreter 5))
+                                     7 (random-integers 5000)
+                                     8 (random-booleans)
+                                     9 (random-floats 40)
+                                     10  (random-chars)
+                                     11 (random-strings)
+
                                      (any-instruction interpreter)))))
 
 
@@ -121,7 +152,7 @@
                       [:config :step-limit] 5000)] 
           (try
             (timeout 10000 #(do
-              ; (println (str "\n\n" n " : " (pr-str (:program rando)) "\n" (pr-str (:inputs rando))))
+              (println (str "\n\n" n " : " (pr-str (:program rando)) "\n" (pr-str (:inputs rando))))
               (loop [s rando]
                 (if (is-done? s)
                   (println (str n "  " (:counter s)))
