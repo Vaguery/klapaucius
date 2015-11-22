@@ -72,11 +72,19 @@
     (d/push-onto :exec :continuation)))
 
 
-
-;; TODO fix size limit
-(def string-concat (t/simple-2-in-1-out-instruction
-  "`:string-concat` pops the top two `:string` items, and pushes the result of concatenating the top item at the end of the second item"
-  :string "concat" 'str))
+(def string-concat
+  (core/build-instruction
+    string-concat
+    "`:string-concat` pops the top two `:string` items, and pushes the result of concatenating the top item at the end of the second item. If the result would be longer than :max-collection-size, it is discarded."
+    :tags #{:string :base}
+    (d/consume-top-of :string :as :arg2)
+    (d/consume-top-of :string :as :arg1)
+    (d/calculate [:arg1 :arg2]
+      #(strings/join (list %1 (str %2))) :as :longer)
+    (d/save-max-collection-size :as :limit)
+    (d/calculate [:longer :limit]
+      #(if (< (count %1) %2) %1 nil) :as :result)
+    (d/push-onto :string :result)))
 
 
 (def string-conjchar

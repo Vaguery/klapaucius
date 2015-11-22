@@ -6,6 +6,10 @@
   )
 
 
+;; a fixure
+
+(def huge-string (apply str (repeat 131070 "*")))
+
 ;; all the conversions
 
 (tabular
@@ -140,6 +144,9 @@
     ;; because Java is weird enough to let you inline backspace characters
     :string    '("\b8" "\n" )
                                 :string-concat  :string     '("\n\b8")
+    ;; length limit behavior
+    :string    (list huge-string huge-string)
+                                :string-concat  :string     '()
     ;; missing args
     :string    '("foo")         :string-concat  :string     '("foo"))
 
@@ -436,9 +443,6 @@
                                                    :string '()})
 
 
-;; fixture
-
-(def huge-string (apply str (repeat 131070 "*")))
 
 (tabular
   (fact ":string-replace replaces all occurrences of :str/2 with :str/1 in :str/3"

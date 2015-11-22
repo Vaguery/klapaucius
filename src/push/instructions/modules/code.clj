@@ -18,8 +18,7 @@
 (def code-append
   (core/build-instruction
     code-append
-    "`code-append` concatenates the top :code item to the end of the second :code item.
-    If either isn't a list, it's made into one first."
+    "`code-append` concatenates the top :code item to the end of the second :code item. If either argument isn't a list, it's made into one first. If the result would be larger than :max-collection-size points, it is discarded."
     :tags #{:complex :base}
     (d/consume-top-of :code :as :arg2)
     (d/consume-top-of :code :as :arg1)
@@ -37,11 +36,19 @@
       :code "atom?" #(not (coll? %1))))
 
 
-;; TODO fix size limit
-(def code-cons (t/simple-2-in-1-out-instruction
-  "`:code-cons` pops the top two `:code` items. If the first one is a list, it conjoins the second item to that; if it's not a list, it makes it one, then conjoins."
-    :code "cons" #(if (seq? %2) (conj %2 %1) 
-                                (conj (list %2) %1))))
+(def code-cons 
+  (core/build-instruction
+    code-cons
+    "`:code-cons` pops the top two `:code` items. If the first one is a list, it conjoins the second item to that; if it's not a list, it makes it one, then conjoins. If the result would be larger than :max-code-points it is discarded."
+    :tags #{:complex :base}
+    (d/consume-top-of :code :as :item2)
+    (d/consume-top-of :code :as :item1)
+    (d/calculate [:item2] #(if (seq? %1) %1 (list %1)) :as :list)
+    (d/calculate [:list :item1] #(conj %1 %2) :as :conjed)
+    (d/save-max-collection-size :as :limit)
+    (d/calculate [:conjed :limit]
+      #(if (< (u/count-code-points %1) %2) %1 nil) :as :result)
+    (d/push-onto :code :result)))
 
 
 (def code-container (t/simple-2-in-1-out-instruction
@@ -211,7 +218,7 @@
 (def code-insert
   (core/build-instruction
     code-insert
-    "`:code-insert` pops the top two `:code` items (call them `A` and `B` respectively), and the top `:integer`. It counts the number of code points in `B` (that is, lists and items in lists, not other collections), then forces the `:integer` to a suitable index range using `(mod integer (points B))`. It then pushes the result when the indexed node of `B` is replaced with `A`."
+    "`:code-insert` pops the top two `:code` items (call them `A` and `B` respectively), and the top `:integer`. It counts the number of code points in `B` (that is, lists and items in lists, not other collections), then forces the `:integer` to a suitable index range using `(mod integer (points B))`. It then pushes the result when the indexed node of `B` is replaced with `A`. If the result would be larger than :max-collection-size, it is discarded."
     :tags #{:complex :base}
     (d/consume-top-of :code :as :a)
     (d/consume-top-of :code :as :b)
@@ -234,14 +241,20 @@
     (d/push-onto :integer :len)))
 
 
-;; TODO fix size limit
-(def code-list (t/simple-2-in-1-out-instruction
-  "`:code-list` pops the top two items from the `:code` stack, returning a list of two elements: of the first item, then the second"
-  :code "list" #(list %1 %2)))
+(def code-list
+  (core/build-instruction
+    code-list
+    "`:code-list` pops the top two items from the `:code` stack, returning a list of two elements: of the first item, then the second. If the result would be larger than :max-collection-size, it is discarded."
+    :tags #{:complex :base}
+    (d/consume-top-of :code :as :arg2)
+    (d/consume-top-of :code :as :arg1)
+    (d/calculate [:arg1 :arg2] #(list %1 %2) :as :both)
+    (d/save-max-collection-size :as :limit)
+    (d/calculate [:both :limit]
+      #(if (< (u/count-code-points %1) %2) %1 nil) :as :result)
+    (d/push-onto :code :result)))
 
 
-
-;; TODO fix size limit
 (def code-map
   (core/build-instruction
     code-map
@@ -254,7 +267,7 @@
       ...
       (:code-quote [last item of code] :code-length) :code-cons)
   ```
-  and this is pushed to the `:exec` stack."
+  and this is pushed to the `:exec` stack. If the result would be larger than :max-collection-size it is discarded."
     :tags #{:complex :predicate :base}
     (d/consume-top-of :code :as :arg)
     (d/consume-top-of :exec :as :fn)
@@ -266,7 +279,10 @@
         (list :code-quote '()) 
         %1)
       :as :continuation)
-    (d/push-onto :exec :continuation)))
+    (d/save-max-collection-size :as :limit)
+    (d/calculate [:continuation :limit]
+      #(if (< (u/count-code-points %1) %2) %1 nil) :as :result)
+    (d/push-onto :exec :result)))
 
 
 (def code-member?
@@ -357,7 +373,7 @@
 (def code-subst
   (core/build-instruction
     code-subst
-    "`:code-subst` pops the top three `:code` items (call them `A` `B` and `C`, respectively). It replaces all occurrences of `B` in `C` (in a depth-first traversal) with `A`."
+    "`:code-subst` pops the top three `:code` items (call them `A` `B` and `C`, respectively). It replaces all occurrences of `B` in `C` (in a depth-first traversal) with `A`. If the result is larger than max-collection-size, it is discarded."
     :tags #{:complex :base}
     (d/consume-top-of :code :as :arg3)
     (d/consume-top-of :code :as :arg2)

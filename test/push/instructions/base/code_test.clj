@@ -6,6 +6,11 @@
   )
 
 
+;; a fixture
+
+(def huge-list (repeat 131070 1))
+
+
 ;; all the basic conversions
 
 (tabular
@@ -45,7 +50,11 @@
     :code    '(() 3)                :code-append        :code        '((3))
     :code    '(2 ())                :code-append        :code        '((2))
     :code    '(() ())               :code-append        :code        '(())
-    :code    '(2)                   :code-append        :code        '(2))
+    :code    '(2)                   :code-append        :code        '(2)
+    ;; oversized results
+    :code    (list huge-list huge-list)
+                                    :code-append        :code        '()
+    )
 
 
 (tabular
@@ -73,7 +82,11 @@
     :code    '(() 3)                :code-cons        :code        '((3))
     :code    '(2 ())                :code-cons        :code        '((() 2))
     :code    '(() ())               :code-cons        :code        '((()))
-    :code    '(2)                   :code-cons        :code        '(2))
+    :code    '(2)                   :code-cons        :code        '(2)
+    ;; size limit
+    :code    (list huge-list huge-list)
+                                    :code-cons        :code        '()
+    )
 
 
 
@@ -415,7 +428,12 @@
      :integer  '(4)}            :code-insert                 {:code '(((1 (99)) (()) (3 4)))} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(99 ((1 (2)) ( ()) (3 4)))
-     :integer  '(5)}            :code-insert                 {:code '(((1 (2)) 99 (3 4)))} )
+     :integer  '(5)}            :code-insert                 {:code '(((1 (2)) 99 (3 4)))} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;; size limit
+    {:code     (list huge-list huge-list)
+     :integer  '(88)}           :code-insert                 {:code '()} 
+     )
 
 
 
@@ -446,7 +464,11 @@
     :code    '(() 3)                :code-list        :code        '((3 ()))
     :code    '(2 ())                :code-list        :code        '((() 2))
     :code    '(() ())               :code-list        :code        '((() ()))
-    :code    '(2)                   :code-list        :code        '(2))
+    :code    '(2)                   :code-list        :code        '(2)
+    ;; size limit
+    :code    (list huge-list huge-list)
+                                    :code-list        :code        '()
+    )
 
 
 
@@ -468,7 +490,15 @@
                                                (:code-quote 1 :code-length) :code-cons))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code  '(() :bar)
-     :exec  '(99)}             :code-map     {:exec '((:code-quote ()))})
+     :exec  '(99)}             :code-map     {:exec '((:code-quote ()))}
+
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;; size limit
+    ; {:code  (list huge-list)
+    ;  :exec  '(99)}             :code-map     {:exec '((:code-quote ()))}
+
+
+     )
 
 
 (tabular
@@ -650,8 +680,10 @@
                                     :code-subst        :code        '((1 ((99 99) 3
                                                                       (99 99)) (99 99) 4))
     :code    '(99 (1 2 3 4))        :code-subst        :code        '(99 (1 2 3 4))
-    :code    '(99)                  :code-subst        :code        '(99))
-
+    :code    '(99)                  :code-subst        :code        '(99)
+    ;; size limit
+    :code    (list '(1 2) 1 huge-list)
+                                    :code-subst        :code        '())
 
 
 
