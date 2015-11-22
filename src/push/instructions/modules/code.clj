@@ -37,6 +37,7 @@
       :code "atom?" #(not (coll? %1))))
 
 
+;; TODO fix size limit
 (def code-cons (t/simple-2-in-1-out-instruction
   "`:code-cons` pops the top two `:code` items. If the first one is a list, it conjoins the second item to that; if it's not a list, it makes it one, then conjoins."
     :code "cons" #(if (seq? %2) (conj %2 %1) 
@@ -233,11 +234,14 @@
     (d/push-onto :integer :len)))
 
 
+;; TODO fix size limit
 (def code-list (t/simple-2-in-1-out-instruction
   "`:code-list` pops the top two items from the `:code` stack, returning a list of two elements: of the first item, then the second"
   :code "list" #(list %1 %2)))
 
 
+
+;; TODO fix size limit
 (def code-map
   (core/build-instruction
     code-map
