@@ -8,7 +8,7 @@
 
 
 (tabular
-  (fact ":environment-new saves copies of all the stacks (the whole hash) to the :environment stack, then clears the :exec and :return stacks"
+  (fact ":environment-new saves copies of all the stacks (the whole hash) to the :environment stack, then brings back the top item of the :exec stack, and empties the :return stack"
     (check-instruction-with-all-kinds-of-stack-stuff
         ?new-stacks classic-environment-module ?instruction) => (contains ?expected))
 
@@ -114,31 +114,130 @@
 (def starting-here (i/make-classic-interpreter :stacks {:integer '(1 2)
                                                         :error '(:oops :ow)
                                                         :print '("hi")
-                                                        :log '(1 2 3)}))
+                                                        :log '(1 2 3)
+                                                        :unknown '(:weird)
+                                                        :exec '(:foo :bar)}))
 
 
-(def has-memories (i/execute-instruction starting-here :environment-begin))
+(def has-memories (i/execute-instruction starting-here :environment-new))
+
+(def new-memories (-> has-memories
+                      (u/set-stack , :exec '(9 99 999))
+                      (u/set-stack , :unknown '(:huh :weird))
+                      (u/set-stack , :integer '(7 77 777))
+                      (u/set-stack , :return '(1 11 1111))
+                      (u/set-stack , :boolean '(false false))
+                      (u/set-stack , :log '(1 2 3 4 5 6 7))
+                      ))
 
 
-(def returns-memories (u/set-stack has-memories :return '(1 2 3)))
+(fact "starting-here is as expected"
+  (:stacks starting-here) =>
+    '{:boolean (), 
+      :char (), 
+      :code (), 
+      :environment (), 
+      :error (:oops :ow), 
+      :exec (:foo :bar), 
+      :float (), 
+      :integer (1 2), 
+      :log (1 2 3), 
+      :print ("hi"), 
+      :return (), 
+      :string (), 
+      :unknown (:weird)})
 
 
 (fact "has-memories is as expected"
-  (:stacks has-memories) => '{:boolean (), :char (), :code (), :environment ({:boolean (), :char (), :code (), :environment (), :error (:oops :ow), :exec (), :float (), :integer (1 2), :log (1 2 3), :print ("hi"), :return (), :string (), :unknown ()}), :error (:oops :ow), :exec (), :float (), :integer (1 2), :log (1 2 3), :print ("hi"), :return (), :string (), :unknown ()})
+    (:stacks has-memories) =>
+    '{:boolean (), 
+      :char (), 
+      :code (), 
+      :environment (
+        { :boolean (), 
+          :char (), 
+          :code (), 
+          :environment (), 
+          :error (:oops :ow), 
+          :exec (:bar), 
+          :float (), 
+          :integer (1 2), 
+          :log (1 2 3), 
+          :print ("hi"), 
+          :return (), 
+          :string (), 
+          :unknown (:weird)}), 
+      :error (:oops :ow), 
+      :exec (:foo), 
+      :float (), 
+      :integer (1 2), 
+      :log (1 2 3), 
+      :print ("hi"), 
+      :return (), 
+      :string (), 
+      :unknown (:weird)})
 
 
-(fact ":environment-end keeps the :print, :log and :error stacks, replaces the rest with the top :environment stack values, and pushes :return stack onto :exec"
+(fact "new-memories is as expected"
+    (:stacks new-memories) => 
+    '{:boolean (false false), 
+      :char (), 
+      :code (), 
+      :environment (
+        { :boolean (), 
+          :char (), 
+          :code (), 
+          :environment (), 
+          :error (:oops :ow), 
+          :exec (:bar), 
+          :float (), 
+          :integer (1 2), 
+          :log (1 2 3), 
+          :print ("hi"), 
+          :return (), 
+          :string (), 
+          :unknown (:weird)}), 
+      :error (:oops :ow), 
+      :exec (9 99 999), 
+      :float (), 
+      :integer (7 77 777), 
+      :log (1 2 3 4 5 6 7), 
+      :print ("hi"), 
+      :return (1 11 1111), 
+      :string (), 
+      :unknown (:huh :weird)})
+
+
+(fact ":environment-end keeps the :print, :log, :unknown and :error stacks, replaces the rest with the top :environment stack values, then pushes the :exec and :return stacks onto the unarchived :exec"
   (:stacks (i/execute-instruction has-memories :environment-end)) =>
-    '{:boolean (), :char (), :code (), :environment (), :error (:oops :ow), :exec (()), :float (), :integer (1 2), :log (1 2 3), :print ("hi"), :return (), :string (), :unknown ()}
+    '{:boolean (), 
+      :char (), 
+      :code (), 
+      :environment (), 
+      :error (:oops :ow),               ;; kept
+      :exec (:foo :bar),                ;; return; new exec; old exec
+      :float (), 
+      :integer (1 2), 
+      :log (1 2 3),                     ;; kept
+      :print ("hi"),                    ;; kept
+      :return (), 
+      :string (), 
+      :unknown (:weird)}                ;; kept
 
 
-  (:stacks (i/execute-instruction returns-memories :environment-end)) =>
-    '{:boolean (), :char (), :code (), :environment (), 
-      :error (:oops :ow),                                    ;;; keeps error
-      :exec ((1 2 3)),                                       ;;; return values
-      :float (), :integer (1 2),                             
-      :log (1 2 3),                                          ;;; keeps log
-      :print ("hi"),                                         ;;; keeps print
-      :return (),                                            ;;; empties return
-      :string (), :unknown ()})
+  (:stacks (i/execute-instruction new-memories :environment-end)) =>
+    '{:boolean (),                            ;; overwritten
+      :char (),
+      :code (), 
+      :environment (),                        ;; popped
+      :error (:oops :ow),                     ;; retained
+      :exec (1 11 1111 9 99 999 :bar),        ;; returns; new exec; old exec
+      :float (), 
+      :integer (1 2),                         ;; overwritten
+      :log (1 2 3 4 5 6 7),                   ;; retained
+      :print ("hi"), 
+      :return (),                             ;; popped and sent to :exec
+      :string (), 
+      :unknown (:huh :weird)}                 ;; retained
 
+)

@@ -2,6 +2,7 @@
   (:require [push.instructions.core :as core])
   (:require [push.types.core :as t])
   (:require [push.instructions.dsl :as d])
+  (:require [push.util.stack-manipulation :as u])
   )
 
 
@@ -65,13 +66,16 @@
 (def environment-end
   (core/build-instruction
     environment-end
-    "`environment-end` pops the top `:environment` item, and records the current `:return` stack, then replaces all stacks _except_ the `:print`, `:log` and `:error` stacks with their archived counterparts. Then the items on the `:return` stack are pushed to `:exec` as a single list."
+    "`environment-end` pops the top `:environment` item, and records the current `:return` stack, then replaces all stacks _except_ the `:print`, `:log` , `:unknown` and `:error` stacks with their archived counterparts. If there are any `:exec` items in the current state, these are pushed onto the retrieved archived state (as a single continuation, for simplicity). The items on the `:return` stack are then pushed onto `:exec` as a single list."
     :tags #{:complex :base}
+    (d/save-stack :exec :as :remainder)
     (d/save-stack :return :as :results)
     (d/consume-top-of :environment :as :archive)
     (d/retrieve-all-stacks :using :archive)
-    (d/push-onto :exec :results)
-    ))
+    (d/consume-stack :exec :as :new-exec)
+    (d/calculate [:results :remainder :new-exec]
+      #(concat %1 %2 %3) :as :compiled)
+    (d/replace-stack :exec :compiled)))
 
 
 (defn make-returnable

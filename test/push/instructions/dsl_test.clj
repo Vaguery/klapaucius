@@ -797,14 +797,16 @@
 ;; `retrieve-all-stacks`
 
 
-(fact "`retrive-all-stacks` replaces all the stacks except :print, :log and :error with the argument's ones"
+(fact "`retrieve-all-stacks` replaces all the stacks except :print, :log and :error with the argument's ones"
   (:stacks (first (retrieve-all-stacks [afew {:foo {}}] :using :foo))) =>
-    {:error '(), :log '(), :print '(), :unknown '()}
+    (contains '{:error (), :log (), :print (), :unknown ()})
 
   (:stacks (first (retrieve-all-stacks
                     [afew {:foo {:integer '(9 99 999)}}]
                     :using :foo))) =>
-    {:integer '(9 99 999), :error '(), :log '(), :print '(), :unknown '()}
+    (contains
+      '{:integer (9 99 999), :error (), 
+        :log (), :print (), :unknown ()})
 
   (:stacks 
     (first 
@@ -816,9 +818,11 @@
 
           {:foo {:integer '(9 99 999)}}]
         :using :foo))) =>
-    {:error '(:oops), :integer '(9 99 999), :log '(), :print '(33), :unknown '(88)})
+    (contains
+      '{:error (:oops), :integer (9 99 999), 
+        :log (), :print (33), :unknown (88)}))
 
 
-(fact "`retrive-all-stacks` throws an exception if it lacks the hash"
+(fact "`retrieve-all-stacks` throws an exception if it lacks the hash"
   (:stacks (first (retrieve-all-stacks [afew {}]))) => (throws #"Push DSL argument error"))
 

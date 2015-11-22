@@ -228,9 +228,7 @@
   (is-done? (basic-interpreter :stacks {:exec '()}  :config {:step-limit 99})) => true
   (is-done? (basic-interpreter 
               :stacks {:exec '() :environment '({:integer '(9)})}
-              :config {:step-limit 99})) => false
-
-  )
+              :config {:step-limit 99})) => false)
 
 ;; logging
 
@@ -280,6 +278,89 @@
 (fact "calling `step` doesn't log anything if no step was taken"
   (u/get-stack (step (step knows-some-things)) :log) =>
     '({:item :intProductToFloat, :step 23}))
+
+
+;; merging old environments
+
+(fact "`merge-environment` overwrites most stacks"
+  (:stacks (u/merge-environment 
+            (basic-interpreter)
+            {:integer '(1 2 3)
+             :boolean '(false)
+             :exec '(:foo)})) =>
+    '{:boolean (false),
+      :char (), 
+      :code (), 
+      :environment (), 
+      :error (), 
+      :exec (:foo), 
+      :float (),
+      :integer (1 2 3), 
+      :log (), 
+      :print (), 
+      :return (), 
+      :string (), 
+      :unknown ()})
+
+
+(fact "`merge-environment` keeps :unknown stack"
+  (:stacks (u/merge-environment 
+            (assoc-in (basic-interpreter) [:stacks :unknown] '(7 77 777))
+            {:unknown '(1 2 3)})) =>
+    (contains {:unknown '(7 77 777)}))
+
+
+(fact "`merge-environment` keeps :error stack"
+  (:stacks (u/merge-environment 
+            (assoc-in (basic-interpreter) [:stacks :error] '(7 77 777))
+            {:error '(1 2 3)})) =>
+    (contains {:error '(7 77 777)}))
+
+
+(fact "`merge-environment` keeps :log stack"
+  (:stacks (u/merge-environment 
+            (assoc-in (basic-interpreter) [:stacks :log] '(7 77 777))
+            {:log '(1 2 3)})) =>
+    (contains {:log '(7 77 777)}))
+
+
+(fact "`merge-environment` keeps :print stack"
+  (:stacks (u/merge-environment 
+            (assoc-in (basic-interpreter) [:stacks :print] '(7 77 777))
+            {:print '(1 2 3)})) =>
+    (contains {:print '(7 77 777)}))
+
+
+(fact "`merge-environment` does not keep the :exec stack (that's for :end-environment to do by hand)"
+  (:stacks (u/merge-environment 
+            (assoc-in (basic-interpreter) [:stacks :exec] '(7 77 777))
+            {:exec '(88)})) =>
+    (contains {:exec '(88)}))
+
+;;
+
+
+(future-fact "calling `step` merges a stored environment if there is one and the :exec stack is empty"
+  (:stacks (step
+    (make-classic-interpreter 
+      :stacks {:exec '() :environment '({:exec '(3 33)})}
+      ))) =>
+    '{ :boolean (), 
+      :char (), 
+      :code (), 
+      :environment (), 
+      :error (), 
+      :exec (3 33), 
+      :float (), 
+      :integer (), 
+      :log (), 
+      :print (), 
+      :return (), 
+      :string (), 
+      :unknown ()}
+    )
+
+
 
 
 ;; interrogating an Interpreter instance
