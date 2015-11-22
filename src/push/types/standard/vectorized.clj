@@ -57,6 +57,8 @@
       `(push.instructions.dsl/push-onto ~typename :most)))))
 
 
+
+
 (defn x-concat-instruction
   [typename]
   (let [instruction-name (str (name typename) "-concat")]
@@ -69,7 +71,9 @@
       `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
       '(push.instructions.dsl/calculate [:arg1 :arg2]
           #(into [] (concat %1 %2)) :as :concatted)
-      `(push.instructions.dsl/push-onto ~typename :concatted)))))
+      '(push.instructions.dsl/save-max-collection-size :as :limit)
+      `(push.instructions.dsl/calculate [:concatted :limit] #(if (< (count %1) %2) %1 nil) :as :result)
+      `(push.instructions.dsl/push-onto ~typename :result)))))
 
 
 (defn x-conj-instruction
