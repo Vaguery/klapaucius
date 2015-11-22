@@ -26,8 +26,9 @@
     (d/calculate [:arg1] #(if (coll? %1) %1 (list %1)) :as :list1)
     (d/calculate [:arg2] #(if (coll? %1) %1 (list %1)) :as :list2)
     (d/calculate [:list1 :list2] #(concat %1 %2) :as :both)
-    (d/push-onto :code :both)))
-
+    (d/save-max-collection-size :as :limit)
+    (d/calculate [:both :limit] #(if (< (u/count-code-points %1) %2) %1 nil) :as :result)
+    (d/push-onto :code :result)))
 
 
 (def code-atom?
@@ -216,7 +217,9 @@
     (d/consume-top-of :integer :as :i)
     (d/calculate [:b] #(u/count-code-points %1) :as :size)
     (d/calculate [:i :size] #(u/safe-mod %1 %2) :as :idx)
-    (d/calculate [:a :b :idx] #(u/replace-nth-in-code %2 %1 %3) :as :result)
+    (d/calculate [:a :b :idx] #(u/replace-nth-in-code %2 %1 %3) :as :replaced)
+    (d/save-max-collection-size :as :limit)
+    (d/calculate [:replaced :limit] #(if (< (u/count-code-points %1) %2) %1 nil) :as :result)
     (d/push-onto :code :result)))
 
 
@@ -355,9 +358,10 @@
     (d/consume-top-of :code :as :arg3)
     (d/consume-top-of :code :as :arg2)
     (d/consume-top-of :code :as :arg1)
-    (d/calculate [:arg1 :arg2 :arg3]
-      #(u/replace-in-code %1 %2 %3) :as :replaced)
-    (d/push-onto :code :replaced)))
+    (d/calculate [:arg1 :arg2 :arg3] #(u/replace-in-code %1 %2 %3) :as :replaced)
+    (d/save-max-collection-size :as :limit)
+    (d/calculate [:replaced :limit] #(if (< (u/count-code-points %1) %2) %1 nil) :as :result)
+    (d/push-onto :code :result)))
 
 
 (def code-wrap (t/simple-1-in-1-out-instruction

@@ -57,8 +57,6 @@
       `(push.instructions.dsl/push-onto ~typename :most)))))
 
 
-
-
 (defn x-concat-instruction
   [typename]
   (let [instruction-name (str (name typename) "-concat")]
