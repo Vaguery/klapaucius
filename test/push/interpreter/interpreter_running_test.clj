@@ -221,9 +221,16 @@
 (fact "`is-done?` checks the [:config :step-limit] against the :counter"
   (is-done? (basic-interpreter)) => true
   (is-done? (basic-interpreter :stacks {:exec '()}  :config {:step-limit 99})) => true
-  (is-done? (basic-interpreter :stacks {:exec '(2)} :config {:step-limit 99})) => false
-  )
+  (is-done? (basic-interpreter :stacks {:exec '(2)} :config {:step-limit 99})) => false)
 
+
+(fact "`is-done?` returns true when :exec and :environment are empty, but not when :exec is empty and :environment has at least one item"
+  (is-done? (basic-interpreter :stacks {:exec '()}  :config {:step-limit 99})) => true
+  (is-done? (basic-interpreter 
+              :stacks {:exec '() :environment '({:integer '(9)})}
+              :config {:step-limit 99})) => false
+
+  )
 
 ;; logging
 

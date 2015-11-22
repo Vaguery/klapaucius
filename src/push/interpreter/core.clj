@@ -442,7 +442,8 @@
   Returns true if any is true. Does not change interpreter state."
   [interpreter]
   (let [limit (step-limit interpreter)]
-    (or  (empty? (u/get-stack interpreter :exec))
+    (or  (and (empty? (u/get-stack interpreter :exec))
+              (empty? (u/get-stack interpreter :environment)))
          (>= (:counter interpreter) limit))))
 
 
@@ -458,6 +459,21 @@
   counter of the Interpreter when called."
   [interpreter item]
   (push-item interpreter :log {:step (:counter interpreter) :item item}))
+
+
+;; TODO
+; (defn merge-environment
+;   "Takes an Interpreter, pops an item from `:environment` (if any), and merges it into the current state by keeping the current :print, :log, :error and :unknown stacks, putting the current :exec stack on top of the old one, and replacing the rest with the stored ones.")
+
+; (defn retrieve-all-stacks
+;   "The second argument (:using) is an `:environment` hash of stacks. Delete all stacks from the current Interpreter except :print, :log and :error, then merge in the archived stacks. Note: if the archived hash lacks some stacks present in the running stacks, too bad!"
+;   [[interpreter scratch] & {:keys [using]}]
+;   (let [seed  {:print (u/get-stack interpreter :print)
+;                :log   (u/get-stack interpreter :log)
+;                :error (u/get-stack interpreter :error)}]
+;     (if (nil? using)
+;       (oops/throw-missing-key-exception using)
+;       [(assoc interpreter :stacks (merge seed (using scratch))) scratch])))
 
 
 (defn step
