@@ -477,28 +477,62 @@
     (check-instruction-with-all-kinds-of-stack-stuff
         ?new-stacks classic-code-module ?instruction) => (contains ?expected))
 
+    ?new-stacks              ?instruction             ?expected
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code  '((1 2 3) :bar)
+     :exec  '(:foo)}          :code-map     {:exec '((:code-quote () 
+                                                    (:code-quote 1 :foo) 
+                                                    :code-cons 
+                                                    (:code-quote (2 3)
+                                                      :code-reduce :foo)))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code  '((1) :bar)
+     :exec  '(:foo)}          :code-map     {:exec '((:code-quote () 
+                                                    (:code-quote 1 :foo) 
+                                                    :code-cons))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code  '(() :bar)
+     :exec  '(:foo)}          :code-map     {:exec '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code  '(88 :bar)
+     :exec  '(:foo)}          :code-map     {:exec '((:code-quote () 
+                                                    (:code-quote 88 :foo) 
+                                                    :code-cons))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;; size limit
+    {:code  (list huge-list :bar)
+     :exec  '(:foo)}          :code-map     {:exec '()}
+    )
+
+
+(tabular
+  (fact ":code-reduce does complicated things involving continuations (see tests)"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks classic-code-module ?instruction) => (contains ?expected))
+
     ?new-stacks                ?instruction             ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code  '((1 2 3) :bar)
-     :exec  '(:code-length)}   :code-map     {:exec '((:code-quote () 
-                                               (:code-quote 1 :code-length) :code-cons
-                                               (:code-quote 2 :code-length) :code-cons
-                                               (:code-quote 3 :code-length) :code-cons))}
+     :exec  '(:foo)}          :code-reduce     {:exec '(((:code-quote 1 :foo) 
+                                                  :code-cons 
+                                                  (:code-quote (2 3) 
+                                                    :code-reduce :foo)))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:code  '(1 :bar)
-     :exec  '(:code-length)}   :code-map     {:exec '((:code-quote () 
-                                               (:code-quote 1 :code-length) :code-cons))}
+    {:code  '((1) :bar)
+     :exec  '(:foo)}          :code-reduce     {:exec '(((:code-quote 1 :foo) 
+                                                  :code-cons))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code  '(() :bar)
-     :exec  '(99)}             :code-map     {:exec '((:code-quote ()))}
-
+     :exec  '(:foo)}          :code-reduce     {:exec '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code  '(88 :bar)
+     :exec  '(:foo)}          :code-reduce     {:exec '(((:code-quote 88 :foo) 
+                                                  :code-cons))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;; size limit
-    ; {:code  (list huge-list)
-    ;  :exec  '(99)}             :code-map     {:exec '((:code-quote ()))}
-
-
-     )
+    {:code  (list huge-list :bar)
+     :exec  '(:foo)}          :code-reduce     {:exec '()}
+    )
 
 
 (tabular

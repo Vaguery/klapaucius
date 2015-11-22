@@ -258,31 +258,52 @@
 (def code-map
   (core/build-instruction
     code-map
-    "`:code-map` pops the top items of the `:code` and `:exec` stacks. If the `:code` item isn't a list, it's wrapped in one. Then the following continuation form is made:
-
-  ```
-    '(:code-quote ()
-      (:code-quote [1st item of code] :code-length) :code-cons
-      (:code-quote [2nd item of code] :code-length) :code-cons
-      ...
-      (:code-quote [last item of code] :code-length) :code-cons)
-  ```
-  and this is pushed to the `:exec` stack. If the result would be larger than :max-collection-size it is discarded."
-    :tags #{:complex :predicate :base}
-    (d/consume-top-of :code :as :arg)
+    "`:code-map` pops the top items of the `:code` and `:exec` stacks (call them \"C\" and \"E\", respectively), and pushes a continuation to `:exec`. If C is a list of 2 or more elements, `'(:code-quote () (:code-quote (first C) E) :code-cons (:code-quote (rest C) :code-reduce E))`; if a list of 1 item, `'(:code-quote () (:code-quote (first C) E) :code-cons)`; if an empty list, no continuation results; if not a list, `'(:code-quote () (:code-quote C E) :code-cons)`. If the continuation would be larger than :max-collection-size it is discarded."
+    :tags #{:complex :base}
+    (d/consume-top-of :code :as :item)
     (d/consume-top-of :exec :as :fn)
-    (d/calculate [:arg] #(if (seq? %1) %1 (list %1)) :as :collection)
-    (d/calculate [:collection :fn] 
-      #(reduce
-        (fn [cont item] 
-          (concat cont (list (list :code-quote item %2) :code-cons)))
-        (list :code-quote '()) 
-        %1)
+    (d/calculate [:item] #(if (seq? %1) %1 (list %1)) :as :collection)
+    (d/calculate [:collection :fn]
+      #(cond  (empty? %1)
+                nil
+              (= 1 (count %1))
+                (list :code-quote '() 
+                      (list :code-quote (first %1) %2) :code-cons)
+              :else
+                (list :code-quote '() 
+                      (list :code-quote (first %1) %2) :code-cons
+                      (list :code-quote (rest %1) :code-reduce %2)))
       :as :continuation)
     (d/save-max-collection-size :as :limit)
     (d/calculate [:continuation :limit]
       #(if (< (u/count-code-points %1) %2) %1 nil) :as :result)
     (d/push-onto :exec :result)))
+
+
+
+(def code-reduce
+  (core/build-instruction
+    code-reduce
+    "`:code-reduce` pops the top items of the `:code` and `:exec` stacks (call them \"C\" and \"E\", respectively), and pushes a continuation to `:exec`. If C is a list of 2 or more elements, `'((:code-quote (first C) E) :code-cons (:code-quote (rest C) :code-reduce E ))`; if a list of 1 item, `'((:code-quote (first C) E) :code-cons)`; if an empty list, no continuation results; if not a list, `'((:code-quote C E) :code-cons)`. If the continuation would be larger than :max-collection-size it is discarded."
+    :tags #{:complex :base}
+    (d/consume-top-of :code :as :item)
+    (d/consume-top-of :exec :as :fn)
+    (d/calculate [:item] #(if (seq? %1) %1 (list %1)) :as :collection)
+    (d/calculate [:collection :fn]
+      #(
+        cond  (empty? %1)
+                nil
+              (= 1 (count %1))
+                (list (list :code-quote (first %1) %2) :code-cons)
+              :else
+                (list (list :code-quote (first %1) %2) :code-cons
+                      (list :code-quote (rest %1) :code-reduce %2)))
+      :as :continuation)
+    (d/save-max-collection-size :as :limit)
+    (d/calculate [:continuation :limit]
+      #(if (< (u/count-code-points %1) %2) %1 nil) :as :result)
+    (d/push-onto :exec :result)))
+
 
 
 (def code-member?
@@ -439,6 +460,7 @@
         (t/attach-instruction , code-points)
         (t/attach-instruction , code-position)
         (t/attach-instruction , code-quote)
+        (t/attach-instruction , code-reduce)
         (t/attach-instruction , code-rest)
         (t/attach-instruction , code-return)
         (t/attach-instruction , code-size)

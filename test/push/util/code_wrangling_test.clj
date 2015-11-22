@@ -89,9 +89,11 @@
   (count-code-points #{}) => 1
   (count-code-points #{1 2 3}) => 1
   (count-code-points #{1 2 #{3 4 5}}) => 1
-
   (count-code-points '( 1 2 #{1 2 #{3 4 5}})) => 4)
 
+
+(fact "`count-code-points` is OK with nil"
+  (count-code-points nil) => 1)
 
 ;; nth-code-point
 
