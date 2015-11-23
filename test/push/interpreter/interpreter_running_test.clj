@@ -376,7 +376,7 @@
       :code (), 
       :environment (), 
       :error (:error1 :error2), 
-      :exec (:return1 :return2 3 33), 
+      :exec (:return2 :return1 3 33), 
       :float (), 
       :integer (), 
       :log ({:item "ENVIRONMENT STACK POPPED", :step 1} :log1 :log2), 

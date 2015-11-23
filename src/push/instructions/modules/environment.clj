@@ -74,7 +74,7 @@
     (d/retrieve-all-stacks :using :archive)
     (d/consume-stack :exec :as :new-exec)
     (d/calculate [:results :remainder :new-exec]
-      #(into '() (reverse (concat %1 %2 %3))) :as :compiled)
+      #(into '() (reverse (concat (reverse %1) %2 %3))) :as :compiled)
     (d/replace-stack :exec :compiled)))
 
 

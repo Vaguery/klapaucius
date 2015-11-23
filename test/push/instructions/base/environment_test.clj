@@ -231,7 +231,7 @@
       :code (), 
       :environment (),                        ;; popped
       :error (:oops :ow),                     ;; retained
-      :exec (1 11 1111 9 99 999 :bar),        ;; returns; new exec; old exec
+      :exec (1111 11 1 9 99 999 :bar),        ;; returns; new exec; old exec
       :float (), 
       :integer (1 2),                         ;; overwritten
       :log (1 2 3 4 5 6 7),                   ;; retained

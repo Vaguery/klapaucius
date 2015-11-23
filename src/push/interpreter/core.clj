@@ -469,7 +469,7 @@
         environments  (u/get-stack interpreter :environment)
         retrieved     (first environments)
         old-exec      (:exec retrieved)
-        new-exec      (into '() (reverse (concat returns current-exec old-exec)))]
+        new-exec      (into '() (reverse (concat (reverse returns) current-exec old-exec)))]
     (-> (u/merge-environment interpreter retrieved)
         (u/set-stack , :exec new-exec)
         (u/set-stack , :environment (pop environments))
