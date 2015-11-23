@@ -156,405 +156,420 @@
 
 
 
-; (tabular
-;   (fact "`foos-first` pushes the first item of the top :foos vector onto :foo"
-;     (check-instruction-with-all-kinds-of-stack-stuff
-;         ?new-stacks standard-vector-type ?instruction) => (contains ?expected))
-
-;     ?new-stacks                ?instruction     ?expected
-
-;     {:foos   '([1 2 3])
-;      :foo    '(9.9)}          :foos-first       {:foos   '()
-;                                                  :foo    '(1 9.9)}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:foos   '([])
-;      :foo    '(9.9)}          :foos-first       {:foos   '()   ;;; NOTE nil
-;                                                  :foo    '(9.9)}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:foos   '([1 2 3])
-;      :foo    '()}             :foos-first       {:foos   '()
-;                                                  :foo    '(1)}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     )
-
-
-; (tabular
-;   (fact "`foos-indexof` pushes an :integer indicating where :foo is in :foos (or -1)"
-;     (check-instruction-with-all-kinds-of-stack-stuff
-;         ?new-stacks standard-vector-type ?instruction) => (contains ?expected))
-
-;     ?new-stacks             ?instruction         ?expected
-
-;     {:foos   '([1 2 3])
-;      :foo    '(3)}          :foos-indexof       {:foos    '()
-;                                                  :integer '(2)}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:foos   '([1 2 3])
-;      :foo    '(99)}         :foos-indexof       {:foos    '()
-;                                                  :integer '(-1)}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:foos   '([1 2 1])
-;      :foo    '(1)}          :foos-indexof       {:foos    '()
-;                                                  :integer '(0)}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     )
-
-
-
-; (tabular
-;   (fact "`foos-last` pushes the last item of the top :foos vector onto :foo"
-;     (check-instruction-with-all-kinds-of-stack-stuff
-;         ?new-stacks standard-vector-type ?instruction) => (contains ?expected))
-
-;     ?new-stacks                ?instruction     ?expected
-
-;     {:foos   '([1 2 3])
-;      :foo    '(9.9)}          :foos-last        {:foos   '()
-;                                                  :foo    '(3 9.9)}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:foos   '([])
-;      :foo    '(9.9)}          :foos-last        {:foos   '()   ;;; NOTE nil
-;                                                  :foo    '(9.9)}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:foos   '([1 2 3])
-;      :foo    '()}             :foos-last        {:foos   '()
-;                                                  :foo    '(3)}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     )
-
-
-; (tabular
-;   (fact "`foos-length` pushes the length of the top :foos vector onto :integer"
-;     (check-instruction-with-all-kinds-of-stack-stuff
-;         ?new-stacks standard-vector-type ?instruction) => (contains ?expected))
-
-;     ?new-stacks                ?instruction     ?expected
-
-;     {:foos     '([1 2 3])
-;      :integer  '()}           :foos-length        {:foos    '()
-;                                                    :integer '(3)}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:foos     '([1 2])
-;      :integer  '()}           :foos-length        {:foos    '()
-;                                                    :integer '(2)}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:foos     '([])
-;      :integer  '()}           :foos-length        {:foos    '()
-;                                                    :integer '(0)}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     )
-
-
-
-; (tabular
-;   (fact "`foos-new` pushes an empty :foos vector"
-;     (check-instruction-with-all-kinds-of-stack-stuff
-;         ?new-stacks standard-vector-type ?instruction) => (contains ?expected))
-
-;     ?new-stacks              ?instruction     ?expected
-
-;     {:foos '([1 2 3])}        :foos-new        {:foos '([] [1 2 3])}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:foos '()}               :foos-new        {:foos '([])}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     )
-
-
-; (tabular
-;   (fact "`foos-nth` pops an :integer to index the position in the nth :foos item to push to :foo"
-;     (check-instruction-with-all-kinds-of-stack-stuff
-;         ?new-stacks standard-vector-type ?instruction) => (contains ?expected))
-
-;     ?new-stacks                ?instruction     ?expected
-
-;     {:foos     '([1 2 3])
-;      :integer  '(0)
-;      :foo      '()}           :foos-nth         {:foos '()
-;                                                  :foo  '(1)}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:foos     '([1 2 3])
-;      :integer  '(3)
-;      :foo      '()}           :foos-nth         {:foos '()
-;                                                  :foo  '(1)}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:foos     '([1 2 3])
-;      :integer  '(-7)
-;      :foo      '()}           :foos-nth         {:foos '()
-;                                                  :foo  '(3)}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:foos     '([])
-;      :integer  '(2)
-;      :foo      '()}           :foos-nth         {:foos '()
-;                                                  :foo  '()}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     )
-
-
-; (tabular
-;   (fact "`foos-occurrencesof` pushes an :integer how many :foo occur in :foos"
-;     (check-instruction-with-all-kinds-of-stack-stuff
-;         ?new-stacks standard-vector-type ?instruction) => (contains ?expected))
-
-;     ?new-stacks             ?instruction         ?expected
-
-;     {:foos   '([1 2 3])
-;      :foo    '(3)}         :foos-occurrencesof   {:foos    '()
-;                                                   :integer '(1)}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:foos   '([1 1 3])
-;      :foo    '(1)}         :foos-occurrencesof   {:foos    '()
-;                                                   :integer '(2)}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:foos   '([1 2 1])
-;      :foo    '(99)}        :foos-occurrencesof  {:foos    '()
-;                                                   :integer '(0)}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     )
-
-
-; (tabular
-;   (fact "`foos-portion` pops two :integer values and does some crazy math to extract a subvector from the top `:foos item"
-;     (check-instruction-with-all-kinds-of-stack-stuff
-;         ?new-stacks standard-vector-type ?instruction) => (contains ?expected))
-
-;     ?new-stacks                ?instruction     ?expected
-
-;     {:foos     '([1 2 3 4 5 6])
-;      :integer  '(2 3)}          :foos-portion        {:foos '([3])}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:foos     '([1 2 3 4 5 6])
-;      :integer  '(2 2)}          :foos-portion        {:foos '([])}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:foos     '([1 2 3 4 5 6])
-;      :integer  '(11 2)}          :foos-portion        {:foos '([3 4 5 6])}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:foos     '([1 2 3 4 5 6])
-;      :integer  '(22 -11)}          :foos-portion        {:foos '([1 2 3 4 5 6])}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:foos     '([1 2 3 4 5 6])
-;      :integer  '(19 19)}          :foos-portion        {:foos '([])}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:foos     '([1 2 3 4 5 6])
-;      :integer  '(0 1)}          :foos-portion        {:foos '([1])}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:foos     '([1 2 3 4 5 6])
-;      :integer  '(0 3)}          :foos-portion        {:foos '([1 2 3])}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:foos     '([1 2 3 4 5 6])
-;      :integer  '(3 0)}          :foos-portion        {:foos '([1 2 3])}
-;     )
-
-
-; (tabular
-;   (fact "`foos-shatter` pushes the items from the first :foos vector onto :foos"
-;     (check-instruction-with-all-kinds-of-stack-stuff
-;         ?new-stacks standard-vector-type ?instruction) => (contains ?expected))
-
-;     ?new-stacks             ?instruction     ?expected
-
-;     {:foos   '([1 2 3])
-;      :foo    '(9.9)}       :foos-shatter       {:foos '()
-;                                                 :foo  '(1 2 3 9.9)}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:foos   '([])
-;      :foo    '(9.9)}       :foos-shatter       {:foos '()   
-;                                                 :foo  '(9.9)}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:foos   '([1 2 3])
-;      :foo    '()}          :foos-shatter       {:foos '()
-;                                                 :foo  '(1 2 3)}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     )
-
-
-
-; (tabular
-;   (fact "`foos-remove` pops the top :foos and :foo items, pushing the former purged of all appearances of the latter"
-;     (check-instruction-with-all-kinds-of-stack-stuff
-;         ?new-stacks standard-vector-type ?instruction) => (contains ?expected))
-
-;     ?new-stacks                ?instruction     ?expected
-
-;     {:foos     '([1 2 3])
-;      :foo      '(2)}           :foos-remove     {:foos '([1 3])
-;                                                  :foo  '()}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:foos     '([1 2 1])
-;      :foo      '(1)}           :foos-remove     {:foos '([2])
-;                                                  :foo  '()}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:foos     '([1 2 3])
-;      :foo      '(9)}           :foos-remove     {:foos '([1 2 3])
-;                                                  :foo  '()}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:foos     '([1 1 1 1])
-;      :foo      '(1)}           :foos-remove     {:foos '([])
-;                                                  :foo  '()}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     )
-
-
-
-; (tabular
-;   (fact "`foos-replace` replaces all occurrences of :foo/2 with :foo/1"
-;     (check-instruction-with-all-kinds-of-stack-stuff
-;         ?new-stacks standard-vector-type ?instruction) => (contains ?expected))
-
-;     ?new-stacks                ?instruction     ?expected
-
-;     {:foos   '([1 2 3])
-;      :foo    '(99 2)}          :foos-replace    {:foos    '([1 99 3])
-;                                                   :foo     '()}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:foos   '([1 2 3])
-;      :foo    '(99 8)}          :foos-replace    {:foos    '([1 2 3])
-;                                                   :foo     '()}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:foos   '([2 2 2])
-;      :foo    '(3 2)}          :foos-replace    {:foos    '([3 3 3])
-;                                                   :foo     '()}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:foos   '([])
-;      :foo    '(99 2)}          :foos-replace    {:foos    '([])
-;                                                   :foo     '()}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     )
-
-
-; (tabular
-;   (fact "`foos-replacefirst` replaces the first appearance of :foo/2 with :foo/1"
-;     (check-instruction-with-all-kinds-of-stack-stuff
-;         ?new-stacks standard-vector-type ?instruction) => (contains ?expected))
-
-;     ?new-stacks                ?instruction     ?expected
-
-;     {:foos   '([1 2 1])
-;      :foo    '(99 1)}       :foos-replacefirst    {:foos  '([99 2 1])
-;                                                   :foo    '()}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:foos   '([1 2 1])
-;      :foo    '(99 8)}       :foos-replacefirst    {:foos  '([1 2 1])
-;                                                   :foo    '()}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:foos   '([2 2 2])
-;      :foo    '(3 2)}        :foos-replacefirst    {:foos  '([3 2 2])
-;                                                   :foo    '()}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:foos   '([])
-;      :foo    '(99 2)}       :foos-replacefirst    {:foos  '([])
-;                                                   :foo    '()}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     )
-
-
-; (tabular
-;   (fact "`foos-rest` pushes the rest of the first :foos vector back onto :foos"
-;     (check-instruction-with-all-kinds-of-stack-stuff
-;         ?new-stacks standard-vector-type ?instruction) => (contains ?expected))
-
-;     ?new-stacks                ?instruction     ?expected
-
-;     {:foos   '([1 2 3])
-;      :foo    '(9.9)}          :foos-rest       {:foos   '([2 3])
-;                                                  :foo    '(9.9)}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:foos   '([])
-;      :foo    '(9.9)}          :foos-rest       {:foos   '([])    ;;; NOTE not nil!
-;                                                  :foo    '(9.9)}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:foos   '([1 2 3])
-;      :foo    '()}             :foos-rest       {:foos   '([2 3])
-;                                                  :foo    '()}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     )
-
-
-
-; (tabular
-;   (fact "`foos-reverse` pushes the reverse of the first :foos vector back onto :foos"
-;     (check-instruction-with-all-kinds-of-stack-stuff
-;         ?new-stacks standard-vector-type ?instruction) => (contains ?expected))
-
-;     ?new-stacks                ?instruction     ?expected
-
-;     {:foos   '([1 2 3])
-;      :foo    '(9.9)}          :foos-reverse       {:foos   '([3 2 1])
-;                                                  :foo    '(9.9)}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:foos   '([])
-;      :foo    '(9.9)}          :foos-reverse       {:foos   '([])  
-;                                                  :foo    '(9.9)}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     )
-
-
-; (tabular
-;   (fact "`foos-set` pops an :integer to index the position in the top :foos item to replace with the top :foo"
-;     (check-instruction-with-all-kinds-of-stack-stuff
-;         ?new-stacks standard-vector-type ?instruction) => (contains ?expected))
-
-;     ?new-stacks                ?instruction     ?expected
-
-;     {:foos     '([1 2 3])
-;      :integer  '(0)
-;      :foo      '(99)}          :foos-set        {:foos '([99 2 3])
-;                                                  :foo  '()}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:foos     '([1 2 3])
-;      :integer  '(2)
-;      :foo      '(99)}          :foos-set        {:foos '([1 2 99])
-;                                                  :foo  '()}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:foos     '([1 2 3])
-;      :integer  '(-2)
-;      :foo      '(99)}          :foos-set        {:foos '([1 99 3])
-;                                                  :foo  '()}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:foos     '([1 2 3])
-;      :integer  '(11)
-;      :foo      '(99)}          :foos-set        {:foos '([1 2 99])
-;                                                  :foo  '()}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:foos     '([1 2 3])
-;      :integer  '(11)
-;      :foo      '()}          :foos-set          {:foos '([1 2 3])
-;                                                  :integer  '(11)}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:foos     '([])
-;      :integer  '(11)
-;      :foo      '(8)}          :foos-set       {:foos   '([]) ;; NOTE behavior!
-;                                                :integer '()
-;                                                :foo '()}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     )
-
-
-
-; (tabular
-;   (fact "`foos-take` pops an :integer to index the position in the top :foos item to trim to"
-;     (check-instruction-with-all-kinds-of-stack-stuff
-;         ?new-stacks standard-vector-type ?instruction) => (contains ?expected))
-
-;     ?new-stacks                ?instruction     ?expected
-
-;     {:foos     '([1 2 3])
-;      :integer  '(1)}           :foos-take        {:foos    '([1])
-;                                                    :integer '()}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:foos     '([1 2])
-;      :integer  '(0)}           :foos-take        {:foos    '([]) ;; NOTE empty
-;                                                    :integer '()}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:foos     '([1 2 3])
-;      :integer  '(10)}           :foos-take        {:foos    '([1 2])
-;                                                    :integer '()}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:foos     '([1 2 3])
-;      :integer  '(-11)}           :foos-take        {:foos    '([1])
-;                                                    :integer '()}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:foos     '([1 2 3])
-;      :integer  '(-12)}           :foos-take        {:foos    '([])
-;                                                    :integer '()}
-;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     )
+(tabular
+  (fact "`vector-first` pushes the first item of the top :vector onto :code"
+    (check-instruction-with-all-kinds-of-stack-stuff
+      ?new-stacks standard-vector-type ?instruction) => 
+    (contains ?expected))
+
+    ?new-stacks                ?instruction     ?expected
+
+    {:vector  '([1 2 3])
+     :code    '(9.9)}          :vector-first     {:vector  '()
+                                                  :code    '(1 9.9)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector  '([])
+     :code    '(9.9)}          :vector-first     {:vector  '()   ;;; NOTE nil
+                                                  :code    '(9.9)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector  '([1 2 3])
+     :code    '()}             :vector-first     {:vector  '()
+                                                  :code    '(1)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+(tabular
+  (fact "`vector-indexof` pushes an :integer indicating where :code is in :vector (or -1)"
+    (check-instruction-with-all-kinds-of-stack-stuff
+      ?new-stacks standard-vector-type ?instruction) => 
+    (contains ?expected))
+
+    ?new-stacks             ?instruction         ?expected
+
+    {:vector  '([1 2 3])
+     :code    '(3)}          :vector-indexof    {:vector    '()
+                                                 :integer '(2)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector  '([1 2 3])
+     :code    '(99)}         :vector-indexof    {:vector    '()
+                                                 :integer '(-1)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector  '([1 2 1])
+     :code    '(1)}          :vector-indexof    {:vector    '()
+                                                 :integer '(0)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
+(tabular
+  (fact "`vector-last` pushes the last item of the top :vector onto :code"
+    (check-instruction-with-all-kinds-of-stack-stuff
+      ?new-stacks standard-vector-type ?instruction) => 
+    (contains ?expected))
+
+    ?new-stacks                ?instruction     ?expected
+
+    {:vector  '([1 2 3])
+     :code    '(9.9)}          :vector-last     {:vector   '()
+                                                 :code    '(3 9.9)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector  '([])
+     :code    '(9.9)}          :vector-last     {:vector   '()   ;;; NOTE nil
+                                                 :code    '(9.9)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector  '([1 2 3])
+     :code    '()}             :vector-last     {:vector   '()
+                                                 :code    '(3)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+(tabular
+  (fact "`vector-length` pushes the length of the top :vector onto :integer"
+    (check-instruction-with-all-kinds-of-stack-stuff
+      ?new-stacks standard-vector-type ?instruction) => 
+    (contains ?expected))
+
+    ?new-stacks                ?instruction     ?expected
+
+    {:vector   '([1 2 3])
+     :integer  '()}           :vector-length      {:vector    '()
+                                                   :integer '(3)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector   '([1 2])
+     :integer  '()}           :vector-length      {:vector    '()
+                                                   :integer '(2)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector   '([])
+     :integer  '()}           :vector-length      {:vector    '()
+                                                   :integer '(0)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
+(tabular
+  (fact "`vector-new` pushes an empty :vector"
+    (check-instruction-with-all-kinds-of-stack-stuff
+      ?new-stacks standard-vector-type ?instruction) => 
+    (contains ?expected))
+
+    ?new-stacks              ?instruction     ?expected
+
+    {:vector '([1 2 3])}        :vector-new        {:vector '([] [1 2 3])}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector '()}               :vector-new        {:vector '([])}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+(tabular
+  (fact "`vector-nth` pops an :integer to index the position in the nth :vector item to push to :code"
+    (check-instruction-with-all-kinds-of-stack-stuff
+      ?new-stacks standard-vector-type ?instruction) => 
+    (contains ?expected))
+
+    ?new-stacks                ?instruction     ?expected
+
+    {:vector   '([1 2 3])
+     :integer  '(0)
+     :code     '()}           :vector-nth       {:vector '()
+                                                 :code  '(1)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector   '([1 2 3])
+     :integer  '(3)
+     :code     '()}           :vector-nth       {:vector '()
+                                                 :code  '(1)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector   '([1 2 3])
+     :integer  '(-7)
+     :code     '()}           :vector-nth       {:vector '()
+                                                 :code  '(3)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector   '([])
+     :integer  '(2)
+     :code     '()}           :vector-nth       {:vector '()
+                                                 :code  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+(tabular
+  (fact "`vector-occurrencesof` pushes an :integer how many copies of the top :code item occur in :vector"
+    (check-instruction-with-all-kinds-of-stack-stuff
+      ?new-stacks standard-vector-type ?instruction) => 
+    (contains ?expected))
+
+    ?new-stacks             ?instruction             ?expected
+
+    {:vector  '([1 2 3])
+     :code    '(3)}         :vector-occurrencesof   {:vector    '()
+                                                     :integer '(1)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector  '([1 1 3])
+     :code    '(1)}         :vector-occurrencesof   {:vector    '()
+                                                     :integer '(2)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector  '([1 2 1])
+     :code    '(99)}        :vector-occurrencesof  {:vector    '()
+                                                     :integer '(0)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+(tabular
+  (fact "`vector-portion` pops two :integer values and does some crazy math to extract a subvector from the top `:vector item"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks standard-vector-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                   ?instruction          ?expected
+
+    {:vector   '([1 2 3 4 5 6])
+     :integer  '(2 3)}           :vector-portion     {:vector '([3])}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector   '([1 2 3 4 5 6])
+     :integer  '(2 2)}           :vector-portion     {:vector '([])}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector   '([1 2 3 4 5 6])
+     :integer  '(11 2)}          :vector-portion     {:vector '([3 4 5 6])}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector   '([1 2 3 4 5 6])
+     :integer  '(22 -11)}        :vector-portion     {:vector '([1 2 3 4 5 6])}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector   '([1 2 3 4 5 6])
+     :integer  '(19 19)}         :vector-portion     {:vector '([])}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector   '([1 2 3 4 5 6])
+     :integer  '(0 1)}           :vector-portion     {:vector '([1])}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector   '([1 2 3 4 5 6])
+     :integer  '(0 3)}           :vector-portion     {:vector '([1 2 3])}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector   '([1 2 3 4 5 6])
+     :integer  '(3 0)}           :vector-portion     {:vector '([1 2 3])}
+    )
+
+
+(tabular
+  (fact "`vector-shatter` pushes the items from the first :vector onto :code"
+    (check-instruction-with-all-kinds-of-stack-stuff
+      ?new-stacks standard-vector-type ?instruction) => 
+    (contains ?expected))
+
+    ?new-stacks             ?instruction        ?expected
+
+    {:vector  '([1 2 3])
+     :code    '(9.9)}       :vector-shatter    {:vector '()
+                                                :code  '(1 2 3 9.9)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector  '([])
+     :code    '(9.9)}       :vector-shatter    {:vector '()   
+                                                :code  '(9.9)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector  '([1 2 3])
+     :code    '()}          :vector-shatter    {:vector '()
+                                                :code  '(1 2 3)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
+(tabular
+  (fact "`vector-remove` pops the top :vector and :code items, pushing the former purged of all appearances of the latter"
+    (check-instruction-with-all-kinds-of-stack-stuff
+      ?new-stacks standard-vector-type ?instruction) => 
+    (contains ?expected))
+
+    ?new-stacks                  ?instruction     ?expected
+
+    {:vector    '([1 2 3])
+     :code      '(2)}           :vector-remove     {:vector '([1 3])
+                                                    :code  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector    '([1 2 1])
+     :code      '(1)}           :vector-remove     {:vector '([2])
+                                                    :code  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector    '([1 2 3])
+     :code      '(9)}           :vector-remove     {:vector '([1 2 3])
+                                                    :code  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector    '([1 1 1 1])
+     :code      '(1)}           :vector-remove     {:vector '([])
+                                                    :code  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
+(tabular
+  (fact "`vector-replace` replaces all occurrences of :code/2 with :code/1"
+    (check-instruction-with-all-kinds-of-stack-stuff
+      ?new-stacks standard-vector-type ?instruction) =>
+    (contains ?expected))
+
+    ?new-stacks                ?instruction     ?expected
+
+    {:vector  '([1 2 3])
+     :code    '(99 2)}        :vector-replace    {:vector   '([1 99 3])
+                                                  :code     '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector  '([1 2 3])
+     :code    '(99 8)}        :vector-replace    {:vector   '([1 2 3])
+                                                  :code     '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector  '([2 2 2])
+     :code    '(3 2)}         :vector-replace    {:vector   '([3 3 3])
+                                                  :code     '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector  '([])
+     :code    '(99 2)}        :vector-replace    {:vector   '([])
+                                                  :code     '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+(tabular
+  (fact "`vector-replacefirst` replaces the first appearance of :code/2 with :code/1"
+    (check-instruction-with-all-kinds-of-stack-stuff
+      ?new-stacks standard-vector-type ?instruction) =>
+    (contains ?expected))
+
+    ?new-stacks                ?instruction     ?expected
+
+    {:vector  '([1 2 1])
+     :code    '(99 1)}     :vector-replacefirst    {:vector  '([99 2 1])
+                                                    :code    '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector  '([1 2 1])
+     :code    '(99 8)}     :vector-replacefirst    {:vector  '([1 2 1])
+                                                    :code    '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector  '([2 2 2])
+     :code    '(3 2)}      :vector-replacefirst    {:vector  '([3 2 2])
+                                                    :code    '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector  '([])
+     :code    '(99 2)}     :vector-replacefirst    {:vector  '([])
+                                                    :code    '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+(tabular
+  (fact "`vector-rest` pushes the rest of the first :vector vector back onto :vector"
+    (check-instruction-with-all-kinds-of-stack-stuff
+      ?new-stacks standard-vector-type ?instruction) => 
+    (contains ?expected))
+
+    ?new-stacks            ?instruction     ?expected
+
+    {:vector  '([1 2 3])
+     :code    '(9.9)}      :vector-rest    {:vector  '([2 3])
+                                            :code    '(9.9)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector  '([])
+     :code    '(9.9)}      :vector-rest    {:vector  '([])    ;;; NOTE not nil!
+                                            :code    '(9.9)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector  '([1 2 3])
+     :code    '()}         :vector-rest    {:vector  '([2 3])
+                                            :code    '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
+(tabular
+  (fact "`vector-reverse` pushes the reverse of the first :vector back onto :vector"
+    (check-instruction-with-all-kinds-of-stack-stuff
+      ?new-stacks standard-vector-type ?instruction) => 
+    (contains ?expected))
+
+    ?new-stacks                ?instruction          ?expected
+
+    {:vector  '([1 2 3])
+     :code    '(9.9)}          :vector-reverse       {:vector  '([3 2 1])
+                                                      :code    '(9.9)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector  '([])
+     :code    '(9.9)}          :vector-reverse       {:vector  '([])  
+                                                      :code    '(9.9)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+(tabular
+  (fact "`vector-set` pops an :integer to index the position in the top :vector item to replace with the top :code"
+    (check-instruction-with-all-kinds-of-stack-stuff
+      ?new-stacks standard-vector-type ?instruction) => 
+    (contains ?expected))
+
+    ?new-stacks             ?instruction         ?expected
+
+    {:vector   '([1 2 3])
+     :integer  '(0)
+     :code     '(99)}        :vector-set        {:vector '([99 2 3])
+                                                 :code  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector   '([1 2 3])
+     :integer  '(2)
+     :code     '(99)}        :vector-set        {:vector '([1 2 99])
+                                                 :code  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector   '([1 2 3])
+     :integer  '(-2)
+     :code     '(99)}        :vector-set        {:vector '([1 99 3])
+                                                 :code  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector   '([1 2 3])
+     :integer  '(11)
+     :code     '(99)}        :vector-set        {:vector '([1 2 99])
+                                                 :code  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector   '([1 2 3])
+     :integer  '(11)
+     :code     '()}          :vector-set        {:vector '([1 2 3])
+                                                 :integer  '(11)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector   '([])
+     :integer  '(11)
+     :code     '(8)}         :vector-set        {:vector   '([]) ;; NOTE behavior!
+                                                 :integer '()
+                                                 :code '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
+(tabular
+  (fact "`vector-take` pops an :integer to index the position in the top :vector item to trim to"
+    (check-instruction-with-all-kinds-of-stack-stuff
+      ?new-stacks standard-vector-type ?instruction) => 
+    (contains ?expected))
+
+    ?new-stacks                ?instruction         ?expected
+
+    {:vector   '([1 2 3])
+     :integer  '(1)}           :vector-take       {:vector  '([1])
+                                                   :integer '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector   '([1 2])
+     :integer  '(0)}           :vector-take       {:vector  '([]) ;; NOTE empty
+                                                   :integer '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector   '([1 2 3])
+     :integer  '(10)}          :vector-take       {:vector  '([1 2])
+                                                   :integer '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector   '([1 2 3])
+     :integer  '(-11)}         :vector-take       {:vector  '([1])
+                                                   :integer '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector   '([1 2 3])
+     :integer  '(-12)}         :vector-take       {:vector  '([])
+                                                   :integer '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )

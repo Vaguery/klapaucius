@@ -12,6 +12,7 @@
   (:require [push.instructions.modules.log])
   (:require [push.instructions.modules.error])
   (:require [push.types.standard.vectorized])
+  (:require [push.types.standard.vector])
   (:require [push.util.exceptions :as oops])
   (:use [push.interpreter.core])
   (:use [push.util.type-checkers])
@@ -34,7 +35,9 @@
     (push.types.standard.vectorized/build-vectorized-type
       push.types.base.integer/classic-integer-type)
     (push.types.standard.vectorized/build-vectorized-type
-      push.types.base.string/classic-string-type)])
+      push.types.base.string/classic-string-type)
+    push.types.standard.vector/standard-vector-type
+    ])
 
 
 (def all-kinds-of-modules

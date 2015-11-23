@@ -10,7 +10,15 @@
 
 
 (fact "the :vector type has the correct :recognizer"
-  (:recognizer standard-vector-type) => (exactly vector?))
+  (:recognizer standard-vector-type) => (exactly vector?)
+  ((:recognizer standard-vector-type) []) => true
+  ((:recognizer standard-vector-type)  9) => false
+  ((:recognizer standard-vector-type) [9]) => true
+  ((:recognizer standard-vector-type) [9 '(2)]) => true
+  ((:recognizer standard-vector-type) '(9 '(2))) => false
+  ((:recognizer standard-vector-type) [[1] [2 3]]) => true
+  ((:recognizer standard-vector-type) ["a"]) => true
+  )
 
 
 (fact ":vector type has the expected :attributes"
