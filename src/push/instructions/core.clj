@@ -40,6 +40,38 @@
     (map needs-of-dsl-step transaction)))
 
 
+(defn products-of-dsl-step
+  [step]
+  (let [cmd (first step)
+        resolved (resolve cmd)]
+    (condp = resolved
+      #'archive-all-stacks {}
+      #'calculate {}
+      #'consume-nth-of {}
+      #'consume-stack {}
+      #'consume-top-of {}
+      #'count-of {}
+      #'delete-nth-of {}
+      #'delete-stack {}
+      #'delete-top-of {}
+      #'insert-as-nth-of {(second step) 1}
+      #'replace-stack {(second step) 0}
+      #'push-onto {(second step) 1}
+      #'push-these-onto {(second step) (count (last step))}
+      #'retrieve-all-stacks {}
+      #'save-max-collection-size {}
+      #'save-nth-of {}
+      #'save-stack {}
+      #'save-top-of {}
+      (oops/throw-unknown-DSL-exception cmd)  )))
+
+
+(defn total-products
+  [transaction]
+  (apply (partial merge-with +)
+    (map products-of-dsl-step transaction)))
+
+
 (defmacro
   def-function-from-dsl
   [& transactions]
@@ -50,18 +82,19 @@
       (first (-> [~interpreter {}] ~@transactions))))))
 
 
-(defrecord Instruction [token docstring tags needs transaction])
+(defrecord Instruction [token docstring tags needs products transaction])
 
 
 (defn make-instruction
   "creates a new Instruction record instance"
   [token & {
-    :keys [docstring tags needs transaction] 
+    :keys [docstring tags needs products transaction] 
     :or { docstring (str "`" token "` needs a docstring!")
           tags #{}
           needs {}
+          products {}
           transaction identity }}]
-  (with-meta (->Instruction token docstring tags needs transaction) {:doc docstring}))
+  (with-meta (->Instruction token docstring tags needs products transaction) {:doc docstring}))
 
 
 (defmacro build-instruction
@@ -80,6 +113,7 @@
       ;;       get a default string from `make-instruction`
       :tags ~(or tags #{})
       :needs ~(total-needs steps)
+      :products ~(total-products steps)
       :transaction (def-function-from-dsl ~@steps))))
 
 

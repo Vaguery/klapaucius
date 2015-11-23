@@ -651,6 +651,58 @@
     (throws "Push DSL parse error: 'push' is not a known instruction."))
 
 
+;; inst/products-of-dsl-step
+
+
+(fact "`products-of-dsl-step` returns a hashmap containing the products for every DSL instruction"
+  (inst/products-of-dsl-step
+    '(push-onto :integer :foo))  => {:integer 1}
+  (inst/products-of-dsl-step
+    '(push-these-onto :integer [:foo :bar :baz]))  => {:integer 3}
+  (inst/products-of-dsl-step
+    '(replace-stack :integer :foo))  => {:integer 0}
+  (inst/products-of-dsl-step
+    '(insert-as-nth-of :integer :foo :at 0))  => {:integer 1}
+  (inst/products-of-dsl-step
+    '(count-of :integer :as :foo)) => {})
+
+
+(fact "`inst/products-of-dsl-step` throws an exception for unknown DSL instructions"
+  (inst/products-of-dsl-step '(bad-idea-instruction :foo 8 :bar)) =>
+    (throws #"parse error: 'bad-idea-instruction' is not"))
+
+
+;; inst/total-products
+
+
+(fact "`inst/total-products` takes a whole transaction and sums up all the products of each item"
+  (inst/total-products 
+    ['(push-onto :integer :bar)]) => {:integer 1}
+
+
+  (inst/total-products 
+    ['(push-onto :integer :foo)
+     '(replace-stack :integer :foo)
+     '(insert-as-nth-of :integer :foo :at 0)]) => {:integer 2}
+
+
+  (inst/total-products 
+    ['(push-onto :integer :foo)
+     '(push-onto :integer :foo2)
+     '(push-these-onto :float [:foo :bar :baz :qux])
+     '(insert-as-nth-of :boolean :foo :at :place)
+     '(count-of :exec :as :foo)]) => {:boolean 1, :float 4, :integer 2})
+
+
+(fact "`inst/total-products` throws up when it sees bad DSL code"
+  (inst/total-products 
+    ['(consume-top-of :integer :as :arg1)
+     '(consume-top-of :integer :as :arg2)
+     '(calculate [:arg1 :arg2] #(mod %1 %2) :as :m)
+     '(push :integer :m)]) =>
+    (throws "Push DSL parse error: 'push' is not a known instruction."))
+
+
 ;; inst/def-function-from-dsl
 
 

@@ -210,3 +210,15 @@
 (fact "the docstring is associated with an instance"
   (:doc (meta (t/yankdup-instruction i-know-foo))) =>
     (:docstring (t/yankdup-instruction i-know-foo)))
+
+
+;; needs-and-products graph edges
+
+
+(fact "I can map how instructions connect types (and stacks more generally)"
+  (:needs (t/swap-instruction i-know-foo)) => {:foo 2}
+  (:products (t/swap-instruction i-know-foo)) => {:foo 2}
+
+  (:needs (t/yankdup-instruction i-know-foo)) => {:foo 1, :integer 1}
+  (:products (t/yankdup-instruction i-know-foo)) => {:foo 1}
+  )
