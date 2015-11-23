@@ -26,8 +26,8 @@
             (println "DONE")
             (recur (do 
               (println (str (pr-str (u/peek-at-stack s :log))
-                            " >> " (pr-str (keys (:stacks s)))
-                            " >> " (pr-str (map count (vals (:stacks s))))
+                            ; " >> " (pr-str (keys (:stacks s)))
+                            ; " >> " (pr-str (map count (vals (:stacks s))))
                             ; " >> " (u/peek-at-stack s :booleans)
                               ))
               (step s))))))
