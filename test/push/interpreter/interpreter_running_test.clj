@@ -337,30 +337,80 @@
             {:exec '(88)})) =>
     (contains {:exec '(88)}))
 
-;;
+
+;; popping saved :environments
 
 
-(future-fact "calling `step` merges a stored environment if there is one and the :exec stack is empty"
-  (:stacks (step
-    (make-classic-interpreter 
-      :stacks {:exec '() :environment '({:exec '(3 33)})}
-      ))) =>
-    '{ :boolean (), 
+(def ready-to-pop 
+  (make-classic-interpreter 
+    :config {:step-limit 1000}
+    :stacks {:exec '() 
+             :environment '({:exec (3 33)})
+             :log '(:log1 :log2)
+             :error '(:error1 :error2)
+             :return '(:return1 :return2)
+             :unknown '(:nope :no-idea)
+             :integer '(1 2 3)
+             }))
+
+
+(def unready-to-pop 
+  (make-classic-interpreter 
+    :config {:step-limit 1000}
+    :stacks {:exec '() 
+             :environment '()
+             :log '(:log1 :log2)
+             :error '(:error1 :error2)
+             :return '(:return1 :return2)
+             :unknown '(:nope :no-idea)
+             :integer '(1 2 3)
+             }))
+
+
+(fact "calling `step` merges a stored environment if there is one and the :exec stack is empty"
+  (is-done? ready-to-pop) => false
+
+  (:stacks (step ready-to-pop)) =>
+    '{:boolean (), 
       :char (), 
       :code (), 
       :environment (), 
-      :error (), 
-      :exec (3 33), 
+      :error (:error1 :error2), 
+      :exec (:return1 :return2 3 33), 
       :float (), 
       :integer (), 
-      :log (), 
+      :log ({:item "ENVIRONMENT STACK POPPED", :step 1} :log1 :log2), 
       :print (), 
       :return (), 
       :string (), 
-      :unknown ()}
-    )
+      :unknown (:nope :no-idea)})
 
 
+(fact "the counter advances when the :environment pops"
+  (inc (:counter ready-to-pop)) => (:counter (step ready-to-pop)))
+
+
+(fact "calling `step` does nothing if there's no stored environment"
+  (is-done? unready-to-pop) => true
+
+  (:stacks (step unready-to-pop)) =>
+    '{:boolean (),
+      :char (), 
+      :code (), 
+      :environment (), 
+      :error (:error1 :error2), 
+      :exec (), 
+      :float (), 
+      :integer (1 2 3), 
+      :log (:log1 :log2), 
+      :print (), 
+      :return (:return1 :return2), 
+      :string (), 
+      :unknown (:nope :no-idea)})
+
+
+(fact "the counter does not advance when the :environment does not pop!"
+  (:counter unready-to-pop) => (:counter (step unready-to-pop)))
 
 
 ;; interrogating an Interpreter instance

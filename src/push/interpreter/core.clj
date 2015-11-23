@@ -461,6 +461,23 @@
   (push-item interpreter :log {:step (:counter interpreter) :item item}))
 
 
+(defn soft-environment-ending
+  "Called when an Interpreter has an empty :exec stack but a stored :environment on that stack. Merges the stored stacks, keeps the persistent ones, combines the :exec stacks and puts the :return on top."
+  [interpreter]
+  (let [returns       (u/get-stack interpreter :return)
+        current-exec  (u/get-stack interpreter :exec)
+        environments  (u/get-stack interpreter :environment)
+        retrieved     (first environments)
+        old-exec      (:exec retrieved)
+        new-exec      (concat returns current-exec old-exec)]
+    (-> (u/merge-environment interpreter retrieved)
+        (u/set-stack , :exec new-exec)
+        (u/set-stack , :environment (pop environments))
+        (increment-counter ,)
+        (log-routed-item , "ENVIRONMENT STACK POPPED")
+        (set-doneness ,))))
+
+
 (defn step
   "Takes an Interpreter, pops one item off :exec, routes it to the
   router, increments the counter. If the :exec stack is empty, does
@@ -468,14 +485,16 @@
   [interpreter]
   (let [old-exec (u/get-stack interpreter :exec)]
     (if-not (is-done? interpreter)
-      (let [next-item (first old-exec)
-            new-exec (pop old-exec)]
-        (-> interpreter
-            (increment-counter)
-            (u/set-stack :exec new-exec)
-            (handle-item next-item)
-            (log-routed-item next-item)
-            (set-doneness)))
+      (if (empty? old-exec)
+        (soft-environment-ending interpreter)
+        (let [next-item (first old-exec)
+              new-exec (pop old-exec)]
+          (-> interpreter
+              (increment-counter)
+              (u/set-stack :exec new-exec)
+              (handle-item next-item)
+              (log-routed-item next-item)
+              (set-doneness))))
       interpreter)))
 
 
