@@ -36,6 +36,7 @@
       push.types.base.integer/classic-integer-type)
     (push.types.standard.vectorized/build-vectorized-type
       push.types.base.string/classic-string-type)
+
     push.types.standard.vector/standard-vector-type
     ])
 
@@ -69,6 +70,7 @@
   - integers-type
   - floats-type
   - strings-type
+  - standard-vector-type (loaded last as a default)
   and the counter is 0.
 
   Optional arguments include
