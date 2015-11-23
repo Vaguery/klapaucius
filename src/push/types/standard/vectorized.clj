@@ -370,6 +370,7 @@
   [item type]
   (let [checker (:recognizer type)]
     (and  (vector? item)
+          (boolean (seq item))
           (every? #(checker %) item))))
 
 

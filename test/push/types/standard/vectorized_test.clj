@@ -17,7 +17,7 @@
   ((:recognizer vector-of-integers) 99) => false
   ((:recognizer vector-of-integers) [1 2.2 3]) => false
   ((:recognizer vector-of-integers) '(1 2 3)) => false
-  ((:recognizer vector-of-integers) []) => true
+  ((:recognizer vector-of-integers) []) => false
   )
 
 (fact ":integers type has the expected :attributes"
