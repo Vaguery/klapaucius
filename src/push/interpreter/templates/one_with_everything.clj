@@ -11,8 +11,8 @@
   (:require [push.types.modules.print])
   (:require [push.types.modules.log])
   (:require [push.types.modules.error])
-  (:require [push.types.standard.vectorized])
-  (:require [push.types.standard.vector])
+  (:require [push.types.extra.vectorized])
+  (:require [push.types.extra.vector])
   (:require [push.util.exceptions :as oops])
   (:use [push.interpreter.core])
   (:use [push.util.type-checkers])
@@ -26,18 +26,18 @@
     push.types.base.float/classic-float-type
     push.types.base.string/classic-string-type
 
-    (push.types.standard.vectorized/build-vectorized-type
+    (push.types.extra.vectorized/build-vectorized-type
       push.types.base.boolean/classic-boolean-type)
-    (push.types.standard.vectorized/build-vectorized-type
+    (push.types.extra.vectorized/build-vectorized-type
       push.types.base.char/classic-char-type)
-    (push.types.standard.vectorized/build-vectorized-type
+    (push.types.extra.vectorized/build-vectorized-type
       push.types.base.float/classic-float-type)
-    (push.types.standard.vectorized/build-vectorized-type
+    (push.types.extra.vectorized/build-vectorized-type
       push.types.base.integer/classic-integer-type)
-    (push.types.standard.vectorized/build-vectorized-type
+    (push.types.extra.vectorized/build-vectorized-type
       push.types.base.string/classic-string-type)
 
-    push.types.standard.vector/standard-vector-type
+    push.types.extra.vector/standard-vector-type
     ])
 
 

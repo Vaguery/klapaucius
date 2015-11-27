@@ -1,4 +1,4 @@
-(ns push.types.standard.vectorized
+(ns push.types.extra.vectorized
   (:require [push.instructions.core :as core])
   (:require [push.types.core :as t])
   (:require [push.instructions.dsl])

@@ -1,4 +1,4 @@
-(ns push.types.standard.zipper
+(ns push.types.extra.zipper
   (:require [push.instructions.core :as core])
   (:require [push.types.core :as t])
   (:require [push.instructions.dsl :as d])

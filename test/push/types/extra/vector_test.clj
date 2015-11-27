@@ -1,7 +1,7 @@
-(ns push.types.standard.vector_test
+(ns push.types.extra.vector_test
   (:use midje.sweet)
   (:use [push.util.test-helpers])
-  (:use [push.types.standard.vector])
+  (:use [push.types.extra.vector])
   )
 
 

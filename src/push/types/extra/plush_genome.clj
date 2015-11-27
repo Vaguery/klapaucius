@@ -1,4 +1,4 @@
-(ns push.types.standard.plush-genome
+(ns push.types.extra.plush-genome
   (:require [push.instructions.core :as core])
   (:require [push.types.core :as t])
   (:require [push.instructions.dsl :as d])

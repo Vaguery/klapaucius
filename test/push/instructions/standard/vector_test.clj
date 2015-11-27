@@ -3,7 +3,7 @@
   (:use [push.util.test-helpers])
   (:require [push.interpreter.core :as i])
   (:require [push.types.core :as t])
-  (:use [push.types.standard.vector])
+  (:use [push.types.extra.vector])
   )
 
 

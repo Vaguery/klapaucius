@@ -1,4 +1,4 @@
-(ns push.types.standard.vector
+(ns push.types.extra.vector
   (:require [push.instructions.core :as core])
   (:require [push.types.core :as t])
   (:require [push.instructions.dsl :as d])
@@ -7,7 +7,7 @@
   (:use push.instructions.aspects.printable)
   (:use push.instructions.aspects.returnable)
   (:use push.instructions.aspects.visible)
-  (:require [push.types.standard.vectorized :as v])
+  (:require [push.types.extra.vectorized :as v])
   )
 
 
