@@ -1,8 +1,10 @@
 (ns push.types.core
   (:require [push.instructions.core :as core])
   (:require [push.instructions.dsl :as dsl])
-  (:use [push.instructions.aspects.visible
-    :only [stackdepth-instruction empty?-instruction]])
+  (:use [push.instructions.aspects.visible])
+  (:use [push.instructions.aspects.equatable])
+  (:use [push.instructions.aspects.comparable])
+  (:use [push.instructions.aspects.movable])
   )
 
 
@@ -137,41 +139,7 @@
       (assoc :attributes (conj (:attributes pushtype) :visible))))
 
 
-;; :comparable
-
-
-(defn equal?-instruction
-  "returns a new x-equal? instruction for a PushType"
-  [pushtype]
-  (let [typename (:name pushtype)
-        instruction-name (str (name typename) "-equal?")]
-    (eval (list
-      'push.instructions.core/build-instruction
-      instruction-name
-      (str "`:" instruction-name "` pops the top two `" typename
-        "` items and pushes `true` if they are equal, `false` otherwise.")
-      :tags #{:equatable}
-      `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
-      `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
-      '(push.instructions.dsl/calculate [:arg1 :arg2] #(= %1 %2) :as :check)
-      '(push.instructions.dsl/push-onto :boolean :check)))))
-
-
-(defn notequal?-instruction
-  "returns a new x-notequal? instruction for a PushType"
-  [pushtype]
-  (let [typename (:name pushtype)
-        instruction-name (str (name typename) "-notequal?")]
-    (eval (list
-      'push.instructions.core/build-instruction
-      instruction-name
-      (str "`:" instruction-name "` pops the top two `" typename
-        "` items and pushes `false` if they are equal, `true` otherwise.")
-      :tags #{:equatable}
-      `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
-      `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
-      '(push.instructions.dsl/calculate [:arg1 :arg2] #(not= %1 %2) :as :check)
-      '(push.instructions.dsl/push-onto :boolean :check)))))
+;; :equatable
 
 
 (defn make-equatable
@@ -186,110 +154,6 @@
 
 
 ;; comparable
-
-
-(defn lessthan?-instruction
-  "returns a new x-<? instruction for a PushType"
-  [pushtype]
-  (let [typename (:name pushtype)
-        instruction-name (str (name typename) "<?")]
-    (eval (list
-      'push.instructions.core/build-instruction
-      instruction-name
-      (str "`:" instruction-name "` pops the top two `" typename
-        "` items and pushes `true` if the top item is less than the second, `false` otherwise.")
-      :tags #{:comparison}
-      `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
-      `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
-      '(push.instructions.dsl/calculate [:arg1 :arg2] #(< (compare %1 %2) 0) :as :check)
-      '(push.instructions.dsl/push-onto :boolean :check)))))
-
-
-(defn lessthanorequal?-instruction
-  "returns a new x≤? instruction for a PushType"
-  [pushtype]
-  (let [typename (:name pushtype)
-        instruction-name (str (name typename) "≤?")]
-    (eval (list
-      'push.instructions.core/build-instruction
-      instruction-name
-      (str "`:" instruction-name "` pops the top two `" typename
-        "` items and pushes `true` if the top item is less than or equal to the second, `false` otherwise.")
-      :tags #{:comparison}
-      `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
-      `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
-      '(push.instructions.dsl/calculate [:arg1 :arg2] #(< (compare %1 %2) 1) :as :check)
-      '(push.instructions.dsl/push-onto :boolean :check)))))
-
-
-(defn greaterthanorequal?-instruction
-  "returns a new x≥? instruction for a PushType"
-  [pushtype]
-  (let [typename (:name pushtype)
-        instruction-name (str (name typename) "≥?")]
-    (eval (list
-      'push.instructions.core/build-instruction
-      instruction-name
-      (str "`:" instruction-name "` pops the top two `" typename
-        "` items and pushes `true` if the top item is greater than or equal to the second, `false` otherwise.")
-      :tags #{:comparison}
-      `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
-      `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
-      '(push.instructions.dsl/calculate [:arg1 :arg2] #(> (compare %1 %2) -1) :as :check)
-      '(push.instructions.dsl/push-onto :boolean :check)))))
-
-
-(defn greaterthan?-instruction
-  "returns a new x>? instruction for a PushType"
-  [pushtype]
-  (let [typename (:name pushtype)
-        instruction-name (str (name typename) ">?")]
-    (eval (list
-      'push.instructions.core/build-instruction
-      instruction-name
-      (str "`:" instruction-name "` pops the top two `" typename
-        "` items and pushes `true` if the top item is greater than the second, `false` otherwise.")
-      :tags #{:comparison}
-      `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
-      `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
-      '(push.instructions.dsl/calculate [:arg1 :arg2] #(> (compare %1 %2) 0) :as :check)
-      '(push.instructions.dsl/push-onto :boolean :check)))))
-
-
-(defn min-instruction
-  "returns a new x-min instruction for a PushType"
-  [pushtype]
-  (let [typename (:name pushtype)
-        instruction-name (str (name typename) "-min")]
-    (eval (list
-      'push.instructions.core/build-instruction
-      instruction-name
-      (str "`:" instruction-name "` pops the top two `" typename
-        "` items and pushes the _smaller_ of the two.")
-      :tags #{:comparison}
-      `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
-      `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
-      '(push.instructions.dsl/calculate [:arg1 :arg2]
-          #(if (pos? (compare %1 %2)) %2 %1) :as :winner)
-      `(push.instructions.dsl/push-onto ~typename :winner)))))
-
-
-(defn max-instruction
-  "returns a new x-max instruction for a PushType"
-  [pushtype]
-  (let [typename (:name pushtype)
-        instruction-name (str (name typename) "-max")]
-    (eval (list
-      'push.instructions.core/build-instruction
-      instruction-name
-      (str "`:" instruction-name "` pops the top two `" typename
-        "` items and pushes the _larger_ of the two.")
-      :tags #{:comparison}
-      `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
-      `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
-      '(push.instructions.dsl/calculate [:arg1 :arg2] 
-          #(if (neg? (compare %1 %2)) %2 %1) :as :winner)
-      `(push.instructions.dsl/push-onto ~typename :winner)))))
 
 
 (defn make-comparable
@@ -308,134 +172,6 @@
 
 
 ;; movable
-
-
-(defn dup-instruction
-  "returns a new x-dup instruction for a PushType"
-  [pushtype]
-  (let [typename (:name pushtype)
-        instruction-name (str (name typename) "-dup")]
-    (eval (list
-      'push.instructions.core/build-instruction
-      instruction-name
-      (str "`:" instruction-name "` examines the top `" typename
-        "` item and pushes a duplicate to the same stack.")
-      :tags #{:combinator}
-      `(push.instructions.dsl/save-top-of ~typename :as :arg1)
-      `(push.instructions.dsl/push-onto ~typename :arg1)))))
-
-
-(defn flush-instruction
-  "returns a new x-flush instruction for a PushType"
-  [pushtype]
-  (let [typename (:name pushtype)
-        instruction-name (str (name typename) "-flush")]
-    (eval (list
-      'push.instructions.core/build-instruction
-      instruction-name
-      (str "`:" instruction-name "` discards all items from the `" typename
-        "` stack.")
-      :tags #{:combinator}
-      `(push.instructions.dsl/delete-stack ~typename)))))
-
-
-(defn pop-instruction
-  "returns a new x-pop instruction for a PushType"
-  [pushtype]
-  (let [typename (:name pushtype)
-        instruction-name (str (name typename) "-pop")]
-    (eval (list
-      'push.instructions.core/build-instruction
-      instruction-name
-      (str "`:" instruction-name "` discards the top item from the `" typename
-        "` stack.")
-      :tags #{:combinator}
-      `(push.instructions.dsl/delete-top-of ~typename)))))
-
-
-(defn rotate-instruction
-  "returns a new x-rotate instruction for a PushType"
-  [pushtype]
-  (let [typename (:name pushtype)
-        instruction-name (str (name typename) "-rotate")]
-    (eval (list
-      'push.instructions.core/build-instruction
-      instruction-name
-      (str "`:" instruction-name "` pops the top three items from the `" typename
-        "` stack; call them `A`, `B` and `C`, respectively. It pushes them back so that top-to-bottom order is now `'(C A B ...)`")
-      :tags #{:combinator}
-      `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
-      `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
-      `(push.instructions.dsl/consume-top-of ~typename :as :arg3)
-      `(push.instructions.dsl/push-onto ~typename :arg2)
-      `(push.instructions.dsl/push-onto ~typename :arg1)
-      `(push.instructions.dsl/push-onto ~typename :arg3)))))
-
-
-(defn shove-instruction
-  "returns a new x-shove instruction for a PushType"
-  [pushtype]
-  (let [typename (:name pushtype)
-        instruction-name (str (name typename) "-shove")]
-    (eval (list
-      'push.instructions.core/build-instruction
-      instruction-name
-      (str "`:" instruction-name "` pops the top item from the `" typename
-        "` stack and the top `:integer`. The `:integer` is brought into range as an index by applying `(mod integer (count stack))`, and then the top item is _moved_ so that it is in that position in the resulting stack.")
-      :tags #{:combinator}
-      '(push.instructions.dsl/consume-top-of :integer :as :index)
-      `(push.instructions.dsl/consume-top-of ~typename :as :shoved-item)
-      `(push.instructions.dsl/insert-as-nth-of ~typename :shoved-item :at :index)))))
-
-
-
-(defn swap-instruction
-  "returns a new x-swap instruction for a PushType"
-  [pushtype]
-  (let [typename (:name pushtype)
-        instruction-name (str (name typename) "-swap")]
-    (eval (list
-      'push.instructions.core/build-instruction
-      instruction-name
-      (str "`:" instruction-name "` swaps the positions of the top two `" typename
-        "` items.")
-      :tags #{:combinator}
-      `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
-      `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
-      `(push.instructions.dsl/push-onto ~typename :arg1)
-      `(push.instructions.dsl/push-onto ~typename :arg2)))))
-
-
-(defn yank-instruction
-  "returns a new x-yank instruction for a PushType"
-  [pushtype]
-  (let [typename (:name pushtype)
-        instruction-name (str (name typename) "-yank")]
-    (eval (list
-      'push.instructions.core/build-instruction
-      instruction-name
-      (str "`:" instruction-name "` pops the top `:integer`. The `:integer` is brought into range as an index by applying `(mod integer (count stack))`, and then the item _currently_ found in the indexed position in the `" typename "` stack is _moved_ so that it is on top.")
-      :tags #{:combinator}
-      '(push.instructions.dsl/consume-top-of :integer :as :index)
-      `(push.instructions.dsl/count-of ~typename :as :how-many)
-      `(push.instructions.dsl/consume-nth-of ~typename :at :index :as :yanked-item)
-      `(push.instructions.dsl/push-onto ~typename :yanked-item)))))
-
-
-(defn yankdup-instruction
-  "returns a new x-yankdup instruction for a PushType"
-  [pushtype]
-  (let [typename (:name pushtype)
-        instruction-name (str (name typename) "-yankdup")]
-    (eval (list
-      'push.instructions.core/build-instruction
-      instruction-name
-      (str "`:" instruction-name "` pops the top `:integer`. The `:integer` is brought into range as an index by applying `(mod integer (count stack))`, and then the item _currently_ found in the indexed position in the `" typename "` stack is _copied_ so that a duplicate of it is on top.")
-      :tags #{:combinator}
-      '(push.instructions.dsl/consume-top-of :integer :as :index)
-      `(push.instructions.dsl/count-of ~typename :as :how-many)
-      `(push.instructions.dsl/save-nth-of ~typename :at :index :as :yanked-item)
-      `(push.instructions.dsl/push-onto ~typename :yanked-item)))))
 
 
 (defn make-movable

@@ -5,6 +5,9 @@
   (:require [push.interpreter.core :as i])
   (:require [push.types.core :as t])
   (:use [push.instructions.aspects.visible])
+  (:use [push.instructions.aspects.equatable])
+  (:use [push.instructions.aspects.comparable])
+  (:use [push.instructions.aspects.movable])
   (:use [push.instructions.core])
   )
 
@@ -129,97 +132,97 @@
 
 
 (fact "a generated equal?-instruction has a reasonable docstring"
-  (:docstring (t/equal?-instruction i-know-foo)) =>
+  (:docstring (equal?-instruction i-know-foo)) =>
     "`:foo-equal?` pops the top two `:foo` items and pushes `true` if they are equal, `false` otherwise.")
 
 
 (fact "a generated notequal?-instruction has a reasonable docstring"
-  (:docstring (t/notequal?-instruction i-know-foo)) =>
+  (:docstring (notequal?-instruction i-know-foo)) =>
     "`:foo-notequal?` pops the top two `:foo` items and pushes `false` if they are equal, `true` otherwise.")
 
 
 (fact "a generated lessthan?-instruction has a reasonable docstring"
-  (:docstring (t/lessthan?-instruction i-know-foo)) =>
+  (:docstring (lessthan?-instruction i-know-foo)) =>
     "`:foo<?` pops the top two `:foo` items and pushes `true` if the top item is less than the second, `false` otherwise.")
 
 
 (fact "a generated lessthanorequal?-instruction has a reasonable docstring"
-  (:docstring (t/lessthanorequal?-instruction i-know-foo)) =>
+  (:docstring (lessthanorequal?-instruction i-know-foo)) =>
     "`:foo≤?` pops the top two `:foo` items and pushes `true` if the top item is less than or equal to the second, `false` otherwise.")
 
 
 (fact "a generated greaterthanorequal?-instruction has a reasonable docstring"
-  (:docstring (t/greaterthanorequal?-instruction i-know-foo)) =>
+  (:docstring (greaterthanorequal?-instruction i-know-foo)) =>
     "`:foo≥?` pops the top two `:foo` items and pushes `true` if the top item is greater than or equal to the second, `false` otherwise.")
 
 
 (fact "a generated greaterthan?-instruction has a reasonable docstring"
-  (:docstring (t/greaterthan?-instruction i-know-foo)) =>
+  (:docstring (greaterthan?-instruction i-know-foo)) =>
     "`:foo>?` pops the top two `:foo` items and pushes `true` if the top item is greater than the second, `false` otherwise.")
 
 
 (fact "a generated min-instruction has a reasonable docstring"
-  (:docstring (t/min-instruction i-know-foo)) =>
+  (:docstring (min-instruction i-know-foo)) =>
     "`:foo-min` pops the top two `:foo` items and pushes the _smaller_ of the two.")
 
 
 (fact "a generated max-instruction has a reasonable docstring"
-  (:docstring (t/max-instruction i-know-foo)) =>
+  (:docstring (max-instruction i-know-foo)) =>
     "`:foo-max` pops the top two `:foo` items and pushes the _larger_ of the two.")
 
 
 
 (fact "a generated dup-instruction has a reasonable docstring"
-  (:docstring (t/dup-instruction i-know-foo)) =>
+  (:docstring (dup-instruction i-know-foo)) =>
     "`:foo-dup` examines the top `:foo` item and pushes a duplicate to the same stack.")
 
 
 (fact "a generated flush-instruction has a reasonable docstring"
-  (:docstring (t/flush-instruction i-know-foo)) =>
+  (:docstring (flush-instruction i-know-foo)) =>
     "`:foo-flush` discards all items from the `:foo` stack.")
 
 
 (fact "a generated pop-instruction has a reasonable docstring"
-  (:docstring (t/pop-instruction i-know-foo)) =>
+  (:docstring (pop-instruction i-know-foo)) =>
     "`:foo-pop` discards the top item from the `:foo` stack.")
 
 
 (fact "a generated rotate-instruction has a reasonable docstring"
-  (:docstring (t/rotate-instruction i-know-foo)) =>
+  (:docstring (rotate-instruction i-know-foo)) =>
     "`:foo-rotate` pops the top three items from the `:foo` stack; call them `A`, `B` and `C`, respectively. It pushes them back so that top-to-bottom order is now `'(C A B ...)`")
 
 
 (fact "a generated shove-instruction has a reasonable docstring"
-  (:docstring (t/shove-instruction i-know-foo)) =>
+  (:docstring (shove-instruction i-know-foo)) =>
     "`:foo-shove` pops the top item from the `:foo` stack and the top `:integer`. The `:integer` is brought into range as an index by applying `(mod integer (count stack))`, and then the top item is _moved_ so that it is in that position in the resulting stack.")
 
 
 (fact "a generated swap-instruction has a reasonable docstring"
-  (:docstring (t/swap-instruction i-know-foo)) =>
+  (:docstring (swap-instruction i-know-foo)) =>
     "`:foo-swap` swaps the positions of the top two `:foo` items.")
 
 
 (fact "a generated yank-instruction has a reasonable docstring"
-  (:docstring (t/yank-instruction i-know-foo)) =>
+  (:docstring (yank-instruction i-know-foo)) =>
     "`:foo-yank` pops the top `:integer`. The `:integer` is brought into range as an index by applying `(mod integer (count stack))`, and then the item _currently_ found in the indexed position in the `:foo` stack is _moved_ so that it is on top.")
 
 
 (fact "a generated yankdup-instruction has a reasonable docstring"
-  (:docstring (t/yankdup-instruction i-know-foo)) =>
+  (:docstring (yankdup-instruction i-know-foo)) =>
     "`:foo-yankdup` pops the top `:integer`. The `:integer` is brought into range as an index by applying `(mod integer (count stack))`, and then the item _currently_ found in the indexed position in the `:foo` stack is _copied_ so that a duplicate of it is on top.")
 
 (fact "the docstring is associated with an instance"
-  (:doc (meta (t/yankdup-instruction i-know-foo))) =>
-    (:docstring (t/yankdup-instruction i-know-foo)))
+  (:doc (meta (yankdup-instruction i-know-foo))) =>
+    (:docstring (yankdup-instruction i-know-foo)))
 
 
 ;; needs-and-products graph edges
 
 
 (fact "I can map how instructions connect types (and stacks more generally)"
-  (:needs (t/swap-instruction i-know-foo)) => {:foo 2}
-  (:products (t/swap-instruction i-know-foo)) => {:foo 2}
+  (:needs (swap-instruction i-know-foo)) => {:foo 2}
+  (:products (swap-instruction i-know-foo)) => {:foo 2}
 
-  (:needs (t/yankdup-instruction i-know-foo)) => {:foo 1, :integer 1}
-  (:products (t/yankdup-instruction i-know-foo)) => {:foo 1}
+  (:needs (yankdup-instruction i-know-foo)) => {:foo 1, :integer 1}
+  (:products (yankdup-instruction i-know-foo)) => {:foo 1}
   )
