@@ -353,6 +353,54 @@
 
 
 (tabular
+  (fact "`vector-refilter` pushes the first :vector onto :exec"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks standard-vector-type ?instruction) => 
+    (contains ?expected))
+
+    ?new-stacks                ?instruction     ?expected
+
+    {:vector '([1 2 3])
+     :exec   '()}            :vector-refilter   {:vector  '()
+                                                 :exec    '([1 2 3])}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector '([1 2 3] [4 5])
+     :exec   '(6)}            :vector-refilter   {:vector  '([4 5])
+                                                 :exec    '([1 2 3] 6)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector '()
+     :exec   '(9 99)}            :vector-refilter   {:vector  '()
+                                                 :exec    '(9 99)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+(tabular
+  (fact "`vector-refilterall` pushes the entire :vector stack onto :exec"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks standard-vector-type ?instruction) => 
+    (contains ?expected))
+
+    ?new-stacks                ?instruction              ?expected
+
+    {:vector '([1 2 3] [4 5])
+     :exec   '(6 7 8)}        :vector-refilterall      {:vector  '()
+                                                        :exec    '([1 2 3] 
+                                                          [4 5] 6 7 8)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector '([])
+     :exec   '(6 7 8)}        :vector-refilterall      {:vector  '()
+                                                        :exec    '([] 6 7 8)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector '()
+     :exec   '(6 7 8)}        :vector-refilterall      {:vector  '()
+                                                        :exec    '(6 7 8)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
+(tabular
   (fact "`vector-shatter` pushes the items from the first :vector onto :code"
     (check-instruction-with-all-kinds-of-stack-stuff
       ?new-stacks standard-vector-type ?instruction) => 

@@ -223,6 +223,8 @@
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
 
+
+
 (tabular
   (fact "`foos-indexof` pushes an :integer indicating where :foo is in :foos (or -1)"
     (check-instruction-with-all-kinds-of-stack-stuff

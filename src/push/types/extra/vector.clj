@@ -12,6 +12,26 @@
 
 
 
+(def vector-refilter
+  (core/build-instruction
+    vector-refilter
+    "`:vector-refilter` pops the top `:vector` value, and sends it to the `:exec` stack"
+    :tags #{:conversion :vector}
+    (d/consume-top-of :vector :as :arg)
+    (d/push-onto :exec :arg)))
+
+
+(def vector-refilterall
+  (core/build-instruction
+    vector-refilterall
+    "`:vector-refilterall` puts the entire `:vector` stack on top of the `:exec` stack"
+    :tags #{:conversion :vector}
+    (d/consume-stack :vector :as :stack)
+    (d/consume-stack :exec :as :old-exec)
+    (d/calculate [:stack :old-exec]
+        #(into '() (reverse (concat %1 %2))) :as :new-exec)
+    (d/replace-stack :exec :new-exec)))
+
 
 (def standard-vector-type
   "builds the basic `:vector` type, which can hold arbitrary and mixed contents"
@@ -25,6 +45,8 @@
       make-movable
       make-printable
       make-returnable
+      (t/attach-instruction , vector-refilter)
+      (t/attach-instruction , vector-refilterall)
       (t/attach-instruction , (v/x-butlast-instruction typename))
       (t/attach-instruction , (v/x-concat-instruction typename))
       (t/attach-instruction , (v/x-conj-instruction typename componentname))
