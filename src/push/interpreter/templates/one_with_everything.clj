@@ -1,53 +1,52 @@
 (ns push.interpreter.templates.one-with-everything
   (:require [push.util.stack-manipulation :as u])
-  (:require [push.types.base.boolean])
-  (:require [push.types.base.char])
-  (:require [push.types.modules.code])
-  (:require [push.types.modules.exec])
-  (:require [push.types.base.float])
-  (:require [push.types.base.integer])
-  (:require [push.types.base.string])
-  (:require [push.types.modules.environment])
-  (:require [push.types.modules.print])
-  (:require [push.types.modules.log])
-  (:require [push.types.modules.error])
-  (:require [push.types.extra.vectorized])
-  (:require [push.types.extra.vector])
-  (:require [push.util.exceptions :as oops])
+  (:use push.types.base.boolean)
+  (:use push.types.base.char)
+  (:use push.types.modules.code)
+  (:use push.types.modules.exec)
+  (:use push.types.base.float)
+  (:use push.types.base.integer)
+  (:use push.types.base.string)
+  (:use push.types.modules.environment)
+  (:use push.types.modules.print)
+  (:use push.types.modules.log)
+  (:use push.types.modules.error)
+  (:use push.types.extra.vectorized)
+  (:use push.types.extra.vector)
   (:use [push.interpreter.core])
   (:use [push.util.type-checkers])
+  (:require [push.util.exceptions :as oops])
+
+  (:use push.instructions.extra.stack-combinators)
   )
 
 
 (def all-kinds-of-types
-  [ push.types.base.integer/classic-integer-type
-    push.types.base.boolean/classic-boolean-type
-    push.types.base.char/classic-char-type
-    push.types.base.float/classic-float-type
-    push.types.base.string/classic-string-type
+  (map extend-combinators
+    [classic-integer-type
+    classic-boolean-type
+    classic-char-type
+    classic-float-type
+    classic-string-type
 
-    (push.types.extra.vectorized/build-vectorized-type
-      push.types.base.boolean/classic-boolean-type)
-    (push.types.extra.vectorized/build-vectorized-type
-      push.types.base.char/classic-char-type)
-    (push.types.extra.vectorized/build-vectorized-type
-      push.types.base.float/classic-float-type)
-    (push.types.extra.vectorized/build-vectorized-type
-      push.types.base.integer/classic-integer-type)
-    (push.types.extra.vectorized/build-vectorized-type
-      push.types.base.string/classic-string-type)
+    (build-vectorized-type classic-boolean-type)
+    (build-vectorized-type classic-char-type)
+    (build-vectorized-type classic-float-type)
+    (build-vectorized-type classic-integer-type)
+    (build-vectorized-type classic-string-type)
 
-    push.types.extra.vector/standard-vector-type
-    ])
+    standard-vector-type
+    ]))
 
 
 (def all-kinds-of-modules
-  [push.types.modules.exec/classic-exec-module
-   push.types.modules.log/classic-log-module
-   push.types.modules.error/classic-error-module
-   push.types.modules.code/classic-code-module
-   push.types.modules.environment/classic-environment-module
-   push.types.modules.print/classic-print-module])
+  (map extend-combinators
+    [classic-exec-module
+     classic-log-module
+     classic-error-module
+     classic-code-module
+     classic-environment-module
+     classic-print-module]))
 
 
 (defn make-everything-interpreter
@@ -71,6 +70,7 @@
   - floats-type
   - strings-type
   - standard-vector-type (loaded last as a default)
+  - extra-stack-combinators (for all types that are :movable)
   and the counter is 0.
 
   Optional arguments include

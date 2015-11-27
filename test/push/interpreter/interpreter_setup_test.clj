@@ -415,7 +415,7 @@
       (contains [:integer-add :boolean-and :char≥? :string-concat] :in-any-order :gaps-ok)))
 
 
-(fact "`make-classic-interpreter` knows all kinds of instructions already"
+(fact "`one-with-everything` knows all kinds of instructions already"
   (let [benchmarker (everything/make-everything-interpreter)]
     (println (str "Interpreter with Everything: "
                   (count (keys (:instructions benchmarker)))
