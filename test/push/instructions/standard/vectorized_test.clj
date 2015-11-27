@@ -203,6 +203,27 @@
 
 
 (tabular
+  (fact "`foos-generalizeall` pushes every :foos vector onto :vector"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks foos-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction     ?expected
+
+    {:foos   '([1] [2] [3])
+     :vector '()}            :foos-generalizeall   {:foos   '()
+                                                    :vector  '([1] [2] [3])}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos   '([] [] [])
+     :vector '([2])}            :foos-generalizeall   {:foos   '()
+                                                    :vector  '([] [] [] [2])}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos   '()
+     :vector '()}            :foos-generalizeall   {:foos   '()
+                                                    :vector  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+(tabular
   (fact "`foos-indexof` pushes an :integer indicating where :foo is in :foos (or -1)"
     (check-instruction-with-all-kinds-of-stack-stuff
         ?new-stacks foos-type ?instruction) => (contains ?expected))

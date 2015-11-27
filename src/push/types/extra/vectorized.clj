@@ -146,6 +146,20 @@
       `(push.instructions.dsl/push-onto :vector :arg)))))
 
 
+(defn x-generalizeall-instruction
+  [typename]
+  (let [instruction-name (str (name typename) "-generalizeall")]
+    (eval (list
+      'push.instructions.core/build-instruction
+      instruction-name
+      (str "`" typename "-generalizeall` puts the entire `" typename "` stack onto the `:vector` stack.")
+      :tags #{:vector}
+      `(push.instructions.dsl/consume-stack ~typename :as :stack)
+      `(push.instructions.dsl/consume-stack :vector :as :old-vectors)
+      '(push.instructions.dsl/calculate [:stack :old-vectors]
+          #(into '() (reverse (concat %1 %2))) :as :new-vectors)
+      `(push.instructions.dsl/replace-stack :vector :new-vectors)))))
+
 
 (defn x-indexof-instruction
   [typename rootname]
@@ -410,6 +424,7 @@
           (t/attach-instruction , (x-do*each-instruction typename))
           (t/attach-instruction , (x-emptyitem?-instruction typename))
           (t/attach-instruction , (x-generalize-instruction typename))
+          (t/attach-instruction , (x-generalizeall-instruction typename))
           (t/attach-instruction , (x-first-instruction typename rootname))
           (t/attach-instruction , (x-indexof-instruction typename rootname))
           (t/attach-instruction , (x-last-instruction typename rootname))
