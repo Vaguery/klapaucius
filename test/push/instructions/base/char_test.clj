@@ -74,73 +74,73 @@
 
 
 (tabular
-  (fact ":char-frominteger drops the top :integer into [0..65535] and pushes that unicode character"
+  (fact ":integer->char drops the top :integer into [0..65535] and pushes that unicode character"
     (register-type-and-check-instruction
         ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction  ?get-stack         ?expected
     ;; all the letters
-    :integer    '(88)         :char-frominteger   :char         '(\X)
-    :integer    '(37)         :char-frominteger   :char         '(\%)
-    :integer    '(382)        :char-frominteger   :char         '(\ž)
-    :integer    '(-17212)     :char-frominteger   :char         '(\볃)
-    :integer    '(2764)       :char-frominteger   :char         '(\ૌ)
+    :integer    '(88)         :integer->char   :char         '(\X)
+    :integer    '(37)         :integer->char   :char         '(\%)
+    :integer    '(382)        :integer->char   :char         '(\ž)
+    :integer    '(-17212)     :integer->char   :char         '(\볃)
+    :integer    '(2764)       :integer->char   :char         '(\ૌ)
     ;; edge cases
-    :integer    '(0)          :char-frominteger   :char         zerochar-list
-    :integer    '(65535)      :char-frominteger   :char         zerochar-list
-    :integer    '(256)        :char-frominteger   :char         '(\Ā)
-    :integer    '(-128)       :char-frominteger   :char         '(\ｿ)
+    :integer    '(0)          :integer->char   :char         zerochar-list
+    :integer    '(65535)      :integer->char   :char         zerochar-list
+    :integer    '(256)        :integer->char   :char         '(\Ā)
+    :integer    '(-128)       :integer->char   :char         '(\ｿ)
     ;; missing args
-    :integer    '()           :char-frominteger   :char         '())
+    :integer    '()           :integer->char   :char         '())
 
 
 (tabular
-  (fact ":char-asciifromfloat drops the top :float down to an integer value in [0..128] and pushes that ASCII character"
+  (fact ":float->asciichar drops the top :float down to an integer value in [0..128] and pushes that ASCII character"
     (register-type-and-check-instruction
         ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction  ?get-stack         ?expected
     ;; all the letters
-    :float    '(88.9)         :char-asciifromfloat   :char         '(\X)
-    :float    '(37.2)         :char-asciifromfloat   :char         '(\%)
-    :float    '(-37.9)        :char-asciifromfloat   :char         '(\[)
-    :float    '(200.2)        :char-asciifromfloat   :char         '(\H)
+    :float    '(88.9)         :float->asciichar   :char         '(\X)
+    :float    '(37.2)         :float->asciichar   :char         '(\%)
+    :float    '(-37.9)        :float->asciichar   :char         '(\[)
+    :float    '(200.2)        :float->asciichar   :char         '(\H)
     ;; edge cases
-    :float    '(0.2)          :char-asciifromfloat   :char         zerochar-list
-    :float    '(128.2)        :char-asciifromfloat   :char         zerochar-list
-    :float    '(256.2)        :char-asciifromfloat   :char         zerochar-list
-    :float    '(-128.2)       :char-asciifromfloat   :char         zerochar-list
+    :float    '(0.2)          :float->asciichar   :char         zerochar-list
+    :float    '(128.2)        :float->asciichar   :char         zerochar-list
+    :float    '(256.2)        :float->asciichar   :char         zerochar-list
+    :float    '(-128.2)       :float->asciichar   :char         zerochar-list
     ;; bounds for internal typecast (huge bigint mod 128 -> 0)
-    :float    '(1.1e88M)      :char-asciifromfloat   :char         zerochar-list
+    :float    '(1.1e88M)      :float->asciichar   :char         zerochar-list
     :float    '(111111111111111111111111111111111111111111.0M)
-                              :char-asciifromfloat   :char         '(\G)
+                              :float->asciichar   :char         '(\G)
     ;; missing args
-    :float    '()             :char-asciifromfloat   :char         '())
+    :float    '()             :float->asciichar   :char         '())
 
 
 
 (tabular
-  (fact ":char-fromfloat drops the top :float down to an integer value in [0..65535] and pushes that ASCII character"
+  (fact ":float->char drops the top :float down to an integer value in [0..65535] and pushes that ASCII character"
     (register-type-and-check-instruction
         ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction  ?get-stack         ?expected
     ;; all the letters
-    :float    '(88.9)         :char-fromfloat   :char         '(\X)
-    :float    '(37.2)         :char-fromfloat   :char         '(\%)
-    :float    '(-22771.9)     :char-fromfloat   :char         '(\꜌)
-    :float    '(200.2)        :char-fromfloat   :char         '(\È)
-    ;; comparison to :char-fromfloat
-    :float    '(0.2)          :char-fromfloat   :char         zerochar-list
-    :float    '(65535.3)      :char-fromfloat   :char         zerochar-list
-    :float    '(256.9)        :char-fromfloat   :char         '(\Ā)
-    :float    '(-128.2)       :char-fromfloat   :char         '(\ｿ)
+    :float    '(88.9)         :float->char   :char         '(\X)
+    :float    '(37.2)         :float->char   :char         '(\%)
+    :float    '(-22771.9)     :float->char   :char         '(\꜌)
+    :float    '(200.2)        :float->char   :char         '(\È)
+    ;; comparison to :integer->char
+    :float    '(0.2)          :float->char   :char         zerochar-list
+    :float    '(65535.3)      :float->char   :char         zerochar-list
+    :float    '(256.9)        :float->char   :char         '(\Ā)
+    :float    '(-128.2)       :float->char   :char         '(\ｿ)
     ;; bounds for internal typecast (huge bigint mod 65535 -> 0)
-    :float    '(1.1e88M)      :char-fromfloat   :char         '(\뗖)
+    :float    '(1.1e88M)      :float->char   :char         '(\뗖)
     :float    '(111111111111111111111111111111111111111.0M)
-                              :char-fromfloat   :char         '(\㓂)
+                              :float->char   :char         '(\㓂)
     ;; missing args
-    :float    '()             :char-fromfloat   :char         '())
+    :float    '()             :float->char   :char         '())
 
 
 (tabular

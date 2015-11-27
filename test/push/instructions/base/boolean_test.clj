@@ -8,26 +8,26 @@
 ;; all the conversions
 
 (tabular
-  (fact ":boolean-frominteger is false if 0, true otherwise
-         :boolean-fromintsign is false if neg, true otherwise
-         ditto :boolean-fromfloat and :boolean-fromfloatsign"
+  (fact ":integer->boolean is false if 0, true otherwise
+         :intsign->boolean is false if neg, true otherwise
+         ditto :float->boolean and :floatsign->boolean"
     (register-type-and-check-instruction
         ?set-stack ?items classic-boolean-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction           ?get-stack     ?expected
-    :integer    '(0)         :boolean-frominteger      :boolean       '(false)
-    :integer    '(11)        :boolean-frominteger      :boolean       '(true)
-    :integer    '(-4)        :boolean-frominteger      :boolean       '(true)
-    :integer    '(0)         :boolean-fromintsign      :boolean       '(true)
-    :integer    '(11)        :boolean-fromintsign      :boolean       '(true)
-    :integer    '(-4)        :boolean-fromintsign      :boolean       '(false)
+    :integer    '(0)         :integer->boolean      :boolean       '(false)
+    :integer    '(11)        :integer->boolean      :boolean       '(true)
+    :integer    '(-4)        :integer->boolean      :boolean       '(true)
+    :integer    '(0)         :intsign->boolean      :boolean       '(true)
+    :integer    '(11)        :intsign->boolean      :boolean       '(true)
+    :integer    '(-4)        :intsign->boolean      :boolean       '(false)
 
-    :float    '(0.0)         :boolean-fromfloat        :boolean       '(false)
-    :float    '(11.0)        :boolean-fromfloat        :boolean       '(true)
-    :float    '(-4.0)        :boolean-fromfloat        :boolean       '(true)
-    :float    '(0.0)         :boolean-fromfloatsign    :boolean       '(true)
-    :float    '(11.0)        :boolean-fromfloatsign    :boolean       '(true)
-    :float    '(-4.0)        :boolean-fromfloatsign    :boolean       '(false))
+    :float    '(0.0)         :float->boolean        :boolean       '(false)
+    :float    '(11.0)        :float->boolean        :boolean       '(true)
+    :float    '(-4.0)        :float->boolean        :boolean       '(true)
+    :float    '(0.0)         :floatsign->boolean    :boolean       '(true)
+    :float    '(11.0)        :floatsign->boolean    :boolean       '(true)
+    :float    '(-4.0)        :floatsign->boolean    :boolean       '(false))
 
 
 

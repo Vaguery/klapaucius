@@ -111,7 +111,7 @@
   "returns a standard arity-1 function, which moves the top item from the named stack to the :code stack"
   [type]
   (let [stackname (keyword type)
-        instruction-name (str "code-from" (name stackname))]
+        instruction-name (str (name stackname) "->code")]
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name

@@ -191,19 +191,19 @@
   :code "first" #(if (coll? %) (first %) %)))
 
 
-(def code-fromboolean (t/simple-item-to-code-instruction :boolean))
+(def boolean->code (t/simple-item-to-code-instruction :boolean))
 
 
-(def code-fromchar (t/simple-item-to-code-instruction :char))
+(def char->code (t/simple-item-to-code-instruction :char))
 
 
-(def code-fromfloat (t/simple-item-to-code-instruction :float))
+(def float->code (t/simple-item-to-code-instruction :float))
 
 
-(def code-frominteger (t/simple-item-to-code-instruction :integer))
+(def integer->code (t/simple-item-to-code-instruction :integer))
 
 
-(def code-fromstring (t/simple-item-to-code-instruction :string))
+(def string->code (t/simple-item-to-code-instruction :string))
 
 
 (def code-if
@@ -447,11 +447,11 @@
         (t/attach-instruction , code-drop)
         (t/attach-instruction , code-extract)
         (t/attach-instruction , code-first)
-        (t/attach-instruction , code-fromboolean)
-        (t/attach-instruction , code-fromchar)
-        (t/attach-instruction , code-frominteger)
-        (t/attach-instruction , code-fromstring)
-        (t/attach-instruction , code-fromfloat)
+        (t/attach-instruction , boolean->code)
+        (t/attach-instruction , char->code)
+        (t/attach-instruction , integer->code)
+        (t/attach-instruction , string->code)
+        (t/attach-instruction , float->code)
         (t/attach-instruction , code-if)
         (t/attach-instruction , code-insert)
         (t/attach-instruction , code-length)

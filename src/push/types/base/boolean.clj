@@ -11,40 +11,40 @@
   )
 
 
-(def boolean-frominteger
+(def integer->boolean
   (core/build-instruction
-    boolean-frominteger
-    "`:boolean-frominteger` pops the top `:integer` item, and pushes `false` if it is 0, or `true` if it is any other value"
+    integer->boolean
+    "`:integer->boolean` pops the top `:integer` item, and pushes `false` if it is 0, or `true` if it is any other value"
     :tags #{:boolean :conversion :base}
     (d/consume-top-of :integer :as :arg)
     (d/calculate [:arg] #(not (zero? %1)) :as :result)
     (d/push-onto :boolean :result)))
 
 
-(def boolean-fromintsign
+(def intsign->boolean
   (core/build-instruction
-    boolean-fromintsign
-    "`:boolean-fromintsign` pops the top `:integer` item, and pushes `true` if it positive, or `false` if it is zero or negative"
+    intsign->boolean
+    "`:intsign->boolean` pops the top `:integer` item, and pushes `true` if it positive, or `false` if it is zero or negative"
     :tags #{:boolean :conversion :base}
     (d/consume-top-of :integer :as :arg)
     (d/calculate [:arg] #(not (neg? %1)) :as :result)
     (d/push-onto :boolean :result)))
 
 
-(def boolean-fromfloat
+(def float->boolean
   (core/build-instruction
-    boolean-fromfloat
-    "`:boolean-fromfloat` pops the top `:float` item, and pushes `false` if it is 0.0, or `true` if it is any other value"
+    float->boolean
+    "`:float->boolean` pops the top `:float` item, and pushes `false` if it is 0.0, or `true` if it is any other value"
     :tags #{:boolean :conversion :base}
     (d/consume-top-of :float :as :arg)
     (d/calculate [:arg] #(not (zero? %1)) :as :result)
     (d/push-onto :boolean :result)))
 
 
-(def boolean-fromfloatsign
+(def floatsign->boolean
   (core/build-instruction
-    boolean-fromfloatsign
-    "`:boolean-fromfloatsign` pops the top `:float` item, and pushes `true` if it positive, or `false` if it is zero or negative"
+    floatsign->boolean
+    "`:floatsign->boolean` pops the top `:float` item, and pushes `true` if it positive, or `false` if it is zero or negative"
     :tags #{:boolean :conversion :base}
     (d/consume-top-of :float :as :arg)
     (d/calculate [:arg] #(not (neg? %1)) :as :result)
@@ -89,10 +89,10 @@
         make-printable
         make-returnable
         (t/attach-instruction , bool-and)
-        (t/attach-instruction , boolean-frominteger)
-        (t/attach-instruction , boolean-fromintsign)
-        (t/attach-instruction , boolean-fromfloat)
-        (t/attach-instruction , boolean-fromfloatsign)
+        (t/attach-instruction , integer->boolean)
+        (t/attach-instruction , intsign->boolean)
+        (t/attach-instruction , float->boolean)
+        (t/attach-instruction , floatsign->boolean)
         (t/attach-instruction , bool-or)
         (t/attach-instruction , bool-not)
         (t/attach-instruction , bool-xor)

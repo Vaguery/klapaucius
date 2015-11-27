@@ -44,30 +44,30 @@
     (d/push-onto :char :c)))
 
 
-(def char-frominteger
+(def integer->char
   (core/build-instruction
-    char-frominteger
-    "`:char-frominteger` pops the top `:integer` value, reduces it modulo 65535, and pushes the `:char` that is represented by that unicode value"
+    integer->char
+    "`:integer-char` pops the top `:integer` value, reduces it modulo 65535, and pushes the `:char` that is represented by that unicode value"
     :tags #{:string :conversion :base}
     (d/consume-top-of :integer :as :arg)
     (d/calculate [:arg] #(char (mod %1 65535)) :as :c)
     (d/push-onto :char :c)))
 
 
-(def char-asciifromfloat
+(def float->asciichar
   (core/build-instruction
-    char-asciifromfloat
-    "`:char-asciifromfloat` pops the top `:float` value, reduces it to an integer modulo 128, and pushes the `:char` that is represented by that ASCII value"
+    float->asciichar
+    "`:float->asciichar` pops the top `:float` value, reduces it to an integer modulo 128, and pushes the `:char` that is represented by that ASCII value"
     :tags #{:string :conversion :base}
     (d/consume-top-of :float :as :arg)
     (d/calculate [:arg] #(char (fix/safe-mod (bigint %1) 128)) :as :c)
     (d/push-onto :char :c)))
 
 
-(def char-fromfloat
+(def float->char
   (core/build-instruction
-    char-fromfloat
-    "`:char-fromfloat` pops the top `:float` value, reduces it to an integer modulo 65535, and pushes the `:char` that is represented by that unicode value"
+    float->char
+    "`:float->char` pops the top `:float` value, reduces it to an integer modulo 65535, and pushes the `:char` that is represented by that unicode value"
     :tags #{:string :conversion :base}
     (d/consume-top-of :float :as :arg)
     (d/calculate [:arg] #(char (fix/safe-mod (bigint %1) 65535)) :as :c)
@@ -109,9 +109,9 @@
         (t/attach-instruction , char-digit?)
         (t/attach-instruction , char-whitespace?)
         (t/attach-instruction , char-asciifrominteger)
-        (t/attach-instruction , char-frominteger)
-        (t/attach-instruction , char-fromfloat)
-        (t/attach-instruction , char-asciifromfloat)
+        (t/attach-instruction , integer->char)
+        (t/attach-instruction , float->char)
+        (t/attach-instruction , float->asciichar)
         (t/attach-instruction , char-lowercase?)
         (t/attach-instruction , char-uppercase?)
         ))

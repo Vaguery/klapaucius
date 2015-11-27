@@ -13,40 +13,40 @@
 ;; all the conversions
 
 (tabular
-  (fact ":string-frominteger, :string-fromboolean, :string-fromcode, :string-fromexec, :string-fromfloat"
+  (fact ":integer->string, :boolean->string, :code->string, :exec->string, :float->string"
     (register-type-and-check-instruction
         ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction           ?get-stack     ?expected
-    :boolean    '(false)       :string-fromboolean      :string       '("false")
-    :boolean    '(true)        :string-fromboolean      :string       '("true")
-    :boolean    '()            :string-fromboolean      :string       '()
+    :boolean    '(false)       :boolean->string      :string       '("false")
+    :boolean    '(true)        :boolean->string      :string       '("true")
+    :boolean    '()            :boolean->string      :string       '()
 
-    :integer    '(11)          :string-frominteger      :string       '("11")
-    :integer    '(-11)         :string-frominteger      :string       '("-11")
-    :integer    '()            :string-frominteger      :string       '()
+    :integer    '(11)          :integer->string      :string       '("11")
+    :integer    '(-11)         :integer->string      :string       '("-11")
+    :integer    '()            :integer->string      :string       '()
 
-    :float      '(117.0)       :string-fromfloat        :string       '("117.0")
-    :float      '(-0.3)        :string-fromfloat        :string       '("-0.3")
-    :float      '()            :string-fromfloat        :string       '()
+    :float      '(117.0)       :float->string        :string       '("117.0")
+    :float      '(-0.3)        :float->string        :string       '("-0.3")
+    :float      '()            :float->string        :string       '()
 
-    :char       '(\Y)          :string-fromchar         :string       '("Y")
-    :char       '(\u262F)      :string-fromchar         :string       '("☯")
-    :char       '()            :string-fromchar         :string       '()
+    :char       '(\Y)          :char->string         :string       '("Y")
+    :char       '(\u262F)      :char->string         :string       '("☯")
+    :char       '()            :char->string         :string       '()
 
-    :code     '((88 :code-do)) :string-fromcode         :string       '("(88 :code-do)")
-    :code     '([1 [3 5]])     :string-fromcode         :string       '("[1 [3 5]]")
-    :code     '(''99)          :string-fromcode         :string       '("(quote (quote 99))")
-    :code     '(1/8)           :string-fromcode         :string       '("1/8")
-    :code     '({:a [1 2]})    :string-fromcode         :string       '("{:a [1 2]}")
-    :code     '()              :string-fromcode         :string       '()
+    :code     '((88 :code-do)) :code->string         :string       '("(88 :code-do)")
+    :code     '([1 [3 5]])     :code->string         :string       '("[1 [3 5]]")
+    :code     '(''99)          :code->string         :string       '("(quote (quote 99))")
+    :code     '(1/8)           :code->string         :string       '("1/8")
+    :code     '({:a [1 2]})    :code->string         :string       '("{:a [1 2]}")
+    :code     '()              :code->string         :string       '()
 
-    :exec     '((88 :code-do)) :string-fromexec         :string       '("(88 :code-do)")
-    :exec     '([1 [3 5]])     :string-fromexec         :string       '("[1 [3 5]]")
-    :exec     '(''99)          :string-fromexec         :string       '("(quote (quote 99))")
-    :exec     '(1/8)           :string-fromexec         :string       '("1/8")
-    :exec     '({:a [1 2]})    :string-fromexec         :string       '("{:a [1 2]}")
-    :exec     '()              :string-fromexec         :string       '())
+    :exec     '((88 :code-do)) :exec->string         :string       '("(88 :code-do)")
+    :exec     '([1 [3 5]])     :exec->string         :string       '("[1 [3 5]]")
+    :exec     '(''99)          :exec->string         :string       '("(quote (quote 99))")
+    :exec     '(1/8)           :exec->string         :string       '("1/8")
+    :exec     '({:a [1 2]})    :exec->string         :string       '("{:a [1 2]}")
+    :exec     '()              :exec->string         :string       '())
 
 
 ;; specific string behavior

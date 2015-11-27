@@ -138,99 +138,99 @@
 
 
 (tabular
-  (fact ":integer-fromboolean takes a :boolean value, and returns 1 if true, 0 if false"
+  (fact ":boolean->integer takes a :boolean value, and returns 1 if true, 0 if false"
     (register-type-and-check-instruction
         ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction      ?get-stack     ?expected
     ;; simple     
-    :boolean    '(false true)    :integer-fromboolean      :integer       '(0)
-    :boolean    '(false true)    :integer-fromboolean      :boolean       '(true)
-    :boolean    '(true false)    :integer-fromboolean      :integer       '(1)
-    :boolean    '(true false)    :integer-fromboolean      :boolean       '(false)
+    :boolean    '(false true)    :boolean->integer      :integer       '(0)
+    :boolean    '(false true)    :boolean->integer      :boolean       '(true)
+    :boolean    '(true false)    :boolean->integer      :integer       '(1)
+    :boolean    '(true false)    :boolean->integer      :boolean       '(false)
     ;; missing args 
-    :boolean    '()              :integer-fromboolean      :integer       '()
-    :boolean    '()              :integer-fromboolean      :boolean       '())
+    :boolean    '()              :boolean->integer      :integer       '()
+    :boolean    '()              :boolean->integer      :boolean       '())
 
 
 
 (tabular
-  (fact ":integer-signfromboolean takes a :boolean value, and returns 1 if true, -1 if false"
+  (fact ":boolean->signedint takes a :boolean value, and returns 1 if true, -1 if false"
     (register-type-and-check-instruction
         ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction      ?get-stack     ?expected
-    :boolean    '(false true)    :integer-signfromboolean      :integer       '(-1)
-    :boolean    '(true false)    :integer-signfromboolean      :integer       '(1)
+    :boolean    '(false true)    :boolean->signedint      :integer       '(-1)
+    :boolean    '(true false)    :boolean->signedint      :integer       '(1)
     ;; missing args 
-    :boolean    '()              :integer-signfromboolean      :integer       '()
-    :boolean    '()              :integer-signfromboolean      :boolean       '())
+    :boolean    '()              :boolean->signedint      :integer       '()
+    :boolean    '()              :boolean->signedint      :boolean       '())
 
 
 (tabular
-  (fact ":integer-fromfloat takes a :float value, and truncates it to an :integer"
+  (fact ":float->integer takes a :float value, and truncates it to an :integer"
     (register-type-and-check-instruction
         ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction      ?get-stack     ?expected
     ;; simple     
-    :float    '(0.0)          :integer-fromfloat      :integer       '(0)
-    :float    '(0.1)          :integer-fromfloat      :integer       '(0)
-    :float    '(0.9)          :integer-fromfloat      :integer       '(0)
-    :float    '(22.22)        :integer-fromfloat      :integer       '(22)
+    :float    '(0.0)          :float->integer      :integer       '(0)
+    :float    '(0.1)          :float->integer      :integer       '(0)
+    :float    '(0.9)          :float->integer      :integer       '(0)
+    :float    '(22.22)        :float->integer      :integer       '(22)
     ;; consumes arg
-    :float    '(22.22)        :integer-fromfloat      :float         '()
+    :float    '(22.22)        :float->integer      :float         '()
     ;; edge cases 
-    :float    '(-0.0)         :integer-fromfloat      :integer       '(0)
-    :float    '(-0.1)         :integer-fromfloat      :integer       '(0)
-    :float    '(-22.22)       :integer-fromfloat      :integer       '(-22)
+    :float    '(-0.0)         :float->integer      :integer       '(0)
+    :float    '(-0.1)         :float->integer      :integer       '(0)
+    :float    '(-22.22)       :float->integer      :integer       '(-22)
     ;; range
     :float    '(-22222222222222222222222222222.3333333333M)
-                              :integer-fromfloat      :integer       '(-22222222222222222222222222222N)
+                              :float->integer      :integer       '(-22222222222222222222222222222N)
     ;; missing args 
-    :float    '()             :integer-fromfloat      :integer       '()
-    :float    '()             :integer-fromfloat      :float         '())
+    :float    '()             :float->integer      :integer       '()
+    :float    '()             :float->integer      :float         '())
 
 
 (tabular
-  (fact ":integer-fromstring"
+  (fact ":string->integer"
     (register-type-and-check-instruction
         ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction           ?get-stack     ?expected
 
-    :string     '("123")       :integer-fromstring        :integer       '(123)
-    :string     '("-123")      :integer-fromstring        :integer       '(-123)
-    :string     '("  52")      :integer-fromstring        :integer       '()
-    :string     '("52  ")      :integer-fromstring        :integer       '()
-    :string     '("\t\n52")    :integer-fromstring        :integer       '()
-    :string     '("-52e3")     :integer-fromstring        :integer       '()
-    :string     '("2.3e-4")    :integer-fromstring        :integer       '()
+    :string     '("123")       :string->integer        :integer       '(123)
+    :string     '("-123")      :string->integer        :integer       '(-123)
+    :string     '("  52")      :string->integer        :integer       '()
+    :string     '("52  ")      :string->integer        :integer       '()
+    :string     '("\t\n52")    :string->integer        :integer       '()
+    :string     '("-52e3")     :string->integer        :integer       '()
+    :string     '("2.3e-4")    :string->integer        :integer       '()
 
-    :string     '("foo")       :integer-fromstring        :integer       '()
-    :string     '("1.2.3")     :integer-fromstring        :integer       '()
-    :string     '("1.2 8")     :integer-fromstring        :integer       '()
-    :string     '("1/17")      :integer-fromstring        :integer       '()
-    :string     '("")          :integer-fromstring        :integer       '()
-    :string     '()            :integer-fromstring        :integer       '())
+    :string     '("foo")       :string->integer        :integer       '()
+    :string     '("1.2.3")     :string->integer        :integer       '()
+    :string     '("1.2 8")     :string->integer        :integer       '()
+    :string     '("1/17")      :string->integer        :integer       '()
+    :string     '("")          :string->integer        :integer       '()
+    :string     '()            :string->integer        :integer       '())
 
 
 (tabular
-  (fact ":integer-fromchar takes a :char value, and converts it to an :integer"
+  (fact ":char->integer takes a :char value, and converts it to an :integer"
     (register-type-and-check-instruction
         ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction      ?get-stack     ?expected
     ;; simple     
-    :char    '(\0)           :integer-fromchar      :integer       '(48)
-    :char    '(\r)           :integer-fromchar      :integer       '(114)
-    :char    '(\newline)     :integer-fromchar      :integer       '(10)
-    :char    '(\uF021)       :integer-fromchar      :integer       '(61473)
+    :char    '(\0)           :char->integer      :integer       '(48)
+    :char    '(\r)           :char->integer      :integer       '(114)
+    :char    '(\newline)     :char->integer      :integer       '(10)
+    :char    '(\uF021)       :char->integer      :integer       '(61473)
     ;; consumes arg
-    :char    '(\0)           :integer-fromchar      :char          '()
+    :char    '(\0)           :char->integer      :char          '()
     ;; missing args 
-    :char    '()             :integer-fromchar      :integer       '()
-    :char    '()             :integer-fromchar      :char          '())
+    :char    '()             :char->integer      :integer       '()
+    :char    '()             :char->integer      :char          '())
 
 
 (tabular

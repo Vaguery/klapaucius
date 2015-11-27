@@ -14,26 +14,26 @@
 ;; all the basic conversions
 
 (tabular
-  (fact ":code-fromboolean move the top :boolean item to :code;
-         :code-frominteger
-         :code-fromfloat
-         :code-fromstring
-         :code-fromchar"
+  (fact ":boolean->code move the top :boolean item to :code;
+         :integer->code
+         :float->code
+         :string->code
+         :char->code"
     (register-type-and-check-instruction
         ?set-stack ?items classic-code-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; move it!
-    :boolean    '(false)        :code-fromboolean      :code        '(false)
-    :boolean    '()             :code-fromboolean      :code        '()
-    :char       '(\y)           :code-fromchar         :code        '(\y)
-    :char       '()             :code-fromchar         :code        '()
-    :float      '(0.)           :code-fromfloat        :code        '(0.)
-    :float      '()             :code-fromfloat        :code        '()
-    :integer    '(88)           :code-frominteger      :code        '(88)
-    :integer    '()             :code-frominteger      :code        '()
-    :string     '("88")         :code-fromstring       :code        '("88")    
-    :string     '()             :code-fromstring       :code        '()
+    :boolean    '(false)        :boolean->code      :code        '(false)
+    :boolean    '()             :boolean->code      :code        '()
+    :char       '(\y)           :char->code         :code        '(\y)
+    :char       '()             :char->code         :code        '()
+    :float      '(0.)           :float->code        :code        '(0.)
+    :float      '()             :float->code        :code        '()
+    :integer    '(88)           :integer->code      :code        '(88)
+    :integer    '()             :integer->code      :code        '()
+    :string     '("88")         :string->code       :code        '("88")    
+    :string     '()             :string->code       :code        '()
     )
 
 

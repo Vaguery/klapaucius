@@ -16,7 +16,7 @@
   "returns a standard arity-1 function, which moves the string representation of the top item from the named stack to the :string stack"
   [type]
   (let [stackname (keyword type)
-        instruction-name (str "string-from" (name stackname))]
+        instruction-name (str (name stackname) "->string" )]
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name

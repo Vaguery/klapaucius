@@ -77,50 +77,50 @@
 ;; conversion
 
 
-(def integer-fromboolean
+(def boolean->integer
   (core/build-instruction
-    integer-fromboolean
-    "`:integer-fromboolean` pops the top `:boolean`. If it's `true`, it pushes 1; if `false`, it pushes 0."
+    boolean->integer
+    "`:boolean->integer` pops the top `:boolean`. If it's `true`, it pushes 1; if `false`, it pushes 0."
     :tags #{:base :conversion}
     (d/consume-top-of :boolean :as :arg1)
     (d/calculate [:arg1] #(if %1 1 0) :as :logic)
     (d/push-onto :integer :logic)))
 
 
-(def integer-signfromboolean
+(def boolean->signedint
   (core/build-instruction
-    integer-signfromboolean
-    "`:integer-signfromboolean` pops the top `:boolean`. If it's `true`, it pushes 1; if `false`, it pushes -1."
+    boolean->signedint
+    "`:boolean->signedint` pops the top `:boolean`. If it's `true`, it pushes 1; if `false`, it pushes -1."
     :tags #{:base :conversion}
     (d/consume-top-of :boolean :as :arg1)
     (d/calculate [:arg1] #(if %1 1 -1) :as :logic)
     (d/push-onto :integer :logic)))
 
 
-(def integer-fromfloat
+(def float->integer
   (core/build-instruction
-    integer-fromfloat
-    "`:integer-fromfloat` pops the top `:float` item, and converts it to an `:integer` value (using CLojure's `bigint` function)"
+    float->integer
+    "`:float->integer` pops the top `:float` item, and converts it to an `:integer` value (using CLojure's `bigint` function)"
     :tags #{:numeric :base :conversion}
     (d/consume-top-of :float :as :arg1)
     (d/calculate [:arg1] #(bigint %1) :as :int)
     (d/push-onto :integer :int)))
 
 
-(def integer-fromchar
+(def char->integer
   (core/build-instruction
-    integer-fromchar
-    "`:integer-fromchar` pops the top `:char` item, and converts it to an (integer) index"
+    char->integer
+    "`:char->integer` pops the top `:char` item, and converts it to an (integer) index"
     :tags #{:base :conversion}
     (d/consume-top-of :char :as :arg1)
     (d/calculate [:arg1] #(long %1) :as :int)
     (d/push-onto :integer :int)))
 
 
-(def integer-fromstring
+(def string->integer
   (core/build-instruction
-    integer-fromstring
-    "`:integer-fromstring` pops the top `:string` item, and applies `Long/parseLong` to attempt to convert it to a fixed-point value. If successful (that is, if no exception is raised), the result is pushed to `:integer`"
+    string->integer
+    "`:string->integer` pops the top `:string` item, and applies `Long/parseLong` to attempt to convert it to a fixed-point value. If successful (that is, if no exception is raised), the result is pushed to `:integer`"
     :tags #{:conversion :base :numeric}
     (d/consume-top-of :string :as :arg)
     (d/calculate [:arg] 
@@ -143,15 +143,15 @@
         (t/attach-instruction , integer-add)
         (t/attach-instruction , integer-dec)
         (t/attach-instruction , integer-divide)
-        (t/attach-instruction , integer-fromboolean)
-        (t/attach-instruction , integer-fromchar)
-        (t/attach-instruction , integer-fromfloat)
-        (t/attach-instruction , integer-fromstring)
+        (t/attach-instruction , boolean->integer)
+        (t/attach-instruction , char->integer)
+        (t/attach-instruction , float->integer)
+        (t/attach-instruction , string->integer)
         (t/attach-instruction , integer-inc)
         (t/attach-instruction , integer-mod)
         (t/attach-instruction , integer-multiply)
         (t/attach-instruction , integer-sign)
-        (t/attach-instruction , integer-signfromboolean)
+        (t/attach-instruction , boolean->signedint)
         (t/attach-instruction , integer-subtract)
         ))
 

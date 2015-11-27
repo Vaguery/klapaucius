@@ -40,40 +40,40 @@
     (d/push-these-onto :float [:replacement :quotient])))
 
 
-(def float-fromboolean
+(def boolean->float
   (core/build-instruction
-    float-fromboolean
-    "`:float-fromboolean` pops the top `:boolean` value; if it is `true`, it pushes 1.0, and if `false` it pushes `0.0`"
+    boolean->float
+    "`:boolean->float` pops the top `:boolean` value; if it is `true`, it pushes 1.0, and if `false` it pushes `0.0`"
     :tags #{:conversion :base :numeric}
     (d/consume-top-of :boolean :as :arg)
     (d/calculate [:arg] #(if %1 1.0 0.0) :as :result)
     (d/push-onto :float :result)))
 
 
-(def float-fromchar
+(def char->float
   (core/build-instruction
-    float-fromchar
-    "`:float-fromchar` pops the top `:char`, converts this to an integer, and pushes that value typecast to a `:float`"
+    char->float
+    "`:char->float` pops the top `:char`, converts this to an integer, and pushes that value typecast to a `:float`"
     :tags #{:conversion :base :numeric}
     (d/consume-top-of :char :as :arg)
     (d/calculate [:arg] #(double (long %1)) :as :result)
     (d/push-onto :float :result)))
 
 
-(def float-frominteger
+(def integer->float
   (core/build-instruction
-    float-frominteger
-    "`:float-frominteger` pops the top `:integer`, and typecasts it to a (double) `:float` value"
+    integer->float
+    "`:integer->float` pops the top `:integer`, and typecasts it to a (double) `:float` value"
     :tags #{:conversion :base :numeric}
     (d/consume-top-of :integer :as :arg)
     (d/calculate [:arg] #(double %1) :as :result)
     (d/push-onto :float :result)))
 
 
-(def float-fromstring
+(def string->float
   (core/build-instruction
-    float-fromstring
-    "`:float-fromstring` pops the top `:string` item, and applies `Double/parseDouble` to attempt to convert it to a floating-point value. If successful (that is, if no exception is raised), the result is pushed to `:float`"
+    string->float
+    "`:string->float` pops the top `:string` item, and applies `Double/parseDouble` to attempt to convert it to a floating-point value. If successful (that is, if no exception is raised), the result is pushed to `:float`"
     :tags #{:conversion :base :numeric}
     (d/consume-top-of :string :as :arg)
     (d/calculate [:arg] 
@@ -82,10 +82,10 @@
     (d/push-onto :float :result)))
 
 
-(def float-signfromboolean
+(def boolean->signedfloat
   (core/build-instruction
-    float-signfromboolean
-    "`:float-signfromboolean` pops the top `:boolean` value; if it is `true`, it pushes 1.0, and if `false` it pushes `-1.0`"
+    boolean->signedfloat
+    "`:boolean->signedfloat` pops the top `:boolean` value; if it is `true`, it pushes 1.0, and if `false` it pushes `-1.0`"
     :tags #{:conversion :base :numeric}
     (d/consume-top-of :boolean :as :arg)
     (d/calculate [:arg] #(if %1 1.0 -1.0) :as :result)
@@ -150,16 +150,16 @@
         (t/attach-instruction , float-cosine)
         (t/attach-instruction , float-dec)
         (t/attach-instruction , float-divide)
-        (t/attach-instruction , float-fromboolean)
-        (t/attach-instruction , float-fromchar)
-        (t/attach-instruction , float-frominteger)
-        (t/attach-instruction , float-fromstring)
+        (t/attach-instruction , boolean->float)
+        (t/attach-instruction , char->float)
+        (t/attach-instruction , integer->float)
+        (t/attach-instruction , string->float)
         (t/attach-instruction , float-inc)
         (t/attach-instruction , float-mod)
         (t/attach-instruction , float-multiply)
         (t/attach-instruction , float-sine)
         (t/attach-instruction , float-sign)
-        (t/attach-instruction , float-signfromboolean)
+        (t/attach-instruction , boolean->signedfloat)
         (t/attach-instruction , float-subtract)
         (t/attach-instruction , float-tangent)
         ))
