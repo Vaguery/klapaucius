@@ -2,11 +2,11 @@
   (:require [push.instructions.core :as core])
   (:require [push.types.core :as t])
   (:require [push.instructions.dsl :as d])
-  (:require [push.instructions.modules.print :as print])
+  (:use push.instructions.aspects.comparable)
   (:use push.instructions.aspects.equatable)
   (:use push.instructions.aspects.movable)
+  (:use push.instructions.aspects.printable)
   (:use push.instructions.aspects.returnable)
-  (:use push.instructions.aspects.comparable)
   (:use push.instructions.aspects.visible)
   )
 
@@ -144,7 +144,7 @@
         make-equatable
         make-comparable
         make-movable
-        print/make-printable
+        make-printable
         make-returnable
         (t/attach-instruction , float-add)
         (t/attach-instruction , float-cosine)

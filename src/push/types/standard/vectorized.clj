@@ -2,9 +2,9 @@
   (:require [push.instructions.core :as core])
   (:require [push.types.core :as t])
   (:require [push.instructions.dsl])
-  (:require [push.instructions.modules.print :as print])
   (:use push.instructions.aspects.equatable)
   (:use push.instructions.aspects.movable)
+  (:use push.instructions.aspects.printable)
   (:use push.instructions.aspects.returnable)
   (:use push.instructions.aspects.visible)
   (:require [push.util.code-wrangling :as fix])
@@ -388,7 +388,7 @@
           make-visible
           make-equatable
           make-movable
-          print/make-printable
+          make-printable
           make-returnable
           (t/attach-instruction , (x-butlast-instruction typename))
           (t/attach-instruction , (x-concat-instruction typename))

@@ -3,7 +3,8 @@
   (:use [push.util.test-helpers])
   (:require [push.interpreter.core :as i])
   (:require [push.types.core :as t])
-  (:use [push.instructions.modules.print])            ;; sets up classic-print-module
+  (use push.instructions.aspects.printable)
+  (:use push.instructions.modules.print) 
   )
 
 

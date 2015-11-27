@@ -4,11 +4,11 @@
   (:require [push.instructions.dsl :as d])
   (:require [push.util.stack-manipulation :as u])
   (:require [push.util.code-wrangling :as fix])
-  (:require [push.instructions.modules.print :as print])
+  (:use push.instructions.aspects.comparable)
   (:use push.instructions.aspects.equatable)
   (:use push.instructions.aspects.movable)
+  (:use push.instructions.aspects.printable)
   (:use push.instructions.aspects.returnable)
-  (:use push.instructions.aspects.comparable)
   (:use push.instructions.aspects.visible)
   )
 
@@ -102,7 +102,7 @@
         make-equatable
         make-comparable
         make-movable
-        print/make-printable
+        make-printable
         make-returnable
         (t/attach-instruction , char-allfromstring)
         (t/attach-instruction , char-letter?)

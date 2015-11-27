@@ -2,9 +2,9 @@
   (:require [push.instructions.core :as core])
   (:require [push.types.core :as t])
   (:require [push.instructions.dsl :as d])
-  (:require [push.instructions.modules.print :as print])
   (:use push.instructions.aspects.equatable)
   (:use push.instructions.aspects.movable)
+  (:use push.instructions.aspects.printable)
   (:use push.instructions.aspects.returnable)
   (:use push.instructions.aspects.visible)
   (:use [push.util.type-checkers :only (boolean?)])
@@ -86,7 +86,7 @@
         make-visible 
         make-equatable
         make-movable
-        print/make-printable
+        make-printable
         make-returnable
         (t/attach-instruction , bool-and)
         (t/attach-instruction , boolean-frominteger)

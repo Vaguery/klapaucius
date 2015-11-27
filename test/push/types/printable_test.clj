@@ -3,6 +3,7 @@
   (:use push.util.stack-manipulation)
   (:require [push.interpreter.core :as i])
   (:use push.types.core)
+  (:use push.instructions.aspects.printable)
   (:use push.instructions.modules.print)
   )
 

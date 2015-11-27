@@ -6,21 +6,6 @@
   )
 
 
-(defn print-instruction
-  "returns a new x-print instruction for a PushType"
-  [pushtype]
-  (let [typename (:name pushtype)
-        instruction-name (str (name typename) "-print")]
-    (eval (list
-      'push.instructions.core/build-instruction
-      instruction-name
-      (str "`:" instruction-name "` pops the top `" typename
-        "` item and pushes it to the `:print` stack.")
-      :tags #{:io}
-      `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
-      `(push.instructions.dsl/push-onto :print :arg1)))))
-
-
 (def print-newline
   (core/build-instruction
     print-newline
@@ -37,15 +22,6 @@
     :tags #{:print :io :base}
     (d/calculate [] (fn [] \space) :as :space)
     (d/push-onto :print :space)))
-
-
-(defn make-printable
-  "takes a PushType and adds the :printable attribute and the `:print-X` instruction"
-  [pushtype]
-  (-> pushtype
-      (t/attach-instruction (print-instruction pushtype))
-      (assoc :attributes (conj (:attributes pushtype) :printable))))
-
 
 
 (def classic-print-module
