@@ -2,7 +2,7 @@
   (:use midje.sweet)
   (:use [push.util.test-helpers])
   (:require [push.interpreter.core :as i])
-  (:use [push.instructions.modules.code])            ;; sets up classic-code-module
+  (:use [push.types.modules.code])            ;; sets up classic-code-module
   )
 
 

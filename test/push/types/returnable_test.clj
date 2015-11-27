@@ -4,7 +4,7 @@
   (:require [push.interpreter.core :as i])
   (:use push.types.core)
   (:use push.instructions.aspects.returnable)
-  (:use push.instructions.modules.environment)
+  (:use push.types.modules.environment)
   )
 
 

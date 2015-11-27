@@ -1,4 +1,4 @@
-(ns push.instructions.modules.error
+(ns push.types.modules.error
   (:require [push.instructions.core :as core])
   (:require [push.types.core :as t])
   (:require [push.instructions.dsl :as d])

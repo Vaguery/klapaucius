@@ -3,7 +3,7 @@
   (:use [push.util.test-helpers])
   (:require [push.interpreter.core :as i])
   (:require [push.util.stack-manipulation :as u])
-  (:use [push.instructions.modules.environment])
+  (:use [push.types.modules.environment])
   )
 
 

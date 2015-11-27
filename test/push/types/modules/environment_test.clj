@@ -1,7 +1,7 @@
-(ns push.instructions.modules.environment_test
+(ns push.types.modules.environment_test
   (:use midje.sweet)
   (:use [push.util.test-helpers])
-  (:use [push.instructions.modules.environment])
+  (:use [push.types.modules.environment])
   )
 
 

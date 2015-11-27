@@ -4,7 +4,7 @@
   (:require [push.interpreter.core :as i])
   (:require [push.types.core :as t])
   (use push.instructions.aspects.printable)
-  (:use push.instructions.modules.print) 
+  (:use push.types.modules.print) 
   )
 
 

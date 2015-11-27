@@ -2,15 +2,15 @@
   (:require [push.util.stack-manipulation :as u])
   (:require [push.types.base.boolean])
   (:require [push.types.base.char])
-  (:require [push.instructions.modules.code])
-  (:require [push.instructions.modules.exec])
+  (:require [push.types.modules.code])
+  (:require [push.types.modules.exec])
   (:require [push.types.base.float])
   (:require [push.types.base.integer])
   (:require [push.types.base.string])
-  (:require [push.instructions.modules.environment])
-  (:require [push.instructions.modules.print])
-  (:require [push.instructions.modules.log])
-  (:require [push.instructions.modules.error])
+  (:require [push.types.modules.environment])
+  (:require [push.types.modules.print])
+  (:require [push.types.modules.log])
+  (:require [push.types.modules.error])
   (:require [push.util.exceptions :as oops])
   (:use [push.util.type-checkers])
   )
@@ -240,12 +240,12 @@
                          push.types.base.float/classic-float-type
                          push.types.base.string/classic-string-type
                          ])
-        (register-modules [push.instructions.modules.exec/classic-exec-module
-                           push.instructions.modules.log/classic-log-module
-                           push.instructions.modules.error/classic-error-module
-                           push.instructions.modules.code/classic-code-module
-                           push.instructions.modules.environment/classic-environment-module
-                           push.instructions.modules.print/classic-print-module])
+        (register-modules [push.types.modules.exec/classic-exec-module
+                           push.types.modules.log/classic-log-module
+                           push.types.modules.error/classic-error-module
+                           push.types.modules.code/classic-code-module
+                           push.types.modules.environment/classic-environment-module
+                           push.types.modules.print/classic-print-module])
         (register-inputs inputs)
         )))
 
