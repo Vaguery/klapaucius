@@ -2,6 +2,7 @@
   (:use midje.sweet)
   (:use push.util.stack-manipulation)
   (:require [push.interpreter.core :as i])
+  (:use [push.instructions.aspects.visible])
   (:use push.types.core)
   )
 

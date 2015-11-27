@@ -4,6 +4,7 @@
   (:require [push.instructions.dsl :as d])
   (:require [push.interpreter.core :as i])
   (:require [push.types.core :as t])
+  (:use [push.instructions.aspects.visible])
   (:use [push.instructions.core])
   )
 
@@ -118,12 +119,12 @@
 
 
 (fact "a generated stackdepth-instruction has a reasonable docstring"
-  (:docstring (t/stackdepth-instruction i-know-foo)) =>
+  (:docstring (stackdepth-instruction i-know-foo)) =>
     "`:foo-stackdepth` pushes an `:integer` which is the number of items in the `:foo` stack.")
 
 
 (fact "a generated empty?-instruction has a reasonable docstring"
-  (:docstring (t/empty?-instruction i-know-foo)) =>
+  (:docstring (empty?-instruction i-know-foo)) =>
     "`:foo-empty?` pushes a `:boolean`, `true` if the `:foo` stack is empty, `false` otherwise.")
 
 
