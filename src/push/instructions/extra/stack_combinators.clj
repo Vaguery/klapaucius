@@ -78,7 +78,7 @@
       :tags #{:combinator}
       `(push.instructions.dsl/consume-stack ~typename :as :old)
       `(push.instructions.dsl/calculate [:old]
-        #(reduce concat '() (double-items %1)) :as :new)
+        #(into '() (reverse (reduce concat '() (double-items %1)))) :as :new)
       `(push.instructions.dsl/replace-stack ~typename :new)))))
 
 
