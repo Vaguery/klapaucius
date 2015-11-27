@@ -1,4 +1,4 @@
-(ns push.types.equatable-test
+(ns push.instructions.aspects.equatable-test
   (:use midje.sweet)
   (:use push.util.stack-manipulation)
   (:require [push.interpreter.core :as i])

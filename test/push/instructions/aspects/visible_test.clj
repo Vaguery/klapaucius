@@ -1,4 +1,4 @@
-(ns push.types.visible-test
+(ns push.instructions.aspects.visible-test
   (:use midje.sweet)
   (:use push.util.stack-manipulation)
   (:require [push.interpreter.core :as i])

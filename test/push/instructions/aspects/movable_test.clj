@@ -1,4 +1,4 @@
-(ns push.types.movable-test
+(ns push.instructions.aspects.movable-test
   (:use midje.sweet)
   (:use push.util.stack-manipulation)
   (:require [push.interpreter.core :as i])

@@ -1,4 +1,4 @@
-(ns push.types.returnable-test
+(ns push.instructions.aspects.returnable-test
   (:use midje.sweet)
   (:use push.util.stack-manipulation)
   (:require [push.interpreter.core :as i])
