@@ -123,6 +123,9 @@
 
 
 
+(def huge-list (repeat 131070 1))
+
+
 (tabular
   (fact "`foo-liftstack` takes an :integer, divides the stack into two parts at that index (measured from the top), and puts the top segment at the bottom"
     (check-instruction-with-all-kinds-of-stack-stuff
@@ -156,6 +159,11 @@
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foo      '(2 3 4)
      :integer  '()}              :foo-liftstack      {:foo    '(2 3 4)
+                                                     :integer '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;; oversized does nothing
+    {:foo      huge-list
+     :integer  '(12000)}         :foo-liftstack      {:foo    huge-list
                                                      :integer '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
