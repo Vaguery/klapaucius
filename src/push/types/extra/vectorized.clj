@@ -134,6 +134,19 @@
       `(push.instructions.dsl/push-onto ~rootname :top)))))
 
 
+(defn x-generalize-instruction
+  [typename]
+  (let [instruction-name (str (name typename) "-generalize")]
+    (eval (list
+      'push.instructions.core/build-instruction
+      instruction-name
+      (str "`" typename "-generalize` pops the top `" typename "` item, and pushes it onto the `:vector` stack.")
+      :tags #{:vector}
+      `(push.instructions.dsl/consume-top-of ~typename :as :arg)
+      `(push.instructions.dsl/push-onto :vector :arg)))))
+
+
+
 (defn x-indexof-instruction
   [typename rootname]
   (let [instruction-name (str (name typename) "-indexof")]
@@ -396,6 +409,7 @@
           (t/attach-instruction , (x-contains?-instruction typename rootname))
           (t/attach-instruction , (x-do*each-instruction typename))
           (t/attach-instruction , (x-emptyitem?-instruction typename))
+          (t/attach-instruction , (x-generalize-instruction typename))
           (t/attach-instruction , (x-first-instruction typename rootname))
           (t/attach-instruction , (x-indexof-instruction typename rootname))
           (t/attach-instruction , (x-last-instruction typename rootname))

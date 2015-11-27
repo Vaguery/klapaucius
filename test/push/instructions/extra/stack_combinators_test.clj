@@ -127,7 +127,7 @@
 
 
 (tabular
-  (fact "`foo-liftstack` takes an :integer, divides the stack into two parts at that index (measured from the top), and puts the top segment at the bottom"
+  (future-fact "`foo-liftstack` takes an :integer, divides the stack into two parts at that index (measured from the top), and puts the top segment at the bottom"
     (check-instruction-with-all-kinds-of-stack-stuff
         ?new-stacks foo-type ?instruction) => (contains ?expected))
 

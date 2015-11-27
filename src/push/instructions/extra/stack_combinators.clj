@@ -93,7 +93,7 @@
       (t/attach-instruction (flipstack-instruction pushtype))
       (t/attach-instruction (cutflip-instruction pushtype))
       (t/attach-instruction (cutstack-instruction pushtype))
-      (t/attach-instruction (liftstack-instruction pushtype))
+      ; (t/attach-instruction (liftstack-instruction pushtype))
       ))
 
 
