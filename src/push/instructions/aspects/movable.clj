@@ -1,6 +1,7 @@
 (ns push.instructions.aspects.movable
   (:require [push.instructions.core :as core])
   (:require [push.instructions.dsl :as dsl])
+  (:require [push.types.core :as t])
   )
 
 
@@ -131,3 +132,23 @@
       `(push.instructions.dsl/save-nth-of ~typename :at :index :as :yanked-item)
       `(push.instructions.dsl/push-onto ~typename :yanked-item)))))
 
+
+;;;;;;;;;;;;;;;;
+
+
+(defn make-movable
+  "takes a PushType and adds the :movable attribute, and the
+  :pushtype-dup, :pushtype-flush, :pushtype-pop, :pushtype-rotate,
+  :pushtype-shove, :pushtype-swap, :pushtype-yank and
+  :pushtype-yankdup instructions to its :instructions collection"
+  [pushtype]
+  (-> pushtype
+      (t/attach-instruction (dup-instruction pushtype))
+      (t/attach-instruction (flush-instruction pushtype))
+      (t/attach-instruction (pop-instruction pushtype))
+      (t/attach-instruction (rotate-instruction pushtype))
+      (t/attach-instruction (shove-instruction pushtype))
+      (t/attach-instruction (swap-instruction pushtype))
+      (t/attach-instruction (yank-instruction pushtype))
+      (t/attach-instruction (yankdup-instruction pushtype))
+      (assoc :attributes (conj (:attributes pushtype) :movable))))

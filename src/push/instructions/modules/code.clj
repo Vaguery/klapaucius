@@ -5,7 +5,10 @@
   (:require [push.util.stack-manipulation :as stacks])
   (:require [push.util.code-wrangling :as u])
   (:require [push.instructions.modules.print :as print])
-  (:require [push.instructions.modules.environment :as env])
+  (:use push.instructions.aspects.movable)
+  (:use push.instructions.aspects.returnable)
+  (:use push.instructions.aspects.equatable)
+  (:use push.instructions.aspects.visible)
   )
 
 
@@ -426,10 +429,11 @@
 (def classic-code-module
   ( ->  (t/make-module  :code
                         :attributes #{:complex :base})
-        t/make-visible 
-        t/make-equatable
-        t/make-movable
+        make-visible 
+        make-equatable
+        make-movable
         print/make-printable
+        make-returnable
         (t/attach-instruction , code-append)
         (t/attach-instruction , code-atom?)
         (t/attach-instruction , code-cons)

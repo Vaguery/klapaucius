@@ -1,6 +1,7 @@
 (ns push.instructions.aspects.equatable
   (:require [push.instructions.core :as core])
   (:require [push.instructions.dsl :as dsl])
+  (:require [push.types.core :as t])
   )
 
 
@@ -36,3 +37,20 @@
       `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
       '(push.instructions.dsl/calculate [:arg1 :arg2] #(not= %1 %2) :as :check)
       '(push.instructions.dsl/push-onto :boolean :check)))))
+
+
+
+;;;;;;;;;;;;;;;;;;;;
+
+
+
+(defn make-equatable
+  "takes a PushType and adds the :equatable attribute, and the
+  :pushtype-equal? and :pushtype-notequal? instructions to its
+  :instructions collection"
+  [pushtype]
+  (-> pushtype
+      (t/attach-instruction (equal?-instruction pushtype))
+      (t/attach-instruction (notequal?-instruction pushtype))
+      (assoc :attributes (conj (:attributes pushtype) :equatable))))
+

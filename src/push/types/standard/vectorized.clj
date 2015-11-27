@@ -3,7 +3,10 @@
   (:require [push.types.core :as t])
   (:require [push.instructions.dsl])
   (:require [push.instructions.modules.print :as print])
-  (:require [push.instructions.modules.environment :as env])
+  (:use push.instructions.aspects.equatable)
+  (:use push.instructions.aspects.movable)
+  (:use push.instructions.aspects.returnable)
+  (:use push.instructions.aspects.visible)
   (:require [push.util.code-wrangling :as fix])
   )
 
@@ -382,11 +385,11 @@
     ( ->  (t/make-type  typename
                         :recognizer #(vector-of-type? % content-type)
                         :attributes #{:vector})
-          t/make-visible
-          t/make-equatable
-          t/make-movable
+          make-visible
+          make-equatable
+          make-movable
           print/make-printable
-          env/make-returnable
+          make-returnable
           (t/attach-instruction , (x-butlast-instruction typename))
           (t/attach-instruction , (x-concat-instruction typename))
           (t/attach-instruction , (x-conj-instruction typename rootname))

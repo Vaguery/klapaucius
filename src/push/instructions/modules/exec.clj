@@ -3,7 +3,10 @@
   (:require [push.types.core :as t])
   (:require [push.instructions.dsl :as d])
   (:require [push.instructions.modules.print :as print])
-  (:require [push.instructions.modules.environment :as env])  
+  (:use push.instructions.aspects.movable)
+  (:use push.instructions.aspects.returnable)
+  (:use push.instructions.aspects.equatable)
+  (:use push.instructions.aspects.visible)
   )
 
 
@@ -172,11 +175,11 @@
 (def classic-exec-module
   ( ->  (t/make-module  :exec
                         :attributes #{:complex :base})
-        t/make-visible 
-        t/make-equatable
-        t/make-movable
+        make-visible 
+        make-equatable
+        make-movable
         print/make-printable
-        env/make-returnable
+        make-returnable
         (t/attach-instruction , exec-do*count)
         (t/attach-instruction , exec-do*range)
         (t/attach-instruction , exec-do*times)

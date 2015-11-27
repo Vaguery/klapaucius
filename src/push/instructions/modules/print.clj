@@ -2,6 +2,7 @@
   (:require [push.instructions.core :as core])
   (:require [push.types.core :as t])
   (:require [push.instructions.dsl :as d])
+  (:use push.instructions.aspects.visible)
   )
 
 
@@ -47,13 +48,10 @@
 
 
 
-; print_space
-
-
 (def classic-print-module
   ( ->  (t/make-module  :print
                         :attributes #{:io :base})
-        t/make-visible
+        make-visible
         (t/attach-instruction print-newline)
         (t/attach-instruction print-space)
         ))

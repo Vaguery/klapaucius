@@ -5,7 +5,11 @@
   (:require [push.util.stack-manipulation :as u])
   (:require [push.util.code-wrangling :as fix])
   (:require [push.instructions.modules.print :as print])
-  (:require [push.instructions.modules.environment :as env])
+  (:use push.instructions.aspects.equatable)
+  (:use push.instructions.aspects.movable)
+  (:use push.instructions.aspects.returnable)
+  (:use push.instructions.aspects.comparable)
+  (:use push.instructions.aspects.visible)
   )
 
 
@@ -94,12 +98,12 @@
   ( ->  (t/make-type  :char
                       :recognizer char?
                       :attributes #{:string})
-        t/make-visible 
-        t/make-equatable
-        t/make-comparable
-        t/make-movable
+        make-visible 
+        make-equatable
+        make-comparable
+        make-movable
         print/make-printable
-        env/make-returnable
+        make-returnable
         (t/attach-instruction , char-allfromstring)
         (t/attach-instruction , char-letter?)
         (t/attach-instruction , char-digit?)

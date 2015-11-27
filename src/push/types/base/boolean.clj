@@ -3,7 +3,10 @@
   (:require [push.types.core :as t])
   (:require [push.instructions.dsl :as d])
   (:require [push.instructions.modules.print :as print])
-  (:require [push.instructions.modules.environment :as env])
+  (:use push.instructions.aspects.equatable)
+  (:use push.instructions.aspects.movable)
+  (:use push.instructions.aspects.returnable)
+  (:use push.instructions.aspects.visible)
   (:use [push.util.type-checkers :only (boolean?)])
   )
 
@@ -80,11 +83,11 @@
   ( ->  (t/make-type  :boolean
                       :recognizer boolean?
                       :attributes #{:logical})
-        t/make-visible 
-        t/make-equatable
-        t/make-movable
+        make-visible 
+        make-equatable
+        make-movable
         print/make-printable
-        env/make-returnable
+        make-returnable
         (t/attach-instruction , bool-and)
         (t/attach-instruction , boolean-frominteger)
         (t/attach-instruction , boolean-fromintsign)

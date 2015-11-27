@@ -1,6 +1,7 @@
 (ns push.instructions.aspects.visible
   (:require [push.instructions.core :as core])
   (:require [push.instructions.dsl :as dsl])
+  (:require [push.types.core :as t])
   )
 
 
@@ -33,4 +34,20 @@
       `(push.instructions.dsl/count-of ~typename :as :depth)
       '(push.instructions.dsl/calculate [:depth] #(zero? %1) :as :check)
       '(push.instructions.dsl/push-onto :boolean :check)))))
+
+
+
+;;;;;;;;;;;;;;;;;;
+
+
+
+(defn make-visible
+  "takes a PushType and adds the :visible attribute, and the
+  :pushtype-stackdepth and :pushtype-empty? instructions to its
+  :instructions collection"
+  [pushtype]
+  (-> pushtype
+      (t/attach-instruction (stackdepth-instruction pushtype))
+      (t/attach-instruction (empty?-instruction pushtype))
+      (assoc :attributes (conj (:attributes pushtype) :visible))))
 

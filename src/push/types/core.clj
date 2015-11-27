@@ -1,10 +1,6 @@
 (ns push.types.core
   (:require [push.instructions.core :as core])
   (:require [push.instructions.dsl :as dsl])
-  (:use [push.instructions.aspects.visible])
-  (:use [push.instructions.aspects.equatable])
-  (:use [push.instructions.aspects.comparable])
-  (:use [push.instructions.aspects.movable])
   )
 
 
@@ -124,69 +120,3 @@
       `(d/consume-top-of ~stackname :as :arg)
       '(d/push-onto :code :arg)))))
 
-
-;; visible
-
-
-(defn make-visible
-  "takes a PushType and adds the :visible attribute, and the
-  :pushtype-stackdepth and :pushtype-empty? instructions to its
-  :instructions collection"
-  [pushtype]
-  (-> pushtype
-      (attach-instruction (stackdepth-instruction pushtype))
-      (attach-instruction (empty?-instruction pushtype))
-      (assoc :attributes (conj (:attributes pushtype) :visible))))
-
-
-;; :equatable
-
-
-(defn make-equatable
-  "takes a PushType and adds the :equatable attribute, and the
-  :pushtype-equal? and :pushtype-notequal? instructions to its
-  :instructions collection"
-  [pushtype]
-  (-> pushtype
-      (attach-instruction (equal?-instruction pushtype))
-      (attach-instruction (notequal?-instruction pushtype))
-      (assoc :attributes (conj (:attributes pushtype) :equatable))))
-
-
-;; comparable
-
-
-(defn make-comparable
-  "takes a PushType and adds the :comparable attribute, and the
-  :pushtype>?, :pushtype≥?, :pushtype<?, :pushtype≤?, :pushtype-min and
-  :pushtype-max instructions to its :instructions collection"
-  [pushtype]
-  (-> pushtype
-      (attach-instruction (lessthan?-instruction pushtype))
-      (attach-instruction (lessthanorequal?-instruction pushtype))
-      (attach-instruction (greaterthan?-instruction pushtype))
-      (attach-instruction (greaterthanorequal?-instruction pushtype))
-      (attach-instruction (min-instruction pushtype))
-      (attach-instruction (max-instruction pushtype))
-      (assoc :attributes (conj (:attributes pushtype) :comparable))))
-
-
-;; movable
-
-
-(defn make-movable
-  "takes a PushType and adds the :movable attribute, and the
-  :pushtype-dup, :pushtype-flush, :pushtype-pop, :pushtype-rotate,
-  :pushtype-shove, :pushtype-swap, :pushtype-yank and
-  :pushtype-yankdup instructions to its :instructions collection"
-  [pushtype]
-  (-> pushtype
-      (attach-instruction (dup-instruction pushtype))
-      (attach-instruction (flush-instruction pushtype))
-      (attach-instruction (pop-instruction pushtype))
-      (attach-instruction (rotate-instruction pushtype))
-      (attach-instruction (shove-instruction pushtype))
-      (attach-instruction (swap-instruction pushtype))
-      (attach-instruction (yank-instruction pushtype))
-      (attach-instruction (yankdup-instruction pushtype))
-      (assoc :attributes (conj (:attributes pushtype) :movable))))

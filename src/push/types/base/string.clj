@@ -4,7 +4,11 @@
   (:require [push.instructions.dsl :as d])
   (:require [clojure.string :as strings])
   (:require [push.instructions.modules.print :as print])
-  (:require [push.instructions.modules.environment :as env])
+  (:use push.instructions.aspects.equatable)
+  (:use push.instructions.aspects.movable)
+  (:use push.instructions.aspects.returnable)
+  (:use push.instructions.aspects.comparable)
+  (:use push.instructions.aspects.visible)
   )
 
 
@@ -356,12 +360,12 @@
   ( ->  (t/make-type  :string
                       :recognizer string?
                       :attributes #{:string :base})
-        t/make-visible 
-        t/make-equatable
-        t/make-comparable
-        t/make-movable
+        make-visible 
+        make-equatable
+        make-comparable
+        make-movable
         print/make-printable
-        env/make-returnable
+        make-returnable
         (t/attach-instruction , exec-string-iterate)
         (t/attach-instruction , string-butlast)
         (t/attach-instruction , string-concat)
