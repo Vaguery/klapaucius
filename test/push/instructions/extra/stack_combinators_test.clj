@@ -55,22 +55,6 @@
 
 
 (tabular
-  (fact ":foo-double doubles each item in the :foo stack"
-    (register-type-and-check-instruction
-        ?set-stack ?items foo-type ?instruction ?get-stack) => ?expected)
-
-    ?set-stack  ?items     ?instruction  ?get-stack    ?expected
-    :foo       '(1 2 3)    :foo-double   :foo         '(1 1 2 2 3 3)
-    :foo       '(21)       :foo-double   :foo         '(21 21)
-    :foo       '([1 2] [3 4])
-                           :foo-double   :foo         '([1 2] [1 2]
-                                                        [3 4] [3 4])
-    ;; missing args
-    :foo       '()         :foo-double   :foo         '())
-
-
-
-(tabular
   (fact "`foo-cutstack` takes an :integer, divides the stack into two parts at that index (measured from the top), and puts the top segment at the bottom"
     (check-instruction-with-all-kinds-of-stack-stuff
         ?new-stacks foo-type ?instruction) => (contains ?expected))
