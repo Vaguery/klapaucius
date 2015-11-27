@@ -147,11 +147,11 @@
 (fact "I can create and step through 10000 random programs without an exception"
   :slow :acceptance
   (do (println "creating and running 10000 random programs")
-      (dotimes [n 100000] 
+      (dotimes [n 10000] 
         (let [rando (assoc-in (reset-interpreter (random-program-interpreter 10 200))
                       [:config :step-limit] 5000)] 
           (try
-            (timeout 10000 #(do
+            (timeout 120000 #(do
               ; (println (str "\n\n" n " : " (pr-str (:program rando)) "\n" (pr-str (:inputs rando))))
               (loop [s rando]
                 (if (is-done? s)
