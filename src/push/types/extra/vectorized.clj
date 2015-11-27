@@ -134,6 +134,29 @@
       `(push.instructions.dsl/push-onto ~rootname :top)))))
 
 
+
+(defn x-fromexample-instruction
+  [typename rootname]
+  (let [instruction-name (str (name typename) "-fromexample")]
+    (eval (list
+      'push.instructions.core/build-instruction
+      instruction-name
+      (str "`" typename "-fromexample` pops the top `" typename "` item and takes an equal number of items from `" rootname "` to build a new vector of the same type. Both vectors are pushed back onto `" typename "`, newest on top. If there aren't enough items on `" rootname "`, the template vector is replaced.")
+      :tags #{:vector}
+      `(push.instructions.dsl/consume-top-of ~typename :as :template)
+      `(push.instructions.dsl/consume-stack ~rootname :as :pieces)
+      '(push.instructions.dsl/calculate [:template :pieces]
+        #(<= (count %1) (count %2)) :as :enough?)
+      '(push.instructions.dsl/calculate [:enough? :template :pieces]
+        #(if %1 (into [] (take (count %2) %3)) nil) :as :new-vector)
+      '(push.instructions.dsl/calculate [:enough? :template :pieces]
+        #(if %1 (into '() (reverse (drop (count %2) %3))) %3) :as :new-pieces)
+      `(push.instructions.dsl/push-onto ~typename :template)
+      `(push.instructions.dsl/push-onto ~typename :new-vector)
+      `(push.instructions.dsl/replace-stack ~rootname :new-pieces)))))
+
+
+
 (defn x-generalize-instruction
   [typename]
   (let [instruction-name (str (name typename) "-generalize")]
@@ -426,6 +449,7 @@
           (t/attach-instruction , (x-generalize-instruction typename))
           (t/attach-instruction , (x-generalizeall-instruction typename))
           (t/attach-instruction , (x-first-instruction typename rootname))
+          (t/attach-instruction , (x-fromexample-instruction typename rootname))
           (t/attach-instruction , (x-indexof-instruction typename rootname))
           (t/attach-instruction , (x-last-instruction typename rootname))
           (t/attach-instruction , (x-length-instruction typename))
