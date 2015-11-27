@@ -91,6 +91,7 @@
                                      9 (random-floats 40)
                                      10  (random-chars)
                                      11 (random-strings)
+                                     12 (into #{} (bunch-a-junk interpreter 8))
 
                                      (any-instruction interpreter)))))
 

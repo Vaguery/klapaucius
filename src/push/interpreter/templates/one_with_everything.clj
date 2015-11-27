@@ -13,6 +13,7 @@
   (:use push.types.modules.error)
   (:use push.types.extra.vectorized)
   (:use push.types.extra.vector)
+  (:use push.types.extra.set)
   (:use [push.interpreter.core])
   (:use [push.util.type-checkers])
   (:require [push.util.exceptions :as oops])
@@ -36,6 +37,7 @@
     (build-vectorized-type classic-string-type)
 
     standard-vector-type
+    standard-set-type
     ]))
 
 
@@ -69,6 +71,7 @@
   - integers-type
   - floats-type
   - strings-type
+  - standard-set-type
   - standard-vector-type (loaded last as a default)
   - extra-stack-combinators (for all types that are :movable)
   and the counter is 0.
