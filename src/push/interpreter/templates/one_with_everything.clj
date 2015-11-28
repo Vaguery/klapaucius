@@ -19,6 +19,7 @@
   (:require [push.util.exceptions :as oops])
 
   (:use push.instructions.extra.stack-combinators)
+  (:use push.instructions.extra.introspection)
   )
 
 
@@ -38,6 +39,7 @@
 
     standard-vector-type
     standard-set-type
+
     ]))
 
 
@@ -48,7 +50,9 @@
      classic-error-module
      classic-code-module
      classic-environment-module
-     classic-print-module]))
+     classic-print-module
+     
+     standard-introspection-module]))
 
 
 (defn make-everything-interpreter

@@ -127,6 +127,8 @@
     (#'push.instructions.dsl/delete-nth '(0 1 2 3 4 5) 99) => (throws #"Assert")))
 
 
+
+
 ;; insert-as-nth
 
 
@@ -534,6 +536,76 @@
     (#'push.instructions.dsl/get-nth-of
       [(i/basic-interpreter :stacks {:boolean '(false false)}) {}] :boolean :at 6) =not=>
         (throws)))
+
+
+;; `save-inputs [:as where]`
+
+
+(facts "about `save-inputs`"
+
+  (fact "all the inputs are saved as a set in the named scratch variable"
+    (get-local-from-dslblob :inp
+      (#'push.instructions.dsl/save-inputs [nada {}] :as :inp)) =>
+        #{}
+
+
+    (get-local-from-dslblob :inp
+      (#'push.instructions.dsl/save-inputs
+        [(i/basic-interpreter :inputs {:a 8 :b 6}) {}] :as :inp)) =>
+          #{:a :b})
+
+
+  (fact "raises an exception when the :as arg is missing"
+      (#'push.instructions.dsl/save-inputs
+        [(i/basic-interpreter :inputs {:a 8 :b 6}) {}]) =>
+          (throws #"Push DSL argument error: missing key")))
+
+
+
+;; `save-instructions [:as where]`
+
+
+(facts "about `save-instructions`"
+
+  (fact "all the instructions are saved as a set in the named scratch variable"
+    (get-local-from-dslblob :inst
+      (#'push.instructions.dsl/save-instructions [nada {}] :as :inst)) =>
+        #{}
+
+
+    (get-local-from-dslblob :inst
+      (#'push.instructions.dsl/save-instructions
+        [(i/make-classic-interpreter) {}] :as :inst)) =>
+          (contains [:integer-pop :boolean-print :string-swap]))
+
+
+  (fact "raises an exception when the :as arg is missing"
+      (#'push.instructions.dsl/save-instructions
+        [(i/basic-interpreter) {}]) =>
+          (throws #"Push DSL argument error: missing key")))
+
+
+;; `save-counter [:as where]`
+
+
+(facts "about `save-counter`"
+
+  (fact "the counter value is saved into a scratch variable"
+    (get-local-from-dslblob :count
+      (#'push.instructions.dsl/save-counter [nada {}] :as :count)) => 0
+
+
+    (get-local-from-dslblob :count
+      (#'push.instructions.dsl/save-counter
+        [(i/basic-interpreter :counter 8812) {}] :as :count)) =>
+          8812)
+
+
+  (fact "raises an exception when the :as arg is missing"
+      (#'push.instructions.dsl/save-counter
+        [(i/basic-interpreter) {}]) =>
+          (throws #"Push DSL argument error: missing key")))
+
 
 
 ;; `calculate [[args] fn :as local]`

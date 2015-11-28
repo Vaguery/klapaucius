@@ -28,6 +28,9 @@
       #'push-these-onto {(second step) 0}
       #'retrieve-all-stacks {}
       #'save-max-collection-size {}
+      #'save-counter {}
+      #'save-inputs {}
+      #'save-instructions {}
       #'save-nth-of {(second step) 1}
       #'save-stack {(second step) 0}
       #'save-top-of {(second step) 1}
@@ -59,6 +62,9 @@
       #'push-onto {(second step) 1}
       #'push-these-onto {(second step) (count (last step))}
       #'retrieve-all-stacks {}
+      #'save-counter {:integer 1}
+      #'save-inputs {}
+      #'save-instructions {}
       #'save-max-collection-size {}
       #'save-nth-of {}
       #'save-stack {}

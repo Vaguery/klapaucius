@@ -5,7 +5,7 @@
   )
 
 
-;;;; a "PushDSL blob" is just a vector with an interpreter and a hashmap
+;;;; a "PushDSL blob" is just a vector continaing an interpreter and a hashmap
 
 
 ;; utilities
@@ -390,3 +390,28 @@
       [interpreter (assoc scratch as result)])))
 
 
+(defn save-inputs
+  "Saves a set containing all the registered :input keywords to the named scratch variable"
+  [[interpreter scratch] & {:keys [as]}]
+  (let [varnames (into #{} (keys (:inputs interpreter)))]
+    (if (nil? as)
+          (oops/throw-missing-key-exception :as)
+       [interpreter (assoc scratch as varnames)])))
+
+
+(defn save-instructions
+  "Saves a set containing all the registered :instruction keywords to the named scratch variable"
+  [[interpreter scratch] & {:keys [as]}]
+  (let [fxns (into #{} (keys (:instructions interpreter)))]
+    (if (nil? as)
+          (oops/throw-missing-key-exception :as)
+       [interpreter (assoc scratch as fxns)])))
+
+
+(defn save-counter
+  "Saves the current :counter value to the named scratch variable"
+  [[interpreter scratch] & {:keys [as]}]
+  (let [c (:counter interpreter)]
+    (if (nil? as)
+          (oops/throw-missing-key-exception :as)
+       [interpreter (assoc scratch as c)])))

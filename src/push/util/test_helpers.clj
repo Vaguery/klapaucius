@@ -37,6 +37,24 @@
     ))
 
 
+(defn register-type-and-check-instruction-in-this-interpreter
+  "helper sets up an interpreter with `items` on `setup-stack`,
+  registers the named type (with all instructions loaded as a matter of course),
+  executes the named instruction to produce the next step after, and returns 
+  the indicated `get-stack`"
+  [base-interpreter
+    setup-stack items type-under-test instruction-token read-stack]
+  (let [setup (u/set-stack 
+                (i/register-type
+                  base-interpreter
+                  type-under-test)
+                setup-stack items)
+        after (i/execute-instruction setup instruction-token)]
+    (u/get-stack after read-stack)
+    ))
+
+
+
 (defn check-instruction-with-all-kinds-of-stack-stuff
   "helper sets up an interpreter with a hash-map of stacks and items,
   registers the named type (with all instructions loaded as a matter of course),
