@@ -130,3 +130,64 @@
                                                    :boolean  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
+
+
+(tabular
+  (fact "`code->set` pops the top :code item; if it's not a list, it's made one, then the list is made into a set"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks standard-set-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction     ?expected
+
+    {:set  '()
+     :code '((1 2 1 2))}       :code->set     {:set   '(#{1 2})
+                                               :code  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:set  '()
+     :code '((1 (2 3)))}       :code->set     {:set   '(#{1 (2 3)})
+                                               :code  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:set  '()
+     :code '([1 2 3])}         :code->set     {:set   '(#{[1 2 3]})
+                                               :code  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:set  '()
+     :code '(2.3)}             :code->set     {:set   '(#{2.3})
+                                               :code  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:set  '()
+     :code '(())}              :code->set     {:set   '(#{})    ;; note
+                                               :code  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:set  '()
+     :code '()}                :code->set     {:set   '()
+                                               :code  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
+(tabular
+  (fact "`vector->set` pops the top :vector item and makes it into a set"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks standard-set-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                  ?instruction     ?expected
+
+    {:set  '()
+     :vector '([1 2 1 2])}       :vector->set     {:set   '(#{1 2})
+                                                   :vector  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:set  '()
+     :vector '([1 (2 3)])}       :vector->set     {:set   '(#{1 (2 3)})
+                                                   :vector  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:set  '()
+     :vector '([])}              :vector->set     {:set   '(#{})
+                                                   :vector  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:set  '()
+     :vector '()}                :vector->set     {:set   '()
+                                                   :vector  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )

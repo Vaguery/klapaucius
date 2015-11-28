@@ -11,17 +11,17 @@
 
 
 (tabular
-  (fact ":char-allfromstring puts every char in the top :string onto the :char stack"
+  (fact ":string->chars puts every char in the top :string onto the :char stack"
     (register-type-and-check-instruction
         ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction  ?get-stack         ?expected
     ;; all the letters
-    :string    '("foo")         :char-allfromstring   :char     '(\f \o \o)
-    :string    '("4\n5")        :char-allfromstring   :char     '(\4 \newline \5)
-    :string    '("")            :char-allfromstring   :char     '()
+    :string    '("foo")         :string->chars   :char     '(\f \o \o)
+    :string    '("4\n5")        :string->chars   :char     '(\4 \newline \5)
+    :string    '("")            :string->chars   :char     '()
     ;; missing args
-    :string    '()              :char-allfromstring   :char     '())
+    :string    '()              :string->chars   :char     '())
 
 
 
@@ -54,23 +54,23 @@
 (def zerochar-list (list (char 0)))
 
 (tabular
-  (fact ":char-asciifrominteger drops the top :integer into [0..128] and pushes that ASCII character"
+  (fact ":integer->asciichar drops the top :integer into [0..128] and pushes that ASCII character"
     (register-type-and-check-instruction
         ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction  ?get-stack         ?expected
     ;; all the letters
-    :integer    '(88)         :char-asciifrominteger   :char         '(\X)
-    :integer    '(37)         :char-asciifrominteger   :char         '(\%)
-    :integer    '(-37)        :char-asciifrominteger   :char         '(\[)
-    :integer    '(200)        :char-asciifrominteger   :char         '(\H)
+    :integer    '(88)         :integer->asciichar   :char         '(\X)
+    :integer    '(37)         :integer->asciichar   :char         '(\%)
+    :integer    '(-37)        :integer->asciichar   :char         '(\[)
+    :integer    '(200)        :integer->asciichar   :char         '(\H)
     ;; edge cases
-    :integer    '(0)          :char-asciifrominteger   :char         zerochar-list
-    :integer    '(128)        :char-asciifrominteger   :char         zerochar-list
-    :integer    '(256)        :char-asciifrominteger   :char         zerochar-list
-    :integer    '(-128)       :char-asciifrominteger   :char         zerochar-list
+    :integer    '(0)          :integer->asciichar   :char         zerochar-list
+    :integer    '(128)        :integer->asciichar   :char         zerochar-list
+    :integer    '(256)        :integer->asciichar   :char         zerochar-list
+    :integer    '(-128)       :integer->asciichar   :char         zerochar-list
     ;; missing args
-    :integer    '()           :char-asciifrominteger   :char         '())
+    :integer    '()           :integer->asciichar   :char         '())
 
 
 (tabular

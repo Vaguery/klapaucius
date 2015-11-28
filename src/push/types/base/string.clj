@@ -147,12 +147,12 @@
     (d/push-onto :char :c)))
 
 
-(def string-fromboolean (simple-item-to-string-instruction :boolean))
-(def string-fromchar    (simple-item-to-string-instruction :char   ))
-(def string-fromcode    (simple-item-to-string-instruction :code   ))
-(def string-fromexec    (simple-item-to-string-instruction :exec   ))
-(def string-fromfloat   (simple-item-to-string-instruction :float  ))
-(def string-frominteger (simple-item-to-string-instruction :integer))
+(def boolean->string (simple-item-to-string-instruction :boolean))
+(def char->string    (simple-item-to-string-instruction :char   ))
+(def code->string    (simple-item-to-string-instruction :code   ))
+(def exec->string    (simple-item-to-string-instruction :exec   ))
+(def float->string   (simple-item-to-string-instruction :float  ))
+(def integer->string (simple-item-to-string-instruction :integer))
 
 
 (def string-indexofchar
@@ -374,12 +374,12 @@
         (t/attach-instruction , string-containschar?)
         (t/attach-instruction , string-emptystring?)
         (t/attach-instruction , string-first)
-        (t/attach-instruction , string-fromboolean)
-        (t/attach-instruction , string-fromchar)
-        (t/attach-instruction , string-fromcode)
-        (t/attach-instruction , string-fromexec)
-        (t/attach-instruction , string-frominteger)
-        (t/attach-instruction , string-fromfloat)
+        (t/attach-instruction , boolean->string)
+        (t/attach-instruction , char->string)
+        (t/attach-instruction , code->string)
+        (t/attach-instruction , exec->string)
+        (t/attach-instruction , integer->string)
+        (t/attach-instruction , float->string)
         (t/attach-instruction , string-indexofchar)
         (t/attach-instruction , string-last)
         (t/attach-instruction , string-length)
