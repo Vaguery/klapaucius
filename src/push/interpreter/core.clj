@@ -46,12 +46,7 @@
 
 
 (defn register-type
-  "Takes an Interpreter record, and a PushType record, and adds the
-  PushType to the :types collection in the Interpeter; adds the
-  type's :name as a new stack (if not already present); appends the 
-  type's :recognizer to the :router vector; adds
-  the type's internally defined instructions to the Interpreter's
-  registry automatically."
+  "Takes an Interpreter record, and a PushType record, and adds the PushType to the :types collection in the Interpeter; adds the type's :name as a new stack (if not already present); appends the type's :recognizer to the :router vector; adds the type's internally defined instructions to the Interpreter's registry automatically."
   [interpreter type]
   (let [old-types (:types interpreter)
         old-stacks (:stacks interpreter)
@@ -65,9 +60,7 @@
 
 
 (defn register-module
-  "Takes an Interpreter record, and a module; adds
-  the module's internally defined instructions to the Interpreter's
-  registry automatically."
+  "Takes an Interpreter record, and a module; adds the module's internally defined instructions to the Interpreter's registry automatically."
   [interpreter module]
   (let [old-instructions (:instructions interpreter)]
     (-> interpreter
@@ -75,22 +68,19 @@
 
 
 (defn register-types
-  "Takes an Interpreter record, and a list of PushType records. Calls
-  `register-type` on each of the types in turn."
+  "Takes an Interpreter record, and a list of PushType records. Calls `register-type` on each of the types in turn."
   [interpreter types]
   (reduce #(register-type %1 %2) interpreter types))
 
 
 (defn register-modules
-  "Takes an Interpreter record, and a list of modules. Calls
-  `register-module` on each of those in turn."
+  "Takes an Interpreter record, and a list of modules. Calls `register-module` on each of those in turn."
   [interpreter modules]
   (reduce #(register-module %1 %2) interpreter modules))
 
 
 (defn register-input
-  "Takes an Interpreter record, a keyword and any item, and adds the
-  item as a value stored under the keyword in the :inputs hashmap."
+  "Takes an Interpreter record, a keyword and any item, and adds the item as a value stored under the keyword in the :inputs hashmap."
   ([interpreter value]
     (let [next-index (inc (count (:inputs interpreter)))
           next-input (keyword (str "input!" next-index))]
@@ -100,8 +90,7 @@
 
 
 (defn register-inputs
-  "Takes an Interpreter record, and a hashmap of key-value items;
-  merges them into the :inputs map if the Interpreter."
+  "Takes an Interpreter record, and a hashmap of key-value items; merges them into the :inputs map if the Interpreter."
   [interpreter values]
   (cond (vector? values)
     (reduce (partial register-input) interpreter values)
@@ -110,16 +99,13 @@
 
 
 (defn input?
-  "Takes an interpreter, and a keyword, and returns true if the
-  keyword is a key in the :inputs hashmap"
+  "Takes an interpreter, and a keyword, and returns true if the keyword is a key in the :inputs hashmap"
   [interpreter kwd]
   (contains? (:inputs interpreter) kwd))
 
 
 (defn- add-instruction
-  "Takes an Interpreter and an Instruction (record), and adds the
-  instruction to the :instructions registry of the interpreter,
-  without checking for prior definitions."
+  "Takes an Interpreter and an Instruction (record), and adds the instruction to the :instructions registry of the interpreter, without checking for prior definitions."
   [interpreter instruction]
   (assoc-in
     interpreter
@@ -128,9 +114,7 @@
 
 
 (defn register-instruction
-  "Takes an Interpreter and an Instruction, and attempts to add the
-  Instruction to the :instructions map of the Interpreter, keyed by
-  its :token."
+  "Takes an Interpreter and an Instruction, and attempts to add the Instruction to the :instructions map of the Interpreter, keyed by its `:token`."
   [interpreter instruction]
   (let [token (:token instruction)
         registry (:instructions interpreter)]
@@ -146,8 +130,7 @@
 
 
 (defn basic-interpreter
-  "creates a new Interpreter record
-  With no arguments, it has an empty :program, the :stacks include
+  "With no arguments, it has an empty :program, the :stacks include
   core types and are empty, no :instructions are registered, and the
   counter is 0.
 
