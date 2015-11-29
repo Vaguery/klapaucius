@@ -415,3 +415,18 @@
     (if (nil? as)
           (oops/throw-missing-key-exception :as)
        [interpreter (assoc scratch as c)])))
+
+
+(defn record-an-error
+  "Creates a time-stamped entry on the Interpreter's :error stack, with the specified scratch variable as the associeated :item"
+  [[interpreter scratch] & {:keys [from]}]
+  (let [c (:counter interpreter)
+        old-err (u/get-stack interpreter :error)]
+    (if (nil? from)
+      (oops/throw-missing-key-exception :from)
+      (let [msg (from scratch)]
+        (if (nil? msg)
+          [interpreter scratch]
+          (let [err-item {:step c :item msg}
+                new-err (conj old-err err-item)]
+            [(u/set-stack interpreter :error new-err) scratch]))))))

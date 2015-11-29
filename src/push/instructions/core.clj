@@ -26,6 +26,7 @@
       #'replace-stack {(second step) 0}
       #'push-onto {(second step) 0}
       #'push-these-onto {(second step) 0}
+      #'record-an-error {}
       #'retrieve-all-stacks {}
       #'save-max-collection-size {}
       #'save-counter {}
@@ -61,6 +62,7 @@
       #'replace-stack {(second step) 0}
       #'push-onto {(second step) 1}
       #'push-these-onto {(second step) (count (last step))}
+      #'record-an-error {:log 1}
       #'retrieve-all-stacks {}
       #'save-counter {:integer 1}
       #'save-inputs {}

@@ -950,3 +950,30 @@
 (fact "`retrieve-all-stacks` throws an exception if it lacks the hash"
   (:stacks (first (retrieve-all-stacks [afew {}]))) => (throws #"Push DSL argument error"))
 
+
+
+;; `record-an-error [:from scratch item]`
+
+
+(facts "about `record-an-error`"
+
+  (fact "`record-an-error` puts a time-stamped entry on the Interpreter's :error stack, with the argument as its :item field"
+    (get-stack-from-dslblob :error
+      (record-an-error [afew {:foo 99}] :from :foo)) =>
+    '({:item 99, :step 0})
+
+    (get-stack-from-dslblob :error
+      (record-an-error [afew {:foo "a message"}] :from :foo)) =>
+    '({:item "a message", :step 0}))
+
+
+  (fact "`record-an-error` logs nothing if the :from item is nil"
+    (get-stack-from-dslblob :error
+      (record-an-error [afew {:foo nil}] :from :foo)) => '())
+
+
+  (fact "`record-an-error` throws an exception if it lacks the :from argument"
+    (:stacks (first (record-an-error [afew {}]))) =>
+      (throws #"Push DSL argument error"))
+
+  )

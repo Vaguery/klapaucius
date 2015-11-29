@@ -60,7 +60,7 @@
     "`:float->asciichar` pops the top `:float` value, reduces it to an integer modulo 128, and pushes the `:char` that is represented by that ASCII value"
     :tags #{:string :conversion :base}
     (d/consume-top-of :float :as :arg)
-    (d/calculate [:arg] #(char (fix/safe-mod (bigint %1) 128)) :as :c)
+    (d/calculate [:arg] #(char (mod (bigint %1) 128)) :as :c)
     (d/push-onto :char :c)))
 
 
@@ -70,7 +70,7 @@
     "`:float->char` pops the top `:float` value, reduces it to an integer modulo 65535, and pushes the `:char` that is represented by that unicode value"
     :tags #{:string :conversion :base}
     (d/consume-top-of :float :as :arg)
-    (d/calculate [:arg] #(char (fix/safe-mod (bigint %1) 65535)) :as :c)
+    (d/calculate [:arg] #(char (mod (bigint %1) 65535)) :as :c)
     (d/push-onto :char :c)))
 
 

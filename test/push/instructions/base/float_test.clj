@@ -96,7 +96,8 @@
     :float    '(-3.0 -15.0) :float-divide   :float     '(5.0)
     ;; zero
     :float    '(0.0 -5.0)   :float-divide   :float     '(0.0 -5.0)
-    :float    '(-0.0 0.0)  :float-divide   :float      '(-0.0 0.0)
+    :float    '(-0.0 0.0)   :float-divide   :float     '(-0.0 0.0)
+    :float    '(-0.0 0.0)   :float-divide   :error       '({:step 0, :item ":float-divide 0 denominator"})
     ;; missing args
     :float    '(11.0)       :float-divide   :float     '(11.0)
     :float    '()           :float-divide   :float     '()
@@ -123,7 +124,8 @@
     :float    '(-3.0 -15.0) :float-mod   :float     '(0.0)
     ;; zero
     :float    '(0.0 -5.0)   :float-mod   :float     '(0.0 -5.0)
-    :float    '(-0.0 0.0)  :float-mod   :float      '(-0.0 0.0)
+    :float    '(-0.0 0.0)   :float-mod   :float     '(-0.0 0.0)
+    :float    '(-0.0 0.0)   :float-mod   :error       '({:step 0, :item ":float-mod 0 denominator"})
     ;; missing args
     :float    '(11.0)       :float-mod   :float     '(11.0)
     :float    '()           :float-mod   :float     '()

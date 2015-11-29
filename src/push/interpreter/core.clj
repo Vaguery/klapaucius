@@ -293,7 +293,7 @@
 (defn missing-args-message
   [interpreter token]
   (let [t (:counter interpreter)]
-    {:tick t :error (str token " missing arguments")}))
+    {:step t :item (str token " missing arguments")}))
 
 
 (defn execute-instruction

@@ -37,7 +37,10 @@
       #(if (zero? %1) %2 nil) :as :replacement)
     (d/calculate [:denominator :numerator]
       #(if (zero? %1) %1 (/ %2 %1)) :as :quotient)
-    (d/push-these-onto :float [:replacement :quotient])))
+    (d/push-these-onto :float [:replacement :quotient])
+    (d/calculate [:denominator]
+      #(if (zero? %1) ":float-divide 0 denominator" nil) :as :warning)
+    (d/record-an-error :from :warning)))
 
 
 (def boolean->float
@@ -100,7 +103,7 @@
 (def float-mod
   (core/build-instruction
     float-mod
-    "`:float-modulo` pops the top two `:float` values (call them `denominator` and `numerator`, respectively). If `denominator` is 0.0, it replaces the two `:float` values; if not, it pushes `(mod numerator denominator)`."
+    "`:float-mod` pops the top two `:float` values (call them `denominator` and `numerator`, respectively). If `denominator` is 0.0, it replaces the two `:float` values; if not, it pushes `(mod numerator denominator)`."
     :tags #{:arithmetic :base :dangerous}
     (d/consume-top-of :float :as :denominator)
     (d/consume-top-of :float :as :numerator)
@@ -108,7 +111,11 @@
       #(if (zero? %1) %2 nil) :as :replacement)
     (d/calculate [:denominator :numerator]
       #(if (zero? %1) %1 (mod %2 %1)) :as :quotient)
-    (d/push-these-onto :float [:replacement :quotient])))
+    (d/push-these-onto :float [:replacement :quotient])
+    (d/calculate [:denominator]
+      #(if (zero? %1) ":float-mod 0 denominator" nil) :as :warning)
+    (d/record-an-error :from :warning)
+))
 
 
 (def float-subtract (t/simple-2-in-1-out-instruction

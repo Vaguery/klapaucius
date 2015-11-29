@@ -74,7 +74,10 @@
     :integer    '(11)     :integer-divide      :integer       '(11)
     :integer    '()       :integer-divide      :integer       '()
     ;; divide-by-zero
-    :integer    '(0 11)   :integer-divide      :integer       '(0 11))
+    :integer    '(0 11)   :integer-divide      :integer       '(0 11)
+    :integer    '(0 11)   :integer-divide      :error         '({:step 0 :item ":integer-divide 0 denominator"})
+
+    )
 
 
 (tabular
@@ -94,7 +97,9 @@
     :integer    '(11)     :integer-mod      :integer      '(11)
     :integer    '()       :integer-mod      :integer      '()
     ;; divide-by-zero
-    :integer    '(0 11)   :integer-mod      :integer      '(0 11))
+    :integer    '(0 11)   :integer-mod      :integer      '(0 11)
+    :integer    '(0 11)   :integer-mod      :error        '({:step 0 :item ":integer-mod 0 denominator"})
+    )
 
 
 (tabular

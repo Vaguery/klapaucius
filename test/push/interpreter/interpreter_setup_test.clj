@@ -508,7 +508,7 @@
   (let [foo (i/make-instruction :foo :needs {:integer 3} :transaction (fn [a] 99))
       he-knows-foo (register-instruction (basic-interpreter) foo)]
     (u/get-stack (execute-instruction he-knows-foo :foo) :error) => 
-      '({:tick 0 :error ":foo missing arguments"})
+      '({:step 0 :item ":foo missing arguments"})
     (execute-instruction
       (assoc-in he-knows-foo [:stacks :integer] '(1 2 3 4)) :foo) => 99))
 

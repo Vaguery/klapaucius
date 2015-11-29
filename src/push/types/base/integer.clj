@@ -39,7 +39,12 @@
       #(if (zero? %1) %2 nil) :as :replacement)
     (d/calculate [:denominator :numerator]
       #(if (zero? %1) %1 (bigint (/ %2 %1))) :as :quotient)
-    (d/push-these-onto :integer [:replacement :quotient])))
+    (d/push-these-onto :integer [:replacement :quotient])
+    (d/calculate [:denominator]
+      #(if (zero? %1) ":integer-divide 0 denominator" nil) :as :warning)
+    (d/record-an-error :from :warning)
+
+    ))
 
 
 (def integer-inc (t/simple-1-in-1-out-instruction
@@ -57,7 +62,11 @@
     (d/calculate [:denominator :numerator]
       #(if (zero? %1) %2 nil) :as :replacement)
     (d/calculate [:denominator :numerator] #(fix/safe-mod %2 %1) :as :remainder)
-    (d/push-these-onto :integer [:replacement :remainder])))
+    (d/push-these-onto :integer [:replacement :remainder])
+    (d/calculate [:denominator]
+      #(if (zero? %1) ":integer-mod 0 denominator" nil) :as :warning)
+    (d/record-an-error :from :warning)
+    ))
 
 
 (def integer-multiply (t/simple-2-in-1-out-instruction
