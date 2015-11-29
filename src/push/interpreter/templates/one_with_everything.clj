@@ -20,6 +20,7 @@
 
   (:use push.instructions.extra.stack-combinators)
   (:use push.instructions.extra.introspection)
+  (:use push.instructions.extra.numeric-scaling)
   )
 
 
@@ -52,7 +53,9 @@
      classic-environment-module
      classic-print-module
      
-     standard-introspection-module]))
+     standard-introspection-module
+     numeric-scaling-module
+     ]))
 
 
 (defn make-everything-interpreter
