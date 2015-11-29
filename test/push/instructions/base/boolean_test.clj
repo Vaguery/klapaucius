@@ -30,6 +30,20 @@
     :float    '(-4.0)        :floatsign->boolean    :boolean       '(false))
 
 
+;; quotable
+
+(tabular
+  (fact ":boolean->code move the top :boolean item to :code;"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-boolean-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items            ?instruction      ?get-stack     ?expected
+    ;; move it!
+    :boolean    '(false)        :boolean->code      :code        '(false)
+    :boolean    '()             :boolean->code      :code        '()
+    )
+
+
 
 ;; specific boolean behavior
 

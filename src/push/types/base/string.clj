@@ -7,6 +7,7 @@
   (:use push.instructions.aspects.equatable)
   (:use push.instructions.aspects.movable)
   (:use push.instructions.aspects.printable)
+  (:use push.instructions.aspects.quotable)
   (:use push.instructions.aspects.returnable)
   (:use push.instructions.aspects.visible)
   )
@@ -365,6 +366,7 @@
         make-comparable
         make-movable
         make-printable
+        make-quotable
         make-returnable
         (t/attach-instruction , exec-string-iterate)
         (t/attach-instruction , string-butlast)

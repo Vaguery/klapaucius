@@ -49,6 +49,20 @@
     :exec     '()              :exec->string         :string       '())
 
 
+;; quotable
+
+(tabular
+  (fact ":string->code move the top :string item to :code"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items       ?instruction      ?get-stack     ?expected
+    ;; move it!
+    :string       '("92")    :string->code         :code       '("92")
+    :string       '()        :string->code         :code       '()
+    )
+
+
 ;; specific string behavior
 
 

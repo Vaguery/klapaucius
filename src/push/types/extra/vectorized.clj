@@ -5,6 +5,7 @@
   (:use push.instructions.aspects.equatable)
   (:use push.instructions.aspects.movable)
   (:use push.instructions.aspects.printable)
+  (:use push.instructions.aspects.quotable)
   (:use push.instructions.aspects.returnable)
   (:use push.instructions.aspects.visible)
   (:require [push.util.code-wrangling :as fix])
@@ -439,6 +440,7 @@
           make-equatable
           make-movable
           make-printable
+          make-quotable
           make-returnable
           (t/attach-instruction , (x-butlast-instruction typename))
           (t/attach-instruction , (x-concat-instruction typename))

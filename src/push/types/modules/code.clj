@@ -191,21 +191,6 @@
   :code "first" #(if (coll? %) (first %) %)))
 
 
-(def boolean->code (t/simple-item-to-code-instruction :boolean))
-
-
-(def char->code (t/simple-item-to-code-instruction :char))
-
-
-(def float->code (t/simple-item-to-code-instruction :float))
-
-
-(def integer->code (t/simple-item-to-code-instruction :integer))
-
-
-(def string->code (t/simple-item-to-code-instruction :string))
-
-
 (def code-if
   (core/build-instruction
     code-if
@@ -447,11 +432,6 @@
         (t/attach-instruction , code-drop)
         (t/attach-instruction , code-extract)
         (t/attach-instruction , code-first)
-        (t/attach-instruction , boolean->code)
-        (t/attach-instruction , char->code)
-        (t/attach-instruction , integer->code)
-        (t/attach-instruction , string->code)
-        (t/attach-instruction , float->code)
         (t/attach-instruction , code-if)
         (t/attach-instruction , code-insert)
         (t/attach-instruction , code-length)

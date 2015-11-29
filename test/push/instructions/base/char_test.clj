@@ -5,6 +5,18 @@
   (:use [push.types.base.char])  ;; sets up classic-char-type
   )
 
+;; quotable
+
+(tabular
+  (fact ":char->code move the top :char item to :code"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items            ?instruction      ?get-stack     ?expected
+    ;; move it!
+    :char       '(\y)           :char->code         :code        '(\y)
+    :char       '()             :char->code         :code        '()
+    )
 
 
 ;; specific char behavior

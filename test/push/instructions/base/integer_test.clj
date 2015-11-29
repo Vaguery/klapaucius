@@ -6,6 +6,20 @@
   )
 
 
+;; quotable
+
+(tabular
+  (fact ":integer->code move the top :integer item to :code"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items          ?instruction      ?get-stack     ?expected
+    ;; move it!
+    :integer       '(92)      :integer->code         :code        '(92)
+    :integer       '()        :integer->code         :code       '()
+    )
+
+
 ;; integer-specific instructions
 
 

@@ -5,6 +5,7 @@
   (:use push.instructions.aspects.equatable)
   (:use push.instructions.aspects.movable)
   (:use push.instructions.aspects.printable)
+  (:use push.instructions.aspects.quotable)
   (:use push.instructions.aspects.returnable)
   (:use push.instructions.aspects.visible)
   (:require [clojure.set :as sets])
@@ -83,6 +84,7 @@
       make-equatable
       make-movable
       make-printable
+      make-quotable
       make-returnable
       (t/attach-instruction , code->set)
       (t/attach-instruction , vector->set)

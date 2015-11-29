@@ -11,31 +11,6 @@
 (def huge-list (repeat 131070 1))
 
 
-;; all the basic conversions
-
-(tabular
-  (fact ":boolean->code move the top :boolean item to :code;
-         :integer->code
-         :float->code
-         :string->code
-         :char->code"
-    (register-type-and-check-instruction
-        ?set-stack ?items classic-code-module ?instruction ?get-stack) => ?expected)
-
-    ?set-stack  ?items            ?instruction      ?get-stack     ?expected
-    ;; move it!
-    :boolean    '(false)        :boolean->code      :code        '(false)
-    :boolean    '()             :boolean->code      :code        '()
-    :char       '(\y)           :char->code         :code        '(\y)
-    :char       '()             :char->code         :code        '()
-    :float      '(0.)           :float->code        :code        '(0.)
-    :float      '()             :float->code        :code        '()
-    :integer    '(88)           :integer->code      :code        '(88)
-    :integer    '()             :integer->code      :code        '()
-    :string     '("88")         :string->code       :code        '("88")    
-    :string     '()             :string->code       :code        '()
-    )
-
 
 
 (tabular

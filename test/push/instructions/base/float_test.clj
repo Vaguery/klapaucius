@@ -46,6 +46,19 @@
     )
 
 
+;; quotable
+
+(tabular
+  (fact ":float->code move the top :float item to :code"
+    (register-type-and-check-instruction
+        ?set-stack ?items classic-float-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items          ?instruction      ?get-stack     ?expected
+    ;; move it!
+    :float       '(9.2)          :float->code         :code        '(9.2)
+    :float       '()             :float->code         :code        '()
+    )
+
 
 (tabular
   (fact ":float-add returns the sum, auto-promoting overflows"
