@@ -3,6 +3,8 @@
   (:require [push.util.stack-manipulation :as u])
   (:require [push.interpreter.core :as i])
   (:require [push.instructions.core :as inst])
+  (:require [push.interpreter.templates.minimum :as m])
+  (:require [push.interpreter.templates.classic :as c])
   (:use push.instructions.dsl)
   )
 
@@ -17,16 +19,16 @@
 ;; fixtures
 
 
-(def nada (i/basic-interpreter))
-(def afew (i/basic-interpreter :stacks {:integer '(1 2 3)}))
-(def lots (i/basic-interpreter :stacks {:code (range 1 20)}))
+(def nada (m/basic-interpreter))
+(def afew (m/basic-interpreter :stacks {:integer '(1 2 3)}))
+(def lots (m/basic-interpreter :stacks {:code (range 1 20)}))
 
 
 ;; max-collection-size
 
 (fact "I can read the max-collection-size"
   (get-max-collection-size nada) =>
-    (:max-collection-size i/basic-interpreter-default-config))
+    (:max-collection-size m/interpreter-default-config))
 
 ;; count-of
 
@@ -77,7 +79,7 @@
   (fact "`delete-top-of` works on :boolean stacks containing false values"
     (get-stack-from-dslblob :boolean
       (delete-top-of
-        [(i/basic-interpreter :stacks {:boolean '(false true)}) {}]
+        [(m/basic-interpreter :stacks {:boolean '(false true)}) {}]
         :boolean)) => '(true)))
 
 
@@ -104,7 +106,7 @@
 
 
   (fact "`consume-top-of` works with a :boolean stack of falses"
-    (consume-top-of [(i/basic-interpreter :stacks {:boolean '(false false)}) {:foo \f}]
+    (consume-top-of [(m/basic-interpreter :stacks {:boolean '(false false)}) {:foo \f}]
       :boolean :as :foo) =not=> (throws)))
 
 
@@ -221,7 +223,7 @@
     (get-local-from-dslblob :max
       (#'push.instructions.dsl/save-max-collection-size 
         [afew {}] :as :max)) =>
-    (:max-collection-size i/basic-interpreter-default-config))
+    (:max-collection-size m/interpreter-default-config))
 )
 
 
@@ -377,7 +379,7 @@
 
 
   (fact "`save-top-of` works on :boolean stacks containing false"
-    (save-top-of [(i/basic-interpreter :stacks {:boolean '(false)}) {}] :boolean :as :foo)
+    (save-top-of [(m/basic-interpreter :stacks {:boolean '(false)}) {}] :boolean :as :foo)
       =not=> (throws)))
 
 
@@ -534,7 +536,7 @@
 
   (fact "`get-nth-of` works with a stack full of false values"
     (#'push.instructions.dsl/get-nth-of
-      [(i/basic-interpreter :stacks {:boolean '(false false)}) {}] :boolean :at 6) =not=>
+      [(m/basic-interpreter :stacks {:boolean '(false false)}) {}] :boolean :at 6) =not=>
         (throws)))
 
 
@@ -551,13 +553,13 @@
 
     (get-local-from-dslblob :inp
       (#'push.instructions.dsl/save-inputs
-        [(i/basic-interpreter :inputs {:a 8 :b 6}) {}] :as :inp)) =>
+        [(m/basic-interpreter :inputs {:a 8 :b 6}) {}] :as :inp)) =>
           #{:a :b})
 
 
   (fact "raises an exception when the :as arg is missing"
       (#'push.instructions.dsl/save-inputs
-        [(i/basic-interpreter :inputs {:a 8 :b 6}) {}]) =>
+        [(m/basic-interpreter :inputs {:a 8 :b 6}) {}]) =>
           (throws #"Push DSL argument error: missing key")))
 
 
@@ -575,13 +577,13 @@
 
     (get-local-from-dslblob :inst
       (#'push.instructions.dsl/save-instructions
-        [(i/make-classic-interpreter) {}] :as :inst)) =>
+        [(c/classic-interpreter) {}] :as :inst)) =>
           (contains [:integer-pop :boolean-print :string-swap]))
 
 
   (fact "raises an exception when the :as arg is missing"
       (#'push.instructions.dsl/save-instructions
-        [(i/basic-interpreter) {}]) =>
+        [(m/basic-interpreter) {}]) =>
           (throws #"Push DSL argument error: missing key")))
 
 
@@ -597,13 +599,13 @@
 
     (get-local-from-dslblob :count
       (#'push.instructions.dsl/save-counter
-        [(i/basic-interpreter :counter 8812) {}] :as :count)) =>
+        [(m/basic-interpreter :counter 8812) {}] :as :count)) =>
           8812)
 
 
   (fact "raises an exception when the :as arg is missing"
       (#'push.instructions.dsl/save-counter
-        [(i/basic-interpreter) {}]) =>
+        [(m/basic-interpreter) {}]) =>
           (throws #"Push DSL argument error: missing key")))
 
 
@@ -915,7 +917,7 @@
 
 (fact "`archive-all-stacks` works regardless of stack contents"
   (get-stack-from-dslblob :environment
-      (archive-all-stacks [(i/basic-interpreter) {}])) => (list i/core-stacks))
+      (archive-all-stacks [(m/basic-interpreter) {}])) => (list m/minimal-stacks))
 
 
 ;; `retrieve-all-stacks`
@@ -935,7 +937,7 @@
   (:stacks 
     (first 
       (retrieve-all-stacks
-        [(i/basic-interpreter :stacks {:print '(33) 
+        [(m/basic-interpreter :stacks {:print '(33) 
                                        :error '(:oops)
                                        :integer '(0 00)
                                        :unknown '(88)})

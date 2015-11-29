@@ -8,28 +8,28 @@
   (:require [push.instructions.aspects.movable :as movable])
   (:require [push.instructions.aspects.comparable :as comparable])
   (:require [push.instructions.aspects.visible :as visible])
+  (:require [push.interpreter.templates.minimum :as m])
+  (:require [push.interpreter.templates.classic :as c])
   (:use [push.interpreter.core])
   )
 
 
-;;; the router and handle-item
-
-
-;; unknown items
+(def just-basic (m/basic-interpreter))
+(def classy (c/classic-interpreter))
 
 
 (fact "`handle-item` pushes an item to the :unknown stack if unrecognized when :config :lenient? is true"
   (let [junk :this-is-an-unknown-item]
     (u/get-stack
       (handle-item 
-        (make-classic-interpreter :config {:lenient? true})
+        (c/classic-interpreter :config {:lenient? true})
         junk)
       :unknown) => '(:this-is-an-unknown-item)))
 
 
 (fact "`handle-item` pushes an item to the :unknown stack if 
   unrecognized when :config :lenient? is not true (or unset)"
-  (handle-item (make-classic-interpreter) (basic-interpreter)) => 
+  (handle-item classy just-basic) => 
     (throws #"Push Parsing Error: Cannot interpret '"))
 
 
@@ -38,13 +38,13 @@
 
 (fact "`router-sees?` checks the router predicates and returns true if one matches"
   (let [abbr #'push.interpreter.core/router-sees?]
-    (abbr (make-classic-interpreter) :not-likely) => nil
-    (abbr (basic-interpreter 
+    (abbr classy :not-likely) => nil
+    (abbr (m/basic-interpreter 
       :router [[(fn [item] (= item :not-likely)) :integer]]) :not-likely) => true))
 
 
 (fact "`handle-item` checks the :router list"
-  (let [he-knows-foo (basic-interpreter :router [[integer? :code]])]
+  (let [he-knows-foo (m/basic-interpreter :router [[integer? :code]])]
         ;; this will route integers to the :code stack, and not to :integer
     (:stacks (handle-item he-knows-foo 99) :code) => (contains {:code '(99)})))
 
@@ -58,16 +58,16 @@
 
 
 (fact "types added to the router with `register-type` are used by `handle-item`"
-  (:router (register-type (basic-interpreter) foo-type)) =>
+  (:router (register-type just-basic foo-type)) =>
     [ [(:recognizer foo-type) :foo] ]
-  (u/get-stack (handle-item (register-type (basic-interpreter) foo-type) 99) :integer) => '()
-  (u/get-stack (handle-item (register-type (basic-interpreter) foo-type) 99) :foo) => '(99))
+  (u/get-stack (handle-item (register-type just-basic foo-type) 99) :integer) => '()
+  (u/get-stack (handle-item (register-type just-basic foo-type) 99) :foo) => '(99))
 
 
 (fact "handle-item sends integers to :integer"
-  (u/get-stack (handle-item (make-classic-interpreter) 8) :integer) => '(8)
-  (u/get-stack (handle-item (make-classic-interpreter) -8) :integer) => '(-8)
-  (u/get-stack (handle-item (make-classic-interpreter :stacks {:integer '(1)}) -8) :integer) =>
+  (u/get-stack (handle-item classy 8) :integer) => '(8)
+  (u/get-stack (handle-item classy -8) :integer) => '(-8)
+  (u/get-stack (handle-item (c/classic-interpreter :stacks {:integer '(1)}) -8) :integer) =>
     '(-8 1))
 
 
@@ -75,9 +75,9 @@
 
 
 (fact "handle-item sends floats to :float"
-  (u/get-stack (handle-item (make-classic-interpreter) 8.0) :float) => '(8.0)
-  (u/get-stack (handle-item (make-classic-interpreter) -8.0) :float) => '(-8.0)
-  (u/get-stack (handle-item (make-classic-interpreter :stacks {:float '(1.0)}) -8.0) :float) =>
+  (u/get-stack (handle-item classy 8.0) :float) => '(8.0)
+  (u/get-stack (handle-item classy -8.0) :float) => '(-8.0)
+  (u/get-stack (handle-item (c/classic-interpreter :stacks {:float '(1.0)}) -8.0) :float) =>
     '(-8.0 1.0))
 
 
@@ -86,48 +86,48 @@
 
 
 (fact "handle-item sends booleans to :boolean"
-  (u/get-stack (handle-item (make-classic-interpreter) false) :boolean) => '(false)
-  (u/get-stack (handle-item (make-classic-interpreter) true) :boolean) => '(true)
-  (u/get-stack (handle-item (make-classic-interpreter :stacks {:boolean '(false)}) true) :boolean) =>
+  (u/get-stack (handle-item classy false) :boolean) => '(false)
+  (u/get-stack (handle-item classy true) :boolean) => '(true)
+  (u/get-stack (handle-item (c/classic-interpreter :stacks {:boolean '(false)}) true) :boolean) =>
     '(true false))
 
 
 (fact "handle-item sends characters to :char"
-  (u/get-stack (handle-item (make-classic-interpreter) \J) :char) => '(\J)
-  (u/get-stack (handle-item (make-classic-interpreter) \o) :char) => '(\o)
-  (u/get-stack (handle-item (make-classic-interpreter :stacks {:char '(\Y)}) \e) :char) =>
+  (u/get-stack (handle-item classy \J) :char) => '(\J)
+  (u/get-stack (handle-item classy \o) :char) => '(\o)
+  (u/get-stack (handle-item (c/classic-interpreter :stacks {:char '(\Y)}) \e) :char) =>
     '(\e \Y))
 
 
 (fact "handle-item sends strings to :string"
-  (u/get-stack (handle-item (make-classic-interpreter) "foo") :string) => '("foo")
-  (u/get-stack (handle-item (make-classic-interpreter) "") :string) => '("")
-  (u/get-stack (handle-item (make-classic-interpreter :stacks {:string '("bar")}) "baz") :string) =>
+  (u/get-stack (handle-item classy "foo") :string) => '("foo")
+  (u/get-stack (handle-item classy "") :string) => '("")
+  (u/get-stack (handle-item (c/classic-interpreter :stacks {:string '("bar")}) "baz") :string) =>
     '("baz" "bar"))
 
 
 (fact "handle-item 'unwraps' lists onto :exec"
-  (u/get-stack (handle-item (make-classic-interpreter) '(1 2 3)) :exec) => '(1 2 3)
-  (u/get-stack (handle-item (make-classic-interpreter) '(1 (2) (3))) :exec) => '(1 (2) (3))
-  (u/get-stack (handle-item (make-classic-interpreter) '(1 () ())) :exec) => '(1 () ())
-  (u/get-stack (handle-item (make-classic-interpreter) '()) :exec) => '())
+  (u/get-stack (handle-item classy '(1 2 3)) :exec) => '(1 2 3)
+  (u/get-stack (handle-item classy '(1 (2) (3))) :exec) => '(1 (2) (3))
+  (u/get-stack (handle-item classy '(1 () ())) :exec) => '(1 () ())
+  (u/get-stack (handle-item classy '()) :exec) => '())
 
 
 (fact "the :exec stack stays a list when a list is unwrapped onto it"
-  (list? (u/get-stack (handle-item (make-classic-interpreter) '(1 2 3)) :exec)) => 
+  (list? (u/get-stack (handle-item classy '(1 2 3)) :exec)) => 
     true
-  (list? (u/get-stack (handle-item (make-classic-interpreter) '(1 (2) (3))) :exec)) => 
+  (list? (u/get-stack (handle-item classy '(1 (2) (3))) :exec)) => 
     true
-  (list? (u/get-stack (handle-item (make-classic-interpreter) '(1 () ())) :exec)) => 
+  (list? (u/get-stack (handle-item classy '(1 () ())) :exec)) => 
     true
-  (list? (u/get-stack (handle-item (make-classic-interpreter) '()) :exec)) => 
+  (list? (u/get-stack (handle-item classy '()) :exec)) => 
     true)
 
 
 (fact "handle-item will execute a registered instruction"
  (let [foo (instr/make-instruction :foo :transaction (fn [a] 761))
        registry {:foo foo}
-       he-knows-foo (basic-interpreter :instructions registry)]
+       he-knows-foo (m/basic-interpreter :instructions registry)]
    (handle-item he-knows-foo :foo) => 761))
     ;; an intentionally surprising result
 
@@ -135,7 +135,7 @@
 (fact "handle-item will not execute an unregistered instruction"
  (let [foo (instr/make-instruction :foo :transaction (fn [a] 761))
        registry {:foo foo}
-       he-knows-foo (basic-interpreter :instructions registry)]
+       he-knows-foo (m/basic-interpreter :instructions registry)]
    (handle-item he-knows-foo :bar) => (throws #"Push Parsing Error:")))
 
 
@@ -152,7 +152,7 @@
 
 (def knows-some-things
   (register-instruction
-    (basic-interpreter 
+    (m/basic-interpreter 
       :program [1.1 2.2 :intProductToFloat]
       :counter 22
       :stacks {:integer '(1 2 3)
@@ -165,7 +165,7 @@
 
 
 (fact "`clear-all-stacks` empties every stack"
-  (:stacks (clear-all-stacks knows-some-things)) => core-stacks)
+  (:stacks (clear-all-stacks knows-some-things)) => m/minimal-stacks)
 
 
 ;; reset-interpreter
@@ -180,7 +180,7 @@
 (fact "calling `reset-interpreter` clears the other stacks"
   (u/get-stack knows-some-things :integer) => '(1 2 3)
   (:stacks (reset-interpreter knows-some-things)) => 
-    (merge core-stacks {:exec '(1.1 2.2 :intProductToFloat)}))
+    (merge m/minimal-stacks {:exec '(1.1 2.2 :intProductToFloat)}))
 
 
 (fact "`reset-interpreter` sets the counter to 0"
@@ -218,19 +218,19 @@
 
 
 (fact "`is-done?` checks the Interpreter for various halting states"
-  (is-done? (basic-interpreter)) => true
+  (is-done? just-basic) => true
   (is-done? knows-some-things) => false) ;; counter 22, limit 23
 
 
 (fact "`is-done?` checks the [:config :step-limit] against the :counter"
-  (is-done? (basic-interpreter)) => true
-  (is-done? (basic-interpreter :stacks {:exec '()}  :config {:step-limit 99})) => true
-  (is-done? (basic-interpreter :stacks {:exec '(2)} :config {:step-limit 99})) => false)
+  (is-done? just-basic) => true
+  (is-done? (m/basic-interpreter :stacks {:exec '()}  :config {:step-limit 99})) => true
+  (is-done? (m/basic-interpreter :stacks {:exec '(2)} :config {:step-limit 99})) => false)
 
 
 (fact "`is-done?` returns true when :exec and :environment are empty, but not when :exec is empty and :environment has at least one item"
-  (is-done? (basic-interpreter :stacks {:exec '()}  :config {:step-limit 99})) => true
-  (is-done? (basic-interpreter 
+  (is-done? (m/basic-interpreter :stacks {:exec '()}  :config {:step-limit 99})) => true
+  (is-done? (m/basic-interpreter 
               :stacks {:exec '() :environment '({:integer '(9)})}
               :config {:step-limit 99})) => false)
 
@@ -255,8 +255,8 @@
 
 
 (fact "calling `step` doesn't affect the counter if :exec is empty of :done? is true"
-  (:counter (basic-interpreter)) => 0
-  (:counter (step (basic-interpreter))) => 0
+  (:counter just-basic) => 0
+  (:counter (step just-basic)) => 0
   (:counter (step (u/clear-stack knows-some-things :exec))) => 22)
 
 
@@ -288,7 +288,7 @@
 
 (fact "`merge-environment` overwrites most stacks"
   (:stacks (u/merge-environment 
-            (basic-interpreter)
+            just-basic
             {:integer '(1 2 3)
              :boolean '(false)
              :exec '(:foo)})) =>
@@ -309,35 +309,35 @@
 
 (fact "`merge-environment` keeps :unknown stack"
   (:stacks (u/merge-environment 
-            (assoc-in (basic-interpreter) [:stacks :unknown] '(7 77 777))
+            (assoc-in just-basic [:stacks :unknown] '(7 77 777))
             {:unknown '(1 2 3)})) =>
     (contains {:unknown '(7 77 777)}))
 
 
 (fact "`merge-environment` keeps :error stack"
   (:stacks (u/merge-environment 
-            (assoc-in (basic-interpreter) [:stacks :error] '(7 77 777))
+            (assoc-in just-basic [:stacks :error] '(7 77 777))
             {:error '(1 2 3)})) =>
     (contains {:error '(7 77 777)}))
 
 
 (fact "`merge-environment` keeps :log stack"
   (:stacks (u/merge-environment 
-            (assoc-in (basic-interpreter) [:stacks :log] '(7 77 777))
+            (assoc-in just-basic [:stacks :log] '(7 77 777))
             {:log '(1 2 3)})) =>
     (contains {:log '(7 77 777)}))
 
 
 (fact "`merge-environment` keeps :print stack"
   (:stacks (u/merge-environment 
-            (assoc-in (basic-interpreter) [:stacks :print] '(7 77 777))
+            (assoc-in just-basic [:stacks :print] '(7 77 777))
             {:print '(1 2 3)})) =>
     (contains {:print '(7 77 777)}))
 
 
 (fact "`merge-environment` does not keep the :exec stack (that's for :end-environment to do by hand)"
   (:stacks (u/merge-environment 
-            (assoc-in (basic-interpreter) [:stacks :exec] '(7 77 777))
+            (assoc-in just-basic [:stacks :exec] '(7 77 777))
             {:exec '(88)})) =>
     (contains {:exec '(88)}))
 
@@ -346,7 +346,7 @@
 
 
 (def ready-to-pop 
-  (make-classic-interpreter 
+  (c/classic-interpreter 
     :config {:step-limit 1000}
     :stacks {:exec '() 
              :environment '({:exec (3 33)})
@@ -359,7 +359,7 @@
 
 
 (def unready-to-pop 
-  (make-classic-interpreter 
+  (c/classic-interpreter 
     :config {:step-limit 1000}
     :stacks {:exec '() 
              :environment '()
@@ -421,7 +421,7 @@
 
 
 (future-fact "calling `produce-gazetteer` prints a list of all registered instructions, all bound inputs, all registered types and modules"
-  (produce-gazetteer (make-classic-interpreter :inputs [1 2 false 6.3 '(:code-do)])) => "")
+  (produce-gazetteer (c/classic-interpreter :inputs [1 2 false 6.3 '(:code-do)])) => "")
 
 
 ;; `run`
@@ -429,7 +429,7 @@
 ;; a fixture or two
 
 
-(def simple-things (make-classic-interpreter 
+(def simple-things (c/classic-interpreter 
                       :program [1 2 false :integer-add true :boolean-or]
                       :config {:step-limit 1000}))
 
@@ -473,7 +473,7 @@
 
 
 (def forever-8
-  (make-classic-interpreter :program [1 :exec-y 8]))
+  (c/classic-interpreter :program [1 :exec-y 8]))
 
 
 (fact "`run` doesn't care about halting conditions"
@@ -510,7 +510,7 @@
   (:done? (run forever-8 0)) =>               false
   (:done? (run forever-8 5)) =>               true
   (:done? (run forever-8 111)) =>             true
-  (:done? (run (basic-interpreter) 1926)) =>  false)
+  (:done? (run just-basic 1926)) =>  false)
 
 
 (fact "`run` produces a log"
@@ -523,8 +523,8 @@
 
 
 (fact "`run-until-done` runs an Interpreter until it reaches the first step when `:done?` is true"
-  (:counter (run-until-done (basic-interpreter))) => 0
-  (u/get-stack (run-until-done (basic-interpreter)) :log) => '()
+  (:counter (run-until-done just-basic)) => 0
+  (u/get-stack (run-until-done just-basic) :log) => '()
 
   (:counter (run-until-done simple-things)) => (:counter (run simple-things 1000))
 

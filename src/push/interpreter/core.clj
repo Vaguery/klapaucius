@@ -1,16 +1,5 @@
 (ns push.interpreter.core
   (:require [push.util.stack-manipulation :as u])
-  (:require [push.types.base.boolean])
-  (:require [push.types.base.char])
-  (:require [push.types.modules.code])
-  (:require [push.types.modules.exec])
-  (:require [push.types.base.float])
-  (:require [push.types.base.integer])
-  (:require [push.types.base.string])
-  (:require [push.types.modules.environment])
-  (:require [push.types.modules.print])
-  (:require [push.types.modules.log])
-  (:require [push.types.modules.error])
   (:require [push.util.exceptions :as oops])
   (:use [push.util.type-checkers])
   )
@@ -27,22 +16,11 @@
                         done?])
 
 
-(def core-stacks
-  "the basic types central to the Push language"
-    {:boolean '()
-    :char '()
-    :code '()
-    :environment '()
-    :error '()
-    :integer '() 
-    :exec '()
-    :float '()
-    :log '()
-    :string '()
-    :print '()
-    :return '()
-    :unknown '()
-    })
+(defn make-interpreter
+  "simple wrapper around ->Interpreter"
+  [program types router stacks inputs instructions config counter done?]
+  (->Interpreter
+    program types router stacks inputs instructions config counter done?))
 
 
 (defn register-type
@@ -123,119 +101,7 @@
       (add-instruction interpreter instruction)))
 
 
-(def basic-interpreter-default-config
-  { :lenient? false
-    :max-collection-size 131072
-    :step-limit 0      })
-
-
-(defn basic-interpreter
-  "With no arguments, it has an empty :program, the :stacks include
-  core types and are empty, no :instructions are registered, and the
-  counter is 0.
-
-  Any of these can be specified by key.
-
-  If a collection of :types is specified, the stacks are made and any
-  instructions defined in the PushType records are automatically
-  registered.
-
-  Valid :config items include:
-  - `step-limit`, which defaults to 0
-  - `:lenient?` if true, the :unknown stack is used for unrecognized items"
-  [& {:keys [program types router stacks inputs instructions config counter done?]
-      :or {program []
-           types '()
-           router []
-           stacks core-stacks
-           inputs {}
-           instructions {}
-           config {}
-           counter 0
-           done? false}}]
-  (let [all-stacks (merge core-stacks stacks)]
-    (-> (->Interpreter program 
-                      '()
-                      router
-                      all-stacks
-                      {} 
-                      instructions
-                      (merge basic-interpreter-default-config config)
-                      counter
-                      done?)
-        (register-types types)
-        (register-inputs inputs)
-        )))
-
-
-;;; make-classic-interpreter
-
-
-(defn make-classic-interpreter
-  "A convenience funciton that creates a new Interpreter record set up 'like Clojush'.
-
-  With no arguments, it has an empty :program, the :stacks include
-  core types and are empty, these types are loaded (in this order):
-  
-  - classic-boolean-type
-  - classic-char-type
-  - classic-code-module
-  - classic-environment-module
-  - classic-exec-module
-  - classic-integer-type
-  - classic-float-type
-  - classic-log-module
-  - classic-print-module
-  - classic-string-type
-
-  and the counter is 0.
-
-  Optional arguments include
-
-  - :program (defaults to an empty vector)
-  - :stacks (a hashmap, with contents)
-  - :inputs (either a vector of values or a hashmap of named bindings)
-  - :config
-  - :counter
-
-  (other interpreter values should be set after initialization)"
-  [& {:keys [program stacks inputs config counter done?]
-      :or {program []
-           stacks {}
-           inputs {}
-           instructions {}
-           config {}
-           counter 0
-           done? false}}]
-  (let [all-stacks (merge core-stacks stacks)]
-    (-> (->Interpreter  program 
-                        '()        ;; types
-                        []         ;; router
-                        all-stacks 
-                        {}         ;; inputs
-                        {}         ;; instructions
-                        (merge basic-interpreter-default-config config)
-                        counter
-                        done?)
-        (register-types [push.types.base.integer/classic-integer-type
-                         push.types.base.boolean/classic-boolean-type
-                         push.types.base.char/classic-char-type
-                         push.types.base.float/classic-float-type
-                         push.types.base.string/classic-string-type
-                         ])
-        (register-modules [push.types.modules.exec/classic-exec-module
-                           push.types.modules.log/classic-log-module
-                           push.types.modules.error/classic-error-module
-                           push.types.modules.code/classic-code-module
-                           push.types.modules.environment/classic-environment-module
-                           push.types.modules.print/classic-print-module])
-        (register-inputs inputs)
-        )))
-
-
-
 ;;; manipulating Interpreter state
-
 
 
 (defn- contains-at-least?

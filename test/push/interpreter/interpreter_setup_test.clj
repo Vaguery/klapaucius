@@ -10,37 +10,34 @@
   (:require [push.instructions.aspects.movable :as movable])
   (:require [push.instructions.aspects.comparable :as comparable])
   (:require [push.instructions.aspects.visible :as visible])
-  (:use [push.interpreter.core])
+  (:use push.interpreter.core)
+  (:require [push.interpreter.templates.minimum :as m])
+  (:require [push.interpreter.templates.classic :as c])
   )
 
 
-;;;; initialization with `basic-interpreter`
-
-
-;; NOTE: `basic-interpreter` is intended to be used to build EMPTY and/or
-;; "basic" interpreters with only bare-bones functionality, not competent
-;; Push-aware ones.
-
-
-;; To run Push programs immediately, you want `make-classic-interpreter` below.
+(def just-basic (m/basic-interpreter))
+(def classy (c/classic-interpreter))
 
 
 ;; program
 
 
 (fact "a new Interpreter will have an empty program"
-  (:program (basic-interpreter)) => [])
+  (:program just-basic) => [])
 
 
 (fact "a Push program (a vector) can be passed into basic-interpreter"
-  (:program (basic-interpreter :program [1 2 3])) => [1 2 3])
+  (:program (m/basic-interpreter :program [1 2 3])) => [1 2 3])
 
 
 ;; config defaults
 
 
 (fact "a `basic-interpreter` has its :step-limit set to 0 by default"
-  (:step-limit (:config (basic-interpreter))) => 0)
+  (:step-limit (:config just-basic)) => 0)
+
+
 
 ; a fixture or two 
 
@@ -87,38 +84,38 @@
 
 
 (fact "if unspecified, the :router table is empty"
-  (:router (basic-interpreter)) => [])
+  (:router just-basic) => [])
 
 
 (fact "a :router table can be added manually"
-  (:router (basic-interpreter :router [[integer? :code]])) => [[integer? :code]])
+  (:router (m/basic-interpreter :router [[integer? :code]])) => [[integer? :code]])
 
 
 ;; register-type
 
 
 (fact "`register-type` adds the type passed in to an Interpreter"
-  (:types (register-type (basic-interpreter) foo-type)) => 
+  (:types (register-type just-basic foo-type)) => 
     (contains foo-type))
 
 
 (fact "`register-type` adds the stack type to the Interpreter stacks, if needed"
-  (keys (:stacks (register-type (basic-interpreter) foo-type))) => (contains :foo))
+  (keys (:stacks (register-type just-basic foo-type))) => (contains :foo))
 
 
 (fact "`register-type` adds any instructions attached to the type to the Interpreter"
-  (keys (:instructions (register-type (basic-interpreter) foo-type))) => 
+  (keys (:instructions (register-type just-basic foo-type))) => 
     (contains [:foo-rotate :foo-equal? :foo>? :foo-stackdepth :foo-notequal?
                 :foo<? :foo-pop :foo-flush :foo-empty? :foo-dup :foo-min :foo≥? 
                 :foo-swap :foo-max :foo-shove :foo≤? :foo-yankdup :foo-yank] :in-any-order))
 
 
 (fact "`register-type` adds the :recognizer to the Interpreter's :router collection"
-  (:router (basic-interpreter)) => []
-  (:router (register-type (basic-interpreter) foo-type)) =>
+  (:router just-basic) => []
+  (:router (register-type just-basic foo-type)) =>
     [ [(:recognizer foo-type) :foo] ]
 
-  (:router (->  (basic-interpreter) 
+  (:router (->  just-basic 
                 (register-type foo-type)
                 (register-type bar-type))) =>
     [ [(:recognizer foo-type) :foo] 
@@ -126,7 +123,7 @@
 
 
 (fact "`register-type` does not empty a stack if it already contains stuff"
-  (let [loaded-with-foo (basic-interpreter :stacks {:foo '(7 77 777)})]
+  (let [loaded-with-foo (m/basic-interpreter :stacks {:foo '(7 77 777)})]
     (u/get-stack loaded-with-foo :foo) => '(7 77 777)
     (u/get-stack (register-type loaded-with-foo foo-type) :foo) => '(7 77 777)))
 
@@ -155,24 +152,24 @@
 
 (fact "`register-module` adds any instructions attached to the module to the Interpreter"
   (keys (:instructions 
-    (register-module (basic-interpreter) foo-module))) => '(:foo-barbaz :foo-barqux))
+    (register-module just-basic foo-module))) => '(:foo-barbaz :foo-barqux))
 
 
 ;; register-types
 
 
 (fact "`register-types` will register a collection of PushTypes"
-  (:types (register-types (basic-interpreter) [foo-type bar-type])) => 
+  (:types (register-types just-basic [foo-type bar-type])) => 
     (contains [foo-type bar-type] :in-any-order))
 
 
 (fact "`register-types` sets up all the stacks"
-  (keys (:stacks (register-types (basic-interpreter) [foo-type bar-type]))) =>
+  (keys (:stacks (register-types just-basic [foo-type bar-type]))) =>
     (contains [:foo :bar] :in-any-order :gaps-ok))
 
 
 (fact "`register-types` adds all the instructions"
-  (sort (keys (:instructions (register-types (basic-interpreter)
+  (sort (keys (:instructions (register-types just-basic
                                         [foo-type bar-type])))) => 
     '(:bar-dup :bar-empty? :bar-equal? :bar-flush :bar-notequal? 
       :bar-pop :bar-rotate :bar-shove :bar-stackdepth :bar-swap 
@@ -199,7 +196,7 @@
 
 
 (fact "`register-modules` adds all the instructions"
-  (sort (keys (:instructions (register-modules (basic-interpreter)
+  (sort (keys (:instructions (register-modules just-basic
                                                [foo-module bar-module])))) => 
     '(:bar-barbaz :foo-barbaz :foo-barqux))
 
@@ -208,19 +205,19 @@
 
 
 (fact "a list of PushTypes can be passed into `basic-interpreter` and are added to :types"
-  (map :name (:types (basic-interpreter :types [foo-type]))) => 
+  (map :name (:types (m/basic-interpreter :types [foo-type]))) => 
     '(:foo)
-  (map :name (:types (basic-interpreter :types [foo-type bar-type]))) => 
+  (map :name (:types (m/basic-interpreter :types [foo-type bar-type]))) => 
     (just [:bar :foo]))
 
 
 (fact "if a PushType is passed into `basic-interpreter`, its stack is added"
-    (keys (:stacks (basic-interpreter :types [foo-type]))) =>
+    (keys (:stacks (m/basic-interpreter :types [foo-type]))) =>
             (contains :foo))
 
 
 (fact "if a PushType is passed into `basic-interpreter`, its instructions are registered"
-  (keys (:instructions (basic-interpreter :types [foo-type]))) =>
+  (keys (:instructions (m/basic-interpreter :types [foo-type]))) =>
     (contains [:foo-rotate :foo-equal? :foo>? :foo-stackdepth :foo-notequal? 
                :foo<? :foo-pop :foo-flush :foo-empty? :foo-dup :foo-min 
                :foo≥? :foo-swap :foo-max :foo-shove :foo≤? :foo-yankdup 
@@ -229,14 +226,14 @@
 
 (fact "if a PushType is passed into `basic-interpreter`, its recognizer is added to the :router"
   (let [foo-recognizer [(:recognizer foo-type) :foo] ]
-    (:router (basic-interpreter :types [foo-type])) => (contains [foo-recognizer])))
+    (:router (m/basic-interpreter :types [foo-type])) => (contains [foo-recognizer])))
 
 
 ;; finesse (justified paranoia)
 
 
 (fact "registering a new type in an Interpreter with stuff defined still leaves that stuff intact"
-  (let [knows-foo (basic-interpreter :types [foo-type])]
+  (let [knows-foo (m/basic-interpreter :types [foo-type])]
     (map :name (:types (register-type knows-foo bar-type))) => 
         '(:bar :foo)
     (keys (:stacks (register-type knows-foo bar-type))) =>
@@ -254,31 +251,31 @@
 
 
 (fact "a new Interpreter will have an :instructions map, empty by default"
-  (:instructions (basic-interpreter)) => {})
+  (:instructions just-basic) => {})
 
 
 ;; inputs
 
 
 (fact "a new Interpreter passed an :inputs vector will have the bindings registered"
-  (:inputs (basic-interpreter :inputs [1 2 3 4])) =>
+  (:inputs (m/basic-interpreter :inputs [1 2 3 4])) =>
     {:input!1 1, :input!2 2, :input!3 3, :input!4 4})
 
 
 (fact "a new Interpreter passed an :inputs hashmap will have the bindings registered"
-  (:inputs (basic-interpreter :inputs {:a 2 :b 4})) => {:a 2, :b 4})
+  (:inputs (m/basic-interpreter :inputs {:a 2 :b 4})) => {:a 2, :b 4})
 
 
 ;; config
 
 
 (fact "a new Interpreter will have a :config map"
-  (nil? (:config (basic-interpreter))) => false
-  (empty? (:config (basic-interpreter))) => false)
+  (nil? (:config just-basic)) => false
+  (empty? (:config just-basic)) => false)
 
 
 (fact "a new Interpreter can have :config items set or overridden at creation"
-  (:config (basic-interpreter :config {:lenient? true :foo 8})) =>
+  (:config (m/basic-interpreter :config {:lenient? true :foo 8})) =>
     (contains {:foo 8}))
 
 
@@ -286,27 +283,27 @@
 
 
 (fact "a new Interpreter will have counter = 0"
-  (:counter (basic-interpreter)) => 0)
+  (:counter just-basic) => 0)
 
 
 (fact "a counter value can be passed into basic-interpreter"
-  (:counter (basic-interpreter :counter 771)) => 771 )
+  (:counter (m/basic-interpreter :counter 771)) => 771 )
 
 
 ;; done?
 
 
 (fact "a new interpreter will have a default :done? setting of false"
-  (:done? (basic-interpreter)) => false )
+  (:done? just-basic) => false )
 
 
 (fact "a new interpreter can have :done? set as an option"
-  (:done? (basic-interpreter :done? true)) => true )
+  (:done? (m/basic-interpreter :done? true)) => true )
 
 
 
 (fact "the core stack types are defined"
-  (keys core-stacks) =>  (contains [:boolean
+  (keys m/minimal-stacks) =>  (contains [:boolean
                                     :char
                                     :code
                                     :environment
@@ -326,86 +323,86 @@
 
 
 (fact "a new Interpreter will have all the core stacks"
-  (keys (:stacks (basic-interpreter))) => (keys core-stacks))
+  (keys (:stacks just-basic)) => (keys m/minimal-stacks))
 
 
 (fact "basic-interpreter can be passed a hashmap of populated stacks to merge into the core"
-  (u/get-stack (basic-interpreter) :integer ) => '()
-  (u/get-stack (basic-interpreter :stacks {:integer '(7 6 5)}) :integer ) => '(7 6 5)
-  (u/get-stack (basic-interpreter :stacks {:foo '(7 6 5)}) :foo ) => '(7 6 5)
-  (u/get-stack (basic-interpreter :stacks {:foo '(7 6 5)}) :integer ) => '()
-  (u/get-stack (basic-interpreter) :foo ) => nil)
+  (u/get-stack just-basic :integer ) => '()
+  (u/get-stack (m/basic-interpreter :stacks {:integer '(7 6 5)}) :integer ) => '(7 6 5)
+  (u/get-stack (m/basic-interpreter :stacks {:foo '(7 6 5)}) :foo ) => '(7 6 5)
+  (u/get-stack (m/basic-interpreter :stacks {:foo '(7 6 5)}) :integer ) => '()
+  (u/get-stack just-basic :foo ) => nil)
 
 
-;;;; make-classic-interpreter
+;;;; classic-interpreter
 
 
 ;; this function creates a Push interpreter that pre-loads all the core types
 ;; and their instructions on creation
 
 
-(fact "`make-classic-interpreter` has `classic-integer-type` registered"
-  (:types (make-classic-interpreter)) =>
+(fact "`classic-interpreter` has `classic-integer-type` registered"
+  (:types classy) =>
     (contains push.types.base.integer/classic-integer-type))
 
 
-(fact "`make-classic-interpreter` has `classic-boolean-type` registered"
-  (:types (make-classic-interpreter)) =>
+(fact "`classic-interpreter` has `classic-boolean-type` registered"
+  (:types classy) =>
     (contains push.types.base.boolean/classic-boolean-type))
 
 
-(fact "`make-classic-interpreter` has `classic-string-type` registered"
-  (:types (make-classic-interpreter)) =>
+(fact "`classic-interpreter` has `classic-string-type` registered"
+  (:types classy) =>
     (contains push.types.base.string/classic-string-type))
 
 
-(fact "`make-classic-interpreter` has `classic-char-type` registered"
-  (:types (make-classic-interpreter)) =>
+(fact "`classic-interpreter` has `classic-char-type` registered"
+  (:types classy) =>
     (contains push.types.base.char/classic-char-type))
 
 
-(fact "`make-classic-interpreter` has `classic-float-type` registered"
-  (:types (make-classic-interpreter)) =>
+(fact "`classic-interpreter` has `classic-float-type` registered"
+  (:types classy) =>
     (contains push.types.base.float/classic-float-type))
 
 
-(fact "`make-classic-interpreter` has `classic-code-module` registered"
-  (keys (:instructions (make-classic-interpreter))) =>
+(fact "`classic-interpreter` has `classic-code-module` registered"
+  (keys (:instructions classy)) =>
     (contains :code-stackdepth)) ;; there's probably a more appropriate check
 
 
-(fact "`make-classic-interpreter` has `classic-exec-module` registered"
-  (keys (:instructions (make-classic-interpreter))) =>
+(fact "`classic-interpreter` has `classic-exec-module` registered"
+  (keys (:instructions classy)) =>
     (contains :exec-stackdepth))  ;; there's probably a more appropriate check
 
 
-(fact "`make-classic-interpreter` can have its :stacks set"
-  (keys (:stacks (make-classic-interpreter))) => (contains
+(fact "`classic-interpreter` can have its :stacks set"
+  (keys (:stacks classy)) => (contains
     [:boolean :char :code :environment :error :exec :float :integer :log :print :return :string :unknown]
     :in-any-order)
-  (:integer (:stacks (make-classic-interpreter :stacks {:integer '(8)}))) => '(8)
-  (:boolean (:stacks (make-classic-interpreter :stacks {:boolean '(:test)}))) => '(:test))
+  (:integer (:stacks (c/classic-interpreter :stacks {:integer '(8)}))) => '(8)
+  (:boolean (:stacks (c/classic-interpreter :stacks {:boolean '(:test)}))) => '(:test))
 
 
-(fact "`make-classic-interpreter` can have its :inputs set"
-  (:inputs (make-classic-interpreter)) => {}
-  (:inputs (make-classic-interpreter :inputs [1 2 3])) => {:input!1 1, :input!2 2, :input!3 3}
-  (:inputs (make-classic-interpreter :inputs {:a 8 :b false})) => {:a 8, :b false})
+(fact "`classic-interpreter` can have its :inputs set"
+  (:inputs classy) => {}
+  (:inputs (c/classic-interpreter :inputs [1 2 3])) => {:input!1 1, :input!2 2, :input!3 3}
+  (:inputs (c/classic-interpreter :inputs {:a 8 :b false})) => {:a 8, :b false})
   
 
-(fact "`make-classic-interpreter` can have its :config set"
-  (:config (make-classic-interpreter)) => basic-interpreter-default-config
-  (:config (make-classic-interpreter :config {:weird-config 88})) => 
+(fact "`classic-interpreter` can have its :config set"
+  (:config classy) => m/interpreter-default-config
+  (:config (c/classic-interpreter :config {:weird-config 88})) => 
     (contains {:weird-config 88}))
 
 
-(fact "`make-classic-interpreter` can have its :counter set"
-  (:counter (make-classic-interpreter)) => 0
-  (:counter (make-classic-interpreter :counter 7777)) => 7777)
+(fact "`classic-interpreter` can have its :counter set"
+  (:counter classy) => 0
+  (:counter (c/classic-interpreter :counter 7777)) => 7777)
 
 
-(fact "`make-classic-interpreter` knows all kinds of instructions already"
-  (let [benchmarker (make-classic-interpreter)]
+(fact "`classic-interpreter` knows all kinds of instructions already"
+  (let [benchmarker classy]
     (println (str "Classic Interpreter: "
                   (count (keys (:instructions benchmarker)))
                   " instructions, "
@@ -435,13 +432,13 @@
 (fact "register-instruction adds an Instruction to the registry in a specified Interpreter"
   (let [foo (i/make-instruction :foo)]
     (keys (:instructions 
-      (register-instruction (basic-interpreter) foo))) => '(:foo)
-    (:foo (:instructions (register-instruction (basic-interpreter) foo))) => foo))
+      (register-instruction just-basic foo))) => '(:foo)
+    (:foo (:instructions (register-instruction just-basic foo))) => foo))
 
 
 (fact "register-instruction throws an exception if a token is reassigned (because that's what Clojush does)"
   (let [foo (i/make-instruction :foo)]
-    (register-instruction (register-instruction (basic-interpreter) foo) foo) =>
+    (register-instruction (register-instruction just-basic foo) foo) =>
       (throws Exception "Push Instruction Redefined:':foo'")))
 
 
@@ -450,17 +447,17 @@
 
 (fact "contains-at-least? returns true if the count of the specified stack is >= the number"
   (let [abbr #'push.interpreter.core/contains-at-least?]
-  (abbr (basic-interpreter) :integer 0) => true
-  (abbr (basic-interpreter) :integer 3) => false
-  (abbr (basic-interpreter :stacks {:integer '(1 2 3)}) :integer 3) => true
-  (abbr (basic-interpreter :stacks {:integer '(1 2 3)}) :integer 2) => true))
+  (abbr just-basic :integer 0) => true
+  (abbr just-basic :integer 3) => false
+  (abbr (m/basic-interpreter :stacks {:integer '(1 2 3)}) :integer 3) => true
+  (abbr (m/basic-interpreter :stacks {:integer '(1 2 3)}) :integer 2) => true))
 
 
 (fact "contains-at-least? returns false if the named stack isn't present"
   (let [abbr #'push.interpreter.core/contains-at-least?]
 
-  (abbr (basic-interpreter) :foo 0) => false
-  (abbr (basic-interpreter) :boolean 0) => true))
+  (abbr just-basic :foo 0) => false
+  (abbr just-basic :boolean 0) => true))
 
 
 ;; ready-for-instruction?
@@ -471,9 +468,9 @@
         foo
           (i/make-instruction :foo :needs {:integer 2})
         an-int
-          (register-instruction (basic-interpreter :stacks {:integer '(1)}) foo)
+          (register-instruction (m/basic-interpreter :stacks {:integer '(1)}) foo)
         many-ints
-          (register-instruction (basic-interpreter :stacks {:integer '(1 2 3 4)}) foo)]
+          (register-instruction (m/basic-interpreter :stacks {:integer '(1 2 3 4)}) foo)]
     (count (u/get-stack an-int :integer)) => 1
     (abbr an-int :foo) => false
     (count (u/get-stack many-ints :integer )) => 4
@@ -487,7 +484,7 @@
         foo
           (i/make-instruction :foo :needs {:integer 2})
         an-int
-          (register-instruction (basic-interpreter :stacks {:integer '(1)}) foo)]
+          (register-instruction (m/basic-interpreter :stacks {:integer '(1)}) foo)]
     (abbr an-int :bar) => false))
 
 
@@ -498,7 +495,7 @@
   (let [foo (i/make-instruction :foo :transaction (fn [a] 99))
         bar (i/make-instruction :bar)
         he-knows-foo (register-instruction
-          (register-instruction (basic-interpreter) foo) bar)]
+          (register-instruction just-basic foo) bar)]
     (keys (:instructions he-knows-foo)) => (just :foo :bar)
     (execute-instruction he-knows-foo :foo) => 99
     (execute-instruction he-knows-foo :bar) => he-knows-foo))
@@ -506,7 +503,7 @@
 
 (fact "execute-instruction will add an :error message if the needs aren't met"
   (let [foo (i/make-instruction :foo :needs {:integer 3} :transaction (fn [a] 99))
-      he-knows-foo (register-instruction (basic-interpreter) foo)]
+      he-knows-foo (register-instruction just-basic foo)]
     (u/get-stack (execute-instruction he-knows-foo :foo) :error) => 
       '({:step 0 :item ":foo missing arguments"})
     (execute-instruction
@@ -514,27 +511,27 @@
 
 
 (fact "execute-instruction will throw an Exception if the token is not registered"
-    (execute-instruction (basic-interpreter) :foo) => (throws #"Unknown Push instruction:"))
+    (execute-instruction just-basic :foo) => (throws #"Unknown Push instruction:"))
 
 
 ;; utilities and helpers
 
 
 (fact "u/get-stack is a convenience function for reading the named stack"
-  (u/get-stack (basic-interpreter :stacks {:boolean '(false true)}) :boolean) =>
+  (u/get-stack (m/basic-interpreter :stacks {:boolean '(false true)}) :boolean) =>
     '(false true))
 
 
 (fact "u/get-stack will happily look up and return any named stack"
-  (u/get-stack (basic-interpreter) :foo) => nil)
+  (u/get-stack just-basic :foo) => nil)
 
 
 (fact "u/get-stack will return an empty list for an existing (but empty) stack"
-  (u/get-stack (basic-interpreter) :integer) => '())
+  (u/get-stack just-basic :integer) => '())
 
 
 (fact "u/set-stack replaces a stack completely"
-  (u/get-stack (u/set-stack (basic-interpreter) :integer '(1 2 3)) :integer) => '(1 2 3)
+  (u/get-stack (u/set-stack just-basic :integer '(1 2 3)) :integer) => '(1 2 3)
   )
 
 
@@ -550,7 +547,7 @@
  (let [abbr #'push.interpreter.core/instruction?
        foo (i/make-instruction :foo)
        registry {:foo foo}
-       he-knows-foo (basic-interpreter :instructions registry)]
+       he-knows-foo (m/basic-interpreter :instructions registry)]
    (abbr he-knows-foo :foo) => true
    (abbr he-knows-foo :bar) => false))
 
@@ -559,19 +556,19 @@
 
 
 (fact "push-item pushes the specified item to the stack, returning the updated Interpreter"
-  (u/get-stack (push-item (basic-interpreter) :integer 9) :integer) => '(9)
+  (u/get-stack (push-item just-basic :integer 9) :integer) => '(9)
   (u/get-stack (push-item 
-    (basic-interpreter :stacks {:integer '(1 2 3)}) :integer 9) :integer) => '(9 1 2 3))
+    (m/basic-interpreter :stacks {:integer '(1 2 3)}) :integer 9) :integer) => '(9 1 2 3))
 
 
 (fact "push-item does not do type-checking"
   (u/get-stack (
-    push-item (basic-interpreter :stacks {:integer '(1 2 3)}) :integer false)  :integer) =>
+    push-item (m/basic-interpreter :stacks {:integer '(1 2 3)}) :integer false)  :integer) =>
     '(false 1 2 3))
 
 
 (fact "push-item will create a stack if told to"
-  (u/get-stack (push-item (basic-interpreter) :foo [1 :weird :thing]) :foo) =>
+  (u/get-stack (push-item just-basic :foo [1 :weird :thing]) :foo) =>
     '([1 :weird :thing]))
 
 

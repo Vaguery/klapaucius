@@ -2,6 +2,7 @@
   (:use midje.sweet)
   (:use push.util.stack-manipulation)
   (:require [push.interpreter.core :as i])
+  (:require [push.interpreter.templates.minimum :as m])
   (:use push.types.core)
   (:use push.instructions.aspects.returnable)
   (:use push.types.modules.environment)
@@ -22,12 +23,12 @@
     (:token foo-return) => :foo-return
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/basic-interpreter :stacks {:foo '(2)}) foo-return)
+        (i/register-instruction (m/basic-interpreter :stacks {:foo '(2)}) foo-return)
         :foo-return)
       :return) => '(2)
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/basic-interpreter :stacks {:foo '(2)}) foo-return)
+        (i/register-instruction (m/basic-interpreter :stacks {:foo '(2)}) foo-return)
         :foo-return)
       :foo) => '()))
 
@@ -39,11 +40,11 @@
     (:token foo-return-pop) => :foo-return-pop
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/basic-interpreter :stacks {:foo '(2)}) foo-return-pop)
+        (i/register-instruction (m/basic-interpreter :stacks {:foo '(2)}) foo-return-pop)
         :foo-return-pop)
       :return) => '(:foo-pop)
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/basic-interpreter :stacks {:foo '(2)}) foo-return-pop)
+        (i/register-instruction (m/basic-interpreter :stacks {:foo '(2)}) foo-return-pop)
         :foo-return-pop)
       :foo) => '(2)))

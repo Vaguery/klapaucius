@@ -4,6 +4,7 @@
   (:require [push.instructions.dsl :as d])
   (:require [push.interpreter.core :as i])
   (:require [push.types.core :as t])
+  (:require [push.interpreter.templates.minimum :as m])
   (:use [push.instructions.aspects.visible])
   (:use [push.instructions.aspects.equatable])
   (:use [push.instructions.aspects.comparable])
@@ -100,7 +101,7 @@
                   (d/consume-top-of :foo :as :in)
                   (d/push-onto :bar :in))
         context (i/register-instruction 
-                  (i/basic-interpreter :stacks {:foo '(1 2 3) :bar '(4 5 6)})
+                  (m/basic-interpreter :stacks {:foo '(1 2 3) :bar '(4 5 6)})
                   foobar)]
   (u/get-stack (i/execute-instruction context :foobar) :bar ) => '(1 4 5 6)
   (u/get-stack (i/execute-instruction context :foobar) :foo ) => '(2 3)))

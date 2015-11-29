@@ -1,5 +1,6 @@
 (ns push.interpreter.templates.one-with-everything
   (:require [push.util.stack-manipulation :as u])
+  (:require [push.interpreter.templates.minimum :as m])
   (:use push.types.base.boolean)
   (:use push.types.base.char)
   (:use push.types.modules.code)
@@ -100,14 +101,14 @@
            config {}
            counter 0
            done? false}}]
-  (let [all-stacks (merge core-stacks stacks)]
+  (let [all-stacks (merge m/minimal-stacks stacks)]
     (-> (->Interpreter  program 
                         '()        ;; types
                         []         ;; router
                         all-stacks 
                         {}         ;; inputs
                         {}         ;; instructions
-                        (merge basic-interpreter-default-config config)
+                        (merge m/interpreter-default-config config)
                         counter
                         done?)
         (register-types all-kinds-of-types)

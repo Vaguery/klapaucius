@@ -3,6 +3,7 @@
   (:use [push.util.test-helpers])
   (:require [push.interpreter.core :as i])
   (:require [push.util.stack-manipulation :as u])
+  (:require [push.interpreter.templates.classic :as c])
   (:use [push.types.modules.environment])
   )
 
@@ -111,7 +112,7 @@
 
 ;; a big fixture
 
-(def starting-here (i/make-classic-interpreter :stacks {:integer '(1 2)
+(def starting-here (c/classic-interpreter :stacks {:integer '(1 2)
                                                         :error '(:oops :ow)
                                                         :print '("hi")
                                                         :log '(1 2 3)

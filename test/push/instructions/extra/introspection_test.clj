@@ -4,6 +4,7 @@
   (:require [push.interpreter.core :as i])
   (:require [push.types.core :as t])
   (:require [push.util.code-wrangling :as u])
+  (:require [push.interpreter.templates.classic :as c])
   (:use push.instructions.extra.introspection)
   )
 
@@ -12,7 +13,7 @@
 
 (def simple-case 
   (i/register-type
-    (i/make-classic-interpreter :inputs {:c 1 :b false} :counter 77)
+    (c/classic-interpreter :inputs {:c 1 :b false} :counter 77)
     standard-introspection-module))
 
 

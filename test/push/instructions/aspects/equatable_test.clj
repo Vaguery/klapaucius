@@ -2,6 +2,7 @@
   (:use midje.sweet)
   (:use push.util.stack-manipulation)
   (:require [push.interpreter.core :as i])
+  (:require [push.interpreter.templates.minimum :as m])
   (:use push.types.core)
   (:use push.instructions.aspects.equatable)
   )
@@ -17,12 +18,12 @@
     (:token foo-equal) => :foo-equal?
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/basic-interpreter :stacks {:foo '(1 2)}) foo-equal)
+        (i/register-instruction (m/basic-interpreter :stacks {:foo '(1 2)}) foo-equal)
         :foo-equal?)
       :boolean) => '(false)
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/basic-interpreter :stacks {:foo '(1 1)}) foo-equal)
+        (i/register-instruction (m/basic-interpreter :stacks {:foo '(1 1)}) foo-equal)
         :foo-equal?)
       :boolean) => '(true)))
 
@@ -34,12 +35,12 @@
     (:token foo-notequal) => :foo-notequal?
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/basic-interpreter :stacks {:foo '(1 2)}) foo-notequal)
+        (i/register-instruction (m/basic-interpreter :stacks {:foo '(1 2)}) foo-notequal)
         :foo-notequal?)
       :boolean) => '(true)
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/basic-interpreter :stacks {:foo '(1 1)}) foo-notequal)
+        (i/register-instruction (m/basic-interpreter :stacks {:foo '(1 1)}) foo-notequal)
         :foo-notequal?)
       :boolean) => '(false)))
 

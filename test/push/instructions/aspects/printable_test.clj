@@ -2,6 +2,7 @@
   (:use midje.sweet)
   (:use push.util.stack-manipulation)
   (:require [push.interpreter.core :as i])
+  (:require [push.interpreter.templates.minimum :as m])
   (:use push.types.core)
   (:use push.instructions.aspects.printable)
   (:use push.types.modules.print)
@@ -22,12 +23,12 @@
     (:token foo-print) => :foo-print
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/basic-interpreter :stacks {:foo '(2)}) foo-print)
+        (i/register-instruction (m/basic-interpreter :stacks {:foo '(2)}) foo-print)
         :foo-print)
       :print) => '(2)
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (i/basic-interpreter :stacks {:foo '(2)}) foo-print)
+        (i/register-instruction (m/basic-interpreter :stacks {:foo '(2)}) foo-print)
         :foo-print)
       :foo) => '()
 ))
