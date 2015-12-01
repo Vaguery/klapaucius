@@ -41,9 +41,9 @@ Exploring any interesting problem will entail writing new types. In this `Interp
                              :attributes #{:numeric}))
 ~~~
 
-That is, it has a unique identifier (which is, as it happens, exactly the name of the stack to which it will be sent by the `Interpreter`), it has a `:recognizer` (which is exactly the function that will send it to that stack from `:exec`), and it has some labeling junk you need not worry about. That's actually the entirely of the type definition.
+That is, it has a unique identifier (which is, as it happens, exactly the name of the stack to which it will be sent by the `Interpreter`), it has a `:recognizer` (which is exactly the function that will send it to that stack from `:exec`), and it has some labeling junk you need not worry about. That's actually the entirety of the type definition.
 
-That said, what I've written above is a type with no associated instructions, so it will probably (but not necessarily) pretty boring in practice. It will be recognized if it shows up in a program, and it will be sent to the `:integer` stack. I could as easily (and usefully) define a `:robot` type with 
+That said, what I've written above is a type with no associated instructions, so it will probably (but not necessarily) be pretty boring in practice. It will be recognized if it shows up in a program, and it will be sent to the `:integer` stack. I could as easily (and usefully) define a `:robot` type with 
 
 ~~~clojure
 (def fancy-robot-type
@@ -144,7 +144,7 @@ So here's a useful design pattern for you to keep in mind when you're considerin
         ...
 ~~~
 
-In other words, it will end up being the word `:complex`, maybe a simple rules for discriminating it from a regular real number, and then a load of salient complex number _behavior_ in the form of instruction definitions.
+In other words, it will end up being the word `:complex`, maybe a simple rule for discriminating it from a regular real number, and then a load of salient complex number _behavior_ in the form of instruction definitions.
 
 ### Aspects: Tasty Bundles of Behavior
 
