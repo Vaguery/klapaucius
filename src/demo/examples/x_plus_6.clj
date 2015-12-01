@@ -128,7 +128,7 @@
 (defn random-push-item
   [interpreter]
   (let [diceroll (rand-int 20)]
-    (condp #(<= %1 %2) diceroll
+    (condp <= diceroll
       15 (random-float 100)
       13 (random-integer 100)
       11 (random-boolean)
