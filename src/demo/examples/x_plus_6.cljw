@@ -10,14 +10,19 @@
   (:use clojure.pprint)
   )
 ;; @@
+;; ->
+;;; [36mRun `(doc midje)` for Midje usage.[0m
+;;; 
+;; <-
 ;; =>
 ;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}
 ;; <=
 
 ;; **
-;;; # The x-plus-6 example
+;;; # A trivial symbolic regression problem:
+;;; ## The X-plus-6 Example
 ;;; 
-;;; A walk-through for a trivially simple use case of the Push interpreter.
+;;; A walk-through for using the Push-in-Clojure interpreter in a trivially simple curve-fitting problem.
 ;; **
 
 ;; **
@@ -126,8 +131,7 @@
 ;; <=
 
 ;; **
-;;; ... and what those are:
-;;; 
+;;; ... and what those instructions are:
 ;; **
 
 ;; @@
@@ -143,7 +147,11 @@
 ;; <=
 
 ;; **
-;;; If I'm going to be making random Push programs from these instructions, I'll need to have a way of selecting random instructions. And I'll also want at least a few kinds of random literal values. Let me define a few functions to that end here:
+;;; That feels like a lot of instructions, but to be honest most of them are simple take-one-of-these-and-put-it-over-there "movers" and "converters".
+;; **
+
+;; **
+;;; If I'm going to be making random Push programs from these instructions, I'll need to have a way of selecting random instructions. And by force of habit, I also want there to be at least a few kinds of random literal values, and probably I should give them access to the input variable `:x` I've defined. So let's define a few functions to that end here:
 ;; **
 
 ;; @@
@@ -176,9 +184,9 @@
 ;; <=
 
 ;; **
-;;; That's should do, at least for a simple "guess". I can pick (with uniform probability) any of the `instructions` from an interpreter, a floating-point number, an integer, any of the defined `inputs` from an interpreter, and a cion-flip true-false value.
+;;; That's should do, at least for a simple "guess". I can pick (with uniform probability) any of the `instructions` from an interpreter, a floating-point number, an integer, any of the defined `inputs` from an interpreter, and a coin-flip `true`/`false` value.
 ;;; 
-;;; A lot of the complex behavior of Push code-composing instructions depends on the presence of lists of things (including other lists of things) in the programs, so let's write a function for making those as well. At this point anything seems reasonable (after all, I'm throwing it in out of curiosity), so how about little chunks of five other items?
+;;; A lot of the complex behavior of Push code-composing instructions depends on the presence of _lists_ of things (including other lists of things) in the programs, so let's write a function for making those as well. At this point anything seems reasonable (after all, I'm throwing it in out of curiosity), so how about little chunks of five other items?
 ;;; 
 ;;; The trick of course is that I'd like a "list of `random-push-item`" to actually _be_ a kind of `random-push-item`, so I'll need to `declare` that function here first, before I define it below.
 ;; **
@@ -221,23 +229,37 @@
 ;; <=
 
 ;; **
+;;; ### No "Genomes"
+;;; 
+;;; I feel it's important to note there is no separate "genome" data structure in this example, even though there will be in almost any interesting GP project. What I've been building here is simply a way of generating a Push _program_, which is to say runnable code as far as our `Interpreter` is concerned.
+;;; 
+;;; Most "genome" structures (scare quotes intentional, because you don't need to be evolving populations or invoking that biological metaphor) differ from runnable code in support of _evolvability_ or more generally _mutability_. That is, there are extra data structure aspects of "genomes" which have nothing to do with what the final program an `Interpreter` runs will do, but which rather help you snip up different prospects or transform them in some other useful way as you incrementally improve them. They're a layer of semantics that doesn't refer to the running program, but rather in the other direction to the search algorithm you're using.
+;; **
+
+;; **
+;;; ### Checking to see
+;;; 
 ;;; I should have a look and see what my `random-push-program` produces.
 ;; **
 
 ;; @@
 (def my-sample (random-push-program 7))
+
 (println my-sample)
+
+(def my-stable-sample          ;; this is one I "prepared earlier"
+'[:integer-max 300.0 ( :x ( :integers-flipstack 171.875 31 true true) 106.25 :x true) 246.875 30 :char-shove ( 28 :strings-generalize :booleans-yankdup :print-empty? ( 203.125 :chars-stackdepth false :x 221.875))])
 ;; @@
 ;; ->
-;;; [:integer-max 300.0 (:x (:integers-flipstack 171.875 31 true true) 106.25 :x true) 246.875 30 :char-shove (28 :strings-generalize :booleans-yankdup :print-empty? (203.125 :chars-stackdepth false :x 221.875))]
+;;; [:boolean-rotate 56.25 150.0 :x (:chars-fromexample true (false true (:char-cutflip :strings-shatter true 90 128.125) 81 44) :strings-concat 159.375) :x 50.0]
 ;;; 
 ;; <-
 ;; =>
-;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}
+;;; {"type":"html","content":"<span class='clj-var'>#&#x27;x-plus-six/my-stable-sample</span>","value":"#'x-plus-six/my-stable-sample"}
 ;; <=
 
 ;; **
-;;; That preceding cell is dynamically calculated every time this worksheet is re-evaluated, so let me copy down here what I see in mine, and format it a bit by hand to highlight the nested structure:
+;;; That preceding cell will be dynamically calculated every time this worksheet is re-evaluated, so I've gone ahead and run it myself, copied the random program my run produced, and saved it in the `var` `my-stable-sample` so we I can talk about it here. In case the formatting of the previous cell has changed, let me copy `my-stable-sample` over here, and format it a bit by hand to highlight its nested structure:
 ;;; 
 ;;;     [:integer-max
 ;;;      300.0 
@@ -263,7 +285,9 @@
 ;;;          :x 
 ;;;          221.875))]
 ;;; 
-;;; So that's interesting. It's more than seven items, of course, since there are a few `random-code` items tucked in (nested, actually), and each of those contains five items of its own. But there are seven _root_ items in this program vector, which is what I asked for. Seems fine from here. I might (but doubt I will) worry about how large a tree this might make in extreme cases where it's entirely `random-code` with `random-code` inside it and so forth, but... nah.
+;;; So that's interesting (for some definition of "interesting").
+;;; 
+;;; It's more than seven items, which might surprise you, since there are a few `random-code` items tucked in (nested, actually), and each of _those_ contains five items of its own. But there are seven _root_ items in this program vector, which is what I asked for. Seems fine from here. I might (but doubt I will) worry about how large a tree this might make in extreme cases where it's entirely `random-code` with `random-code` inside it and so forth, but... nah.
 ;; **
 
 ;; **
@@ -278,7 +302,7 @@
 (def sample-before
   (core/recycle-interpreter
   	my-interpreter
-    my-sample
+    my-stable-sample
     :inputs {:x 10}))
 
 (pprint (:stacks sample-before))
@@ -320,6 +344,44 @@
 ;; =>
 ;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}
 ;; <=
+
+;; **
+;;; Again, because the cell might be recalculated differently if the worksheet gets re-evaluated, for my pet sample that was:
+;;; 
+;;;     {:booleans (),
+;;;      :integers (),
+;;;      :unknown (),
+;;;      :exec
+;;;      (:integer-max
+;;;       300.0
+;;;       (:x (:integers-flipstack 171.875 31 true true) 106.25 :x true)
+;;;       246.875
+;;;       30
+;;;       :char-shove
+;;;       (28
+;;;        :strings-generalize
+;;;        :booleans-yankdup
+;;;        :print-empty?
+;;;        (203.125 :chars-stackdepth false :x 221.875))),
+;;;      :return (),
+;;;      :float (),
+;;;      :strings (),
+;;;      :string (),
+;;;      :vector (),
+;;;      :print (),
+;;;      :integer (),
+;;;      :chars (),
+;;;      :code (),
+;;;      :error (),
+;;;      :environment (),
+;;;      :set (),
+;;;      :log (),
+;;;      :boolean (),
+;;;      :char (),
+;;;      :floats ()}
+;;;      
+;;; You can see the program itself, loaded onto the `:exec` stack here, ready to be run. So I'll run it.
+;; **
 
 ;; @@
 ;; after
@@ -399,23 +461,111 @@
 ;; <=
 
 ;; **
-;;; As you can see, there's a lot going on when I run even a little Push program. There are entries on the `:log` stack for every item that was popped from `:exec` during the run, and there are items on the `:error` stack noting when arguments were missing for instructions that were invoked by the interpreter. If you gloss over those, there are a few simpler items also present: some `:boolean` and `:integer` items, and a bunch of `:float` items. Some of those are simply literals from the original program, pushed to the appropriate stacks. But a few arose as the result of instructions executed: there was a `:chars-stackdepth` instruction that returned a `0` value, for example. Not much else, though.
+;;; And for my sample that was:
 ;;; 
-;;; It doesn't seem to be a very good prospect for calculating @@y=x+6@@, does it?
-;;; 
-;;; Well, except that it also looked at `x` at least twice in the course of the run. So it's "paying attention" a bit. We might be able to encourage that sort of thing.
+;;;     {:booleans (),
+;;;      :integers (),
+;;;      :unknown (),
+;;;      :exec (),
+;;;      :return (),
+;;;      :float (221.875 203.125 246.875 106.25 171.875 300.0),
+;;;      :strings (),
+;;;      :string (),
+;;;      :vector (),
+;;;      :print (),
+;;;      :integer (10 0 28 30 10 31 10),
+;;;      :chars (),
+;;;      :code (),
+;;;      :error
+;;;      ({:step 22, :item ":booleans-yankdup missing arguments"}
+;;;       {:step 21, :item ":strings-generalize missing arguments"}
+;;;       {:step 18, :item ":char-shove missing arguments"}
+;;;       {:step 1, :item ":integer-max missing arguments"}),
+;;;      :environment (),
+;;;      :set (),
+;;;      :log
+;;;      ({:step 30, :item 221.875}
+;;;       {:step 29, :item 10}
+;;;       {:step 28, :item :x}
+;;;       {:step 27, :item false}
+;;;       {:step 26, :item :chars-stackdepth}
+;;;       {:step 25, :item 203.125}
+;;;       {:step 24, :item (203.125 :chars-stackdepth false :x 221.875)}
+;;;       {:step 23, :item :print-empty?}
+;;;       {:step 22, :item :booleans-yankdup}
+;;;       {:step 21, :item :strings-generalize}
+;;;       {:step 20, :item 28}
+;;;       {:step 19,
+;;;        :item
+;;;        (28
+;;;         :strings-generalize
+;;;         :booleans-yankdup
+;;;         :print-empty?
+;;;         (203.125 :chars-stackdepth false :x 221.875))}
+;;;       {:step 18, :item :char-shove}
+;;;       {:step 17, :item 30}
+;;;       {:step 16, :item 246.875}
+;;;       {:step 15, :item true}
+;;;       {:step 14, :item 10}
+;;;       {:step 13, :item :x}
+;;;       {:step 12, :item 106.25}
+;;;       {:step 11, :item true}
+;;;       {:step 10, :item true}
+;;;       {:step 9, :item 31}
+;;;       {:step 8, :item 171.875}
+;;;       {:step 7, :item :integers-flipstack}
+;;;       {:step 6, :item (:integers-flipstack 171.875 31 true true)}
+;;;       {:step 5, :item 10}
+;;;       {:step 4, :item :x}
+;;;       {:step 3,
+;;;        :item
+;;;        (:x (:integers-flipstack 171.875 31 true true) 106.25 :x true)}
+;;;       {:step 2, :item 300.0}
+;;;       {:step 1, :item :integer-max}),
+;;;      :boolean (false true true true true),
+;;;      :char (),
+;;;      :floats ()}
 ;; **
 
 ;; **
-;;; [WORK IN PROGRESS]
+;;; As you can see, there's a lot going on when I run even a little Push program. There are entries on the `:log` stack for every item that was popped from `:exec` during the run, and there are items on the `:error` stack noting when arguments were missing for instructions that were invoked by the interpreter. If you gloss over those for the time being, the important things to see are a few simpler items tucked onto the other stacks: some `:boolean` and `:integer` items, and a bunch of `:float` items. Some of those are simply literals from the original program, pushed to the appropriate stacks. But a few arose as the result of instructions executed: there was a `:chars-stackdepth` instruction that returned a `0` value, for example. Not much else, though.
+;;; 
+;;; It doesn't seem to be a very good prospect for calculating @@y=x+6@@, does it?
+;;; 
+;;; Well, except that it also looked at `x` at least twice in the course of the run. So it's "paying attention" a bit. We will want to be able to encourage that sort of thing.
+;; **
+
+;; **
+;;; ### Scoring
+;;; 
+;;; As I said above, I think we'll take the most common approach here, and interpret the top item on the `:float` stack after a program has gone a maximum of 3000 steps. That value will be our program's predicted @@y@@, for the `:x` input we pass in.
 ;; **
 
 ;; @@
 (defn top-float
   [interpreter]
   (first (u/get-stack interpreter :float)))
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-var'>#&#x27;x-plus-six/top-float</span>","value":"#'x-plus-six/top-float"}
+;; <=
 
+;; **
+;;; I should be able to get the `top-float` now:
+;; **
 
+;; @@
+(top-float sample-after)
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-double'>221.875</span>","value":"221.875"}
+;; <=
+
+;; **
+;;; Now I said I'd like to evaluate the programs over all the training data, so let's grab that from the list I provided above:
+;; **
+
+;; @@
 (def training-cases
   [ {:x 12.3 :y 18.3}
     {:x -2.0 :y 4.0}
@@ -423,8 +573,12 @@
     {:x 10.2 :y 16.2}
     {:x -1.2 :y 4.8}
     {:x 187267311.9 :y 187267317.9}])
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-var'>#&#x27;x-plus-six/training-cases</span>","value":"#'x-plus-six/training-cases"}
+;; <=
 
-
+;; @@
 (defn evaluate-one-case
   [program io-pair]
   (let [dude (core/recycle-interpreter
@@ -436,13 +590,69 @@
       999999999
       (Math/abs (- (:y io-pair) result)))))
 
-
 (defn sum-absolute-errors-of-program
   [program io-pairs]
   (reduce #(+ %1 (Math/abs (evaluate-one-case program %2))) 0 io-pairs))
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-var'>#&#x27;x-plus-six/sum-absolute-errors-of-program</span>","value":"#'x-plus-six/sum-absolute-errors-of-program"}
+;; <=
+
+;; **
+;;; That might give me what I need. Let's see; the program I saved in `my-stable-sample` always returns `221.875` (for any input `:x`), so I should be able to see pretty clearly how the scores change with the different desired @@y@@ values in `training-cases`:
+;; **
+
+;; @@
+(fact "I can evaluate a program with different io pairs"
+	(evaluate-one-case my-stable-sample (first training-cases)) => 203.575  ;; y = 18.3
+    (evaluate-one-case my-stable-sample (second training-cases)) => 217.875 ;; y = 4.0
+    )
+
+(fact "A 'perfect' program gives zero error"
+	(evaluate-one-case [18.3] (first training-cases)) => 0.0                ;; y = 18.3
+    (evaluate-one-case [4.0] (second training-cases)) => 0.0                ;; y = 4.0
+    )
+
+(fact "A nonresponding program has a score of 9999…"
+	(evaluate-one-case [false] (first training-cases)) => 999999999)
 
 
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
 
+;; **
+;;; Those look about right for the absolute errors on `my-stable-program`, and just to make sure in the second Midje fact I'm evaluating a program (in each case) that "returns" the correct `:float` value and does nothing else.
+;;; 
+;;; So now I'm comfrotable evaluating these over all the training cases:
+;; **
+
+;; @@
+(fact "A perfect program has 0.0 score over all training pairs"
+	(sum-absolute-errors-of-program
+      [:x 6.0 :float-add]              ;; this is a perfect fit, but you know that already
+      training-cases) => 0.0
+    )
+
+(fact "An imperfect program has a substantial positive score"
+    (sum-absolute-errors-of-program my-stable-sample training-cases) =>
+      (roughly 187200000))             
+									   ;; I cheated here, and peeked at the actual result
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; **
+;;; 
+;; **
+
+;; **
+;;; [WORK IN PROGRESS FOLLOWS]
+;; **
+
+;; @@
 (fact "I can sample and score a bunch of random programs"
   (println (sort (take 20 (repeatedly
     #(let [dude (random-push-program 100)
@@ -466,7 +676,7 @@
 (def starter (random-push-program 50))
 ;; @@
 ;; ->
-;;; (36.0 36.0 36.0 36.0 36.0 1.872673709E8 1.8726738225E8 1.872674848E8 1.872675098E8 1.872675598E8 1.872676973E8 1.872677348E8 1.872678848E8 1.872679223E8 1.872679473E8 1.872681598E8 1.872682723E8 1.872682848E8 1.872683848E8 1.872684348E8)
+;;; (36.0 36.0 36.0 36.0 1.8726735815E8 1.8726738225E8 1.872675098E8 1.872676223E8 1.872676598E8 1.872677098E8 1.872677223E8 1.872677598E8 1.872677723E8 1.872678723E8 1.872679098E8 1.872679348E8 1.872679598E8 1.872681598E8 1.872681848E8 1.872683473E8)
 ;;; 
 ;; <-
 ;; =>
