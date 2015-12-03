@@ -10,6 +10,10 @@
   (:use clojure.pprint)
   )
 ;; @@
+;; ->
+;;; [36mRun `(doc midje)` for Midje usage.[0m
+;;; 
+;; <-
 ;; =>
 ;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}
 ;; <=
@@ -51,7 +55,7 @@
 ;;; 
 ;;; This leaves us with a question of how to model "results" for programs that don't even give us the input to our defined "return function" (top thing on the `:float` stack after 3000 steps). Should we use a default value? Should we permit "no answer given" as the _result_, and somehow penalize the _score_ of a program that gives that result? Or should we immediately discard any program that provides no `:float` value (which is a sort of Extremely Large Immediate Penalty function)?
 ;;; 
-;;; Here I'll stick with "top `:float` at 3000 steps, if any", and immediately discard any program that gives no answer.
+;;; Here I'll do the most common thing (in the literature) and say the "return value" is the top `:float` item at exactly 3000 steps, and use a large positive default value for any program that has no `:float` items.
 ;;; 
 ;; **
 
@@ -249,7 +253,7 @@
 '[:integer-max 300.0 ( :x ( :integers-flipstack 171.875 31 true true) 106.25 :x true) 246.875 30 :char-shove ( 28 :strings-generalize :booleans-yankdup :print-empty? ( 203.125 :chars-stackdepth false :x 221.875))])
 ;; @@
 ;; ->
-;;; [:chars-butlast ((false :chars-emptyitem? (32 91 :set-shove :x false) :chars-generalizeall (:float-pop :integer-min true 100.0 :integer≤?)) (52 (((200.0 :set-difference 175.0 false 225.0) (3.125 43.75 :floats-equal? :float-equal? 12.5) 65.625 :vector-replacefirst (68.75 (50.0 94 true 0 (243.75 67 (:boolean-empty? :code-empty? true 45 :strings-&gt;code) 212.5 :x)) :string-pop :integer-many :x)) :x 203.125 :char-&gt;code 3) 6.25 :x :set-print) :x ((16 :float-return :string&lt;? :x :booleans-print) 56.25 :push-inputset 0.0 65.625) :booleans-fromexample) 75 :integers-notequal? ((162.5 :exec-if :floats-flipstack 171.875 11) 178.125 false (49 :booleans-shatter (81.25 (43.75 :x 203.125 284.375 :exec-return-pop) 46 196.875 (246.875 137.5 ((175.0 :float-yankdup 62.5 45 84.375) 287.5 175.0 false 262.5) (82 228.125 75.0 :code-quote :x) :integer-min)) 31.25 :x) (58 :boolean-xor :integer-&gt;asciichar 281.25 (:booleans-occurrencesof 156.25 0 81.25 268.75))) 259.375 :string-&gt;chars]
+;;; [:x 256.25 :code-flipstack 290.625 80 ((true :floats-generalize (57 true 250.0 :vector-empty? 137.5) :float-&gt;asciichar :floats-do*each) :chars-flipstack ((:chars-remove 96.875 (:string-cutflip (250.0 (true (:integer-&gt;char 178.125 false false (:x false 90.625 250.0 :set-empty?)) 33 ((:integer&lt;? false :integers-yank (228.125 150.0 21.875 :vector-&gt;set false) 171.875) ((:strings-emptyitem? (71 true (:float-return :x 90.625 :vector-concat 290.625) :string-butlast 3.125) :strings-replace :x :chars-nth) :strings-replacefirst false (:float-&gt;asciichar :x :x :float-&gt;asciichar :integers-swap) false) 165.625 (:vector-contains? :chars-return ((86 1 :string-replacefirstchar 250.0 :vector-yank) :code-list :set-subset? :strings-yank :char-empty?) :exec-if (:floats-yankdup ((:x 11 :string-replace 200.0 78) 28.125 :x :float-equal? 50) :string-conjchar false (((:booleans-shatter false :chars-shove :x :integers-nth) 25.0 40.625 74 25.0) :float-sine :booleans-return-pop true ((66 33 21.875 67 :intsign-&gt;boolean) false 79 300.0 :x)))) true) :environment-begin) 19 :char-digit? (196.875 true :code-wrap 187.5 :x)) (:strings-&gt;code 221.875 125.0 203.125 :x) 253.125 77) ((((false 60 (:x :x 94 58 :chars-generalizeall) 137.5 :x) ((:set-superset? 11 96.875 78 true) 86 206.25 :x (1 :booleans-indexof 250.0 118.75 46.875)) :strings-contains? :booleans-length :vector-first) 30 253.125 196.875 :floats-set) 15.625 :char-uppercase? :integers-yank 18.75) :booleans-shatter) :integer-return-pop 140.625 :booleans-reverse false) 23 (250.0 :chars-reverse false true :x)) false]
 ;;; 
 ;; <-
 ;; =>
@@ -674,7 +678,7 @@
 (def starter (random-push-program 50))
 ;; @@
 ;; ->
-;;; (36.0 36.0 36.0 36.0 36.0 1.872673709E8 1.87267401E8 1.872674223E8 1.872674723E8 1.872675848E8 1.872676348E8 1.872676473E8 1.872677348E8 1.872677723E8 1.872678973E8 1.872679598E8 1.872680223E8 1.872682223E8 1.872683098E8 1.872684223E8)
+;;; (36.0 36.0 36.0 1.872673584E8 1.872678098E8 1.872678348E8 1.872678723E8 1.872678973E8 1.872679098E8 1.872679348E8 1.872679473E8 1.872680598E8 1.872681098E8 1.872681348E8 1.872681723E8 1.872682598E8 1.872683223E8 1.872683723E8 1.872684348E8 1.872684598E8)
 ;;; 
 ;; <-
 ;; =>
