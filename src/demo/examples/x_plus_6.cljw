@@ -10,10 +10,6 @@
   (:use clojure.pprint)
   )
 ;; @@
-;; ->
-;;; [36mRun `(doc midje)` for Midje usage.[0m
-;;; 
-;; <-
 ;; =>
 ;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}
 ;; <=
@@ -22,7 +18,9 @@
 ;;; # A trivial symbolic regression problem:
 ;;; ## The X-plus-6 Example
 ;;; 
-;;; A walk-through for using the Push-in-Clojure interpreter in a trivially simple curve-fitting problem.
+;;; This gorilla session includes a walk-through in which I use the Push-in-Clojure interpreter for a trivially simple curve-fitting problem. I use this example in every Introduction to Genetic Programming class I teach: the simplicity of the target (and "knowing the right answer" beforehand) helps clarify a lot of how the software itself works, and the implicit decisions we make when we design a GP project.
+;;; 
+;;; **Note** this is not a tutorial on genetic programming. It's much more about how one designs and configures a Push-in-Clojure interpreter so one can run and evaluate Push programs. There are some very rudimentary "fitness" functions discussed, but the point here is to learn how one maps training cases from an _external_ search process (of any sort) onto the inputs and "result" values of a Push program.
 ;; **
 
 ;; **
@@ -184,7 +182,7 @@
 ;; <=
 
 ;; **
-;;; That's should do, at least for a simple "guess". I can pick (with uniform probability) any of the `instructions` from an interpreter, a floating-point number, an integer, any of the defined `inputs` from an interpreter, and a coin-flip `true`/`false` value.
+;;; That should do, at least for a simple "guess". I can pick (with uniform probability) any of the `instructions` from an interpreter, a floating-point number, an integer, any of the defined `inputs` from an interpreter, and a coin-flip `true`/`false` value.
 ;;; 
 ;;; A lot of the complex behavior of Push code-composing instructions depends on the presence of _lists_ of things (including other lists of things) in the programs, so let's write a function for making those as well. At this point anything seems reasonable (after all, I'm throwing it in out of curiosity), so how about little chunks of five other items?
 ;;; 
@@ -251,7 +249,7 @@
 '[:integer-max 300.0 ( :x ( :integers-flipstack 171.875 31 true true) 106.25 :x true) 246.875 30 :char-shove ( 28 :strings-generalize :booleans-yankdup :print-empty? ( 203.125 :chars-stackdepth false :x 221.875))])
 ;; @@
 ;; ->
-;;; [:boolean-rotate 56.25 150.0 :x (:chars-fromexample true (false true (:char-cutflip :strings-shatter true 90 128.125) 81 44) :strings-concat 159.375) :x 50.0]
+;;; [:chars-butlast ((false :chars-emptyitem? (32 91 :set-shove :x false) :chars-generalizeall (:float-pop :integer-min true 100.0 :integer≤?)) (52 (((200.0 :set-difference 175.0 false 225.0) (3.125 43.75 :floats-equal? :float-equal? 12.5) 65.625 :vector-replacefirst (68.75 (50.0 94 true 0 (243.75 67 (:boolean-empty? :code-empty? true 45 :strings-&gt;code) 212.5 :x)) :string-pop :integer-many :x)) :x 203.125 :char-&gt;code 3) 6.25 :x :set-print) :x ((16 :float-return :string&lt;? :x :booleans-print) 56.25 :push-inputset 0.0 65.625) :booleans-fromexample) 75 :integers-notequal? ((162.5 :exec-if :floats-flipstack 171.875 11) 178.125 false (49 :booleans-shatter (81.25 (43.75 :x 203.125 284.375 :exec-return-pop) 46 196.875 (246.875 137.5 ((175.0 :float-yankdup 62.5 45 84.375) 287.5 175.0 false 262.5) (82 228.125 75.0 :code-quote :x) :integer-min)) 31.25 :x) (58 :boolean-xor :integer-&gt;asciichar 281.25 (:booleans-occurrencesof 156.25 0 81.25 268.75))) 259.375 :string-&gt;chars]
 ;;; 
 ;; <-
 ;; =>
@@ -676,12 +674,20 @@
 (def starter (random-push-program 50))
 ;; @@
 ;; ->
-;;; (36.0 36.0 36.0 36.0 1.8726735815E8 1.8726738225E8 1.872675098E8 1.872676223E8 1.872676598E8 1.872677098E8 1.872677223E8 1.872677598E8 1.872677723E8 1.872678723E8 1.872679098E8 1.872679348E8 1.872679598E8 1.872681598E8 1.872681848E8 1.872683473E8)
+;;; (36.0 36.0 36.0 36.0 36.0 1.872673709E8 1.87267401E8 1.872674223E8 1.872674723E8 1.872675848E8 1.872676348E8 1.872676473E8 1.872677348E8 1.872677723E8 1.872678973E8 1.872679598E8 1.872680223E8 1.872682223E8 1.872683098E8 1.872684223E8)
 ;;; 
 ;; <-
 ;; =>
 ;;; {"type":"html","content":"<span class='clj-var'>#&#x27;x-plus-six/starter</span>","value":"#'x-plus-six/starter"}
 ;; <=
+
+;; @@
+
+;; @@
+
+;; @@
+
+;; @@
 
 ;; @@
 
