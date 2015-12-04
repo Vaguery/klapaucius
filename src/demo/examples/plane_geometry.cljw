@@ -8,6 +8,8 @@
   (:require [push.interpreter.core :as core])
   (:require [push.types.core :as t])
   (:require [push.util.stack-manipulation :as u])
+  (:require [push.instructions.core :as i])
+  (:require [push.instructions.dsl :as d])
   (:use clojure.pprint)
   )
 ;; @@
@@ -224,6 +226,394 @@
 ;;; - `:circle-concentric?`
 ;;; 
 ;;; Of course there's room for expansion here, but this is after all just a demo. But you could imagine there being room on this domain for angles, oritented rays, line segments, perpendicularity, [all the many other things one can use as tools for construction, such as t-squares, marked rulers, origami folding](https://en.wikipedia.org/wiki/Compass-and-straightedge_construction#Extended_constructions), and more.
+;;; 
+;;; But this is a lot of instructions already. Considering that we should also have `:point`, `:line` and `:circle` types be `:movable` and `:visible` and `:equatable` and so forth, it's dozens. Let me work through a few of them by hand here, and then I'll link in the rest in a "here's one I prepared earlier" fashion below.
+;; **
+
+;; **
+;;; ## Some domain-specific instructions (and a point of resistance)
+;;; 
+;;; I imagine there will be quite a bit of similarity between the `:x-coincide?` instructions for the various geometric items, so it may be helpful to look into those first. Two `:point` items will also be _equal_ if they coincide (I think), so how about I start with `:line-coincide?`?
+;;; 
+;;; I'll write a `fact` about it first, so I have a sense of how to proceed. I'm literally writing these here for the first time, so let me work first in Clojure and then invoke Clojure helper functions in my Push instruction code. This following test helps me identify where I want this to go in the short term, but I'm working here in the REPL at the moment so of course it will fail: there's no `coincide?` function defined yet. I've made it a Midje `future-fact` for the moment, so you don't have to deal with the huge stack trace and Exception it throws.
+;; **
+
+;; @@
+(future-fact "`:line-coincide` should detect 'reversed' lines"
+  (coincide?
+    (make-line (make-point 0 2) (make-point 0 11))
+    (make-line (make-point 0 11) (make-point 0 2))) => true
+  (coincide?
+    (make-line (make-point 3.111 2.9128) (make-point 1/7 3/9))
+    (make-line (make-point 1/7 3/9 (make-point 3.111 2.9128)))) => true
+
+  (coincide?
+    (make-line (make-point 0 2) (make-point 0 11))
+    (make-line (make-point 0 11) (make-point 0 2.001))) => false
+  (coincide?
+    (make-line (make-point 3.111 2.9128) (make-point 1/7 3/9))
+    (make-line (make-point 1/7 3/9 (make-point 3.112 2.9128)))) => false)
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}
+;; <=
+
+;; **
+;;; Actually I noticed something tangential as I was creating that test: What should my `(->Line a b)` and `(->Circle o c)` constructor functions do when the points are the same? I suspect they should probably throw an exception—at least in my Clojure code—when I try to use two equal `Point` items as the arguments. I think I'll backtrack for a second and make that happen first.
+;; **
+
+;; @@
+(fact "`make-line` throws an Exception if both point arguments are the same"
+  (make-line (make-point 1 2) (make-point 1 2)) => (throws #"points must differ")
+  (make-line (make-point 1 2.000002) (make-point 1 2.000001)) =not=> (throws))
+;; @@
+;; ->
+;;; 
+;;; [31mFAIL[0m &quot;`make-line` throws an Exception if both point arguments are the same&quot; at (form-init9143366493531024882.clj:2)
+;;; Actual result did not agree with the checking function.
+;;;         Actual result: {:p1 {:x 1, :y 2}, :p2 {:x 1, :y 2}}::plane_geometry.Line
+;;;     Checking function: (throws #&quot;points must differ&quot;)
+;;; 
+;; <-
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>false</span>","value":"false"}
+;; <=
+
+;; @@
+(defn make-line
+  "Builds an (oriented) Line record from two Points that lie on that line; throws an Exception if the point arguments are equal"
+  [a b]
+  (if (= a b)
+    (throw (Exception. "make-line argument error: points must differ"))
+    (->Line a b)))
+
+(fact "`make-line` throws an Exception if both point arguments are the same"
+  (make-line (make-point 1 2) (make-point 1 2)) => (throws #"points must differ"))
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; @@
+(fact "`make-circle` throws an Exception if both point arguments are the same"
+  (make-circle (make-point 1 2) (make-point 1 2)) => (throws #"points must differ")
+  (make-circle (make-point 1 2.000002) (make-point 1 2.000001)) =not=> (throws))
+;; @@
+;; ->
+;;; 
+;;; [31mFAIL[0m &quot;`make-circle` throws an Exception if both point arguments are the same&quot; at (form-init9143366493531024882.clj:2)
+;;; Actual result did not agree with the checking function.
+;;;         Actual result: {:edgepoint {:x 1, :y 2}, :origin {:x 1, :y 2}}::plane_geometry.Circle
+;;;     Checking function: (throws #&quot;points must differ&quot;)
+;;; 
+;; <-
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>false</span>","value":"false"}
+;; <=
+
+;; @@
+(defn make-circle
+  "Builds a Circle record from two numbers, one the origin and one lying on its circumference; throws an Exception if the point arguments are equal"
+  [origin edge]
+  (if (= origin edge)
+    (throw (Exception. "make-circle argument error: points must differ"))
+    (->Circle origin edge)))
+
+
+(fact "`make-circle` throws an Exception if both point arguments are the same"
+  (make-circle (make-point 1 2) (make-point 1 2)) => (throws #"points must differ")
+  (make-circle (make-point 1 2.000002) (make-point 1 2.000001)) =not=> (throws))
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; **
+;;; That makes me feel a little safer, not least because compass-and-straightedge _proof_ constructions are often about finding the "same" thing in two or more different ways and I suspect this would come up. But we don't want the Push `Interpreter` to throw exceptions whenever it attempts this maneuver, just as we don't want it throwing an exception when it attempts to divide by zero. So I'll have to keep this issue in mind when I write the instructions that build `:line` and `:circle` Push items.
+;;; 
+;;; At any rate, let me go ahead now and work through my `coincide?` functions. Briefly thinking about the problem, it seems there are at least two ways to approach it: I can check to see whether the two points of one line (or circle) _lie on_ the other line, or I can reduce both lines to some kind of "canonical form" and see if those forms are the same. Somehow the first one feels simpler right now, so:
+;; **
+
+;; @@
+(defn slope
+  "returns the slope of a Push `:line` item, or the keyword `:infinity` if the line is vertical"
+  [line]
+  (let [x1 (double (:x (:p1 line)))
+        y1 (double (:y (:p1 line)))
+        x2 (double (:x (:p2 line)))
+        y2 (double (:y (:p2 line)))]
+    (if (= x1 x2)
+      :infinity
+      (/ (- y2 y1) (- x2 x1)))))
+  
+  
+(fact "slope works as expected"
+  (slope (make-line (make-point 2.0 2.0) (make-point 1.0 1.0))) => 1.0
+  (slope (make-line (make-point 1.0 0.0) (make-point 0.0 1.0))) => -1.0
+  (slope (make-line (make-point 1.0 3.0) (make-point 2.0 1.0))) => -2.0
+  (slope (make-line (make-point 2.0 1.0) (make-point 1.0 3.0))) => -2.0
+  (slope (make-line (make-point 1.0 1.0) (make-point 0.0 1.0))) => 0.0)
+
+
+(fact "slope returns the keyword :infinity if the line is vertical"
+  (slope (make-line (make-point 0.0 0.0) (make-point 0.0 1.0))) => :infinity)
+
+
+(fact "slope can detect subtle differences"
+  (slope (make-line (make-point 3.111 2.9128) (make-point 0 0))) =not=>
+    (slope (make-line (make-point 0 0) (make-point 3.112 2.9128))))
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; @@
+(defn intercept
+  "returns the y-intercept of a Push `:line` item, or nil if the line is vertical"
+  [line]
+  (let [x1 (double (:x (:p1 line)))
+        y1 (double (:y (:p1 line)))
+        x2 (double (:x (:p2 line)))
+        y2 (double (:y (:p2 line)))]
+    (if (= x1 x2)
+      nil
+      (- y1 (* x1 (slope line))) ;; y - mx = b
+      )))
+  
+(fact "intercept works as expected"
+  (intercept (make-line (make-point 2.0 2.0) (make-point 1.0 1.0))) => 0.0
+  (intercept (make-line (make-point 1.0 0.0) (make-point 0.0 1.0))) => 1.0
+  (intercept (make-line (make-point 1.0 0.0) (make-point -1.0 -1.0))) => -0.5
+  (intercept (make-line (make-point 1.0 3.0) (make-point 2.0 1.0))) => 5.0
+  (intercept (make-line (make-point 2.0 1.0) (make-point 1.0 3.0))) => 5.0
+  (intercept (make-line (make-point 1.0 1.0) (make-point 0.0 1.0))) => 1.0)
+
+
+(fact "intercept returns nil if the line is vertical"
+  (intercept (make-line (make-point 0.0 0.0) (make-point 0.0 1.0))) => nil)
+
+
+(fact "intercept can detect subtle differences"
+  (intercept (make-line (make-point 3.111 2.9128) (make-point 0 0))) =not=>
+    (intercept (make-line (make-point 0 0.0001) (make-point 3.111 2.9128))))
+
+
+
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; **
+;;; OK, so it looks as if I actually did end up checking canonical forms against one another, rather than what I intended. Force of habit? Familiarity? In any case:
+;; **
+
+;; @@
+(defn line-coincide?
+  "returns `true` if the lines have the same canonical equation"
+  [line1 line2]
+  (and
+    (= (slope line1) (slope line2))
+    (= (intercept line1) (intercept line2))))
+
+
+(fact "`line-coincide` should detect 'reversed' lines"
+  (line-coincide?
+    (make-line (make-point 0 2) (make-point 0 11))
+    (make-line (make-point 0 11) (make-point 0 2))) => true
+  (line-coincide?
+    (make-line (make-point 3.111 2.9128) (make-point 0 0))
+    (make-line (make-point 0 0) (make-point 3.111 2.9128))) => true)
+
+
+(fact "`line-coincide` should be able to detect subtle differences"
+  (line-coincide?
+    (make-line (make-point 0 2.0) (make-point 1 11))
+    (make-line (make-point 1 11) (make-point 0 2.00001))) => false)
+
+
+(fact "`line-coincide` isn't thrown off by type rounding errors"
+  ;; this came up along the way
+  (line-coincide?
+    (make-line (make-point 0 2.0) (make-point 1 11))
+    (make-line (make-point 1 11.0) (make-point 2 20))) => true
+  (line-coincide?
+    (make-line (make-point 0 2.0) (make-point 1 11))
+    (make-line (make-point 1 11) (make-point 2 20))) => true
+
+)
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; **
+;;; I don't want to bore you with all the rest of the proposed infrastructure, but I do want to work through one more before I make a Push instruction from it all: `line-intersection` (which will be the basis, I guess, of the Push instruction `:line-intersection`).
+;;; 
+;;; I think in the Push version it will only produce a `:point` result when there is in fact a single intersection, and otherwise (if the lines are equal, coincident, or parallel) it'll just return `nil`—or rather `nil`'s Push equivalent, which is that no items will be pushed to any stacks.
+;; **
+
+;; @@
+(defn line-at-x
+  "returns the y value at a given x for a line argument"
+  [line x]
+  (+ (intercept line) (* (slope line) x)))
+
+
+(defn crossing-point
+  "returns a `point` where its two `line` arguments intersect, if they intersect at all (even if one is vertical)"
+  [line1 line2]
+  (let [s1 (slope line1)
+        i1 (intercept line1)
+        s2 (slope line2)
+        i2 (intercept line2)]
+  (cond (= s1 s2)
+  		  nil
+        (= s1 :infinity)
+          (let [x (:x (:p1 line1))]
+            (make-point x (line-at-x line2 x)))
+        (= s2 :infinity)
+          (let [x (:x (:p1 line2))]
+            (make-point x (line-at-x line1 x)))
+        :else
+    	  (let [f (/ (- i2 i1) (- s1 s2))]
+            (make-point f (+ i1 (* s1 f)))))))
+
+
+(def line1 (make-line (make-point 0.0 1.0) (make-point 1.0 2.0)))
+(def line2 (make-line (make-point 0.0 10.0) (make-point 5.0 0.0)))
+(def line3 (make-line (make-point 6.0 10.0) (make-point 6.0 0.0)))
+(def line4 (make-line (make-point 0.0 5.0) (make-point 10.0 5.0)))
+
+
+(fact "crossing-point returns the point where lines cross, if they do"
+  (crossing-point line1 line2) => (make-point 3.0 4.0)
+  (crossing-point line1 line3) => (make-point 6.0 7.0)
+  (crossing-point line1 line4) => (make-point 4.0 5.0)
+  (crossing-point line2 line3) => (make-point 6.0 -2.0)
+  (crossing-point line2 line4) => (make-point 2.5 5.0)
+  (crossing-point line3 line4) => (make-point 6.0 5.0))
+
+
+(fact "crossing-point returns nil if they don't intersect"
+  (crossing-point line1 line1) => nil
+  (crossing-point line3 (make-line (make-point 3.0 0.0) (make-point 3.0 12.0))) => nil
+  (crossing-point line1 (make-line (make-point -1.0 0.0) (make-point 0.0 1.0))) => nil
+  (crossing-point line4 (make-line (make-point 0.0 0.0) (make-point 3.0 0.0))) => nil)
+
+(fact "crossing-point is pretty accurate even for small divergences"
+  (crossing-point line1 (make-line (make-point 0.0 1.0) (make-point 112230.0 112231.0001))) =>
+      (make-point 0.0 1.0))
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; **
+;;; ## Push instructions
+;;; 
+;;; Push instructions are defined using the `push.instructions.core/build-instruction` function, and must be written in the Push Instruction DSL. Let me build some of the examples I've worked through in Clojure now:
+;; **
+
+;; @@
+(def crosspoint
+  (i/build-instruction
+    line-intersection
+    "`:line-intersection` pops the top two `:line` items, and pushes the `:point` at which they intersect, if they are not the same or parallel"
+    :tags #{:plane-geometry :construction}
+    (d/consume-top-of :line :as :arg2)
+    (d/consume-top-of :line :as :arg1)
+    (d/calculate [:arg1 :arg2] #(crossing-point %1 %2) :as :pt)
+    (d/push-onto :point :pt)))
+
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-var'>#&#x27;plane-geometry/crosspoint</span>","value":"#'plane-geometry/crosspoint"}
+;; <=
+
+;; **
+;;; Now the Push types I defined above were pretty wimpy and boring, so let me add a few fillips so they work as one might expect.
+;; **
+
+;; @@
+  (def push-point
+    (-> (t/make-type 
+          :point 
+          :recognizer #(instance? Point %))
+        push.instructions.aspects.visible/make-visible
+        push.instructions.aspects.equatable/make-equatable
+        push.instructions.aspects.movable/make-movable
+        push.instructions.aspects.printable/make-printable
+        push.instructions.aspects.quotable/make-quotable
+        push.instructions.aspects.returnable/make-returnable))
+
+    
+(def push-line
+  (-> (t/make-type 
+        :line 
+        :recognizer #(instance? Line %))
+      push.instructions.aspects.visible/make-visible
+      push.instructions.aspects.equatable/make-equatable
+      push.instructions.aspects.movable/make-movable
+      push.instructions.aspects.printable/make-printable
+      push.instructions.aspects.quotable/make-quotable
+      push.instructions.aspects.returnable/make-returnable
+      (t/attach-instruction crosspoint)))
+
+
+
+(def push-circle
+  (-> (t/make-type 
+        :circle 
+        :recognizer #(instance? Circle %))
+      push.instructions.aspects.visible/make-visible
+      push.instructions.aspects.equatable/make-equatable
+      push.instructions.aspects.movable/make-movable
+      push.instructions.aspects.printable/make-printable
+      push.instructions.aspects.quotable/make-quotable
+      push.instructions.aspects.returnable/make-returnable))
+
+
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-var'>#&#x27;plane-geometry/push-circle</span>","value":"#'plane-geometry/push-circle"}
+;; <=
+
+;; **
+;;; This resulting instruction (stored in the `var` `crosspoint`) is a fully-formed Push instruction, with argument checking and everything. So for example if we create a new Push Interpreter that knows this instruction and has the appropriate arguments, it will calculate the intersection point when we run it.
+;; **
+
+;; @@
+(def test-interpreter
+  (core/register-types 
+  	(owe/make-everything-interpreter)
+    [push-point push-line push-circle]))
+
+
+(fact "test-interpreter knows :line-intersection"
+  (keys (:instructions test-interpreter)) => (contains :line-intersection))
+
+
+(fact "the intersection ends up on the :point stack"
+  (let [prepped (core/recycle-interpreter
+                test-interpreter
+                [line1 line2 :line-intersection])]
+    (:stacks prepped) =>
+    `{:boolean (), :booleans (), :char (), :chars (), :circle (), :code (), :environment (), :error (), :exec (~line1 ~line2 :line-intersection), :float (), :floats (), :integer (), :integers (), :line (), :log (), :point (), :print (), :return (), :set (), :string (), :strings (), :unknown (), :vector ()}
+    
+    (u/get-stack (core/run prepped 1000) :point) => (list (make-point 3.0 4.0))))
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; **
+;;; ## Things I've noticed and which need to be fixed
+;;; 
+;;; - the namespace for aspects should be simplified
+;;; - I caused a bug when I called a Clojure function from inside a build-instruction with the same name
+;;; - get-stack is kinda annoying
+;;; - checking for complex items (`:point` for example) should be simpler
 ;; **
 
 ;; @@
