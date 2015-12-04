@@ -1,0 +1,231 @@
+;; gorilla-repl.fileformat = 1
+
+;; @@
+(ns plane-geometry
+  (:use midje.sweet)
+  (:require [gorilla-plot.core :as plot])
+  (:require [push.interpreter.templates.one-with-everything :as owe])
+  (:require [push.interpreter.core :as core])
+  (:require [push.types.core :as t])
+  (:require [push.util.stack-manipulation :as u])
+  (:use clojure.pprint)
+  )
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}
+;; <=
+
+;; **
+;;; # Exploring Compass and Straightedge Constructions
+;;; ## Extending Push with domain- & problem-specific types
+;;; 
+;;; This gorilla session demonstrates approaches for building and using domain- and problem-specific instructions—that is, extensions of the Push language.
+;;; 
+;;; **Note** this is not a tutorial on genetic programming. It's much more about how one designs and configures a Push-in-Clojure interpreter so one can run and evaluate Push programs. There are some rudimentary "fitness" functions discussed, but the point here is to learn how one can add functionality to the Push language quickly and easily.
+;; **
+
+;; **
+;;; ## (WORK IN PROGRESS)
+;;; 
+;;; 
+;;; ## Compass and Straightedge Constructions
+;;; 
+;;; Suppose I'd like to explore [compass and straightedge constructions](https://en.wikipedia.org/wiki/Compass-and-straightedge_construction) in the traditional sense: Imagine an infinite two-dimensional surface, on which we can _see_ points, lines, and circles. I emphasize "see" because we can only _construct_ lines and circles, and we can only do those in one way each:
+;;; 
+;;; - a new line can be made which passes through any two points
+;;; - a new circle can be drawn which has its center at one point, and which passes through another
+;;; 
+;;; This would be _really_ boring, except that we create new points as a side effect of adding intersecting lines and circles:
+;;; 
+;;; - any pair of lines produces one new point, if the lines are not parallel
+;;; - any line and any circle produce one or two new points, depending on whether the line is tangent or forms a chord on the circle
+;;; - any pair of circles produces one or two new points, depending on whether they are mutually tangent or intersect one another
+;;; 
+;;; These new points only become available by the process of _construction_, and construction is subject to the restrictive rules outlined above: If a starting diagram has no points, we're not allowed to add any, and if it has only one point, we're not allowed to draw a circle or a line.
+;;; 
+;;; (Hey, here's a thought: Take a moment to see what the possibilities are for a starting configuration with two points in it. What can you draw? If you can draw two different things, how many new points do you get? If you use those points and draw all the things you can with them, do you get even more points?)
+;;; 
+;;; Even though we all know other algebraic representations for these abstractions, we'll _only_ be able to refer to a line in terms of the pair of points that defines it. There is no @@y=8x - 2@@ in this world; there's just "the line through points `B` and `G`".
+;;; 
+;;; So the rules here are we cannot _construct_ a line or circle (or point) without existing structures on which to base them. But we're not blind, so we can _see_ and _check_ other things. We will also be able to ask:
+;;; 
+;;; - Does a point lie on a given line or circle?
+;;; - Are two points, lines, or circles identical—even though they have different point bases?
+;;; - Does a point lie inside or outside of a given circle?
+;;; - Does a line intersect a given line or circle?
+;;; - Is a circle tangent to a given line or circle?
+;;; 
+;;; And perhaps some more.
+;;; 
+;;; There's a long a fascinating history of compass-and-straightedge constructions, and there are many interesting extensions we can explore if we like. In this example, I'll simply be setting up the Push `Interpreter` so it can _think_ and _talk_ about these objects and their interactions, by building new `PushType` data structures and instructions to go with them.
+;; **
+
+;; **
+;;; ## Points, Lines, Circles
+;;; 
+;;; Probably the simplest place to start is with the basic data structures.
+;;; 
+;;; We might be tempted to model points as vectors of floating-point numbers that are limited to two elements, but believe me when I say that approach gets wordy and confusing when we integrate it into Push's existing infrastructure of `:floats` and `:vector` types. Let's save some hassle and make these simple Clojure record items.
+;; **
+
+;; @@
+(defrecord Point [x y])
+
+(defrecord Line [p1 p2])
+
+(defrecord Circle [origin edgepoint])
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-class'>plane_geometry.Circle</span>","value":"plane_geometry.Circle"}
+;; <=
+
+;; **
+;;; I like to use convenience functions for making these sorts of simple records, so let's do that too
+;; **
+
+;; @@
+(defn make-point
+  "Builds a Point record from two numbers"
+  [x y]
+  (->Point x y))
+
+(defn make-line
+  "Builds an (oriented) Line record from two Points that lie on that line"
+  [a b]
+  (->Line a b))
+
+(defn make-circle
+  "Builds a Circle record from two numbers, one the origin and one lying on its circumference"
+  [origin edge]
+  (->Circle origin edge))
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-var'>#&#x27;plane-geometry/make-circle</span>","value":"#'plane-geometry/make-circle"}
+;; <=
+
+;; **
+;;; These are an excellent starting point for creating new `PushTypes`, so let me do that, too.
+;; **
+
+;; @@
+(def push-point
+  (t/make-type 
+    :point 
+    :recognizer #(instance? Point %)))
+
+(def push-line
+  (t/make-type 
+    :line 
+    :recognizer #(instance? Line %)))
+
+(def push-circle
+  (t/make-type 
+    :circle 
+    :recognizer #(instance? Circle %)))
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-var'>#&#x27;plane-geometry/push-circle</span>","value":"#'plane-geometry/push-circle"}
+;; <=
+
+;; @@
+(fact "I can make and recognize instances of these now"
+  ((:recognizer push-point)
+     (make-point 3 9))                                => true
+  ((:recognizer push-point)
+     9912)                                            => false
+
+  ((:recognizer push-line)
+     (make-line (make-point 2 9) (make-point 2 1)))   => true
+  ((:recognizer push-line)
+     (make-point 2 9))                                => false
+
+  ((:recognizer push-circle)
+     (make-circle (make-point 2 9) (make-point 2 1))) => true
+  ((:recognizer push-circle)
+     (make-point 2 9))                                => false
+  ((:recognizer push-circle)
+   	 (make-line (make-point 2 9) (make-point 2 1)))   => false)
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; **
+;;; This is already enough to build an `Interpreter` instance that recognizes and pushes literals of this type when it encounters them in programs:
+;; **
+
+;; @@
+(def test-interpreter
+  (core/register-types 
+    (owe/make-everything-interpreter)
+    [push-point push-line push-circle]))
+
+(fact "the stacks are alredy there (though it doesn't really matter)"
+  (keys (:stacks test-interpreter)) => (contains [:circle :line :point] :gaps-ok :any-order))
+
+(fact "items can be routed to those stacks correctly"
+  (u/get-stack
+    (core/handle-item test-interpreter (make-point 3 9))
+    :point) => '(#plane_geometry.Point{:x 3, :y 9})
+  (u/get-stack
+    (core/handle-item test-interpreter (make-line (make-point 2 9) (make-point 2 1)))
+    :line) => '(#plane_geometry.Line{
+                  :p1
+                 	#plane_geometry.Point{:x 2, :y 9}
+                  :p2
+                    #plane_geometry.Point{:x 2, :y 1}})
+  (u/get-stack
+    (core/handle-item test-interpreter (make-circle (make-point 2 9) (make-point 2 1)))
+    :circle) => '(#plane_geometry.Circle{
+                    :origin
+                      #plane_geometry.Point{:x 2, :y 9}
+                    :edgepoint
+                      #plane_geometry.Point{:x 2, :y 1}}))
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; **
+;;; ## Push and its effects on domain models
+;;; 
+;;; Now in my brief description above, I said that _if_ two lines intersect, they produce a point. We could represent this relation in several ways, but perhaps the Pushiest approach is to create a new instruction `:line-intersection` that pops the top two `:line` items and pushes zero or one new `:point` items to the `:point` stack as a result.
+;;; 
+;;; It's worth noting that Push has a strong tendency towards _greedy comsumption of arguments_: almost none of the "traditional" Push instruction set leave the stacks the same size they started. Even simple comparison functions that test for equality or compare numeric values consume more items as arguments than the number of results they push. As a result, we should be aware that our geometric "constructions" of points, lines and circles are not technically "drawings", but something more like a dynamic record of what a drawing daemon might be _looking at_ as it acts. Where we might draw a line between two points, give it a name and refer to it as `GH` in future steps of our work, the Push language _consumes_ the points `G` and `H` that it uses to construct that line. When a program wants to refer to something it's created at an earlier step, it typically has to duplicate its arguments before consuming them (or sock them away in local variables).
+;;; 
+;;; In the construction problems I'm sketching here, there should always be the starting diagram items, stored in `input` values, so if nothing else a Push program can refer back to those if necessary to reconstruct earlier work it's done.
+;;; 
+;;; And while I'm talking about it, notice also that our representation of Push points, lines and circles as items on stacks differs in another crucial way from our imagined drawing: When we draw our line `GH` through points `G` and `H`, we have no reason (or ability) to _draw it again_. At the same time Push is consuming (and thus in some sense "erasing") things it's already "drawn", it is also able to build and retain multiple "copies" of them. We might see a thousand copies of a particular `:point` on that stack in some arbitrary program's execution.
+;;; 
+;;; What, then, does it mean for two `:line` items to be "equal" or "the same"? Certainly if the numerical arguments are identical, two `:line` items are equal. But what about `(make-line (make-point 0 1) (make-point 0 2))` and `(make-line (make-point 0 4) (make-point 0 -31))`? These are two lines that are _coincident_, but should we say they are "equal"? They don't share any of the `:point` components, but they're the same from a geometric point of view.
+;;; 
+;;; Perhaps what we should do is give Push the ability to think about these things on its own, and see what it comes up with. For example, we could give it instructions like:
+;;; 
+;;; - `:line-equal?` which pushes `true` if the top two `:line` items have the same arguments exactly
+;;; - `:line-coincide?` which pushes `true` if the top two `:line` items are algebraically identical
+;;; - `:line-intersect?` which pushes `true` if the top two `:line` items cross exactly once (and are not coincident or parallel)
+;;; - `:line-parallel?` which pushes `true` if the top two `:line` items do not cross and are not coincident
+;;; - `:line-intersection` which pushes a new `:point` only when its arguments are not parallel or coincident
+;;; - `:circle-equal?`
+;;; - `:circle-coincide?`
+;;; - `:circle-intersect?`
+;;; - `:circle-nonintersecting?`
+;;; - `:circle-tangent?`
+;;; - `:circle-intersections` which pushes zero, one or two `:point` items
+;;; - `:line-circleintersect?`
+;;; - `:line-circletangent?`
+;;; - `:line-circlemiss?`
+;;; - `:line-circleintersections` zero, one or two `:point` items
+;;; 
+;;; We should also talk about (and let Push "think" about) the things we can see when we look at a drawing:
+;;; 
+;;; - `:circle-containpoint?`
+;;; - `:circle-contain-circle?` if two `:circle` items do not intersect, but one's center is inside the other
+;;; - `:circle-concentric?`
+;;; 
+;;; Of course there's room for expansion here, but this is after all just a demo. But you could imagine there being room on this domain for angles, oritented rays, line segments, perpendicularity, [all the many other things one can use as tools for construction, such as t-squares, marked rulers, origami folding](https://en.wikipedia.org/wiki/Compass-and-straightedge_construction#Extended_constructions), and more.
+;; **
+
+;; @@
+
+;; @@
