@@ -13,6 +13,10 @@
   (:use clojure.pprint)
   )
 ;; @@
+;; ->
+;;; [36mRun `(doc midje)` for Midje usage.[0m
+;;; 
+;; <-
 ;; =>
 ;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}
 ;; <=
@@ -269,7 +273,7 @@
 ;; @@
 ;; ->
 ;;; 
-;;; [31mFAIL[0m &quot;`make-line` throws an Exception if both point arguments are the same&quot; at (form-init9143366493531024882.clj:2)
+;;; [31mFAIL[0m &quot;`make-line` throws an Exception if both point arguments are the same&quot; at (form-init5216987345471001602.clj:2)
 ;;; Actual result did not agree with the checking function.
 ;;;         Actual result: {:p1 {:x 1, :y 2}, :p2 {:x 1, :y 2}}::plane_geometry.Line
 ;;;     Checking function: (throws #&quot;points must differ&quot;)
@@ -301,7 +305,7 @@
 ;; @@
 ;; ->
 ;;; 
-;;; [31mFAIL[0m &quot;`make-circle` throws an Exception if both point arguments are the same&quot; at (form-init9143366493531024882.clj:2)
+;;; [31mFAIL[0m &quot;`make-circle` throws an Exception if both point arguments are the same&quot; at (form-init5216987345471001602.clj:2)
 ;;; Actual result did not agree with the checking function.
 ;;;         Actual result: {:edgepoint {:x 1, :y 2}, :origin {:x 1, :y 2}}::plane_geometry.Circle
 ;;;     Checking function: (throws #&quot;points must differ&quot;)
