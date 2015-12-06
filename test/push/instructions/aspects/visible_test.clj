@@ -3,7 +3,8 @@
   (:use push.util.stack-manipulation)
   (:require [push.interpreter.core :as i])
   (:require [push.interpreter.templates.minimum :as m])
-  (:use [push.instructions.aspects.visible])
+  (:use push.instructions.aspects.visible)
+  (:use push.instructions.aspects)
   (:use push.types.core)
   )
 

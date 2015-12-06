@@ -2,7 +2,7 @@
   (:require [push.instructions.core :as core])
   (:require [push.types.core :as t])
   (:require [push.instructions.dsl :as d])
-  (:use push.instructions.aspects.visible)
+  (:use push.instructions.aspects)
   )
 
 

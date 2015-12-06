@@ -3,7 +3,7 @@
   (:require [push.interpreter.core :as i])
   (:require [push.instructions.core :as instr])
   (:require [push.instructions.dsl :as d])
-  (:require [push.instructions.aspects.visible :as visible])
+  (:use push.instructions.aspects)
   (:use [push.types.core])
   )
 
@@ -53,8 +53,8 @@
 
 
 (fact "modules can have whole attributes assigned as with PushTypes"
-  (keys (:instructions (visible/make-visible (make-module :foo)))) => '(:foo-stackdepth :foo-empty?)
-  (:attributes (visible/make-visible (make-module :foo))) => #{:visible})
+  (keys (:instructions (make-visible (make-module :foo)))) => '(:foo-stackdepth :foo-empty?)
+  (:attributes (make-visible (make-module :foo))) => #{:visible})
 
 
 ;; a fixture

@@ -37,11 +37,3 @@
           #(concat %1 (list ~token)) :as :new-stack)
       `(push.instructions.dsl/replace-stack :return :new-stack)))))
 
-
-(defn make-returnable
-  "takes a PushType and adds the :returnable attribute and the `:X-return` instruction"
-  [pushtype]
-  (-> pushtype
-      (t/attach-instruction (return-instruction pushtype))
-      (t/attach-instruction (return-pop-instruction pushtype))
-      (assoc :attributes (conj (:attributes pushtype) :returnable))))

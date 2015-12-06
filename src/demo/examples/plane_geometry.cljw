@@ -10,6 +10,7 @@
   (:require [push.util.stack-manipulation :as u])
   (:require [push.instructions.core :as i])
   (:require [push.instructions.dsl :as d])
+  (:require [push.instructions.aspects :as aspects])
   (:use clojure.pprint)
   )
 ;; @@
@@ -273,7 +274,7 @@
 ;; @@
 ;; ->
 ;;; 
-;;; [31mFAIL[0m &quot;`make-line` throws an Exception if both point arguments are the same&quot; at (form-init5216987345471001602.clj:2)
+;;; [31mFAIL[0m &quot;`make-line` throws an Exception if both point arguments are the same&quot; at (form-init6652206988956514620.clj:2)
 ;;; Actual result did not agree with the checking function.
 ;;;         Actual result: {:p1 {:x 1, :y 2}, :p2 {:x 1, :y 2}}::plane_geometry.Line
 ;;;     Checking function: (throws #&quot;points must differ&quot;)
@@ -305,7 +306,7 @@
 ;; @@
 ;; ->
 ;;; 
-;;; [31mFAIL[0m &quot;`make-circle` throws an Exception if both point arguments are the same&quot; at (form-init5216987345471001602.clj:2)
+;;; [31mFAIL[0m &quot;`make-circle` throws an Exception if both point arguments are the same&quot; at (form-init6652206988956514620.clj:2)
 ;;; Actual result did not agree with the checking function.
 ;;;         Actual result: {:edgepoint {:x 1, :y 2}, :origin {:x 1, :y 2}}::plane_geometry.Circle
 ;;;     Checking function: (throws #&quot;points must differ&quot;)
@@ -544,24 +545,24 @@
     (-> (t/make-type 
           :point 
           :recognizer #(instance? Point %))
-        push.instructions.aspects.visible/make-visible
-        push.instructions.aspects.equatable/make-equatable
-        push.instructions.aspects.movable/make-movable
-        push.instructions.aspects.printable/make-printable
-        push.instructions.aspects.quotable/make-quotable
-        push.instructions.aspects.returnable/make-returnable))
+        aspects/make-visible
+        aspects/make-equatable
+        aspects/make-movable
+        aspects/make-printable
+        aspects/make-quotable
+        aspects/make-returnable))
 
     
 (def push-line
   (-> (t/make-type 
         :line 
         :recognizer #(instance? Line %))
-      push.instructions.aspects.visible/make-visible
-      push.instructions.aspects.equatable/make-equatable
-      push.instructions.aspects.movable/make-movable
-      push.instructions.aspects.printable/make-printable
-      push.instructions.aspects.quotable/make-quotable
-      push.instructions.aspects.returnable/make-returnable
+      aspects/make-visible
+      aspects/make-equatable
+      aspects/make-movable
+      aspects/make-printable
+      aspects/make-quotable
+      aspects/make-returnable
       (t/attach-instruction crosspoint)))
 
 
@@ -570,12 +571,12 @@
   (-> (t/make-type 
         :circle 
         :recognizer #(instance? Circle %))
-      push.instructions.aspects.visible/make-visible
-      push.instructions.aspects.equatable/make-equatable
-      push.instructions.aspects.movable/make-movable
-      push.instructions.aspects.printable/make-printable
-      push.instructions.aspects.quotable/make-quotable
-      push.instructions.aspects.returnable/make-returnable))
+      aspects/make-visible
+      aspects/make-equatable
+      aspects/make-movable
+      aspects/make-printable
+      aspects/make-quotable
+      aspects/make-returnable))
 
 
 ;; @@
@@ -614,7 +615,6 @@
 ;; **
 ;;; ## Things I've noticed and which need to be fixed
 ;;; 
-;;; - the namespace for aspects should be simplified
 ;;; - I caused a bug when I called a Clojure function from inside a build-instruction with the same name
 ;;; - get-stack is kinda annoying
 ;;; - checking for complex items (`:point` for example) should be simpler

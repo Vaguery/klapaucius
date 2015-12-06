@@ -39,18 +39,3 @@
       '(push.instructions.dsl/push-onto :boolean :check)))))
 
 
-
-;;;;;;;;;;;;;;;;;;;;
-
-
-
-(defn make-equatable
-  "takes a PushType and adds the :equatable attribute, and the
-  :pushtype-equal? and :pushtype-notequal? instructions to its
-  :instructions collection"
-  [pushtype]
-  (-> pushtype
-      (t/attach-instruction (equal?-instruction pushtype))
-      (t/attach-instruction (notequal?-instruction pushtype))
-      (assoc :attributes (conj (:attributes pushtype) :equatable))))
-

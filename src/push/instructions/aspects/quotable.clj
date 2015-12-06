@@ -18,15 +18,3 @@
       :tags #{:visible}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg)
       '(push.instructions.dsl/push-onto :code :arg)))))
-
-
-;;;;;;;;;;;;;;;;;;
-
-
-(defn make-quotable
-  "takes a PushType and adds the :quotable attribute, and the :pushtype->code instruction :instructions collection"
-  [pushtype]
-  (-> pushtype
-      (t/attach-instruction (tocode-instruction pushtype))
-      (assoc :attributes (conj (:attributes pushtype) :quotable))))
-

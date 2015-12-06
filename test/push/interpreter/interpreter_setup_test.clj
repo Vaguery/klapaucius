@@ -6,11 +6,8 @@
   (:require [push.types.core :as types])
   (:require [push.interpreter.templates.one-with-everything :as everything])
   (:use [push.util.type-checkers :only (boolean?)])
-  (:require [push.instructions.aspects.equatable :as equatable])
-  (:require [push.instructions.aspects.movable :as movable])
-  (:require [push.instructions.aspects.comparable :as comparable])
-  (:require [push.instructions.aspects.visible :as visible])
   (:use push.interpreter.core)
+  (:use push.instructions.aspects)
   (:require [push.interpreter.templates.minimum :as m])
   (:require [push.interpreter.templates.classic :as c])
   )
@@ -44,10 +41,10 @@
 
 (def foo-type 
   (-> (types/make-type :foo :recognizer integer?)
-      visible/make-visible
-      comparable/make-comparable
-      equatable/make-equatable
-      movable/make-movable))
+      make-visible
+      make-comparable
+      make-equatable
+      make-movable))
 
 
 (fact "foo-type knows some things (just checking)"
@@ -63,9 +60,9 @@
 
 (def bar-type 
   (-> (types/make-type :bar :recognizer keyword?)
-      visible/make-visible
-      equatable/make-equatable
-      movable/make-movable))
+      make-visible
+      make-equatable
+      make-movable))
 
 
 (fact "bar-type knows some things (also just checking)"

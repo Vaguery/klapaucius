@@ -4,8 +4,9 @@
   (:require [push.interpreter.core :as i])
   (:require [push.interpreter.templates.minimum :as m])
   (:use push.types.core)
-  (:use push.instructions.aspects.printable)
+  (:use push.instructions.aspects)
   (:use push.types.modules.print)
+  (:use push.instructions.aspects.printable)
   )
 
 

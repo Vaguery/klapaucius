@@ -4,12 +4,9 @@
   (:require [push.instructions.core :as instr])
   (:require [push.types.core :as types])
   (:require [push.util.stack-manipulation :as u])
-  (:require [push.instructions.aspects.equatable :as equatable])
-  (:require [push.instructions.aspects.movable :as movable])
-  (:require [push.instructions.aspects.comparable :as comparable])
-  (:require [push.instructions.aspects.visible :as visible])
   (:require [push.interpreter.templates.minimum :as m])
   (:require [push.interpreter.templates.classic :as c])
+  (:use push.instructions.aspects)
   (:use [push.interpreter.core])
   )
 
@@ -51,10 +48,10 @@
 
 (def foo-type 
   (-> (types/make-type :foo :recognizer integer?)
-      visible/make-visible
-      comparable/make-comparable
-      equatable/make-equatable
-      movable/make-movable))
+      make-visible
+      make-comparable
+      make-equatable
+      make-movable))
 
 
 (fact "types added to the router with `register-type` are used by `handle-item`"

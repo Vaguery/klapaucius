@@ -3,13 +3,7 @@
   (:require [push.types.core :as t])
   (:require [push.instructions.dsl :as d])
   (:require [clojure.string :as strings])
-  (:use push.instructions.aspects.comparable)
-  (:use push.instructions.aspects.equatable)
-  (:use push.instructions.aspects.movable)
-  (:use push.instructions.aspects.printable)
-  (:use push.instructions.aspects.quotable)
-  (:use push.instructions.aspects.returnable)
-  (:use push.instructions.aspects.visible)
+  (:use push.instructions.aspects)
   )
 
 

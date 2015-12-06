@@ -19,17 +19,3 @@
       `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
       `(push.instructions.dsl/push-onto :print :arg1)))))
 
-
-
-;;;;;;;;;;;;;;;;;
-
-
-
-(defn make-printable
-  "takes a PushType and adds the :printable attribute and the `:print-X` instruction"
-  [pushtype]
-  (-> pushtype
-      (t/attach-instruction (print-instruction pushtype))
-      (assoc :attributes (conj (:attributes pushtype) :printable))))
-
-

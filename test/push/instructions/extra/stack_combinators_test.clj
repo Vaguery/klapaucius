@@ -4,7 +4,7 @@
   (:require [push.interpreter.core :as i])
   (:require [push.types.core :as t])
   (:require [push.util.code-wrangling :as u])
-  (:use push.instructions.aspects.movable)
+  (:use push.instructions.aspects)
   (:use push.instructions.extra.stack-combinators)
   )
 

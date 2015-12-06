@@ -4,11 +4,7 @@
   (:require [push.instructions.dsl :as d])
   (:require [push.util.stack-manipulation :as stacks])
   (:require [push.util.code-wrangling :as u])
-  (:use push.instructions.aspects.equatable)
-  (:use push.instructions.aspects.movable)
-  (:use push.instructions.aspects.printable)
-  (:use push.instructions.aspects.returnable)
-  (:use push.instructions.aspects.visible)
+  (:use push.instructions.aspects)
   )
 
 

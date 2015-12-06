@@ -3,8 +3,7 @@
   (:require [push.types.core :as t])
   (:require [push.instructions.dsl :as d])
   (:require [push.util.stack-manipulation :as u])
-  (:use push.instructions.aspects.returnable)
-  (:use push.instructions.aspects.visible)
+  (:use push.instructions.aspects)
   )
 
 

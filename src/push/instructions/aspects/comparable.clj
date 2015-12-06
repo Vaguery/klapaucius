@@ -108,20 +108,3 @@
           #(if (neg? (compare %1 %2)) %2 %1) :as :winner)
       `(push.instructions.dsl/push-onto ~typename :winner)))))
 
-
-;;;;;;;;;;;;;;;;;
-
-
-(defn make-comparable
-  "takes a PushType and adds the :comparable attribute, and the
-  :pushtype>?, :pushtype≥?, :pushtype<?, :pushtype≤?, :pushtype-min and
-  :pushtype-max instructions to its :instructions collection"
-  [pushtype]
-  (-> pushtype
-      (t/attach-instruction (lessthan?-instruction pushtype))
-      (t/attach-instruction (lessthanorequal?-instruction pushtype))
-      (t/attach-instruction (greaterthan?-instruction pushtype))
-      (t/attach-instruction (greaterthanorequal?-instruction pushtype))
-      (t/attach-instruction (min-instruction pushtype))
-      (t/attach-instruction (max-instruction pushtype))
-      (assoc :attributes (conj (:attributes pushtype) :comparable))))
