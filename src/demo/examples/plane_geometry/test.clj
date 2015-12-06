@@ -3,6 +3,7 @@
   (:require [push.interpreter.templates.one-with-everything :as owe])
   (:require [push.interpreter.core :as core])
   (:require [push.util.stack-manipulation :as u])
+  (:require [clojure.math.numeric-tower :as math])
   (:use demo.examples.plane-geometry.definitions)
   )
 
@@ -24,8 +25,15 @@
   ((:recognizer push-circle)
      (make-line (make-point 2 9) (make-point 2 1)))   => false)
 
+
+(fact "make-line-from-xyxy"
+  (make-line-from-xyxy 0 1 2 3) => (make-line (make-point 0 1) (make-point 2 3))
+  (make-line-from-xyxy 0 1 0 1) => (throws #"points must differ")
+  )
+
 (fact "`make-line` throws an Exception if both point arguments are the same"
   (make-line (make-point 1 2) (make-point 1 2)) => (throws #"points must differ"))
+
 
 (fact "`make-circle` throws an Exception if both point arguments are the same"
   (make-circle (make-point 1 2) (make-point 1 2)) => (throws #"points must differ")
@@ -75,41 +83,77 @@
     (intercept (make-line (make-point 0 0.0001) (make-point 3.111 2.9128))))
 
 
-;; line-coincide?
+;; lines-coincide?
 
 
-(fact "`line-coincide` should detect 'reversed' lines"
-  (line-coincide?
+(fact "`lines-coincide?` should detect 'reversed' lines"
+  (lines-coincide?
     (make-line (make-point 0 2) (make-point 0 11))
     (make-line (make-point 0 11) (make-point 0 2))) => true
-  (line-coincide?
+  (lines-coincide?
     (make-line (make-point 3.111 2.9128) (make-point 0 0))
     (make-line (make-point 0 0) (make-point 3.111 2.9128))) => true)
 
 
-(fact "`line-coincide` should be able to detect subtle differences"
-  (line-coincide?
+(fact "`lines-coincide?` should be able to detect subtle differences"
+  (lines-coincide?
     (make-line (make-point 0 2.0) (make-point 1 11))
     (make-line (make-point 1 11) (make-point 0 2.00001))) => false)
 
 
-(fact "`line-coincide` isn't thrown off by type rounding errors"
+(fact "`lines-coincide?` works for vertical lines"
+  (lines-coincide?
+    (make-line (make-point 0 2) (make-point 0 11))
+    (make-line (make-point 0 11) (make-point 0 3))) => true
+  (lines-coincide?
+    (make-line (make-point 0 2) (make-point 0 11))
+    (make-line (make-point 1 11) (make-point 1 3))) => false)
+
+
+(fact "`lines-coincide?` isn't thrown off by type rounding errors"
   ;; this came up along the way
-  (line-coincide?
+  (lines-coincide?
     (make-line (make-point 0 2.0) (make-point 1 11))
     (make-line (make-point 1 11.0) (make-point 2 20))) => true
-  (line-coincide?
+  (lines-coincide?
     (make-line (make-point 0 2.0) (make-point 1 11))
     (make-line (make-point 1 11) (make-point 2 20))) => true)
+
+
+;; lines-are-parallel?
+
+
+(fact "`lines-are-parallel?` works for vertical, horizontal and angled lines"
+  (lines-are-parallel?
+    (make-line-from-xyxy 0  2 0 11)
+    (make-line-from-xyxy 5 11 5  2)) => true
+  (lines-are-parallel?
+    (make-line-from-xyxy 0  2 5  2)
+    (make-line-from-xyxy 0 11 5 11)) => true
+  (lines-are-parallel?
+    (make-line-from-xyxy 0 2 8 22)
+    (make-line-from-xyxy 1 3 9 23)) => true)
+
+
+(fact "`lines-are-parallel?` doesn't detect identical, coincident or skew lines"
+  (lines-are-parallel?
+    (make-line (make-point 0 2) (make-point 0 11))
+    (make-line (make-point 0 2) (make-point 0 11))) => false
+  (lines-are-parallel?
+    (make-line (make-point 0 2) (make-point 5 2))
+    (make-line (make-point 0 11) (make-point 5 2))) => false
+  (lines-are-parallel?
+    (make-line (make-point 0 2) (make-point 8 22.0001))
+    (make-line (make-point 1 3) (make-point 9 23))) => false)
 
 
 ;; crossing-point (of lines)
 
 
-(def line1 (make-line (make-point 0.0 1.0) (make-point 1.0 2.0)))
-(def line2 (make-line (make-point 0.0 10.0) (make-point 5.0 0.0)))
-(def line3 (make-line (make-point 6.0 10.0) (make-point 6.0 0.0)))
-(def line4 (make-line (make-point 0.0 5.0) (make-point 10.0 5.0)))
+(def line1 (make-line-from-xyxy 0.0  1.0  1.0 2.0))
+(def line2 (make-line-from-xyxy 0.0 10.0  5.0 0.0))
+(def line3 (make-line-from-xyxy 6.0 10.0  6.0 0.0))
+(def line4 (make-line-from-xyxy 0.0  5.0 10.0 5.0))
 
 
 (fact "crossing-point returns the point where lines cross, if they do"
@@ -128,10 +172,130 @@
   (crossing-point line4 (make-line (make-point 0.0 0.0) (make-point 3.0 0.0))) => nil)
 
 
+(fact "crossing-point works with horizontal and vertical lines"
+  (crossing-point
+    (make-line-from-xyxy 3 8 3 1)
+    (make-line-from-xyxy 6 8 6 1)) => nil
+  (crossing-point
+    (make-line-from-xyxy 3 8 3 1)
+    (make-line-from-xyxy 7 2 3 2)) => (make-point 3.0 2.0)
+  (crossing-point
+    (make-line-from-xyxy 7 2 3 2)
+    (make-line-from-xyxy 3 8 3 1)) => (make-point 3.0 2.0)
+)
+
 (fact "crossing-point is pretty accurate even for small divergences"
   (crossing-point line1 (make-line (make-point 0.0 1.0) (make-point 112230.0 112231.0001))) => (make-point 0.0 1.0))
 
 
+(facts "about line-relation"
+  (line-relation
+    (make-line-from-xyxy 0 1 2 3)
+    (make-line-from-xyxy 0 1 2 3)) => :equal
+  (line-relation
+    (make-line-from-xyxy 0 1 2 3)
+    (make-line-from-xyxy 2 3 0 1)) => :coincident
+  (line-relation
+    (make-line-from-xyxy 0 1 2 3)
+    (make-line-from-xyxy 1 1 3 3)) => :parallel
+  (line-relation
+    (make-line-from-xyxy 0 1 2 3)
+    (make-line-from-xyxy 9 2 7 3)) => :intersecting
+  (line-relation
+    (make-line-from-xyxy 0 1 0 12)
+    (make-line-from-xyxy 2 1 2 12)) => :parallel
+  (line-relation
+    (make-line-from-xyxy 0 1 6 1)
+    (make-line-from-xyxy 2 2 8 2)) => :parallel
+  (line-relation
+    (make-line-from-xyxy 0 1 0 12)
+    (make-line-from-xyxy 0 12 0 1)) => :coincident
+  (line-relation
+    (make-line-from-xyxy 0 1 6 1)
+    (make-line-from-xyxy 6 1 0 1)) => :coincident
+  (line-relation
+    (make-line-from-xyxy 0 1 6 1)
+    (make-line-from-xyxy 3 7 3 1)) => :intersecting
+  (line-relation
+    (make-line-from-xyxy 3 7 3 1)
+    (make-line-from-xyxy 0 1 6 1)) => :intersecting)
+
+;; circles
+
+(fact "make-circle-from-xyxy"
+  (:origin (make-circle-from-xyxy 0 1 2 3)) => (make-point 0 1)
+  (:edgepoint (make-circle-from-xyxy 0 1 2 3)) => (make-point 2 3))
+
+(fact "make-circle-from-xyxy"
+  (make-circle-from-xyxy 0 1 0 1) => (throws))
+
+
+;; distance
+
+
+(fact "about distance"
+  (distance-between (make-point 0 0) (make-point 0 12)) => 12.0
+  (distance-between (make-point 0 0) (make-point 0 0)) => 0.0
+  (distance-between (make-point 0 0) (make-point 3 4)) => 5.0
+  (distance-between (make-point 0 0) (make-point 5 12)) => 13.0
+  (distance-between (make-point 1 1) (make-point 6 13)) => 13.0
+  (distance-between (make-point -1 -2) (make-point 4 10)) => 13.0
+  (distance-between (make-point 0 0) (make-point -12 -5)) => 13.0)
+
+
+;; radius
+
+
+(fact "radius works"
+  (radius (make-circle-from-xyxy 0 0 2 0)) => 2.0
+  (radius (make-circle-from-xyxy 2 0 4 0)) => 2.0
+  (radius (make-circle-from-xyxy 0 0 9 9)) => (roughly (* 9 (math/sqrt 2))))
+
+
+;; helpers
+
+
+(fact "circles-coincide?"
+  (circles-coincide?
+    (make-circle-from-xyxy 0 0 7 0)
+    (make-circle-from-xyxy 0 0 0 7)) => true
+  (circles-coincide?
+    (make-circle-from-xyxy 0 0 3 4)
+    (make-circle-from-xyxy 0 0 4 3)) => true
+  (circles-coincide?
+    (make-circle-from-xyxy 0 0 3 4)
+    (make-circle-from-xyxy 0 0 4 3.001)) => false
+  (circles-coincide?
+    (make-circle-from-xyxy 0 0 3 4)
+    (make-circle-from-xyxy 0 0 4 3.00001)) => false
+  (circles-coincide?
+    (make-circle-from-xyxy 0 0 3 4)
+    (make-circle-from-xyxy 0 0 4 3.0000001)) => false
+  (circles-coincide?
+    (make-circle-from-xyxy 0 0 3 4)
+    (make-circle-from-xyxy 0 0 4 3.000000001)) => false)
+
+
+(fact "circles-intersect?"
+  (circles-intersect?
+    (make-circle-from-xyxy 0 0 3 0)
+    (make-circle-from-xyxy 1 0 3 3)) => true
+  (circles-intersect?
+    (make-circle-from-xyxy 0 0 3 0)
+    (make-circle-from-xyxy 0 0 0 3)) => false
+  (circles-intersect?
+    (make-circle-from-xyxy 0 0 3 0)
+    (make-circle-from-xyxy 6 0 3 0)) => false
+  (circles-intersect?
+    (make-circle-from-xyxy 0 0 1 1)
+    (make-circle-from-xyxy 0 0 2 2)) => false
+  (circles-intersect?
+    (make-circle-from-xyxy 0.5 0.5 1 1)
+    (make-circle-from-xyxy 0 0 2 2)) => false
+  (circles-intersect?
+    (make-circle-from-xyxy 0 0 1 1)
+    (make-circle-from-xyxy 2 2 1 1)) => false
+)
 
 ;;;; Push types and instructions
 
@@ -176,12 +340,6 @@
 
 
 ;; interpreter executes instructions
-
-
-(def test-interpreter
-  (core/register-types 
-    (owe/make-everything-interpreter)
-    [push-point push-line push-circle]))
 
 
 (fact "test-interpreter knows :line-intersection"
