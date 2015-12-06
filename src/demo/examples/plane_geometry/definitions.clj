@@ -1,10 +1,32 @@
 (ns demo.examples.plane-geometry.definitions
+  "Completed library for a set of experiments in plane geometry and compass-and-straightedge constructions. Continues work started in the Gorilla REPL file demo.examples.plane-geometry.cljw"
   (:require [push.interpreter.core :as core])
   (:require [push.types.core :as t])
   (:require [push.instructions.core :as i])
   (:require [push.instructions.dsl :as d])
   (:require [push.instructions.aspects :as aspects])
   )
+
+
+; - `:line-coincide?` which pushes `true` if the top two `:line` items are algebraically identical
+; - `:line-intersect?` which pushes `true` if the top two `:line` items cross exactly once (and are not coincident or parallel)
+; - `:line-parallel?` which pushes `true` if the top two `:line` items do not cross and are not coincident
+; - `:line-intersection` which pushes a new `:point` only when its arguments are not parallel or coincident
+; - `:circle-coincide?`
+; - `:circle-intersect?`
+; - `:circle-nonintersecting?`
+; - `:circle-tangent?`
+; - `:circle-intersections` which pushes zero, one or two `:point` items
+; - `:line-circleintersect?`
+; - `:line-circletangent?`
+; - `:line-circlemiss?`
+; - `:line-circleintersections` zero, one or two `:point` items
+
+; We should also talk about (and let Push "think" about) the things we can see when we look at a drawing:
+
+; - `:circle-containpoint?`
+; - `:circle-contain-circle?` if two `:circle` items do not intersect, but one's center is inside the other
+; - `:circle-concentric?`
 
 
 ;;; points
@@ -143,7 +165,6 @@
       aspects/make-quotable
       aspects/make-returnable
       (t/attach-instruction crosspoint)))
-
 
 
 (def push-circle

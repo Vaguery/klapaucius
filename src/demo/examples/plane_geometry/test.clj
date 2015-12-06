@@ -6,9 +6,7 @@
   (:use demo.examples.plane-geometry.definitions)
   )
 
-
 ;; constructors
-
 
 (fact "I can make and recognize instances of :points, :lines and :circles"
   ((:recognizer push-point) (make-point 3 9))         => true
@@ -26,59 +24,19 @@
   ((:recognizer push-circle)
      (make-line (make-point 2 9) (make-point 2 1)))   => false)
 
-
 (fact "`make-line` throws an Exception if both point arguments are the same"
   (make-line (make-point 1 2) (make-point 1 2)) => (throws #"points must differ"))
-
 
 (fact "`make-circle` throws an Exception if both point arguments are the same"
   (make-circle (make-point 1 2) (make-point 1 2)) => (throws #"points must differ")
   (make-circle (make-point 1 2.000002) (make-point 1 2.000001)) =not=> (throws))
 
 
-;; recognizers work for routing
+;;; helpers
+
+;; line slopes
 
 
-(def test-interpreter
-  (core/register-types 
-    (owe/make-everything-interpreter)
-    [push-point push-line push-circle]))
-
-
-(def point-class (class (make-point 0.0 0.0)))
-
-
-(def line-class (class (make-line (make-point 0.0 0.0) (make-point 1 2))))
-
-
-(def circle-class (class (make-circle (make-point 0.0 0.0) (make-point 1 2))))
-
-(fact "the stacks are alredy there (though it doesn't really matter)"
-  (keys (:stacks test-interpreter)) => (contains [:circle :line :point] :gaps-ok :any-order))
-
-
-(fact "items can be routed to those stacks correctly"
-  (u/get-stack
-    (core/handle-item test-interpreter (make-point 3 9))
-    :point) => (list (map->Point {:x 3, :y 9}))
-
-  (u/get-stack
-    (core/handle-item test-interpreter (make-line (make-point 2 9) (make-point 2 1)))
-    :line) => (list (map->Line { :p1 (map->Point {:x 2, :y 9})
-                                 :p2 (map->Point {:x 2, :y 1}) }))
-
-  (u/get-stack
-    (core/handle-item test-interpreter (make-circle (make-point 2 9) (make-point 2 1)))
-    :circle) => (list (map->Circle {
-                    :origin
-                      (map->Point {:x 2, :y 9})
-                    :edgepoint
-                      (map->Point {:x 2, :y 1})})))
-
-
-;; helpers
-
-  
 (fact "slope works as expected"
   (slope (make-line (make-point 2.0 2.0) (make-point 1.0 1.0))) => 1.0
   (slope (make-line (make-point 1.0 0.0) (make-point 0.0 1.0))) => -1.0
@@ -94,6 +52,9 @@
 (fact "slope can detect subtle differences"
   (slope (make-line (make-point 3.111 2.9128) (make-point 0 0))) =not=>
     (slope (make-line (make-point 0 0) (make-point 3.112 2.9128))))
+
+
+;; line intercepts
 
 
 (fact "intercept works as expected"
@@ -142,7 +103,7 @@
     (make-line (make-point 1 11) (make-point 2 20))) => true)
 
 
-;; 
+;; crossing-point (of lines)
 
 
 (def line1 (make-line (make-point 0.0 1.0) (make-point 1.0 2.0)))
@@ -166,9 +127,55 @@
   (crossing-point line1 (make-line (make-point -1.0 0.0) (make-point 0.0 1.0))) => nil
   (crossing-point line4 (make-line (make-point 0.0 0.0) (make-point 3.0 0.0))) => nil)
 
+
 (fact "crossing-point is pretty accurate even for small divergences"
   (crossing-point line1 (make-line (make-point 0.0 1.0) (make-point 112230.0 112231.0001))) => (make-point 0.0 1.0))
 
+
+
+;;;; Push types and instructions
+
+
+;; recognizers work for routing
+
+(def test-interpreter
+  (core/register-types 
+    (owe/make-everything-interpreter)
+    [push-point push-line push-circle]))
+
+
+(def point-class (class (make-point 0.0 0.0)))
+
+
+(def line-class (class (make-line (make-point 0.0 0.0) (make-point 1 2))))
+
+
+(def circle-class (class (make-circle (make-point 0.0 0.0) (make-point 1 2))))
+
+(fact "the stacks are already there (though it doesn't really matter)"
+  (keys (:stacks test-interpreter)) => (contains [:circle :line :point] :gaps-ok :any-order))
+
+
+(fact "items can be routed to those stacks correctly"
+  (u/get-stack
+    (core/handle-item test-interpreter (make-point 3 9))
+    :point) => (list (map->Point {:x 3, :y 9}))
+
+  (u/get-stack
+    (core/handle-item test-interpreter (make-line (make-point 2 9) (make-point 2 1)))
+    :line) => (list (map->Line { :p1 (map->Point {:x 2, :y 9})
+                                 :p2 (map->Point {:x 2, :y 1}) }))
+
+  (u/get-stack
+    (core/handle-item test-interpreter (make-circle (make-point 2 9) (make-point 2 1)))
+    :circle) => (list (map->Circle {
+                    :origin
+                      (map->Point {:x 2, :y 9})
+                    :edgepoint
+                      (map->Point {:x 2, :y 1})})))
+
+
+;; interpreter executes instructions
 
 
 (def test-interpreter
@@ -189,3 +196,5 @@
     `{:boolean (), :booleans (), :char (), :chars (), :circle (), :code (), :environment (), :error (), :exec (~line1 ~line2 :line-intersection), :float (), :floats (), :integer (), :integers (), :line (), :log (), :point (), :print (), :return (), :set (), :string (), :strings (), :unknown (), :vector ()}
     
     (u/get-stack (core/run prepped 1000) :point) => (list (make-point 3.0 4.0))))
+
+
