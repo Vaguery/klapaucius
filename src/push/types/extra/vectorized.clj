@@ -2,7 +2,7 @@
   (:require [push.instructions.core :as core])
   (:require [push.types.core :as t])
   (:require [push.instructions.dsl])
-  (:use push.instructions.aspects)
+  (:require [push.instructions.aspects :as aspects])
   (:require [push.util.code-wrangling :as fix])
   )
 
@@ -431,12 +431,12 @@
     ( ->  (t/make-type  typename
                         :recognizer #(vector-of-type? % content-type)
                         :attributes #{:vector})
-          make-visible
-          make-equatable
-          make-movable
-          make-printable
-          make-quotable
-          make-returnable
+          aspects/make-visible
+          aspects/make-equatable
+          aspects/make-movable
+          aspects/make-printable
+          aspects/make-quotable
+          aspects/make-returnable
           (t/attach-instruction , (x-butlast-instruction typename))
           (t/attach-instruction , (x-concat-instruction typename))
           (t/attach-instruction , (x-conj-instruction typename rootname))

@@ -4,7 +4,7 @@
   (:require [push.instructions.dsl :as d])
   (:require [push.util.stack-manipulation :as u])
   (:require [push.util.code-wrangling :as fix])
-  (:use push.instructions.aspects)
+  (:require [push.instructions.aspects :as aspects])
   )
 
 
@@ -93,13 +93,13 @@
   ( ->  (t/make-type  :char
                       :recognizer char?
                       :attributes #{:string})
-        make-visible 
-        make-equatable
-        make-comparable
-        make-movable
-        make-printable
-        make-quotable
-        make-returnable
+        aspects/make-visible 
+        aspects/make-equatable
+        aspects/make-comparable
+        aspects/make-movable
+        aspects/make-printable
+        aspects/make-quotable
+        aspects/make-returnable
         (t/attach-instruction , string->chars)
         (t/attach-instruction , char-letter?)
         (t/attach-instruction , char-digit?)

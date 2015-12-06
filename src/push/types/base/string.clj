@@ -3,7 +3,7 @@
   (:require [push.types.core :as t])
   (:require [push.instructions.dsl :as d])
   (:require [clojure.string :as strings])
-  (:use push.instructions.aspects)
+  (:require [push.instructions.aspects :as aspects])
   )
 
 
@@ -355,13 +355,13 @@
   ( ->  (t/make-type  :string
                       :recognizer string?
                       :attributes #{:string :base})
-        make-visible 
-        make-equatable
-        make-comparable
-        make-movable
-        make-printable
-        make-quotable
-        make-returnable
+        aspects/make-visible 
+        aspects/make-equatable
+        aspects/make-comparable
+        aspects/make-movable
+        aspects/make-printable
+        aspects/make-quotable
+        aspects/make-returnable
         (t/attach-instruction , exec-string-iterate)
         (t/attach-instruction , string-butlast)
         (t/attach-instruction , string-concat)

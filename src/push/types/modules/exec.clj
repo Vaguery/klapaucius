@@ -2,7 +2,7 @@
   (:require [push.instructions.core :as core])
   (:require [push.types.core :as t])
   (:require [push.instructions.dsl :as d])
-  (:use push.instructions.aspects)
+  (:require [push.instructions.aspects :as aspects])
   )
 
 
@@ -171,11 +171,11 @@
 (def classic-exec-module
   ( ->  (t/make-module  :exec
                         :attributes #{:complex :base})
-        make-equatable
-        make-movable
-        make-printable
-        make-returnable
-        make-visible 
+        aspects/make-equatable
+        aspects/make-movable
+        aspects/make-printable
+        aspects/make-returnable
+        aspects/make-visible 
         (t/attach-instruction , exec-do*count)
         (t/attach-instruction , exec-do*range)
         (t/attach-instruction , exec-do*times)

@@ -2,7 +2,7 @@
   (:require [push.instructions.core :as core])
   (:require [push.types.core :as t])
   (:require [push.instructions.dsl :as d])
-  (:use push.instructions.aspects)
+  (:require [push.instructions.aspects :as aspects])
   (:require [push.types.extra.vectorized :as v])
   )
 
@@ -36,12 +36,12 @@
   (-> (t/make-type  :vector
                       :recognizer vector?
                       :attributes #{:collection :vector})
-      make-visible 
-      make-equatable
-      make-movable
-      make-printable
-      make-quotable
-      make-returnable
+      aspects/make-visible 
+      aspects/make-equatable
+      aspects/make-movable
+      aspects/make-printable
+      aspects/make-quotable
+      aspects/make-returnable
       (t/attach-instruction , vector-refilter)
       (t/attach-instruction , vector-refilterall)
       (t/attach-instruction , (v/x-butlast-instruction typename))

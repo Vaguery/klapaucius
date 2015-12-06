@@ -3,7 +3,7 @@
   (:require [push.types.core :as t])
   (:require [push.instructions.dsl :as d])
   (:require [push.util.stack-manipulation :as u])
-  (:use push.instructions.aspects)
+  (:require [push.instructions.aspects :as aspects])
   )
 
 
@@ -50,7 +50,7 @@
 (def classic-environment-module
   ( ->  (t/make-module  :environment
                         :attributes #{:complex :base})
-        make-visible
+        aspects/make-visible
         (t/attach-instruction , environment-new)
         (t/attach-instruction , environment-begin)
         (t/attach-instruction , environment-end)

@@ -6,7 +6,7 @@
   (:require [push.util.stack-manipulation :as u])
   (:require [push.interpreter.templates.minimum :as m])
   (:require [push.interpreter.templates.classic :as c])
-  (:use push.instructions.aspects)
+  (:require [push.instructions.aspects :as aspects])
   (:use [push.interpreter.core])
   )
 
@@ -48,10 +48,10 @@
 
 (def foo-type 
   (-> (types/make-type :foo :recognizer integer?)
-      make-visible
-      make-comparable
-      make-equatable
-      make-movable))
+      aspects/make-visible
+      aspects/make-comparable
+      aspects/make-equatable
+      aspects/make-movable))
 
 
 (fact "types added to the router with `register-type` are used by `handle-item`"

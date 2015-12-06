@@ -2,13 +2,13 @@
   (:require [push.instructions.core :as core])
   (:require [push.types.core :as t])
   (:require [push.instructions.dsl :as d])
-  (:use push.instructions.aspects)
+  (:require [push.instructions.aspects :as aspects])
   )
 
 
 (def classic-log-module
   ( ->  (t/make-module  :log
                         :attributes #{:internal :base})
-        make-visible
+        aspects/make-visible
         ))
 

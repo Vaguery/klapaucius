@@ -7,7 +7,7 @@
   (:require [push.interpreter.templates.one-with-everything :as everything])
   (:use [push.util.type-checkers :only (boolean?)])
   (:use push.interpreter.core)
-  (:use push.instructions.aspects)
+  (:require [push.instructions.aspects :as aspects])
   (:require [push.interpreter.templates.minimum :as m])
   (:require [push.interpreter.templates.classic :as c])
   )
@@ -41,10 +41,10 @@
 
 (def foo-type 
   (-> (types/make-type :foo :recognizer integer?)
-      make-visible
-      make-comparable
-      make-equatable
-      make-movable))
+      aspects/make-visible
+      aspects/make-comparable
+      aspects/make-equatable
+      aspects/make-movable))
 
 
 (fact "foo-type knows some things (just checking)"
@@ -60,9 +60,9 @@
 
 (def bar-type 
   (-> (types/make-type :bar :recognizer keyword?)
-      make-visible
-      make-equatable
-      make-movable))
+      aspects/make-visible
+      aspects/make-equatable
+      aspects/make-movable))
 
 
 (fact "bar-type knows some things (also just checking)"
