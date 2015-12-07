@@ -276,6 +276,57 @@
     (make-circle-from-xyxy 0 0 4 3.000000001)) => false)
 
 
+(fact "circles-tangent?"
+  (circles-tangent?
+    (make-circle-from-xyxy 0 0 3 0)
+    (make-circle-from-xyxy 1 0 3 0)) => true
+  (circles-tangent?
+    (make-circle-from-xyxy 0.0 0.0 5.0 5.0)
+    (make-circle-from-xyxy 195.0 195.0 5.0 5.0)) => true
+  (circles-tangent?
+    (make-circle-from-xyxy 0 0 3 0)
+    (make-circle-from-xyxy 6 0 3 0)) => true
+  (circles-tangent?
+    (make-circle-from-xyxy 0 0 3 3)
+    (make-circle-from-xyxy 6 6 3 3)) => true
+  (circles-tangent?
+    (make-circle-from-xyxy 0 0 1 1)
+    (make-circle-from-xyxy 0 0 2 2)) => false
+  (circles-tangent?
+    (make-circle-from-xyxy 0 0 1 1)
+    (make-circle-from-xyxy 1 1 2 2)) => false
+  (circles-tangent?
+    (make-circle-from-xyxy 0 0 1 1)
+    (make-circle-from-xyxy 12 12 11 11)) => false)
+
+(future-fact "these should work, but they don't"
+  (circles-tangent?
+    (make-circle-from-xyxy 0.0 0.0 13.0 13.0)
+    (make-circle-from-xyxy 195.0 195.0 13.0 13.0)) => true
+  (circles-tangent?
+    (make-circle-from-xyxy -301.27 -301.27 3.0 3.0)
+    (make-circle-from-xyxy 195.0 195.0 3.0 3.0)) => true)
+
+
+(fact "circles-separate?"
+  (circles-separate?
+    (make-circle-from-xyxy 0 0 3 0)
+    (make-circle-from-xyxy 9 9 8 8)) => true
+  (circles-separate?
+    (make-circle-from-xyxy 0 0 3 0)
+    (make-circle-from-xyxy 0 0 8 8)) => false
+  (circles-separate?
+    (make-circle-from-xyxy 0 0 3 0)
+    (make-circle-from-xyxy 6 0 3 0)) => false
+  (circles-separate?
+    (make-circle-from-xyxy 0 0 3 0)
+    (make-circle-from-xyxy 0 0 3 0)) => false
+  (circles-separate?
+    (make-circle-from-xyxy 0 0 5 5)
+    (make-circle-from-xyxy 1 1 7 7)) => false)
+
+
+
 (fact "circles-intersect?"
   (circles-intersect?
     (make-circle-from-xyxy 0 0 3 0)

@@ -15,7 +15,7 @@
 ; - `:line-intersection`
 ; - `:circle-coincide?`
 ; - `:circle-intersect?`
-; - `:circle-nonintersecting?`
+; - `:circle-separate?`
 ; - `:circle-tangent?` (to another circle)
 ; - `:circle-intersections` (with another circle)
 ; - `:LC-intersect?` (line-circle)
@@ -187,6 +187,39 @@
     (= (radius circle1) (radius circle2))))
 
 
+(defn circles-tangent?
+  "returns `true` if the circles touch at an edge, whether one is inside the other or they are outside one another (but are not coincident or intersecting)"
+  [circle1 circle2]
+  (let [center-to-center
+          (distance-between (:origin circle1) (:origin circle2))
+        r1 (radius circle1)
+        r2 (radius circle2)
+        sum-of-radii (+ r1 r2)]
+    (cond
+      (= circle1 circle2) false
+      (circles-coincide? circle1 circle2) false
+      (< sum-of-radii center-to-center) false
+      (= center-to-center sum-of-radii) true
+      (= r1 (+ center-to-center r2)) true
+      (= r2 (+ center-to-center r1)) true
+      :else false
+      )))
+
+
+(defn circles-separate?
+  "returns `true` if the circles are not coincident, tangent, concentric, contained in one another, or intersecting"
+  [circle1 circle2]
+  (let [center-to-center
+          (distance-between (:origin circle1) (:origin circle2))
+        r1 (radius circle1)
+        r2 (radius circle2)
+        sum-of-radii (+ r1 r2)]
+    (if (< sum-of-radii center-to-center)
+      true
+      false)))
+
+
+
 (defn circles-intersect?
   "returns `true` if the circles intersect (and are not identical, tangent, concentric, coincident, or disconnected)"
   [circle1 circle2]
@@ -204,6 +237,7 @@
       :else true)))
 
 
+
 ;;; push instructions
 
 
@@ -215,6 +249,28 @@
     (d/consume-top-of :circle :as :arg2)
     (d/consume-top-of :circle :as :arg1)
     (d/calculate [:arg1 :arg2] #(circles-coincide? %1 %2) :as :result)
+    (d/push-onto :boolean :result)))
+
+
+(def circle-intersect?
+  (i/build-instruction
+    circle-intersect?
+    "`:circle-intersect?` pops the top two `:circle` items, and pushes `true` if they intersect (and are thus not coincident, identical, concentric, contained in one another or completely separate)"
+    :tags #{:plane-geometry :construction}
+    (d/consume-top-of :circle :as :arg2)
+    (d/consume-top-of :circle :as :arg1)
+    (d/calculate [:arg1 :arg2] #(circles-intersect? %1 %2) :as :result)
+    (d/push-onto :boolean :result)))
+
+
+(def circle-separate?
+  (i/build-instruction
+    circle-separate?
+    "`:circle-separate?` pops the top two `:circle` items, and pushes `true` if they are not coincident, identical, concentric, contained in one another or intersecting"
+    :tags #{:plane-geometry :construction}
+    (d/consume-top-of :circle :as :arg2)
+    (d/consume-top-of :circle :as :arg1)
+    (d/calculate [:arg1 :arg2] #(circles-separate? %1 %2) :as :result)
     (d/push-onto :boolean :result)))
 
 
