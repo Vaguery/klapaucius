@@ -24,6 +24,34 @@
 
 
 
+;; rounding
+
+(fact "I can use ApfloatMath/round successfully"
+  (let [i1 (intercept (make-line (make-point 3.3 9.9) (make-point 0.0 0.0)))
+        i2 (intercept (make-line (make-point 0.0 0.0) (make-point 3.3 9.9)))]
+    (.equals i1 (apf 0)) => false
+    (.equals i1 i2) => false
+    (.compareTo i1 i2) => 1
+    (pretty-much-equal? i1 i2) => true
+  ))
+
+;; pretty-much-equal?
+
+(fact "pretty-much-equal? uses rounding to the specified precision to compare apf numbers"
+  (.subtract
+    (intercept (make-line (make-point 3.3 9.9) (make-point 0 0)))
+    (intercept (make-line (make-point 0 0) (make-point 3.3 9.9)))) => (apf 4e-99)
+
+  (.equals
+    (intercept (make-line (make-point 3.3 9.9) (make-point 0 0)))
+    (intercept (make-line (make-point 0 0) (make-point 3.3 9.9)))) => false
+
+  (pretty-much-equal?
+    (intercept (make-line (make-point 3.3 9.9) (make-point 0 0)))
+    (intercept (make-line (make-point 0 0) (make-point 3.3 9.9)))) => true)
+
+
+
 ;; constructors
 
 (fact "I can make and recognize instances of :points, :lines and :circles"
@@ -106,32 +134,6 @@
       (intercept (make-line (make-point 129 333) (make-point 88 0.00001)))
       (intercept (make-line (make-point 88 0) (make-point 129 333))))) => true)
 
-
-;; rounding
-
-(fact "I can use ApfloatMath/round successfully"
-  (let [i1 (intercept (make-line (make-point 3.3 9.9) (make-point 0.0 0.0)))
-        i2 (intercept (make-line (make-point 0.0 0.0) (make-point 3.3 9.9)))]
-    (.equals i1 (apf 0)) => false
-    (.equals i1 i2) => false
-    (.compareTo i1 i2) => 1
-    (pretty-much-equal? i1 i2) => true
-  ))
-
-;; pretty-much-equal?
-
-(fact "pretty-much-equal? uses rounding to the specified precision to compare apf numbers"
-  (.subtract
-    (intercept (make-line (make-point 3.3 9.9) (make-point 0 0)))
-    (intercept (make-line (make-point 0 0) (make-point 3.3 9.9)))) => (apf 4e-99)
-
-  (.equals
-    (intercept (make-line (make-point 3.3 9.9) (make-point 0 0)))
-    (intercept (make-line (make-point 0 0) (make-point 3.3 9.9)))) => false
-
-  (pretty-much-equal?
-    (intercept (make-line (make-point 3.3 9.9) (make-point 0 0)))
-    (intercept (make-line (make-point 0 0) (make-point 3.3 9.9)))) => true)
 
 
 ; ;; lines-coincide?
@@ -459,62 +461,62 @@
 
 
 
-; ;;;; Push types and instructions
+;;;; Push types and instructions
 
 
-; ;; recognizers work for routing
+;; recognizers work for routing
 
-; (def test-interpreter
-;   (core/register-types 
-;     (owe/make-everything-interpreter)
-;     [push-point push-line push-circle]))
-
-
-; (def point-class (class (make-point 0.0 0.0)))
+(def test-interpreter
+  (core/register-types 
+    (owe/make-everything-interpreter)
+    [push-point push-line push-circle]))
 
 
-; (def line-class (class (make-line (make-point 0.0 0.0) (make-point 1 2))))
+(def point-class (class (make-point 0.0 0.0)))
 
 
-; (def circle-class (class (make-circle (make-point 0.0 0.0) (make-point 1 2))))
-
-; (fact "the stacks are already there (though it doesn't really matter)"
-;   (keys (:stacks test-interpreter)) => (contains [:circle :line :point] :gaps-ok :any-order))
+(def line-class (class (make-line (make-point 0.0 0.0) (make-point 1 2))))
 
 
-; (fact "items can be routed to those stacks correctly"
-;   (u/get-stack
-;     (core/handle-item test-interpreter (make-point 3 9))
-;     :point) => (list (map->Point {:x 3, :y 9}))
+(def circle-class (class (make-circle (make-point 0.0 0.0) (make-point 1 2))))
 
-;   (u/get-stack
-;     (core/handle-item test-interpreter (make-line (make-point 2 9) (make-point 2 1)))
-;     :line) => (list (map->Line { :p1 (map->Point {:x 2, :y 9})
-;                                  :p2 (map->Point {:x 2, :y 1}) }))
-
-;   (u/get-stack
-;     (core/handle-item test-interpreter (make-circle (make-point 2 9) (make-point 2 1)))
-;     :circle) => (list (map->Circle {
-;                     :origin
-;                       (map->Point {:x 2, :y 9})
-;                     :edgepoint
-;                       (map->Point {:x 2, :y 1})})))
+(fact "the stacks are already there (though it doesn't really matter)"
+  (keys (:stacks test-interpreter)) => (contains [:circle :line :point] :gaps-ok :any-order))
 
 
-; ;; interpreter executes instructions
+(fact "items can be routed to those stacks correctly"
+  (u/get-stack
+    (core/handle-item test-interpreter (make-point 3 9))
+    :point) => (list (map->Point {:x 3, :y 9}))
+
+  (u/get-stack
+    (core/handle-item test-interpreter (make-line (make-point 2 9) (make-point 2 1)))
+    :line) => (list (map->Line { :p1 (map->Point {:x 2, :y 9})
+                                 :p2 (map->Point {:x 2, :y 1}) }))
+
+  (u/get-stack
+    (core/handle-item test-interpreter (make-circle (make-point 2 9) (make-point 2 1)))
+    :circle) => (list (map->Circle {
+                    :origin
+                      (map->Point {:x 2, :y 9})
+                    :edgepoint
+                      (map->Point {:x 2, :y 1})})))
 
 
-; (fact "test-interpreter knows :line-intersection"
-;   (keys (:instructions test-interpreter)) => (contains :line-intersection))
+;; interpreter executes instructions
 
 
-; (fact "the intersection ends up on the :point stack"
-;   (let [prepped (core/recycle-interpreter
-;                 test-interpreter
-;                 [line1 line2 :line-intersection])]
-;     (:stacks prepped) =>
-;     `{:boolean (), :booleans (), :char (), :chars (), :circle (), :code (), :environment (), :error (), :exec (~line1 ~line2 :line-intersection), :float (), :floats (), :integer (), :integers (), :line (), :log (), :point (), :print (), :return (), :set (), :string (), :strings (), :unknown (), :vector ()}
+(fact "test-interpreter knows :line-intersection"
+  (keys (:instructions test-interpreter)) => (contains :line-intersection))
+
+
+(fact "the intersection ends up on the :point stack"
+  (let [prepped (core/recycle-interpreter
+                test-interpreter
+                [line1 line2 :line-intersection])]
+    (:stacks prepped) =>
+    `{:boolean (), :booleans (), :char (), :chars (), :circle (), :code (), :environment (), :error (), :exec (~line1 ~line2 :line-intersection), :float (), :floats (), :integer (), :integers (), :line (), :log (), :point (), :print (), :return (), :set (), :string (), :strings (), :unknown (), :vector ()}
     
-;     (u/get-stack (core/run prepped 1000) :point) => (list (make-point 3.0 4.0))))
+    (u/get-stack (core/run prepped 1000) :point) => (list (make-point 3.0 4.0))))
 
 
