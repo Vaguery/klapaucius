@@ -312,6 +312,17 @@
       (neg? (.compareTo (.add r2 center-to-center) r1)))))
 
 
+(defn circles-concentric?
+  "returns `true` if one circle is entirely inside the other, and they have the same origin points"
+  [circle1 circle2]
+  (let [r1 (radius circle1)
+        r2 (radius circle2)]
+    (and
+      (pt-equal? (:origin circle1) (:origin circle2))
+      (not (circles-coincide? circle1 circle2)))))
+
+
+
 (defn circles-intersect?
   "returns `true` if the circles intersect (and are not identical, tangent, concentric, coincident, or disconnected)"
   [circle1 circle2]
@@ -349,6 +360,7 @@
     (d/consume-top-of :circle :as :arg1)
     (d/calculate [:arg1 :arg2] #(circles-coincide? %1 %2) :as :result)
     (d/push-onto :boolean :result)))
+
 
 (def circle-inside?
   (i/build-instruction

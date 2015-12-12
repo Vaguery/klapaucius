@@ -479,6 +479,19 @@
     (make-circle-from-xyxy 1 0 2.9999999999999M 0)) => true)
 
 
+(fact "circles-concentric?"
+  (circles-concentric?
+    (make-circle-from-xyxy 0 0 3 0)
+    (make-circle-from-xyxy 0 0 2 0)) => true
+  (circles-concentric?
+    (make-circle-from-xyxy 0 0 3 0)
+    (make-circle-from-xyxy 0 1 1 0)) => false
+  (circles-concentric?
+    (make-circle-from-xyxy 0 0 3 0)
+    (make-circle-from-xyxy 0 0 3 0)) => false)
+
+
+
 (fact "circles-intersect?"
   (circles-intersect?
     (make-circle-from-xyxy 0 0 3 0)
