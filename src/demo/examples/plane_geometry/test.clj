@@ -460,6 +460,18 @@
     (make-circle-from-xyxy 2 2 1 1)) => false)
 
 
+;; points
+
+(fact "point-in-circle? returns true when the point is inside the circle"
+  (point-in-circle? (make-point 1 2) (make-circle-from-xyxy 1 2 3 4)) => true
+  (point-in-circle? (make-point 11 12) (make-circle-from-xyxy 1 2 3 4)) => false
+  (point-in-circle? (make-point 3 4) (make-circle-from-xyxy 1 2 3 4)) => false
+  (point-in-circle? (make-point 0 5) (make-circle-from-xyxy 0 0 3 4)) => false
+  (radius (make-circle-from-xyxy 0 0 3 4)) => (apf 5)
+  (point-in-circle? (make-point 0 4.9999999999999M) (make-circle-from-xyxy 0 0 3 4)) => true
+  (point-in-circle? (make-point 0 5M) (make-circle-from-xyxy 0 0 3 4)) => false)
+
+
 
 ;;;; Push types and instructions
 

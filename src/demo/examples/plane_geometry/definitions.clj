@@ -10,24 +10,6 @@
   )
 
 
-; - `:line-coincide?`
-; - `:line-intersect?`
-; - `:line-parallel?`
-; - `:line-intersection`
-; - `:circle-coincide?`
-; - `:circle-intersect?`
-; - `:circle-separate?`
-; - `:circle-tangent?` (to another circle)
-; - `:circle-intersections` (with another circle)
-; - `:LC-intersect?` (line-circle)
-; - `:LC-tangent?` (line-circle)
-; - `:LC-miss?` (line-circle)
-; - `:LC-intersections` zero, one or two `:point` items
-; - `:point-inside?`
-; - `:point-oncircle?`
-; - `:point-online?`
-; - `:circle-nested?` (two `:circle` items do not intersect, and one's center is inside the other)
-; - `:circle-concentric?` (shared centers)
 
 
 ; This extension uses the APfloat Java class for high-accuracy numerical calculations of geometric points. Note that these values are entirely self-contained in the plane geometry objects; no Push items (including primitives) are affected or created from these type or instruction definitions, except for `:line`, `:point` and `:circle`.
@@ -322,6 +304,14 @@
       :else true)))
 
 
+(defn point-in-circle?
+  "returns `true` if the point is strictly inside (not on the circumference) of the circle"
+  [point circle]
+  (let [pt-to-center (distance-between (:origin circle) point)
+        r (radius circle)]
+        (neg? (.compareTo pt-to-center r))))
+
+
 ;;; push instructions
 
 
@@ -405,8 +395,39 @@
     (d/push-onto :point :pt)))
 
 
+(def point-inside?
+  (i/build-instruction
+    point-inside?
+    "`:point-inside?` pops the top `:point` item and the top `:circle` item, and pushes `true` to `:boolean` if the point is _strictly_ inside the circle (not on its circumference)"
+    :tags #{:plane-geometry :construction}
+    (d/consume-top-of :point :as :p)
+    (d/consume-top-of :circle :as :c)
+    (d/calculate [:p :c] #(point-in-circle? %1 %2) :as :within?)
+    (d/push-onto :boolean :within?)))
+
 
 ;;; push types
+
+; [X] `:line-coincide?`
+; [X] `:line-intersect?`
+; [X] `:line-parallel?`
+; [X] `:line-intersection`
+; [X] `:circle-coincide?`
+; [X] `:circle-intersect?`
+; [X] `:circle-separate?`
+; [ ] `:circle-inside?`
+; [ ] `:circle-surrounds?`
+; [ ] `:circle-tangent?` (to another circle)
+; [ ] `:circle-intersections` (with another circle)
+; [ ] `:LC-intersect?` (line-circle)
+; [ ] `:LC-tangent?` (line-circle)
+; [ ] `:LC-miss?` (line-circle)
+; [ ] `:LC-intersections` zero, one or two `:point` items
+; [X] `:point-inside?`
+; [ ] `:point-oncircle?`
+; [ ] `:point-online?`
+; [ ] `:circle-concentric?` (shared centers)
+
 
   (def push-point
     (-> (t/make-type 
@@ -417,7 +438,9 @@
         aspects/make-movable
         aspects/make-printable
         aspects/make-quotable
-        aspects/make-returnable))
+        aspects/make-returnable
+        (t/attach-instruction point-inside?)
+        ))
 
     
 (def push-line
@@ -430,8 +453,11 @@
       aspects/make-printable
       aspects/make-quotable
       aspects/make-returnable
-      (t/attach-instruction line-intersection)))
-
+      (t/attach-instruction line-coincide?)
+      (t/attach-instruction line-intersect?)
+      (t/attach-instruction line-intersection)
+      (t/attach-instruction line-parallel?)
+      ))
 
 (def push-circle
   (-> (t/make-type 
@@ -442,4 +468,8 @@
       aspects/make-movable
       aspects/make-printable
       aspects/make-quotable
-      aspects/make-returnable))
+      aspects/make-returnable
+      (t/attach-instruction circle-coincide?)
+      (t/attach-instruction circle-intersect?)
+      (t/attach-instruction circle-separate?)
+      ))
