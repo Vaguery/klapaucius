@@ -405,6 +405,17 @@
     (d/push-onto :boolean :result)))
 
 
+(def circle-tangent?
+  (i/build-instruction
+    circle-tangent?
+    "`:circle-tangent?` pops the top two `:circle` items, and pushes `true` if they are tangent (either one external to the other, or one inside the other) but not coincident"
+    :tags #{:plane-geometry :construction}
+    (d/consume-top-of :circle :as :arg2)
+    (d/consume-top-of :circle :as :arg1)
+    (d/calculate [:arg1 :arg2] #(circles-tangent? %1 %2) :as :result)
+    (d/push-onto :boolean :result)))
+
+
 (def line-coincide?
   (i/build-instruction
     line-coincide?
@@ -475,7 +486,7 @@
 ; [X] `:circle-nested?`
 ; [X] `:circle-inside?`
 ; [X] `:circle-surrounds?`
-; [ ] `:circle-tangent?` (to another circle)
+; [X] `:circle-tangent?` (to another circle)
 ; [ ] `:circle-intersections` (with another circle)
 ; [ ] `:LC-intersect?` (line-circle)
 ; [ ] `:LC-tangent?` (line-circle)
@@ -533,4 +544,5 @@
       (t/attach-instruction circle-nested?)
       (t/attach-instruction circle-separate?)
       (t/attach-instruction circle-surrounds?)
+      (t/attach-instruction circle-tangent?)
       ))
