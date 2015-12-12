@@ -525,6 +525,26 @@
   (point-in-circle? (make-point 0 5M) (make-circle-from-xyxy 0 0 3 4)) => false)
 
 
+(fact "point-on-circle? returns true when the point is inside the circle"
+  (point-on-circle? (make-point 3 4) (make-circle-from-xyxy 1 2 3 4)) => true
+  (point-on-circle? (make-point 0 5M) (make-circle-from-xyxy 0 0 3 4)) => true
+  (point-on-circle?
+    (make-point 0 4.9999999999999999M)
+    (make-circle-from-xyxy 0 0 3 4)) => false
+  (point-on-circle?
+    (make-point 0 5.000000000000000001M)
+    (make-circle-from-xyxy 0 0 3 4)) => false)
+
+
+
+(fact "point-on-line? returns true when the point is on the line"
+  (point-on-line? (make-point 3 4) (make-line-from-xyxy 1 2 3 4)) => true
+  (point-on-line? (make-point 5 6) (make-line-from-xyxy 1 2 3 4)) => true
+  (point-on-line? (make-point 5 7) (make-line-from-xyxy 1 2 3 4)) => false
+  (point-on-line? (make-point 3.00000000000000000001M 4)
+    (make-line-from-xyxy 1 2 3 4)) => false)
+
+
 
 ;;;; Push types and instructions
 

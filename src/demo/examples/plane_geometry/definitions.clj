@@ -348,6 +348,22 @@
         (neg? (.compareTo pt-to-center r))))
 
 
+(defn point-on-circle?
+  "returns `true` if the point is on the circumference of the circle"
+  [point circle]
+  (let [pt-to-center (distance-between (:origin circle) point)
+        r (radius circle)]
+        (pretty-much-equal? pt-to-center r)))
+
+
+(defn point-on-line?
+  "returns `true` if the point is on the given line"
+  [point line]
+  (let [m (slope line)
+        b (intercept line)]
+    (pretty-much-equal? (:y point) (.add b (.multiply m (:x point))))))
+
+
 ;;; push instructions
 
 
@@ -486,28 +502,51 @@
     (d/push-onto :boolean :within?)))
 
 
-;;; push types
+(def point-oncircle?
+  (i/build-instruction
+    point-oncircle?
+    "`:point-oncircle?` pops the top `:point` item and the top `:circle` item, and pushes `true` to `:boolean` if the point is _strictly_ on the circumference of the circle"
+    :tags #{:plane-geometry :construction}
+    (d/consume-top-of :point :as :p)
+    (d/consume-top-of :circle :as :c)
+    (d/calculate [:p :c] #(point-on-circle? %1 %2) :as :on?)
+    (d/push-onto :boolean :on?)))
+
+
+(def point-online?
+  (i/build-instruction
+    point-online?
+    "`:point-online?` pops the top `:point` item and the top `:line` item, and pushes `true` to `:boolean` if the point lies on the line"
+    :tags #{:plane-geometry :construction}
+    (d/consume-top-of :point :as :p)
+    (d/consume-top-of :line :as :l)
+    (d/calculate [:p :l] #(point-on-line? %1 %2) :as :on?)
+    (d/push-onto :boolean :on?)))
+
 
 ; [X] `:line-coincide?`
 ; [X] `:line-intersect?`
 ; [X] `:line-parallel?`
 ; [X] `:line-intersection`
 ; [X] `:circle-coincide?`
+; [X] `:circle-concentric?` (shared centers)
+; [X] `:circle-inside?`
 ; [X] `:circle-intersect?`
 ; [X] `:circle-separate?`
 ; [X] `:circle-nested?`
-; [X] `:circle-inside?`
 ; [X] `:circle-surrounds?`
 ; [X] `:circle-tangent?` (to another circle)
+; [X] `:point-inside?`
+; [X] `:point-oncircle?`
+; [X] `:point-online?`
 ; [ ] `:circle-intersections` (with another circle)
 ; [ ] `:LC-intersect?` (line-circle)
 ; [ ] `:LC-tangent?` (line-circle)
 ; [ ] `:LC-miss?` (line-circle)
 ; [ ] `:LC-intersections` zero, one or two `:point` items
-; [X] `:point-inside?`
-; [ ] `:point-oncircle?`
-; [ ] `:point-online?`
-; [ ] `:circle-concentric?` (shared centers)
+
+
+;;; push types
 
 
   (def push-point
@@ -521,6 +560,8 @@
         aspects/make-quotable
         aspects/make-returnable
         (t/attach-instruction point-inside?)
+        (t/attach-instruction point-oncircle?)
+        (t/attach-instruction point-online?)
         ))
 
     
