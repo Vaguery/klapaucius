@@ -288,6 +288,17 @@
       (not (circles-tangent? circle1 circle2)))))
 
 
+(defn circle-A-contains-B?
+  "returns `true` if the second circle is nested inside the first (not tangent, entirely within)"
+  [circle1 circle2]
+  (let [center-to-center
+          (distance-between (:origin circle1) (:origin circle2))
+        r1 (radius circle1)
+        r2 (radius circle2)
+        sum-of-radii (.add r1 r2)]
+      (neg? (.compareTo (.add r2 center-to-center) r1))))
+
+
 (defn circles-inside?
   "returns `true` if one circle is entirely inside the other, or they are concentric with different radii (but they are not tangent)"
   [circle1 circle2]
@@ -337,6 +348,27 @@
     (d/consume-top-of :circle :as :arg2)
     (d/consume-top-of :circle :as :arg1)
     (d/calculate [:arg1 :arg2] #(circles-coincide? %1 %2) :as :result)
+    (d/push-onto :boolean :result)))
+
+(def circle-inside?
+  (i/build-instruction
+    circle-inside?
+    "`:circle-inside?` pops the top two `:circle` items (call them `B` and `A` respectively), and pushes `true` if `A` lies entirely inside `B`, and is not tangent (they may be concentric)"
+    :tags #{:plane-geometry :construction}
+    (d/consume-top-of :circle :as :arg2)
+    (d/consume-top-of :circle :as :arg1)
+    (d/calculate [:arg1 :arg2] #(circle-A-contains-B? %1 %2) :as :result)
+    (d/push-onto :boolean :result)))
+
+
+(def circle-surrounds?
+  (i/build-instruction
+    circle-surrounds?
+    "`:circle-surrounds?` pops the top two `:circle` items (call them `B` and `A` respectively), and pushes `true` if `B` lies entirely inside `A`, and is not tangent (they may be concentric)"
+    :tags #{:plane-geometry :construction}
+    (d/consume-top-of :circle :as :arg2)
+    (d/consume-top-of :circle :as :arg1)
+    (d/calculate [:arg1 :arg2] #(circle-A-contains-B? %2 %1) :as :result)
     (d/push-onto :boolean :result)))
 
 
@@ -441,6 +473,8 @@
 ; [X] `:circle-intersect?`
 ; [X] `:circle-separate?`
 ; [X] `:circle-nested?`
+; [X] `:circle-inside?`
+; [X] `:circle-surrounds?`
 ; [ ] `:circle-tangent?` (to another circle)
 ; [ ] `:circle-intersections` (with another circle)
 ; [ ] `:LC-intersect?` (line-circle)
@@ -496,5 +530,7 @@
       (t/attach-instruction circle-coincide?)
       (t/attach-instruction circle-inside?)
       (t/attach-instruction circle-intersect?)
+      (t/attach-instruction circle-nested?)
       (t/attach-instruction circle-separate?)
+      (t/attach-instruction circle-surrounds?)
       ))

@@ -438,6 +438,8 @@
     (make-circle-from-xyxy 1 1 7 7)) => false)
 
 
+
+
 (fact "circles-inside?"
   (circles-inside?
     (make-circle-from-xyxy 0 0 3 0)
@@ -457,6 +459,24 @@
   (circles-inside?
     (make-circle-from-xyxy 0 0 3 0)
     (make-circle-from-xyxy 0 0 2 0)) => true)
+
+
+(fact "circle-A-contains-B?"
+  (circle-A-contains-B?
+    (make-circle-from-xyxy 0 0 3 0)
+    (make-circle-from-xyxy 0 0 2 0)) => true
+  (circle-A-contains-B?
+    (make-circle-from-xyxy 0 0 3 0)
+    (make-circle-from-xyxy 0 0 4 0)) => false
+  (circle-A-contains-B?
+    (make-circle-from-xyxy 0 0 4 0)
+    (make-circle-from-xyxy 0 0 3 0)) => true
+  (circle-A-contains-B?
+    (make-circle-from-xyxy 0 0 3 0)
+    (make-circle-from-xyxy 1 0 3 0)) => false
+  (circle-A-contains-B?
+    (make-circle-from-xyxy 0 0 3 0)
+    (make-circle-from-xyxy 1 0 2.9999999999999M 0)) => true)
 
 
 (fact "circles-intersect?"
