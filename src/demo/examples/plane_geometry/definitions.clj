@@ -281,10 +281,24 @@
         r1 (radius circle1)
         r2 (radius circle2)
         sum-of-radii (.add r1 r2)]
-    (if (< sum-of-radii center-to-center)
-      true
-      false)))
 
+    (and
+      (not (neg? (.compareTo center-to-center r1)))
+      (not (neg? (.compareTo center-to-center r2)))
+      (not (circles-tangent? circle1 circle2)))))
+
+
+(defn circles-inside?
+  "returns `true` if one circle is entirely inside the other, or they are concentric with different radii (but they are not tangent)"
+  [circle1 circle2]
+  (let [center-to-center
+          (distance-between (:origin circle1) (:origin circle2))
+        r1 (radius circle1)
+        r2 (radius circle2)
+        sum-of-radii (.add r1 r2)]
+    (or
+      (neg? (.compareTo (.add r1 center-to-center) r2))
+      (neg? (.compareTo (.add r2 center-to-center) r1)))))
 
 
 (defn circles-intersect?
@@ -323,6 +337,17 @@
     (d/consume-top-of :circle :as :arg2)
     (d/consume-top-of :circle :as :arg1)
     (d/calculate [:arg1 :arg2] #(circles-coincide? %1 %2) :as :result)
+    (d/push-onto :boolean :result)))
+
+
+(def circle-inside?
+  (i/build-instruction
+    circle-inside?
+    "`:circle-inside?` pops the top two `:circle` items, and pushes `true` if one of them lies entirely inside the other (in either order), but is not tangent (they may be concentric)"
+    :tags #{:plane-geometry :construction}
+    (d/consume-top-of :circle :as :arg2)
+    (d/consume-top-of :circle :as :arg1)
+    (d/calculate [:arg1 :arg2] #(circles-inside? %1 %2) :as :result)
     (d/push-onto :boolean :result)))
 
 
@@ -415,7 +440,7 @@
 ; [X] `:circle-coincide?`
 ; [X] `:circle-intersect?`
 ; [X] `:circle-separate?`
-; [ ] `:circle-inside?`
+; [X] `:circle-inside?`
 ; [ ] `:circle-surrounds?`
 ; [ ] `:circle-tangent?` (to another circle)
 ; [ ] `:circle-intersections` (with another circle)
@@ -470,6 +495,7 @@
       aspects/make-quotable
       aspects/make-returnable
       (t/attach-instruction circle-coincide?)
+      (t/attach-instruction circle-inside?)
       (t/attach-instruction circle-intersect?)
       (t/attach-instruction circle-separate?)
       ))
