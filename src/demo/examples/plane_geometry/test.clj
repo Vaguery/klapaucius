@@ -23,17 +23,10 @@
   )
 
 
-
-;; rounding
-
-(fact "I can use ApfloatMath/round successfully"
-  (let [i1 (intercept (make-line (make-point 3.3 9.9) (make-point 0.0 0.0)))
-        i2 (intercept (make-line (make-point 0.0 0.0) (make-point 3.3 9.9)))]
-    (.equals i1 (apf 0)) => false
-    (.equals i1 i2) => false
-    (.compareTo i1 i2) => 1
-    (pretty-much-equal? i1 i2) => true
-  ))
+(fact "apf? checks for Apfloat type"
+  (apf? 3) => false
+  (apf? (apf 3)) => true
+)
 
 ;; pretty-much-equal?
 
@@ -41,10 +34,6 @@
   (.subtract
     (intercept (make-line (make-point 3.3 9.9) (make-point 0 0)))
     (intercept (make-line (make-point 0 0) (make-point 3.3 9.9)))) => (apf 4e-99)
-
-  (.equals
-    (intercept (make-line (make-point 3.3 9.9) (make-point 0 0)))
-    (intercept (make-line (make-point 0 0) (make-point 3.3 9.9)))) => false
 
   (pretty-much-equal?
     (intercept (make-line (make-point 3.3 9.9) (make-point 0 0)))
@@ -75,6 +64,7 @@
   (make-line-from-xyxy 0 1 2 3) => (make-line (make-point 0 1) (make-point 2 3))
   (make-line-from-xyxy 0 1 0 1) => (throws #"points must differ")
   )
+
 
 (fact "`make-line` throws an Exception if both point arguments are the same"
   (make-line (make-point 1 2) (make-point 1 2)) => (throws #"points must differ"))
@@ -511,6 +501,84 @@
   (circles-intersect?
     (make-circle-from-xyxy 0 0 1 1)
     (make-circle-from-xyxy 2 2 1 1)) => false)
+
+
+(fact "circle-intersection-points returns an empty list if they don't touch"
+  (circle-intersection-points
+    (make-circle-from-xyxy 0 0 10 10)
+    (make-circle-from-xyxy 1 1 3  3)) => '()
+  (circle-intersection-points
+    (make-circle-from-xyxy 0 0 10 10)
+    (make-circle-from-xyxy 0 0 33 33)) => '()
+  (circle-intersection-points
+    (make-circle-from-xyxy 0  0  10 10)
+    (make-circle-from-xyxy 22 22 33 33)) => '())
+
+
+(fact "circle-intersection-points returns the first circle if they are equal or coincide"
+  (circle-intersection-points
+    (make-circle-from-xyxy 0 0 10 10)
+    (make-circle-from-xyxy 0 0 10 10)) => (make-circle-from-xyxy 0 0 10 10)
+  (circle-intersection-points
+    (make-circle-from-xyxy 0 0 3 4)
+    (make-circle-from-xyxy 0 0 5 0)) => (make-circle-from-xyxy 0 0 3 4))
+
+
+
+(fact "tangent-point returns the tangent point, or nil"
+  (pt-equal?
+    (tangent-point
+      (make-circle-from-xyxy 0  0  10 10)
+      (make-circle-from-xyxy 20 20 10 10))
+    (make-point 10 10)) => true
+  (pt-equal?
+    (tangent-point
+      (make-circle-from-xyxy 1 1 2 0)
+      (make-circle-from-xyxy 17 17 2 32))
+    (make-point 2 2)) => true)
+
+
+
+(fact "circle-intersection-points returns a list with the one point if they are tangent"
+  (pt-equal?
+    (first (circle-intersection-points
+      (make-circle-from-xyxy 0 0 10 10)
+      (make-circle-from-xyxy 20 20 10 10)))
+    (make-point 10 10)) => true
+
+  (pt-equal?
+    (first (circle-intersection-points
+      (make-circle-from-xyxy 1 1 2 2)
+      (make-circle-from-xyxy 22 22 2 2)))
+      (make-point 2 2)) => true)
+
+
+(fact "circle-intersection-points returns both points if there are two"
+  (circles-intersect?
+    (make-circle-from-xyxy 0 0 5 0)
+    (make-circle-from-xyxy 6 0 1 0)) => true
+
+  (let [pts (both-circle-intersection-points
+              (make-circle-from-xyxy 0 0 5 0)
+              (make-circle-from-xyxy 6 0 1 0))]
+    (pt-equal? (first pts) (make-point 3 -4)) => true
+    (pt-equal? (second pts) (make-point 3 4)) => true)
+
+
+  (let [pts (both-circle-intersection-points
+              (make-circle-from-xyxy 0 0 0.5 0)
+              (make-circle-from-xyxy 0.6 0 0.1 0))]
+    (pt-equal? (first pts) (make-point 0.3 -0.4)) => true
+    (pt-equal? (second pts) (make-point 0.3 0.4)) => true)
+
+
+  (let [pts (both-circle-intersection-points
+              (make-circle-from-xyxy 0 0 10 0)
+              (make-circle-from-xyxy 10 0 0 0))
+        sqrt3over2 (.divide (ApfloatMath/sqrt (apf 3)) (apf 2))
+        y-val (.multiply (apf 10) sqrt3over2)]
+    (pt-equal? (first pts) (make-point 5 (.multiply (apf -1) y-val))) => true
+    (pt-equal? (second pts) (make-point 5 y-val)) => true))
 
 
 ;; points

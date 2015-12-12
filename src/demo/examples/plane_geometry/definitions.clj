@@ -10,8 +10,6 @@
   )
 
 
-
-
 ; This extension uses the APfloat Java class for high-accuracy numerical calculations of geometric points. Note that these values are entirely self-contained in the plane geometry objects; no Push items (including primitives) are affected or created from these type or instruction definitions, except for `:line`, `:point` and `:circle`.
 ; 
 ; The precision argument used throughout is set here:
@@ -19,10 +17,16 @@
 (def precision 100)
 
 
+(defn apf?
+  "returns true if the argument is an Apfloat value"
+  [item]
+  (= (type item) Apfloat))
+
+
 (defn apf
-  "creates an ApFloat value from a Clojure number, via bigdec"
+  "creates an ApFloat value from a Clojure number, via bigdec (if needed)"
   [n]
-  (Apfloat. (bigdec n) precision))
+  (if (apf? n) n (Apfloat. (bigdec n) precision)))
 
 
 ;;; helpers
@@ -37,7 +41,7 @@
     (or (nil? num1) (nil? num2))
       (and (nil? num1) (nil? num2))
     :else
-      (= -1 (.compareTo
+      (neg? (.compareTo
               (ApfloatMath/abs (.subtract num1 num2))
               (Apfloat. (str "1e-" (/ precision 2)) precision)))))
 
@@ -46,6 +50,8 @@
 
 
 (defrecord Point [x y])
+
+
 
 (defn make-point
   "Builds a Point record from two numbers"
@@ -78,6 +84,7 @@
 (defn make-line-from-xyxy
   "Builds an (oriented) Line record from four float values, interpreted as x1, y1, x2, y2"
   [x1 y1 x2 y2]
+
   (if (and (pretty-much-equal? (apf x1) (apf x2))
            (pretty-much-equal? (apf y1) (apf y2)))
     (throw (Exception. "make-line argument error: points must differ"))
@@ -340,6 +347,63 @@
       :else true)))
 
 
+;; http://math.stackexchange.com/questions/256100/how-can-i-find-the-points-at-which-two-circles-intersect
+
+
+(defn both-circle-intersection-points
+  "given two circles, returns two points at which they intersect (which may be the same if they are tangent)"
+  [circle1 circle2]
+  (if (or
+        (circles-intersect? circle1 circle2)
+        (circles-tangent? circle1 circle2))
+    (let [x1 (:x (:origin circle1))
+          y1 (:y (:origin circle1))
+          x2 (:x (:origin circle2))
+          y2 (:y (:origin circle2))
+          d (distance-between (:origin circle1) (:origin circle2))
+          r1 (radius circle1)
+          r2 (radius circle2)
+          l  (.divide
+                (.add (.multiply d d)
+                  (.subtract (.multiply r1 r1) (.multiply r2 r2)))
+                (.multiply (apf 2M) d))
+          h  (ApfloatMath/sqrt
+                (.subtract (.multiply r1 r1) (.multiply l l)))
+          xconst (.add x1 (.multiply (.subtract x2 x1) (.divide l d)))
+          xvar   (.multiply (.subtract y2 y1) (.divide h d))
+          yconst (.add y1 (.multiply (.subtract y2 y1) (.divide l d)))
+          yvar   (.multiply (.subtract x2 x1) (.divide h d))]
+
+    (list (make-point (.add xconst xvar) (.subtract yconst yvar))
+     (make-point (.subtract xconst xvar) (.add yconst yvar))))))
+
+
+(defn tangent-point
+  "given two circles, it returns the point at which they are tangent (whether nested or osculating); returns nil otherwise"
+  [circle1 circle2]
+
+  (if (circles-tangent? circle1 circle2)
+    (first (both-circle-intersection-points circle1 circle2))
+    nil
+  ))
+
+
+(defn circle-intersection-points
+  "takes two circles, and either the first circle (if they are equal or coincide), an empty list (if they do not intersect), a list containing one point (where they are tangent) or a list of two points of intersection, with the first being the positive root"
+  [circle1 circle2]
+  (cond
+    (circle-equal? circle1 circle2)     circle1
+    (circles-coincide? circle1 circle2) circle1
+    (circles-inside? circle1 circle2)   (list)
+    (circles-separate? circle1 circle2) (list)
+    (circles-tangent? circle1 circle2)  (list (tangent-point circle1 circle2))
+    (circles-intersect? circle1 circle2)
+      (both-circle-intersection-points circle1 circle2)
+    :else :BAD
+    ))
+
+
+
 (defn point-in-circle?
   "returns `true` if the point is strictly inside (not on the circumference) of the circle"
   [point circle]
@@ -364,7 +428,9 @@
     (pretty-much-equal? (:y point) (.add b (.multiply m (:x point))))))
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; push instructions
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
 (def circle-coincide?
