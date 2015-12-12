@@ -340,10 +340,10 @@
     (d/push-onto :boolean :result)))
 
 
-(def circle-inside?
+(def circle-nested?
   (i/build-instruction
-    circle-inside?
-    "`:circle-inside?` pops the top two `:circle` items, and pushes `true` if one of them lies entirely inside the other (in either order), but is not tangent (they may be concentric)"
+    circle-nested?
+    "`:circle-nested?` pops the top two `:circle` items, and pushes `true` if one of them lies entirely inside the other (in either order), but is not tangent (they may be concentric)"
     :tags #{:plane-geometry :construction}
     (d/consume-top-of :circle :as :arg2)
     (d/consume-top-of :circle :as :arg1)
@@ -440,8 +440,7 @@
 ; [X] `:circle-coincide?`
 ; [X] `:circle-intersect?`
 ; [X] `:circle-separate?`
-; [X] `:circle-inside?`
-; [ ] `:circle-surrounds?`
+; [X] `:circle-nested?`
 ; [ ] `:circle-tangent?` (to another circle)
 ; [ ] `:circle-intersections` (with another circle)
 ; [ ] `:LC-intersect?` (line-circle)
