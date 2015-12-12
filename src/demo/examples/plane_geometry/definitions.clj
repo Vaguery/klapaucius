@@ -392,16 +392,14 @@
   "takes two circles, and either the first circle (if they are equal or coincide), an empty list (if they do not intersect), a list containing one point (where they are tangent) or a list of two points of intersection, with the first being the positive root"
   [circle1 circle2]
   (cond
-    (circle-equal? circle1 circle2)     circle1
-    (circles-coincide? circle1 circle2) circle1
+    (circle-equal? circle1 circle2)     (list circle1)
+    (circles-coincide? circle1 circle2) (list circle1)
     (circles-inside? circle1 circle2)   (list)
     (circles-separate? circle1 circle2) (list)
     (circles-tangent? circle1 circle2)  (list (tangent-point circle1 circle2))
     (circles-intersect? circle1 circle2)
       (both-circle-intersection-points circle1 circle2)
-    :else :BAD
-    ))
-
+    :else (throw (Exception. "unexpected circle situation in circle-intersection-points"))))
 
 
 (defn point-in-circle?
@@ -510,6 +508,17 @@
     (d/push-onto :boolean :result)))
 
 
+(def circle-intersections
+  (i/build-instruction
+    circle-intersections
+    "`:circle-intersections` pops the top two `:circle` items (call them `B` and `A` respectively), and creates a list of their intersections and pushes this to the `:exec` stack. If they are equal or coincident, the list contains `A`; if they are nonintersecting, the list is empty; if they are tangent, the list contains the one point of contact; if they are overlapping, there are two points in the list."
+    :tags #{:plane-geometry :construction}
+    (d/consume-top-of :circle :as :arg2)
+    (d/consume-top-of :circle :as :arg1)
+    (d/calculate [:arg1 :arg2] #(circle-intersection-points %1 %2) :as :result)
+    (d/push-onto :exec :result)))
+
+
 (def line-coincide?
   (i/build-instruction
     line-coincide?
@@ -605,7 +614,7 @@
 ; [X] `:point-inside?`
 ; [X] `:point-oncircle?`
 ; [X] `:point-online?`
-; [ ] `:circle-intersections` (with another circle)
+; [X] `:circle-intersections` (with another circle)
 ; [ ] `:LC-intersect?` (line-circle)
 ; [ ] `:LC-tangent?` (line-circle)
 ; [ ] `:LC-miss?` (line-circle)
@@ -647,6 +656,7 @@
       (t/attach-instruction line-parallel?)
       ))
 
+
 (def push-circle
   (-> (t/make-type 
         :circle 
@@ -660,6 +670,7 @@
       (t/attach-instruction circle-coincide?)
       (t/attach-instruction circle-inside?)
       (t/attach-instruction circle-intersect?)
+      (t/attach-instruction circle-intersections)
       (t/attach-instruction circle-nested?)
       (t/attach-instruction circle-separate?)
       (t/attach-instruction circle-surrounds?)

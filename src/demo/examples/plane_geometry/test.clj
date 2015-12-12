@@ -515,13 +515,14 @@
     (make-circle-from-xyxy 22 22 33 33)) => '())
 
 
-(fact "circle-intersection-points returns the first circle if they are equal or coincide"
-  (circle-intersection-points
+
+(fact "circle-intersection-points returns a list containing the first circle if they are equal or coincide"
+  (first (circle-intersection-points
     (make-circle-from-xyxy 0 0 10 10)
-    (make-circle-from-xyxy 0 0 10 10)) => (make-circle-from-xyxy 0 0 10 10)
-  (circle-intersection-points
+    (make-circle-from-xyxy 0 0 10 10))) => (make-circle-from-xyxy 0 0 10 10)
+  (first (circle-intersection-points
     (make-circle-from-xyxy 0 0 3 4)
-    (make-circle-from-xyxy 0 0 5 0)) => (make-circle-from-xyxy 0 0 3 4))
+    (make-circle-from-xyxy 0 0 5 0))) => (make-circle-from-xyxy 0 0 3 4))
 
 
 
@@ -582,6 +583,7 @@
 
 
 ;; points
+
 
 (fact "point-in-circle? returns true when the point is inside the circle"
   (point-in-circle? (make-point 1 2) (make-circle-from-xyxy 1 2 3 4)) => true
