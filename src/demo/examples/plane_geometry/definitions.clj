@@ -426,6 +426,123 @@
     (pretty-much-equal? (:y point) (.add b (.multiply m (:x point))))))
 
 
+;; https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
+
+
+(defn line-to-point-distance
+  "given a line and a point, returns the shortest (perpendicular) distance"
+  [line point]
+  (let [x0 (:x point)
+        y0 (:y point)
+        x1 (:x (:p1 line))
+        y1 (:y (:p1 line))
+        x2 (:x (:p2 line))
+        y2 (:y (:p2 line))
+        d (distance-between (:p1 line) (:p2 line))]
+    (.divide
+      (ApfloatMath/abs
+        (.add
+          (.subtract
+            (.multiply x0 (.subtract y2 y1))
+            (.multiply y0 (.subtract x2 x1)))
+          (.subtract
+            (.multiply x2 y1)
+            (.multiply y2 x1))))
+      d)))
+
+
+(defn line-enters-circle?
+  "given a line and a circle, returns true if the line passes (strictly) closer to the center than the radius"
+  [line circle]
+  (let [r (radius circle)
+        d (line-to-point-distance line (:origin circle))]
+    (neg? (.compareTo d r))))
+
+
+(defn line-tangent-to-circle?
+  "given a line and a circle, returns true if the line is exactly tangent to the circle"
+  [line circle]
+  (let [r (radius circle)
+        d (line-to-point-distance line (:origin circle))]
+    (pretty-much-equal? d r)))
+
+
+(defn line-misses-circle?
+  "given a line and a circle, returns true if the line never gets as close as the radius of the circle to the origin of the circle"
+  [line circle]
+  (let [r (radius circle)
+        d (line-to-point-distance line (:origin circle))]
+    (and
+      (not (line-tangent-to-circle? line circle))
+      (pos? (.compareTo d r)))))
+
+
+(defn lc-tangent-point
+  "takes a line and circle, and returns the tangent point (or nil)"
+  [line circle]
+  (if (line-tangent-to-circle? line circle)
+    (if (vertical? line)
+      (let [x (:x (:p1 line))
+            y (:y (:origin circle))]
+        (make-point x y))
+      (let [x1  (:x (:origin circle))
+            y1  (:y (:origin circle))
+            r   (radius circle)
+            m   (slope line)
+            b   (intercept line)
+            qA  (.add (apf 1) (.multiply m m))
+            qB  (.multiply
+                  (apf 2)
+                    (.subtract
+                      (.subtract
+                        (.multiply m b)
+                        (.multiply m y1))
+                      x1))
+            qC  (.add
+                  (.subtract
+                    (.add
+                      (.multiply x1 x1)
+                        (.subtract
+                        (.multiply y1 y1)
+                        (.multiply r r)))
+                    (.multiply y1 (.multiply (apf 2) b)))
+                  (.multiply b b))
+            xconstNumerator
+                  (.negate qB)
+            xvarNumerator
+                  (ApfloatMath/sqrt
+                    (.subtract
+                      (.multiply qB qB)
+                      (.multiply
+                        (.multiply (apf 4) qA)
+                        qC)))
+            xDenominator
+                  (.multiply (apf 2) qA)
+            xSol1 (.divide (.add xconstNumerator xvarNumerator) xDenominator)
+            xSol2 (.divide (.subtract xconstNumerator xvarNumerator) xDenominator)]
+        (make-point xSol1 (line-at-x line xSol1))))
+    nil
+    ))
+
+
+(defn lc-intersection-points
+  "takes a line and circle, and returns a list of the intersection points"
+  [line circle]
+
+  )
+
+
+(defn line-circle-intersection-points
+  "takes a line and a circle, and returns a list of 0, 1 or 2 points where the line intersects the circle"
+  [line circle]
+  (cond
+    (line-misses-circle? line circle)       (list)
+    (line-tangent-to-circle? line circle)   (list (lc-tangent-point line circle))
+    :else (lc-intersection-points line circle)
+    ))
+
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; push instructions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -599,6 +716,39 @@
     (d/push-onto :boolean :on?)))
 
 
+(def lc-intersect?
+  (i/build-instruction
+    line-circle-intersect?
+    "`:line-circle-intersect?` pops the top `:line` item and the top `:circle` item, and pushes `true` to `:boolean` if the line enters the circle (and is not tangent)"
+    :tags #{:plane-geometry :construction}
+    (d/consume-top-of :line :as :my-line)
+    (d/consume-top-of :circle :as :c)
+    (d/calculate [:my-line :c] #(line-enters-circle? %1 %2) :as :result)
+    (d/push-onto :boolean :result)))
+
+
+(def lc-tangent?
+  (i/build-instruction
+    line-circle-tangent?
+    "`:line-circle-tangent?` pops the top `:line` item and the top `:circle` item, and pushes `true` to `:boolean` if the line is tangent to the circle"
+    :tags #{:plane-geometry :construction}
+    (d/consume-top-of :line :as :my-line)
+    (d/consume-top-of :circle :as :c)
+    (d/calculate [:my-line :c] #(line-tangent-to-circle? %1 %2) :as :result)
+    (d/push-onto :boolean :result)))
+
+
+(def lc-miss?
+  (i/build-instruction
+    line-circle-miss?
+    "`:line-circle-miss?` pops the top `:line` item and the top `:circle` item, and pushes `true` to `:boolean` if the line is not tangent or intersecting the circle"
+    :tags #{:plane-geometry :construction}
+    (d/consume-top-of :line :as :my-line)
+    (d/consume-top-of :circle :as :c)
+    (d/calculate [:my-line :c] #(line-misses-circle? %1 %2) :as :result)
+    (d/push-onto :boolean :result)))
+
+
 ; [X] `:line-coincide?`
 ; [X] `:line-intersect?`
 ; [X] `:line-parallel?`
@@ -615,9 +765,9 @@
 ; [X] `:point-oncircle?`
 ; [X] `:point-online?`
 ; [X] `:circle-intersections` (with another circle)
-; [ ] `:LC-intersect?` (line-circle)
-; [ ] `:LC-tangent?` (line-circle)
-; [ ] `:LC-miss?` (line-circle)
+; [X] `:LC-intersect?` (line-circle)
+; [X] `:LC-tangent?` (line-circle)
+; [X] `:LC-miss?` (line-circle)
 ; [ ] `:LC-intersections` zero, one or two `:point` items
 
 
@@ -650,6 +800,9 @@
       aspects/make-printable
       aspects/make-quotable
       aspects/make-returnable
+      (t/attach-instruction lc-intersect?)
+      (t/attach-instruction lc-miss?)
+      (t/attach-instruction lc-tangent?)
       (t/attach-instruction line-coincide?)
       (t/attach-instruction line-intersect?)
       (t/attach-instruction line-intersection)

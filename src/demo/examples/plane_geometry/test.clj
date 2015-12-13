@@ -606,7 +606,6 @@
     (make-circle-from-xyxy 0 0 3 4)) => false)
 
 
-
 (fact "point-on-line? returns true when the point is on the line"
   (point-on-line? (make-point 3 4) (make-line-from-xyxy 1 2 3 4)) => true
   (point-on-line? (make-point 5 6) (make-line-from-xyxy 1 2 3 4)) => true
@@ -615,6 +614,100 @@
     (make-line-from-xyxy 1 2 3 4)) => false)
 
 
+(fact "line-to-point-distance"
+  (line-to-point-distance
+    (make-line-from-xyxy 0 0 10 0)
+    (make-point 5 5)) => (apf 5)
+  (line-to-point-distance
+    (make-line-from-xyxy 0 0 10 0)
+    (make-point 52001 5)) => (apf 5)
+  (line-to-point-distance
+    (make-line-from-xyxy 0 0 10 0)
+    (make-point -52001 5)) => (apf 5)
+
+  (line-to-point-distance
+    (make-line-from-xyxy 0 0 10 10)
+    (make-point 22 22)) => (apf 0)
+
+  (line-to-point-distance
+    (make-line-from-xyxy 0 0 -10 10)
+    (make-point 10 0)) => (.divide (apf 10) (ApfloatMath/sqrt (apf 2))))
+
+
+(fact "line-enters-circle?"
+  (line-enters-circle?
+    (make-line-from-xyxy 0 0 10 0)
+    (make-circle-from-xyxy 5 5 20 20)) => true
+  (line-enters-circle?
+    (make-line-from-xyxy 0 0 10 0)
+    (make-circle-from-xyxy 35 35 20 20)) => false
+  (line-enters-circle?
+    (make-line-from-xyxy 0 0 10 0)
+    (make-circle-from-xyxy 30 30 30 0)) => false
+  (line-enters-circle?
+    (make-line-from-xyxy 0 0 10 0)
+    (make-circle-from-xyxy 30 30 30 -0.000000000001M)) => true)
+
+
+(fact "line-tangent-to-circle?"
+  (line-tangent-to-circle?
+    (make-line-from-xyxy 0 0 10 0)
+    (make-circle-from-xyxy 5 5 20 20)) => false
+  (line-tangent-to-circle?
+    (make-line-from-xyxy 0 0 10 0)
+    (make-circle-from-xyxy 35 35 20 20)) => false
+  (line-tangent-to-circle?
+    (make-line-from-xyxy 0 0 10 0)
+    (make-circle-from-xyxy 30 30 30 0)) => true
+  (line-tangent-to-circle?
+    (make-line-from-xyxy 0 0 10 0)
+    (make-circle-from-xyxy 30 30 30 -0.000000000001M)) => false
+  (line-tangent-to-circle?
+    (make-line-from-xyxy 0 0 3 4)
+    (make-circle-from-xyxy 7 1 7 6)) => true)
+
+
+(fact "line-misses-circle?"
+  (line-misses-circle?
+    (make-line-from-xyxy 0 0 10 0)
+    (make-circle-from-xyxy 5 5 20 20)) => false
+  (line-misses-circle?
+    (make-line-from-xyxy 0 0 10 0)
+    (make-circle-from-xyxy 35 35 20 20)) => true
+  (line-misses-circle?
+    (make-line-from-xyxy 0 0 10 0)
+    (make-circle-from-xyxy 30 30 30 0)) => false
+  (line-misses-circle?
+    (make-line-from-xyxy 0 0 10 0)
+    (make-circle-from-xyxy 30 30 30 -0.000000000001M)) => false
+  (line-misses-circle?
+    (make-line-from-xyxy 0 0 3 4)
+    (make-circle-from-xyxy 7 1 7 6)) => false)
+
+
+(fact "lc-tangent-point"
+  (lc-tangent-point
+    (make-line-from-xyxy 0 0 10 0)
+    (make-circle-from-xyxy 20 20 20 0)) => (make-point 20 0)
+
+  (lc-tangent-point
+    (make-line-from-xyxy 0 0 10 0)
+    (make-circle-from-xyxy 20 20 20 15)) => nil
+
+  (lc-tangent-point
+    (make-line-from-xyxy 0 0 2 2)
+    (make-circle-from-xyxy 20 20 20 15)) => nil
+
+  (lc-tangent-point
+    (make-line-from-xyxy 0 0 0 10)
+    (make-circle-from-xyxy 20 20 20 0)) => (make-point 0 20)
+
+  (pt-equal?
+    (lc-tangent-point
+      (make-line-from-xyxy 0 0 4 3)
+      (make-circle-from-xyxy 7 -1 7 4))
+    (make-point 4 3)) => true
+  )
 
 ;;;; Push types and instructions
 
