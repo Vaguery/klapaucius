@@ -709,6 +709,37 @@
     (make-point 4 3)) => true
   )
 
+
+(fact "lc-intersection-points"
+  (let [hits (lc-intersection-points
+                (make-line-from-xyxy 0 0 10 0)
+                (make-circle-from-xyxy 20 0 7 0))]
+    (pt-equal?
+      (first hits)
+      (make-point 33 0)) => true
+    (pt-equal?
+      (second hits)
+      (make-point 7 0)) => true)
+
+  (let [hits (lc-intersection-points
+                (make-line-from-xyxy 0 0 20 21)
+                (make-circle-from-xyxy 20 21 0 0))]
+    (pt-equal?
+      (first hits)
+      (make-point 40 42)) => true
+    (pt-equal?
+      (second hits)
+      (make-point 0 0)) => true)
+
+  (let [hits (lc-intersection-points
+                (make-line-from-xyxy 7 0 7 29.2)
+                (make-circle-from-xyxy 7 2.5 7 -5))]
+      hits => 88
+
+  ))
+
+
+
 ;;;; Push types and instructions
 
 

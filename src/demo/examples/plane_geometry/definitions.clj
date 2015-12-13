@@ -477,6 +477,52 @@
       (pos? (.compareTo d r)))))
 
 
+(defn lc-intersection-points
+  "takes a line and circle, and returns a list of the intersection points"
+  [line circle]
+  (let [x1  (:x (:origin circle))
+        y1  (:y (:origin circle))
+        r   (radius circle)]
+    (if (vertical? line)
+      (ApfloatMath/sum (into-array Apfloat [ (apf 1) (apf 8) ]))
+      (let [m   (slope line)
+            b   (intercept line)
+            qA  (.add (apf 1) (.multiply m m))
+            qB  (.multiply
+                  (apf 2)
+                    (.subtract
+                      (.subtract
+                        (.multiply m b)
+                        (.multiply m y1))
+                      x1))
+            qC  (.add
+                  (.subtract
+                    (.add
+                      (.multiply x1 x1)
+                        (.subtract
+                        (.multiply y1 y1)
+                        (.multiply r r)))
+                    (.multiply y1 (.multiply (apf 2) b)))
+                  (.multiply b b))
+            xconstNumerator
+                  (.negate qB)
+            xvarNumerator
+                  (ApfloatMath/sqrt
+                    (.subtract
+                      (.multiply qB qB)
+                      (.multiply
+                        (.multiply (apf 4) qA)
+                        qC)))
+            xDenominator
+                  (.multiply (apf 2) qA)
+            xSol1 (.divide (.add xconstNumerator xvarNumerator) xDenominator)
+            xSol2 (.divide (.subtract xconstNumerator xvarNumerator) xDenominator)]
+        (list
+          (make-point xSol1 (line-at-x line xSol1))
+          (make-point xSol2 (line-at-x line xSol2))) 
+  ))))
+
+
 (defn lc-tangent-point
   "takes a line and circle, and returns the tangent point (or nil)"
   [line circle]
@@ -520,16 +566,11 @@
                   (.multiply (apf 2) qA)
             xSol1 (.divide (.add xconstNumerator xvarNumerator) xDenominator)
             xSol2 (.divide (.subtract xconstNumerator xvarNumerator) xDenominator)]
-        (make-point xSol1 (line-at-x line xSol1))))
+        (make-point xSol1 (line-at-x line xSol1)))
+)
     nil
     ))
 
-
-(defn lc-intersection-points
-  "takes a line and circle, and returns a list of the intersection points"
-  [line circle]
-
-  )
 
 
 (defn line-circle-intersection-points
