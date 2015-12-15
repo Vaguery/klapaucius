@@ -16,6 +16,9 @@
 
 (def precision 100)
 
+(def equality-cutoff
+  (Apfloat. (str "1e-" (/ precision 2)) precision))
+
 
 (defn apf?
   "returns true if the argument is an Apfloat value"
@@ -43,14 +46,13 @@
     :else
       (neg? (.compareTo
               (ApfloatMath/abs (.subtract num1 num2))
-              (Apfloat. (str "1e-" (/ precision 2)) precision)))))
+              equality-cutoff))))
 
 
 ;;; points
 
 
 (defrecord Point [x y])
-
 
 
 (defn make-point
@@ -345,6 +347,39 @@
       (not (pos? (.compareTo (.add r2 center-to-center) r1))) false
       (pretty-much-equal? sum-of-radii center-to-center) false
       :else true)))
+
+
+(defn circle-y-at-x
+  "returns a set of Apfloat values (zero, one or two) giving the y values for a given circle at a given x"
+  [circle x0]
+  (let [x1        (:x (:origin circle))
+        y1        (:y (:origin circle))
+        r         (radius circle)
+        leftmost  (.subtract x1 r)
+        rightmost (.add x1 r)
+        ]
+    (if (or (< x0 leftmost) (> x0 rightmost))
+      #{}
+      (let [qA (apf 1)
+            qB (.multiply (apf -2) y1)
+            qC (ApfloatMath/sum (into-array Apfloat
+                  [(.multiply x0 x0)
+                  (.multiply (.multiply (apf -2) x0) x1)
+                  (.multiply x1 x1)
+                  (.multiply y1 y1)
+                  (.multiply (.multiply (apf -1) r) r)
+                  ]))
+            numerator-left  (.negate qB)
+            numerator-right (ApfloatMath/sqrt
+                              (.subtract
+                                (.multiply qB qB)
+                                (.multiply (.multiply (apf 4) qA) qC)))
+            denominator     (.multiply (apf 2) qA)]
+        #{(.divide (.add numerator-left numerator-right) denominator)
+          (.divide (.subtract numerator-left numerator-right) denominator)}
+      ))
+    )
+  )
 
 
 ;; http://math.stackexchange.com/questions/256100/how-can-i-find-the-points-at-which-two-circles-intersect

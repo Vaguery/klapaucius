@@ -685,6 +685,49 @@
     (make-circle-from-xyxy 7 1 7 6)) => false)
 
 
+;;;;;;;;;; quadratic solvers
+
+(fact "circle-y-at-x"
+  (circle-y-at-x
+    (make-circle-from-xyxy 0 0 2 0)
+    (apf -22)) => #{}
+  (circle-y-at-x
+    (make-circle-from-xyxy 0 0 2 0)
+    (apf 18.3)) => #{}
+  (pretty-much-equal?
+    (first (circle-y-at-x
+      (make-circle-from-xyxy 0 0 2 0)
+      (apf 0))) (apf 2)) => true
+  (pretty-much-equal?
+    (second (circle-y-at-x
+      (make-circle-from-xyxy 0 0 2 0)
+      (apf 0))) (apf -2)) => true
+  
+  ; (circle-y-at-x
+  ;   (make-circle-from-xyxy 0 0 2 0)
+  ;   (apf -2)) => 99
+
+  (pretty-much-equal?
+    (first (circle-y-at-x
+      (make-circle-from-xyxy 0 0 13 0)
+      (apf 5))) (apf -12)) => true
+  (pretty-much-equal?
+    (second (circle-y-at-x
+      (make-circle-from-xyxy 0 0 13 0)
+      (apf 5))) (apf 12)) => true
+  (pretty-much-equal?
+    (first (circle-y-at-x
+      (make-circle-from-xyxy 0 0 13 0)
+      (apf 12))) (apf -5)) => true
+  (pretty-much-equal?
+    (second (circle-y-at-x
+      (make-circle-from-xyxy 0 0 13 0)
+      (apf 12))) (apf 5)) => true
+
+  )
+
+
+
 (fact "lc-tangent-point"
   (lc-tangent-point
     (make-line-from-xyxy 0 0 10 0)
@@ -710,7 +753,7 @@
   )
 
 
-(fact "lc-intersection-points"
+(future-fact "lc-intersection-points"
   (let [hits (lc-intersection-points
                 (make-line-from-xyxy 0 0 10 0)
                 (make-circle-from-xyxy 20 0 7 0))]
