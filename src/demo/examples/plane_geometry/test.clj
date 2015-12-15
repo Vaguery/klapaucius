@@ -783,11 +783,18 @@
       (make-point 9 -5)) => true
     (pt-equal?
       (second hits)
-      (make-point 9 5)) => true
-)
+      (make-point 9 5)) => true)
 
 
-)
+  (let [hits (lc-intersection-points
+                (make-line-from-xyxy 68 0 68 -201)
+                (make-circle-from-xyxy 0 10 293 10))]
+    (pt-equal?
+      (first hits)
+      (make-point 68 295)) => true
+    (pt-equal?
+      (second hits)
+      (make-point 68 -275)) => true))
 
 
 
