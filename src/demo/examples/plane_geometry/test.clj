@@ -702,10 +702,13 @@
     (second (circle-y-at-x
       (make-circle-from-xyxy 0 0 2 0)
       (apf 0))) (apf -2)) => true
-  
-  ; (circle-y-at-x
-  ;   (make-circle-from-xyxy 0 0 2 0)
-  ;   (apf -2)) => 99
+
+  (circle-y-at-x
+    (make-circle-from-xyxy 0 0 2 0)
+    (apf -2)) => #{(apf 0)}
+  (circle-y-at-x
+    (make-circle-from-xyxy 0 0 2 0)
+    (apf 2)) => #{(apf 0)}
 
   (pretty-much-equal?
     (first (circle-y-at-x
@@ -722,9 +725,7 @@
   (pretty-much-equal?
     (second (circle-y-at-x
       (make-circle-from-xyxy 0 0 13 0)
-      (apf 12))) (apf 5)) => true
-
-  )
+      (apf 12))) (apf 5)) => true)
 
 
 
@@ -753,9 +754,9 @@
   )
 
 
-(future-fact "lc-intersection-points"
+(fact "lc-intersection-points"
   (let [hits (lc-intersection-points
-                (make-line-from-xyxy 0 0 10 0)
+                (make-line-from-xyxy 0 0 10 0)      ;; horizontal
                 (make-circle-from-xyxy 20 0 7 0))]
     (pt-equal?
       (first hits)
@@ -765,7 +766,7 @@
       (make-point 7 0)) => true)
 
   (let [hits (lc-intersection-points
-                (make-line-from-xyxy 0 0 20 21)
+                (make-line-from-xyxy 0 0 20 21)      ;; angled
                 (make-circle-from-xyxy 20 21 0 0))]
     (pt-equal?
       (first hits)
@@ -775,11 +776,18 @@
       (make-point 0 0)) => true)
 
   (let [hits (lc-intersection-points
-                (make-line-from-xyxy 7 0 7 29.2)
-                (make-circle-from-xyxy 7 2.5 7 -5))]
-      hits => 88
+                (make-line-from-xyxy 9 0 9 20)       ;; vertical
+                (make-circle-from-xyxy 9 0 4 0))]
+    (pt-equal?
+      (first hits)
+      (make-point 9 -5)) => true
+    (pt-equal?
+      (second hits)
+      (make-point 9 5)) => true
+)
 
-  ))
+
+)
 
 
 

@@ -356,30 +356,29 @@
         y1        (:y (:origin circle))
         r         (radius circle)
         leftmost  (.subtract x1 r)
-        rightmost (.add x1 r)
-        ]
-    (if (or (< x0 leftmost) (> x0 rightmost))
-      #{}
-      (let [qA (apf 1)
-            qB (.multiply (apf -2) y1)
-            qC (ApfloatMath/sum (into-array Apfloat
-                  [(.multiply x0 x0)
-                  (.multiply (.multiply (apf -2) x0) x1)
-                  (.multiply x1 x1)
-                  (.multiply y1 y1)
-                  (.multiply (.multiply (apf -1) r) r)
-                  ]))
-            numerator-left  (.negate qB)
-            numerator-right (ApfloatMath/sqrt
-                              (.subtract
-                                (.multiply qB qB)
-                                (.multiply (.multiply (apf 4) qA) qC)))
-            denominator     (.multiply (apf 2) qA)]
-        #{(.divide (.add numerator-left numerator-right) denominator)
-          (.divide (.subtract numerator-left numerator-right) denominator)}
-      ))
-    )
-  )
+        rightmost (.add x1 r)]
+    (cond
+      (pretty-much-equal? x0 leftmost) #{y1}
+      (pretty-much-equal? x0 rightmost) #{y1}
+      (and (pos? (.compareTo x0 leftmost))
+           (neg? (.compareTo x0 rightmost)))
+        (let [qA (apf 1)
+              qB (.multiply (apf -2) y1)
+              qC (ApfloatMath/sum (into-array Apfloat
+                    [(.multiply x0 x0)
+                    (.multiply (.multiply (apf -2) x0) x1)
+                    (.multiply x1 x1)
+                    (.multiply y1 y1)
+                    (.multiply (.multiply (apf -1) r) r)]))
+               numerator-left (.negate qB)
+              numerator-right (ApfloatMath/sqrt
+                                (.subtract
+                                  (.multiply qB qB)
+                                  (.multiply (.multiply (apf 4) qA) qC)))
+                  denominator (.multiply (apf 2) qA)]
+            #{(.divide (.add numerator-left numerator-right) denominator)
+              (.divide (.subtract numerator-left numerator-right) denominator)})
+      :else #{})))
 
 
 ;; http://math.stackexchange.com/questions/256100/how-can-i-find-the-points-at-which-two-circles-intersect
@@ -519,7 +518,9 @@
         y1  (:y (:origin circle))
         r   (radius circle)]
     (if (vertical? line)
-      (ApfloatMath/sum (into-array Apfloat [ (apf 1) (apf 8) ]))
+      (let [x0 (:x (:p1 line))
+            yvals (circle-y-at-x circle x0)]
+        (map #(make-point x0 %) yvals))
       (let [m   (slope line)
             b   (intercept line)
             qA  (.add (apf 1) (.multiply m m))
