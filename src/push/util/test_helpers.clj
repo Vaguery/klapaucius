@@ -67,3 +67,14 @@
         with-stacks (assoc setup :stacks (merge old-stacks new-stacks))
         after (i/execute-instruction with-stacks instruction-token)]
     (:stacks after)))
+
+
+(defn check-instruction-here-using-this
+  "takes an interpreter, a map of stacks to impose on that, and a token to execute"
+  [interpreter
+    new-stacks instruction-token]
+  (let [setup interpreter
+        old-stacks (:stacks setup)
+        with-stacks (assoc setup :stacks (merge old-stacks new-stacks))
+        after (i/execute-instruction with-stacks instruction-token)]
+    (:stacks after)))

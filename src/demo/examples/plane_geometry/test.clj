@@ -5,9 +5,7 @@
   (:require [push.util.stack-manipulation :as u])
   (:require [clojure.math.numeric-tower :as math])
   (:use demo.examples.plane-geometry.definitions)
-  (:import  [org.apfloat Apfloat ApfloatMath])
-
-  )
+  (:import  [org.apfloat Apfloat ApfloatMath]))
 
 
 ;;; Apfloat details

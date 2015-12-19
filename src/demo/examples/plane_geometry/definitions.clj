@@ -16,8 +16,13 @@
 
 (def precision 100)
 
+
 (def equality-cutoff
+  "used when determining (approximate) floating-point equality"
   (Apfloat. (str "1e-" (/ precision 2)) precision))
+
+
+;; some helpers
 
 
 (defn apf?
@@ -27,7 +32,7 @@
 
 
 (defn apf
-  "creates an ApFloat value from a Clojure number, via bigdec (if needed)"
+  "creates an ApFloat value from a Clojure number, via bigdec if needed"
   [n]
   (if (apf? n) n (Apfloat. (bigdec n) precision)))
 
@@ -36,7 +41,7 @@
 
 
 (defn pretty-much-equal?
-  "takes two apfloat items, subtracts one from the other, and returns `true` if the absolute difference is less than 1e-cutoff"
+  "takes two apfloat items, subtracts one from the other, and returns `true` if the absolute difference is less than the equality-cutoff  "
   [num1 num2]
   (cond
     (or (keyword? num1) (keyword? num2))
@@ -636,21 +641,23 @@
     (d/push-onto :boolean :result)))
 
 
+(def circle-concentric?
+  (i/build-instruction
+    circle-concentric?
+    "`:circle-concentric?` pops the top two `:circle` items (call them `B` and `A` respectively), and pushes `true` if `A` and `B` are inside one another: the same centers but different radii"
+    :tags #{:plane-geometry :construction}
+    (d/consume-top-of :circle :as :arg2)
+    (d/consume-top-of :circle :as :arg1)
+    (d/calculate [:arg1 :arg2]
+      #(and (pt-equal? (:origin %1) (:origin %2))
+            (not (circles-coincide? %1 %2))) :as :result)
+    (d/push-onto :boolean :result)))
+
+
 (def circle-inside?
   (i/build-instruction
     circle-inside?
     "`:circle-inside?` pops the top two `:circle` items (call them `B` and `A` respectively), and pushes `true` if `A` lies entirely inside `B`, and is not tangent (they may be concentric)"
-    :tags #{:plane-geometry :construction}
-    (d/consume-top-of :circle :as :arg2)
-    (d/consume-top-of :circle :as :arg1)
-    (d/calculate [:arg1 :arg2] #(circle-A-contains-B? %1 %2) :as :result)
-    (d/push-onto :boolean :result)))
-
-
-(def circle-surrounds?
-  (i/build-instruction
-    circle-surrounds?
-    "`:circle-surrounds?` pops the top two `:circle` items (call them `B` and `A` respectively), and pushes `true` if `B` lies entirely inside `A`, and is not tangent (they may be concentric)"
     :tags #{:plane-geometry :construction}
     (d/consume-top-of :circle :as :arg2)
     (d/consume-top-of :circle :as :arg1)
@@ -688,6 +695,17 @@
     (d/consume-top-of :circle :as :arg2)
     (d/consume-top-of :circle :as :arg1)
     (d/calculate [:arg1 :arg2] #(circles-separate? %1 %2) :as :result)
+    (d/push-onto :boolean :result)))
+
+
+(def circle-surrounds?
+  (i/build-instruction
+    circle-surrounds?
+    "`:circle-surrounds?` pops the top two `:circle` items (call them `B` and `A` respectively), and pushes `true` if `B` lies entirely inside `A`, and is not tangent (they may be concentric)"
+    :tags #{:plane-geometry :construction}
+    (d/consume-top-of :circle :as :arg2)
+    (d/consume-top-of :circle :as :arg1)
+    (d/calculate [:arg1 :arg2] #(circle-A-contains-B? %1 %2) :as :result)
     (d/push-onto :boolean :result)))
 
 
@@ -826,6 +844,19 @@
     (d/push-onto :boolean :result)))
 
 
+(def lc-intersections
+  (i/build-instruction
+    lc-intersections
+    "`:lc-intersections` pops the top `:line` item and the top `:circle` item, and pushes to `:exec` a list containing the zero, one or two `:point`s at which the line intersects the circle"
+    :tags #{:plane-geometry :construction}
+    (d/consume-top-of :line :as :my-line)
+    (d/consume-top-of :circle :as :c)
+    (d/calculate [:my-line :c] #(line-circle-intersection-points %1 %2)
+      :as :results)
+    (d/push-onto :exec :results)))
+
+
+
 ; [X] `:line-coincide?`
 ; [X] `:line-intersect?`
 ; [X] `:line-parallel?`
@@ -845,7 +876,7 @@
 ; [X] `:LC-intersect?` (line-circle)
 ; [X] `:LC-tangent?` (line-circle)
 ; [X] `:LC-miss?` (line-circle)
-; [ ] `:LC-intersections` zero, one or two `:point` items
+; [X] `:LC-intersections` zero, one or two `:point` items
 
 
 ;;; push types
@@ -878,6 +909,7 @@
       aspects/make-quotable
       aspects/make-returnable
       (t/attach-instruction lc-intersect?)
+      (t/attach-instruction lc-intersections)
       (t/attach-instruction lc-miss?)
       (t/attach-instruction lc-tangent?)
       (t/attach-instruction line-coincide?)
@@ -898,6 +930,7 @@
       aspects/make-quotable
       aspects/make-returnable
       (t/attach-instruction circle-coincide?)
+      (t/attach-instruction circle-concentric?)
       (t/attach-instruction circle-inside?)
       (t/attach-instruction circle-intersect?)
       (t/attach-instruction circle-intersections)
