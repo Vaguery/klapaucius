@@ -22,6 +22,8 @@
   (:use push.instructions.extra.stack-combinators)
   (:use push.instructions.extra.introspection)
   (:use push.instructions.extra.numeric-scaling)
+
+  (:use demo.examples.plane-geometry.definitions)
   )
 
 
@@ -41,6 +43,10 @@
 
     standard-vector-type
     standard-set-type
+
+    push-circle  ;; demo.examples.plane-geometry.definitions
+    push-line
+    push-point
 
     ]))
 

@@ -7,6 +7,7 @@
   (:require [clojure.string :as s])
   (:use [push.interpreter.core])
   (:use [push.interpreter.templates.one-with-everything])
+  (:require [demo.examples.plane-geometry.definitions :as geom])
   )
 
 
@@ -66,6 +67,26 @@
   [] (into [] (repeatedly (random-integer 10) #(random-string))))
 
 
+(defn random-point
+  [] (geom/make-point (random-float) (random-integer)))
+
+
+(defn random-circle
+  [] (geom/make-circle-from-xyxy
+        (random-float) 
+        (random-integer) 
+        (random-float) 
+        (random-integer)))
+
+
+(defn random-line
+  [] (geom/make-line-from-xyxy
+        (random-float) 
+        (random-integer) 
+        (random-float) 
+        (random-integer)))
+
+
 (defn any-input
   [interpreter]
   (rand-nth (keys (:inputs interpreter))))
@@ -78,7 +99,7 @@
 
 (defn bunch-a-junk
   [interpreter how-much-junk]
-  (remove nil? (repeatedly how-much-junk #(condp = (rand-int 20)
+  (remove nil? (repeatedly how-much-junk #(condp = (rand-int 30)
                                      0 (random-integer)
                                      1 (random-float)
                                      2 (random-boolean)
@@ -91,7 +112,10 @@
                                      9 (random-floats 40)
                                      10  (random-chars)
                                      11 (random-strings)
-                                     12 (into #{} (bunch-a-junk interpreter 8))
+                                     12 (random-point)
+                                     13 (random-circle)
+                                     14 (random-line)
+                                     15 (into #{} (bunch-a-junk interpreter 8))
 
                                      (any-instruction interpreter)))))
 
