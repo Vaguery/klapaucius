@@ -851,8 +851,8 @@
 
 (def lc-intersections
   (i/build-instruction
-    lc-intersections
-    "`:lc-intersections` pops the top `:line` item and the top `:circle` item, and pushes to `:exec` a list containing the zero, one or two `:point`s at which the line intersects the circle"
+    line-circle-intersections
+    "`:line-circle-intersections` pops the top `:line` item and the top `:circle` item, and pushes to `:exec` a list containing the zero, one or two `:point`s at which the line intersects the circle"
     :tags #{:plane-geometry :construction}
     (d/consume-top-of :line :as :my-line)
     (d/consume-top-of :circle :as :c)
@@ -863,9 +863,9 @@
 
 
 ; [X] `:line-coincide?`
+; [X] `:line-intersection`
 ; [X] `:line-intersect?`
 ; [X] `:line-parallel?`
-; [X] `:line-intersection`
 ; [X] `:circle-coincide?`
 ; [X] `:circle-concentric?` (shared centers)
 ; [X] `:circle-inside?`

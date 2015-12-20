@@ -411,14 +411,14 @@
     )
 
 
-(fact "`lc-intersections` takes one :circle and one :line, and pushes a list containing their intersection points (if any) to :exec"
+(fact "`line-circle-intersections` takes one :circle and one :line, and pushes a list containing their intersection points (if any) to :exec"
   (let [circle (make-circle-from-xyxy 0 0 5 0)
         line   (make-line-from-xyxy 0 0 6 8)
         cross-at-3-4-5  (check-instruction-here-using-this
                           geo-interpreter
                           {:circle (list circle)
                            :line (list line)}
-                          :lc-intersections)]
+                          :line-circle-intersections)]
 
   (line-enters-circle? line circle) => true
   (count (first (:exec cross-at-3-4-5))) => 2
@@ -432,7 +432,7 @@
                           geo-interpreter
                           {:circle (list circle)
                            :line (list line)}
-                          :lc-intersections)]
+                          :line-circle-intersections)]
 
   (line-tangent-to-circle? line circle) => true
   (count (first (:exec cross-at-3-4-5))) => 1
@@ -445,7 +445,7 @@
                           geo-interpreter
                           {:circle (list circle)
                            :line (list line)}
-                          :lc-intersections)]
+                          :line-circle-intersections)]
 
   (line-tangent-to-circle? line circle) => true
   (count (first (:exec cross-at-3-4-5))) => 1
@@ -458,7 +458,7 @@
                           geo-interpreter
                           {:circle (list circle)
                            :line (list line)}
-                          :lc-intersections)]
+                          :line-circle-intersections)]
 
   (line-misses-circle? line circle) => true
   (count (first (:exec cross-at-3-4-5))) => 0
