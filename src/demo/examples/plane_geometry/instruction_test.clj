@@ -779,3 +779,105 @@
                                                   :boolean  '(false)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
+
+
+
+(tabular
+  (fact "`line->points` takes a :line pushes a list of (pt1, pt2) (in that order) to :exec"
+    (check-instruction-here-using-this
+      geo-interpreter
+      ?new-stacks
+      ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction           ?expected
+
+    {:line  (list
+              (make-line-from-xyxy 0 1 2 3))
+     :point '()}
+                               :line->points       {:line    '()
+                                                    :exec    (list (list
+                                                        (make-point 0 1)
+                                                        (make-point 2 3)))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+(tabular
+  (fact "`line<-points` takes two points and makes a :line"
+    (check-instruction-here-using-this
+      geo-interpreter
+      ?new-stacks
+      ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction           ?expected
+
+    {:line  '()
+     :point (list
+              (make-point 2 3)
+              (make-point 0 1))}
+                               :line<-points       {:line
+                                                    (list
+                                                      (make-line-from-xyxy 0 1 2 3))
+                                                    :point  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:line  '()
+     :point (list
+              (make-point 2 3)
+              (make-point 2 3))}
+                               :line<-points       {:line '()
+                                                    :point  '()
+                                                    :error
+                                                    '({:item "can't make line from identical points", :step 0})}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+(tabular
+  (fact "`circle->points` takes a :circle pushes a list of (origin, edgepoint) (in that order) to :exec"
+    (check-instruction-here-using-this
+      geo-interpreter
+      ?new-stacks
+      ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction           ?expected
+
+    {:circle  (list
+              (make-circle-from-xyxy 0 1 2 3))
+     :point '()}
+                               :circle->points     {:circle    '()
+                                                    :exec    (list (list
+                                                        (make-point 0 1)
+                                                        (make-point 2 3)))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+(tabular
+  (fact "`circle<-points` takes two points and makes a :circle"
+    (check-instruction-here-using-this
+      geo-interpreter
+      ?new-stacks
+      ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction           ?expected
+
+    {:circle  '()
+     :point (list
+              (make-point 2 3)
+              (make-point 0 1))}
+                               :circle<-points      {:circle
+                                                    (list
+                                                      (make-circle-from-xyxy 0 1 2 3))
+                                                    :point  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:circle  '()
+     :point (list
+              (make-point 2 3)
+              (make-point 2 3))}
+                               :circle<-points       {:circle '()
+                                                    :point  '()
+                                                    :error
+                                                    '({:item "can't make circle from identical points", :step 0})}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+

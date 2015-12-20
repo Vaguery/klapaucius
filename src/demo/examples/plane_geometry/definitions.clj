@@ -736,6 +736,59 @@
     (d/push-onto :exec :result)))
 
 
+(def circle->points
+  (i/build-instruction
+    circle->points
+    "`:circle->points` pops the top `:circle` item, and a list containing its (origin, edgepoint) in that order onto :exec"
+    :tags #{:plane-geometry :construction}
+    (d/consume-top-of :circle :as :arg1)
+    (d/calculate [:arg1] #(list (:origin %1) (:edgepoint %1)) :as :result)
+    (d/push-onto :exec :result)))
+
+
+(def circle<-points
+  (i/build-instruction
+    circle<-points
+    "`:circle<-points` pops the top two :point items (edgepoint & origin respectively) and makes a :circle from them"
+    :tags #{:plane-geometry :construction}
+    (d/consume-top-of :point :as :e)
+    (d/consume-top-of :point :as :o)
+    (d/calculate [:o :e] #(pt-equal? %1 %2) :as :bad?)
+    (d/calculate [:o :e :bad?]
+      #(if %3 nil (make-circle %1 %2)) :as :result)
+    (d/calculate [:bad?]
+      #(if %1 "can't make circle from identical points" nil) :as :warning)
+    (d/push-onto :circle :result)
+    (d/record-an-error :from :warning)))
+
+
+
+(def line->points
+  (i/build-instruction
+    line->points
+    "`:line->points` pops the top `:line` item, and a list containing its (p1, p2) in that order onto :exec"
+    :tags #{:plane-geometry :construction}
+    (d/consume-top-of :line :as :arg1)
+    (d/calculate [:arg1] #(list (:p1 %1) (:p2 %1)) :as :result)
+    (d/push-onto :exec :result)))
+
+
+(def line<-points
+  (i/build-instruction
+    line<-points
+    "`:line<-points` pops the top two :point items (B and A respectively) and makes a :line from A through B"
+    :tags #{:plane-geometry :construction}
+    (d/consume-top-of :point :as :arg2)
+    (d/consume-top-of :point :as :arg1)
+    (d/calculate [:arg1 :arg2] #(pt-equal? %1 %2) :as :bad?)
+    (d/calculate [:arg1 :arg2 :bad?]
+      #(if %3 nil (make-line %1 %2)) :as :result)
+    (d/calculate [:bad?]
+      #(if %1 "can't make line from identical points" nil) :as :warning)
+    (d/push-onto :line :result)
+    (d/record-an-error :from :warning)))
+
+
 (def line-coincide?
   (i/build-instruction
     line-coincide?
@@ -862,26 +915,30 @@
 
 
 
-; [X] `:line-coincide?`
-; [X] `:line-intersection`
-; [X] `:line-intersect?`
-; [X] `:line-parallel?`
+; [ ] `:circle->points`  (produces (edge, origin) on :exec)
+; [ ] `:circle<-points`  (takes (origin, edge) from :points)
+; [X] `:line->points`  (produces (B, A) on :exec)
+; [ ] `:line<-points`  (takes (A, B) from :points)
 ; [X] `:circle-coincide?`
 ; [X] `:circle-concentric?` (shared centers)
 ; [X] `:circle-inside?`
 ; [X] `:circle-intersect?`
-; [X] `:circle-separate?`
+; [X] `:circle-intersections` (with another circle)
 ; [X] `:circle-nested?`
+; [X] `:circle-separate?`
 ; [X] `:circle-surrounds?`
 ; [X] `:circle-tangent?` (to another circle)
+; [X] `:LC-intersect?` (line-circle)
+; [X] `:LC-intersections` zero, one or two `:point` items
+; [X] `:LC-miss?` (line-circle)
+; [X] `:LC-tangent?` (line-circle)
+; [X] `:line-coincide?`
+; [X] `:line-intersect?`
+; [X] `:line-intersection`
+; [X] `:line-parallel?`
 ; [X] `:point-inside?`
 ; [X] `:point-oncircle?`
 ; [X] `:point-online?`
-; [X] `:circle-intersections` (with another circle)
-; [X] `:LC-intersect?` (line-circle)
-; [X] `:LC-tangent?` (line-circle)
-; [X] `:LC-miss?` (line-circle)
-; [X] `:LC-intersections` zero, one or two `:point` items
 
 
 ;;; push types
@@ -917,6 +974,8 @@
       (t/attach-instruction lc-intersections)
       (t/attach-instruction lc-miss?)
       (t/attach-instruction lc-tangent?)
+      (t/attach-instruction line->points)
+      (t/attach-instruction line<-points)
       (t/attach-instruction line-coincide?)
       (t/attach-instruction line-intersect?)
       (t/attach-instruction line-intersection)
@@ -934,6 +993,8 @@
       aspects/make-printable
       aspects/make-quotable
       aspects/make-returnable
+      (t/attach-instruction circle->points)
+      (t/attach-instruction circle<-points)
       (t/attach-instruction circle-coincide?)
       (t/attach-instruction circle-concentric?)
       (t/attach-instruction circle-inside?)
