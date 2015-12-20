@@ -423,7 +423,11 @@
     (make-circle-from-xyxy 0 0 3 0)) => false
   (circles-separate?
     (make-circle-from-xyxy 0 0 5 5)
-    (make-circle-from-xyxy 1 1 7 7)) => false)
+    (make-circle-from-xyxy 1 1 7 7)) => false
+  (circles-separate?
+    (make-circle-from-xyxy 0 0 5 0)
+    (make-circle-from-xyxy 6 0 1 0)) => false
+  )
 
 
 
@@ -544,6 +548,25 @@
       (make-circle-from-xyxy 0 0 10 10)
       (make-circle-from-xyxy 20 20 10 10)))
     (make-point 10 10)) => true
+
+  (pt-equal?
+    (first (circle-intersection-points
+      (make-circle-from-xyxy 20 20 10 10)
+      (make-circle-from-xyxy 0 0 10 10)
+      ))
+    (make-point 10 10)) => true
+
+  (pt-equal?
+    (first (circle-intersection-points
+      (make-circle-from-xyxy 0 0 3 0)
+      (make-circle-from-xyxy 5 0 3 0)))
+    (make-point 3 0)) => true
+
+  (pt-equal?
+    (first (circle-intersection-points
+      (make-circle-from-xyxy 5 0 3 0)
+      (make-circle-from-xyxy 0 0 3 0)))
+    (make-point 3 0)) => true
 
   (pt-equal?
     (first (circle-intersection-points

@@ -9,16 +9,13 @@
   )
 
 
-; [X] `:circle-intersections` (with another circle)
-; [X] `:LC-intersections` zero, one or two `:point` items
-
-
 ;; setup interpreter for testing
 
 (def geo-interpreter
   (core/register-types
     (owe/make-everything-interpreter)
     [push-point push-line push-circle]))
+
 
 
 ;;;;;;;;;;;;;;;;;;;
@@ -175,6 +172,56 @@
                                                         :boolean  '(true)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
+
+
+(fact "`circle-intersections` takes two :circle items and pushes a list containing their intersection points (if any) to :exec"
+  (let [c1 (make-circle-from-xyxy 0 0 3 0)
+        c2 (make-circle-from-xyxy 6 0 3 0)
+        tangent-at-3-0 (check-instruction-here-using-this
+                          geo-interpreter
+                          {:circle (list c1 c2)}
+                          :circle-intersections)]
+
+  (circles-tangent? c1 c2) => true
+  (first (first (:exec tangent-at-3-0))) => #(pt-equal? (make-point 3 0) %)
+  (count (first (:exec tangent-at-3-0))) => 1)
+
+
+  (let [c1 (make-circle-from-xyxy 0 0 5 0)
+        c2 (make-circle-from-xyxy 6 0 1 0)
+        cross-at-3-4-5  (check-instruction-here-using-this
+                          geo-interpreter
+                          {:circle (list c1 c2)}
+                          :circle-intersections)]
+
+  (circles-intersect? c1 c2) => true
+  (count (first (:exec cross-at-3-4-5))) => 2
+  (first (first (:exec cross-at-3-4-5))) => #(pt-equal? (make-point 3 4) %)
+  (second (first (:exec cross-at-3-4-5))) => #(pt-equal? (make-point 3 -4) %))
+
+  (let [c1 (make-circle-from-xyxy 0 0 5 0)
+        c2 (make-circle-from-xyxy 0 0 0 5)
+        same-all-over   (check-instruction-here-using-this
+                          geo-interpreter
+                          {:circle (list c1 c2)}
+                          :circle-intersections)]
+
+  (circles-coincide? c1 c2) => true
+  (count (first (:exec same-all-over))) => 1
+  (first (first (:exec same-all-over))) =>
+    #(circle-equal? (make-circle-from-xyxy 0 0 0 5) %))
+
+
+  (let [c1 (make-circle-from-xyxy 0 0 5 0)
+        c2 (make-circle-from-xyxy 9 9 8 8)
+        do-not-touch    (check-instruction-here-using-this
+                          geo-interpreter
+                          {:circle (list c1 c2)}
+                          :circle-intersections)]
+
+  (circles-separate? c1 c2) => true
+  (count (first (:exec do-not-touch))) => 0))
+
 
 
 (tabular
@@ -362,6 +409,62 @@
                                                   :boolean  '(false)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
+
+
+(fact "`lc-intersections` takes one :circle and one :line, and pushes a list containing their intersection points (if any) to :exec"
+  (let [circle (make-circle-from-xyxy 0 0 5 0)
+        line   (make-line-from-xyxy 0 0 6 8)
+        cross-at-3-4-5  (check-instruction-here-using-this
+                          geo-interpreter
+                          {:circle (list circle)
+                           :line (list line)}
+                          :lc-intersections)]
+
+  (line-enters-circle? line circle) => true
+  (count (first (:exec cross-at-3-4-5))) => 2
+  (first (first (:exec cross-at-3-4-5))) => #(pt-equal? (make-point 3 4) %)
+  (second (first (:exec cross-at-3-4-5))) => #(pt-equal? (make-point -3 -4) %)
+  )
+
+  (let [circle (make-circle-from-xyxy 0 0 5 0)
+        line   (make-line-from-xyxy 5 22 5 -22)
+        cross-at-3-4-5  (check-instruction-here-using-this
+                          geo-interpreter
+                          {:circle (list circle)
+                           :line (list line)}
+                          :lc-intersections)]
+
+  (line-tangent-to-circle? line circle) => true
+  (count (first (:exec cross-at-3-4-5))) => 1
+  (first (first (:exec cross-at-3-4-5))) => #(pt-equal? (make-point 5 0) %)
+  )
+
+  (let [circle (make-circle-from-xyxy 0 0 5 0)
+        line   (make-line-from-xyxy -5 22 -5 -22)
+        cross-at-3-4-5  (check-instruction-here-using-this
+                          geo-interpreter
+                          {:circle (list circle)
+                           :line (list line)}
+                          :lc-intersections)]
+
+  (line-tangent-to-circle? line circle) => true
+  (count (first (:exec cross-at-3-4-5))) => 1
+  (first (first (:exec cross-at-3-4-5))) => #(pt-equal? (make-point -5 0) %)
+  )
+
+  (let [circle (make-circle-from-xyxy 0 0 5 0)
+        line   (make-line-from-xyxy 9 0 22 1000)
+        cross-at-3-4-5  (check-instruction-here-using-this
+                          geo-interpreter
+                          {:circle (list circle)
+                           :line (list line)}
+                          :lc-intersections)]
+
+  (line-misses-circle? line circle) => true
+  (count (first (:exec cross-at-3-4-5))) => 0
+  )
+)
+
 
 
 (tabular

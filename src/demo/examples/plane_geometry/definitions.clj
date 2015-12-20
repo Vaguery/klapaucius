@@ -297,9 +297,8 @@
         sum-of-radii (.add r1 r2)]
 
     (and
-      (not (neg? (.compareTo center-to-center r1)))
-      (not (neg? (.compareTo center-to-center r2)))
-      (not (circles-tangent? circle1 circle2)))))
+      (not (circles-tangent? circle1 circle2))
+      (neg? (.compareTo (.add r1 r2) center-to-center)))))
 
 
 (defn circle-A-contains-B?
@@ -406,15 +405,21 @@
                 (.add (.multiply d d)
                   (.subtract (.multiply r1 r1) (.multiply r2 r2)))
                 (.multiply (apf 2M) d))
-          h  (ApfloatMath/sqrt
-                (.subtract (.multiply r1 r1) (.multiply l l)))
+          r1s (.multiply r1 r1)
+          ls  (.multiply l l)
+          h  (if (pretty-much-equal? r1s ls)
+                (apf 0)
+                (ApfloatMath/sqrt
+                  (.subtract (.multiply r1 r1) (.multiply l l))))
           xconst (.add x1 (.multiply (.subtract x2 x1) (.divide l d)))
           xvar   (.multiply (.subtract y2 y1) (.divide h d))
           yconst (.add y1 (.multiply (.subtract y2 y1) (.divide l d)))
           yvar   (.multiply (.subtract x2 x1) (.divide h d))]
 
     (list (make-point (.add xconst xvar) (.subtract yconst yvar))
-     (make-point (.subtract xconst xvar) (.add yconst yvar))))))
+          (make-point (.subtract xconst xvar) (.add yconst yvar))))
+    (list)
+    ))
 
 
 (defn tangent-point
