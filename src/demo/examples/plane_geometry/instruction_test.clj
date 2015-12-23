@@ -881,3 +881,215 @@
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
 
+
+;;;; equality
+
+
+(tabular
+  (fact "`point-equal?` takes two :point objects and returns true if :x and :y are pretty-much-equal"
+    (check-instruction-here-using-this
+      geo-interpreter
+      ?new-stacks
+      ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction           ?expected
+
+    {:point
+      (list
+        (make-point 1 1)
+        (make-point 1 1))}
+                                 :point-equal?      {:boolean  '(true)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:point
+      (list
+        (make-point 1 1.00000000000001M)
+        (make-point 1 1))}
+                                 :point-equal?      {:boolean  '(false)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:point
+      (list
+        (make-point 1 (.add (apf 1) (apf 1e-77)))
+        (make-point 1 1))}
+                                 :point-equal?      {:boolean  '(true)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+(tabular
+  (fact "`point-notequal?` takes two :point objects and returns false if :x and :y are pretty-much-equal"
+    (check-instruction-here-using-this
+      geo-interpreter
+      ?new-stacks
+      ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction           ?expected
+
+    {:point
+      (list
+        (make-point 1 1)
+        (make-point 1 1))}
+                                 :point-notequal?      {:boolean  '(false)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:point
+      (list
+        (make-point 1 1.00000000000001M)
+        (make-point 1 1))}
+                                 :point-notequal?      {:boolean  '(true)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:point
+      (list
+        (make-point 0 (apf 1e-47))
+        (make-point 0 0))}
+                                 :point-notequal?      {:boolean  '(true)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:point
+      (list
+        (make-point 0 (apf 1e-77))
+        (make-point 0 0))}
+                                 :point-notequal?      {:boolean  '(false)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+(tabular
+  (fact "`line-equal?` takes two :line objects and returns true if :x and :y are pretty-much-equal"
+    (check-instruction-here-using-this
+      geo-interpreter
+      ?new-stacks
+      ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction           ?expected
+
+    {:line
+      (list
+        (make-line-from-xyxy 1 1 2 2)
+        (make-line-from-xyxy 1 1 2 2))}
+                                 :line-equal?      {:boolean  '(true)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:line
+      (list
+        (make-line-from-xyxy 1 1.00000000000001M 2 2)
+        (make-line-from-xyxy 1 1 2 2))}
+                                 :line-equal?      {:boolean  '(false)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:line
+      (list
+        (make-line-from-xyxy 1 (.add (apf 1) (apf 1e-77)) 2 2)
+        (make-line-from-xyxy 1 1 2 2))}
+                                 :line-equal?      {:boolean  '(true)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:line
+      (list
+        (make-line-from-xyxy 1 (.add (apf 1) (apf 1e-37)) 2 2)
+        (make-line-from-xyxy 1 1 2 2))}
+                                 :line-equal?      {:boolean  '(false)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+(tabular
+  (fact "`line-notequal?` takes two :line objects and returns true if :x and :y are pretty-much-equal"
+    (check-instruction-here-using-this
+      geo-interpreter
+      ?new-stacks
+      ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction           ?expected
+
+    {:line
+      (list
+        (make-line-from-xyxy 1 1 2 2)
+        (make-line-from-xyxy 1 1 2 2))}
+                                 :line-notequal?      {:boolean  '(false)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:line
+      (list
+        (make-line-from-xyxy 1 1.00000000000001M 2 2)
+        (make-line-from-xyxy 1 1 2 2))}
+                                 :line-notequal?      {:boolean  '(true)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:line
+      (list
+        (make-line-from-xyxy 1 (.add (apf 1) (apf 1e-77)) 2 2)
+        (make-line-from-xyxy 1 1 2 2))}
+                                 :line-notequal?      {:boolean  '(false)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:line
+      (list
+        (make-line-from-xyxy 1 (.add (apf 1) (apf 1e-37)) 2 2)
+        (make-line-from-xyxy 1 1 2 2))}
+                                 :line-notequal?      {:boolean  '(true)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+(tabular
+  (fact "`circle-equal?` takes two :circle objects and returns true if :x and :y are pretty-much-equal"
+    (check-instruction-here-using-this
+      geo-interpreter
+      ?new-stacks
+      ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction           ?expected
+
+    {:circle
+      (list
+        (make-circle-from-xyxy 1 1 2 2)
+        (make-circle-from-xyxy 1 1 2 2))}
+                                 :circle-equal?      {:boolean  '(true)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:circle
+      (list
+        (make-circle-from-xyxy 1 1.00000000000001M 2 2)
+        (make-circle-from-xyxy 1 1 2 2))}
+                                 :circle-equal?      {:boolean  '(false)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:circle
+      (list
+        (make-circle-from-xyxy 1 (.add (apf 1) (apf 1e-77)) 2 2)
+        (make-circle-from-xyxy 1 1 2 2))}
+                                 :circle-equal?      {:boolean  '(true)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:circle
+      (list
+        (make-circle-from-xyxy 1 (.add (apf 1) (apf 1e-37)) 2 2)
+        (make-circle-from-xyxy 1 1 2 2))}
+                                 :circle-equal?      {:boolean  '(false)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+(tabular
+  (fact "`circle-notequal?` takes two :circle objects and returns true if :x and :y are pretty-much-equal"
+    (check-instruction-here-using-this
+      geo-interpreter
+      ?new-stacks
+      ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction           ?expected
+
+    {:circle
+      (list
+        (make-circle-from-xyxy 1 1 2 2)
+        (make-circle-from-xyxy 1 1 2 2))}
+                                 :circle-notequal?      {:boolean  '(false)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:circle
+      (list
+        (make-circle-from-xyxy 1 1.00000000000001M 2 2)
+        (make-circle-from-xyxy 1 1 2 2))}
+                                 :circle-notequal?      {:boolean  '(true)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:circle
+      (list
+        (make-circle-from-xyxy 1 (.add (apf 1) (apf 1e-77)) 2 2)
+        (make-circle-from-xyxy 1 1 2 2))}
+                                 :circle-notequal?      {:boolean  '(false)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:circle
+      (list
+        (make-circle-from-xyxy 1 (.add (apf 1) (apf 1e-37)) 2 2)
+        (make-circle-from-xyxy 1 1 2 2))}
+                                 :circle-notequal?      {:boolean  '(true)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )

@@ -914,6 +914,74 @@
     (d/push-onto :exec :results)))
 
 
+;; equality
+
+(def point-equal?
+  (i/build-instruction
+    point-equal?
+    "`:point-equal?` pops the top two `:point` items and pushes `true` if they are `pretty-much-equal?` to one another"
+    :tags #{:plane-geometry :construction}
+    (d/consume-top-of :point :as :arg2)
+    (d/consume-top-of :point :as :arg1)
+    (d/calculate [:arg1 :arg2] #(pt-equal? %1 %2) :as :result)
+    (d/push-onto :boolean :result)))
+
+
+(def point-notequal?
+  (i/build-instruction
+    point-notequal?
+    "`:point-notequal?` pops the top two `:point` items and pushes `false` if they are `pretty-much-equal?` to one another"
+    :tags #{:plane-geometry :construction}
+    (d/consume-top-of :point :as :arg2)
+    (d/consume-top-of :point :as :arg1)
+    (d/calculate [:arg1 :arg2] #(not (pt-equal? %1 %2)) :as :result)
+    (d/push-onto :boolean :result)))
+
+
+(def ln-equal?
+  (i/build-instruction
+    line-equal?
+    "`:line-equal?` pops the top two `:line` items and pushes `true` if they are `pretty-much-equal?` to one another"
+    :tags #{:plane-geometry :construction}
+    (d/consume-top-of :line :as :arg2)
+    (d/consume-top-of :line :as :arg1)
+    (d/calculate [:arg1 :arg2] #(line-equal? %1 %2) :as :result)
+    (d/push-onto :boolean :result)))
+
+
+(def ln-notequal?
+  (i/build-instruction
+    line-notequal?
+    "`:line-notequal?` pops the top two `:line` items and pushes `false` if they are `pretty-much-equal?` to one another"
+    :tags #{:plane-geometry :construction}
+    (d/consume-top-of :line :as :arg2)
+    (d/consume-top-of :line :as :arg1)
+    (d/calculate [:arg1 :arg2] #(not (line-equal? %1 %2)) :as :result)
+    (d/push-onto :boolean :result)))
+
+
+
+(def circ-equal?
+  (i/build-instruction
+    circle-equal?
+    "`:circle-equal?` pops the top two `:circle` items and pushes `true` if they are `pretty-much-equal?` to one another"
+    :tags #{:plane-geometry :construction}
+    (d/consume-top-of :circle :as :arg2)
+    (d/consume-top-of :circle :as :arg1)
+    (d/calculate [:arg1 :arg2] #(circle-equal? %1 %2) :as :result)
+    (d/push-onto :boolean :result)))
+
+
+(def circ-notequal?
+  (i/build-instruction
+    circle-notequal?
+    "`:circle-notequal?` pops the top two `:circle` items and pushes `false` if they are `pretty-much-equal?` to one another"
+    :tags #{:plane-geometry :construction}
+    (d/consume-top-of :circle :as :arg2)
+    (d/consume-top-of :circle :as :arg1)
+    (d/calculate [:arg1 :arg2] #(not (circle-equal? %1 %2)) :as :result)
+    (d/push-onto :boolean :result)))
+
 
 ; [X] `:circle->points`  (produces (edge, origin) on :exec)
 ; [X] `:circle<-points`  (takes (origin, edge) from :points)
@@ -921,10 +989,12 @@
 ; [X] `:line<-points`  (takes (A, B) from :points)
 ; [X] `:circle-coincide?`
 ; [X] `:circle-concentric?` (shared centers)
+; [X] `:circle-equal?`
 ; [X] `:circle-inside?`
 ; [X] `:circle-intersect?`
 ; [X] `:circle-intersections` (with another circle)
 ; [X] `:circle-nested?`
+; [X] `:circle-notequal?`
 ; [X] `:circle-separate?`
 ; [X] `:circle-surrounds?`
 ; [X] `:circle-tangent?` (to another circle)
@@ -933,10 +1003,14 @@
 ; [X] `:LC-miss?` (line-circle)
 ; [X] `:LC-tangent?` (line-circle)
 ; [X] `:line-coincide?`
+; [X] `:line-equal?`
 ; [X] `:line-intersect?`
 ; [X] `:line-intersection`
+; [X] `:line-notequal?`
 ; [X] `:line-parallel?`
+; [X] `:point-equal?`
 ; [X] `:point-inside?`
+; [X] `:point-notequal?`
 ; [X] `:point-oncircle?`
 ; [X] `:point-online?`
 
@@ -954,7 +1028,9 @@
         aspects/make-printable
         aspects/make-quotable
         aspects/make-returnable
+        (t/attach-instruction point-equal?)
         (t/attach-instruction point-inside?)
+        (t/attach-instruction point-notequal?)
         (t/attach-instruction point-oncircle?)
         (t/attach-instruction point-online?)
         ))
@@ -980,6 +1056,8 @@
       (t/attach-instruction line-intersect?)
       (t/attach-instruction line-intersection)
       (t/attach-instruction line-parallel?)
+      (t/attach-instruction ln-equal?)
+      (t/attach-instruction ln-notequal?)
       ))
 
 
@@ -997,10 +1075,12 @@
       (t/attach-instruction circle<-points)
       (t/attach-instruction circle-coincide?)
       (t/attach-instruction circle-concentric?)
+      (t/attach-instruction circ-equal?)
       (t/attach-instruction circle-inside?)
       (t/attach-instruction circle-intersect?)
       (t/attach-instruction circle-intersections)
       (t/attach-instruction circle-nested?)
+      (t/attach-instruction circ-notequal?)
       (t/attach-instruction circle-separate?)
       (t/attach-instruction circle-surrounds?)
       (t/attach-instruction circle-tangent?)
