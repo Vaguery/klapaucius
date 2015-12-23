@@ -99,7 +99,8 @@
 
 (defn bunch-a-junk
   [interpreter how-much-junk]
-  (remove nil? (repeatedly how-much-junk #(condp = (rand-int 30)
+  (remove nil? (repeatedly how-much-junk
+                                  #(condp = (rand-int 30)
                                      0 (random-integer)
                                      1 (random-float)
                                      2 (random-boolean)

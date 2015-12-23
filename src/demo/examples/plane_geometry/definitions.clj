@@ -915,10 +915,10 @@
 
 
 
-; [ ] `:circle->points`  (produces (edge, origin) on :exec)
-; [ ] `:circle<-points`  (takes (origin, edge) from :points)
+; [X] `:circle->points`  (produces (edge, origin) on :exec)
+; [X] `:circle<-points`  (takes (origin, edge) from :points)
 ; [X] `:line->points`  (produces (B, A) on :exec)
-; [ ] `:line<-points`  (takes (A, B) from :points)
+; [X] `:line<-points`  (takes (A, B) from :points)
 ; [X] `:circle-coincide?`
 ; [X] `:circle-concentric?` (shared centers)
 ; [X] `:circle-inside?`

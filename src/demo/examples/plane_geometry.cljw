@@ -14,10 +14,6 @@
   (:use clojure.pprint)
   )
 ;; @@
-;; ->
-;;; [36mRun `(doc midje)` for Midje usage.[0m
-;;; 
-;; <-
 ;; =>
 ;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}
 ;; <=
@@ -26,18 +22,15 @@
 ;;; # Exploring Compass and Straightedge Constructions
 ;;; ## Extending Push with domain- & problem-specific types
 ;;; 
-;;; This gorilla session demonstrates approaches for building and using domain- and problem-specific instructions—that is, extensions of the Push language.
+;;; This gorilla session demonstrates one approach for extending the Push language by building and using domain- and problem-specific instructions.
 ;;; 
-;;; **Note** this is not a tutorial on genetic programming. It's much more about how one designs and configures a Push-in-Clojure interpreter so one can run and evaluate Push programs. There are some rudimentary "fitness" functions discussed, but the point here is to learn how one can add functionality to the Push language quickly and easily.
+;;; **Note** this is _not_ a tutorial on genetic programming. It's much more about how one designs and configures a Push-in-Clojure interpreter so one can run and evaluate Push programs. There are some rudimentary "fitness" functions discussed, but the point here is to learn how one can add functionality to the Push language quickly and easily.
 ;; **
 
 ;; **
-;;; ## (WORK IN PROGRESS)
+;;; ## Compass and Straightedge Constructions (A Sketch)
 ;;; 
-;;; 
-;;; ## Compass and Straightedge Constructions
-;;; 
-;;; Suppose I'd like to explore [compass and straightedge constructions](https://en.wikipedia.org/wiki/Compass-and-straightedge_construction) in the traditional sense: Imagine an infinite two-dimensional surface, on which we can _see_ points, lines, and circles. I emphasize "see" because we can only _construct_ lines and circles, and we can only do those in one way each:
+;;; Suppose I'd like to explore [compass and straightedge constructions](https://en.wikipedia.org/wiki/Compass-and-straightedge_construction), in their traditional sense: Imagine an infinite two-dimensional surface, on which we can _see_ points, lines, and circles. I emphasize "see" because we can only _construct_ lines and circles, and we can only do those in one way each:
 ;;; 
 ;;; - a new line can be made which passes through any two points
 ;;; - a new circle can be drawn which has its center at one point, and which passes through another
@@ -194,7 +187,7 @@
 ;; <=
 
 ;; **
-;;; ## Push and its effects on domain models
+;;; ## What the Push interpreter expects in a domain model
 ;;; 
 ;;; Now in my brief description above, I said that _if_ two lines intersect, they produce a point. We could represent this relation in several ways, but perhaps the Pushiest approach is to create a new instruction `:line-intersection` that pops the top two `:line` items and pushes zero or one new `:point` items to the `:point` stack as a result.
 ;;; 
@@ -222,7 +215,7 @@
 ;;; - `:line-circleintersect?`
 ;;; - `:line-circletangent?`
 ;;; - `:line-circlemiss?`
-;;; - `:line-circleintersections` zero, one or two `:point` items
+;;; - `:line-circle-intersections` zero, one or two `:point` items
 ;;; 
 ;;; We should also talk about (and let Push "think" about) the things we can see when we look at a drawing:
 ;;; 
@@ -274,7 +267,7 @@
 ;; @@
 ;; ->
 ;;; 
-;;; [31mFAIL[0m &quot;`make-line` throws an Exception if both point arguments are the same&quot; at (form-init6652206988956514620.clj:2)
+;;; [31mFAIL[0m &quot;`make-line` throws an Exception if both point arguments are the same&quot; at (form-init431791843326629122.clj:2)
 ;;; Actual result did not agree with the checking function.
 ;;;         Actual result: {:p1 {:x 1, :y 2}, :p2 {:x 1, :y 2}}::plane_geometry.Line
 ;;;     Checking function: (throws #&quot;points must differ&quot;)
@@ -306,7 +299,7 @@
 ;; @@
 ;; ->
 ;;; 
-;;; [31mFAIL[0m &quot;`make-circle` throws an Exception if both point arguments are the same&quot; at (form-init6652206988956514620.clj:2)
+;;; [31mFAIL[0m &quot;`make-circle` throws an Exception if both point arguments are the same&quot; at (form-init431791843326629122.clj:2)
 ;;; Actual result did not agree with the checking function.
 ;;;         Actual result: {:edgepoint {:x 1, :y 2}, :origin {:x 1, :y 2}}::plane_geometry.Circle
 ;;;     Checking function: (throws #&quot;points must differ&quot;)
@@ -453,7 +446,7 @@
 ;; <=
 
 ;; **
-;;; I don't want to bore you with all the rest of the proposed infrastructure, but I do want to work through one more before I make a Push instruction from it all: `line-intersection` (which will be the basis, I guess, of the Push instruction `:line-intersection`).
+;;; I don't want to bore you with all the rest of the infrastructure and how I build it out, but I do want to work through one more before I make a Push instruction from it all: `crossing-point` (which will be the basis, I guess, of the Push instruction `:line-intersection`).
 ;;; 
 ;;; I think in the Push version it will only produce a `:point` result when there is in fact a single intersection, and otherwise (if the lines are equal, coincident, or parallel) it'll just return `nil`—or rather `nil`'s Push equivalent, which is that no items will be pushed to any stacks.
 ;; **
@@ -613,12 +606,208 @@
 ;; <=
 
 ;; **
-;;; ## Things I've noticed and which need to be fixed
+;;; ## And so on…
 ;;; 
-;;; - I caused a bug when I called a Clojure function from inside a build-instruction with the same name
-;;; - get-stack is kinda annoying
-;;; - checking for complex items (`:point` for example) should be simpler
+;;; I hope the examples above begin to show how I prefer to build out domain- and problem-specific Push instructions. I actually did that work here in the Gorilla REPL itself, so I can say with confidence it's _possible_. But I admit the overall experience of working in a REPL doesn't provide an ideal experience for me. Once I reached the point above, where I'd made a few simple instructions and checked they could be used in Push, I moved to  working in my standard text editor, with `lein midje :autotest` running in a background shell.
+;;; 
+;;; This was an interesting experience, and novel for me, because I quickly discovered a shortcoming in the pure Clojure approach I'd assumed would work. As you no doubt already know, floating-point arithmetic is a tricky thing to use for high-precision calculations, and while Clojure does provide [the `BigDecimal`](http://clojure.org/data_structures) primitive for high-precision work, it doesn't give one the square root function! (The result of all the Clojure `sqrt` functions I could find was `double` at best.)
+;;; 
+;;; But by the time I got to the _most important_ instructions and the functions to support them—the ones involved in creating new `:point` values at the intersection of `:line` and `:circle` items, and the testing of whether things are tangent, or intersect at all, I was faced with a difficult design decision. With a little research, I realized I could either have change the representation of `:point`, `:line` and `:circle` items to be _purely algebraic_ (which is to say, "symbolic"), or would need to find a better numeric library that supported much more accurate arithmetic manipulation.
+;;; 
+;;; I chose the latter, for this exercise, and in the library I finally developed (stored in `src/demo/examples/plane_geometry/definitions.clj`) you will see how I load and use the [`Apfloat` library for Java](http://www.apfloat.org/apfloat_java/), which I use to define high-precision floating-point values for these geometric primitives, and some of the design decisions I made in handling common tasks like testing for _approximate_ equality.
+;;; 
+;;; ### Interoperability with Java
+;;; 
+;;; One thing I'd like to emphasize is how simple I found it to load and use the Java `Apfloat` library, once the syntax for calling Java instance and class methods was clear. Simple, but not _easy_ I should say: An unexpected side-effect of my decision to use `Apfloat` is the fact that I had to use the library's own instance methods for addition, subtraction and so forth. So where I might have written `(+ x1 (* 4 x3 x4))` in Clojure, I found myself writing `(.add x1 (.multiply (.multiply (apf 4) x3) x4))` to avoid inadvertent type-casting back to Clojure `double` values.
+;;; 
+;;; I'm sure my code can be refactored quite a bit, but the point to be made (I think) is that interoperability between Push and the vast collection of Java libraries is _very_ simple to start, but may involve significant adaptation and resistance in one's Clojure code.
 ;; **
+
+;; **
+;;; ## Here's One I Prepared Earlier
+;;; 
+;;; Let me start a new namespace (without the definitions above) and load my finished Push definitions to show you where they ended up:
+;; **
+
+;; @@
+(ns from-the-files
+  (:use midje.sweet)
+  (:require [gorilla-plot.core :as plot])
+  (:require [push.interpreter.templates.one-with-everything :as owe])
+  (:require [push.interpreter.core :as core])
+  (:require [push.types.core :as t])
+  (:require [push.util.stack-manipulation :as u])
+  (:require [push.instructions.core :as i])
+  (:require [push.instructions.dsl :as d])
+  (:require [push.instructions.aspects :as aspects])
+  (:use clojure.pprint)
+  (:use demo.examples.plane-geometry.definitions)
+  )
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}
+;; <=
+
+;; @@
+(def p1 (make-point 0 0))
+(def p2 (make-point 6 0))
+
+(def line1 (make-line p1 p2))
+
+(def c1 (make-circle p1 (make-point 5 0)))
+(def c2 (make-circle p2 (make-point 1 0)))
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-var'>#&#x27;from-the-files/c2</span>","value":"#'from-the-files/c2"}
+;; <=
+
+;; @@
+(circles-intersect? c1 c2)
+(circle-intersection-points c1 c2)
+
+(line-enters-circle? line1 c1)
+(lc-intersection-points line1 c1)
+;; @@
+;; =>
+;;; {"type":"list-like","open":"<span class='clj-list'>(</span>","close":"<span class='clj-list'>)</span>","separator":" ","items":[{"type":"list-like","open":"<span class='clj-record'>#demo.examples.plane_geometry.definitions.Point{</span>","close":"<span class='clj-record'>}</span>","separator":" ","items":[{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:x</span>","value":":x"},{"type":"html","content":"<span class='clj-unkown'>5</span>","value":"5"}],"value":"[:x 5]"},{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:y</span>","value":":y"},{"type":"html","content":"<span class='clj-unkown'>0</span>","value":"0"}],"value":"[:y 0]"}],"value":"#demo.examples.plane_geometry.definitions.Point{:x 5, :y 0}"},{"type":"list-like","open":"<span class='clj-record'>#demo.examples.plane_geometry.definitions.Point{</span>","close":"<span class='clj-record'>}</span>","separator":" ","items":[{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:x</span>","value":":x"},{"type":"html","content":"<span class='clj-unkown'>-5</span>","value":"-5"}],"value":"[:x -5]"},{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:y</span>","value":":y"},{"type":"html","content":"<span class='clj-unkown'>0</span>","value":"0"}],"value":"[:y 0]"}],"value":"#demo.examples.plane_geometry.definitions.Point{:x -5, :y 0}"}],"value":"(#demo.examples.plane_geometry.definitions.Point{:x 5, :y 0} #demo.examples.plane_geometry.definitions.Point{:x -5, :y 0})"}
+;; <=
+
+;; @@
+(fact "the circles cross at the corners of 3-4-5 right triangles"
+  (pt-equal?
+    (first (circle-intersection-points c1 c2)) 
+    (make-point 3 -4)) => true
+  (pt-equal?
+    (second (circle-intersection-points c1 c2)) 
+    (make-point 3 4)) => true)
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; @@
+(def tester (owe/make-everything-interpreter))
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-var'>#&#x27;from-the-files/tester</span>","value":"#'from-the-files/tester"}
+;; <=
+
+;; @@
+(pprint (get-in (core/run
+  (core/recycle-interpreter
+    tester
+    [:c1 :c2 :circle-intersections]
+    :inputs {:c1 c1 :c2 c2})
+  100) [:stacks :log]))
+;; @@
+;; ->
+;;; ({:step 8,
+;;;   :item
+;;;   {:x
+;;;    2.999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999,
+;;;    :y 4}}
+;;;  {:step 7,
+;;;   :item
+;;;   {:x
+;;;    2.999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999,
+;;;    :y -4}}
+;;;  {:step 6,
+;;;   :item
+;;;   ({:x
+;;;     2.999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999,
+;;;     :y -4}
+;;;    {:x
+;;;     2.999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999,
+;;;     :y 4})}
+;;;  {:step 5, :item :circle-intersections}
+;;;  {:step 4, :item {:origin {:x 6, :y 0}, :edgepoint {:x 1, :y 0}}}
+;;;  {:step 3, :item :c2}
+;;;  {:step 2, :item {:origin {:x 0, :y 0}, :edgepoint {:x 5, :y 0}}}
+;;;  {:step 1, :item :c1})
+;;; 
+;; <-
+;; =>
+;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}
+;; <=
+
+;; @@
+(defn pretty-trace
+  [program]
+  (pprint
+    (get-in
+      (core/run
+  		(core/recycle-interpreter
+    	  tester
+          program
+    	  :inputs {:c1 c1 :c2 c2 :p1 p1 :p2 p2})
+        100)
+    [:stacks])))
+  
+(pretty-trace [:c1 :c2 :circle-intersections
+               :line<-points :p1 :p2 :line<-points :line-intersection])
+;; @@
+;; ->
+;;; {:booleans (),
+;;;  :integers (),
+;;;  :unknown (),
+;;;  :exec (),
+;;;  :return (),
+;;;  :float (),
+;;;  :strings (),
+;;;  :circle (),
+;;;  :string (),
+;;;  :vector (),
+;;;  :print (),
+;;;  :integer (),
+;;;  :chars (),
+;;;  :line (),
+;;;  :code (),
+;;;  :point
+;;;  ({:x
+;;;    2.999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999,
+;;;    :y 0}),
+;;;  :error (),
+;;;  :environment (),
+;;;  :set (),
+;;;  :log
+;;;  ({:step 15, :item :line-intersection}
+;;;   {:step 14, :item :line&lt;-points}
+;;;   {:step 13, :item {:x 6, :y 0}}
+;;;   {:step 12, :item :p2}
+;;;   {:step 11, :item {:x 0, :y 0}}
+;;;   {:step 10, :item :p1}
+;;;   {:step 9, :item :line&lt;-points}
+;;;   {:step 8,
+;;;    :item
+;;;    {:x
+;;;     2.999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999,
+;;;     :y 4}}
+;;;   {:step 7,
+;;;    :item
+;;;    {:x
+;;;     2.999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999,
+;;;     :y -4}}
+;;;   {:step 6,
+;;;    :item
+;;;    ({:x
+;;;      2.999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999,
+;;;      :y -4}
+;;;     {:x
+;;;      2.999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999,
+;;;      :y 4})}
+;;;   {:step 5, :item :circle-intersections}
+;;;   {:step 4, :item {:origin {:x 6, :y 0}, :edgepoint {:x 1, :y 0}}}
+;;;   {:step 3, :item :c2}
+;;;   {:step 2, :item {:origin {:x 0, :y 0}, :edgepoint {:x 5, :y 0}}}
+;;;   {:step 1, :item :c1}),
+;;;  :boolean (),
+;;;  :char (),
+;;;  :floats ()}
+;;; 
+;; <-
+;; =>
+;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}
+;; <=
 
 ;; @@
 

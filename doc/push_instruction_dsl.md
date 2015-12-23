@@ -2,7 +2,18 @@
 
 The Push Instruction DSL is a highly-constrained domain-specific language for defining Push instructions.
 
-Every Push instruction takes an entire `Interpreter` as its argument, and returns a modified `Interpreter` as its result. The transformation of the `Interpreter` state from input to output is composed of a series of imperative transformations in the DSL, with short-term auxiliary state variables saved in a "scratch map" so that intermediate results can be passed between steps of instruction processing.
+## What a Push instruction does
+
+Every Push instruction takes an entire `Interpreter` as its argument, and returns a modified `Interpreter` as its result. The transformation of the `Interpreter` state from input to output is composed of a series of imperative transformations in the DSL, using ephemeral state variables saved in a "scratch map" in order to pass intermediate results between steps of processing.
+
+Let me walk through a few examples of simple and complex instruction behavior, just to clarify:
+
+- `:integer-divide` pops two `:integer` values as arguments (call them `B` and `A`, respectively); if `B` is zero, it pushes both values back onto the `:integer` stack unchanged, and pushes an item with the value `":integer-divide 0 denominator"` onto the `:error` stack; otherwise, it pushes the integer quotient `A÷B` onto the `:integer` stack
+- `:exec-if` pops the top two `:exec` items and the top `:boolean` item; if the latter is `true`, the first `:exec` item is pushed back onto that stack; if `false`, the second one is.
+- `:string-cutflip` takes an `:integer` argument, and transforms it into an index over the `:string` stack by taking its value modulo that stack's current size; if the stack is empty, the index is 0. It then takes all items from the `:string` stack down to the indexed item, and reverses their order, leaving the remainder of the stack unchanged.
+- `:push-inputs` pushes a list of all the currently defined `input` keywords (in lexicographically sorted order) onto the `:exec` stack
+
+Almost all Push instructions consume arguments from one or more specified stacks. Whenever any argument is missing, everything else is left in place and an `:error` is added to that stack recording the shortage. So for example, `:integer-divide` will not change the values on the `:integer` stack if there is only one number there.
 
 ## DSL fundamentals
 
