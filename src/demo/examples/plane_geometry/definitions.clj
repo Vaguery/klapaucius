@@ -5,7 +5,6 @@
   (:require [push.instructions.core :as i])
   (:require [push.instructions.dsl :as d])
   (:require [push.instructions.aspects :as aspects])
-  (:require [clojure.math.numeric-tower :as math])
   (:import  [org.apfloat Apfloat ApfloatMath])
   )
 
