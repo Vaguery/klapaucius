@@ -421,7 +421,7 @@
   (produce-gazetteer (c/classic-interpreter :inputs [1 2 false 6.3 '(:code-do)])) => "")
 
 
-;; `run`
+;; `run-n`
 
 ;; a fixture or two
 
@@ -431,8 +431,8 @@
                       :config {:step-limit 1000}))
 
 
-(fact "calling `run` with an Interpreter and a step argument returns the Interpreter at that step"
-  (:stacks (run simple-things 0)) => (contains
+(fact "calling `run-n` with an Interpreter and a step argument returns the Interpreter at that step"
+  (:stacks (run-n simple-things 0)) => (contains
                               {:boolean '(), 
                                :char    '(), 
                                :code    '(), 
@@ -444,7 +444,7 @@
                                :string  '(), 
                                :unknown '()})
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  (:stacks (run simple-things 1)) => (contains
+  (:stacks (run-n simple-things 1)) => (contains
                               {:boolean '(), 
                                :char    '(), 
                                :code    '(), 
@@ -456,7 +456,7 @@
                                :string  '(), 
                                :unknown '()})
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  (:stacks (run simple-things 5)) => (contains
+  (:stacks (run-n simple-things 5)) => (contains
                               {:boolean '(true false), 
                                :char    '(), 
                                :code    '(), 
@@ -473,8 +473,8 @@
   (c/classic-interpreter :program [1 :exec-y 8]))
 
 
-(fact "`run` doesn't care about halting conditions"
-  (:stacks (run forever-8 0)) => (contains
+(fact "`run-n` doesn't care about halting conditions"
+  (:stacks (run-n forever-8 0)) => (contains
                               {:boolean '(), 
                                :char    '(), 
                                :code    '(), 
@@ -486,7 +486,7 @@
                                :string  '(), 
                                :unknown '()})
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  (:stacks (run forever-8 33)) => (contains
+  (:stacks (run-n forever-8 33)) => (contains
                               {:boolean '(), 
                                :char    '(), 
                                :code    '(), 
@@ -497,21 +497,21 @@
                                :print   '(), 
                                :string  '(), 
                                :unknown '()})
-  (count (u/get-stack (run forever-8 12000) :integer)) => 4000
-  (count (u/get-stack (run forever-8 50000) :integer)) => 16667
+  (count (u/get-stack (run-n forever-8 12000) :integer)) => 4000
+  (count (u/get-stack (run-n forever-8 50000) :integer)) => 16667
 
-  (:done? (run simple-things 0)) =>           false
-  (:done? (run simple-things 5)) =>           true
-  (:done? (run simple-things 111)) =>         true
-  (:done? (run simple-things 6)) =>           true
-  (:done? (run forever-8 0)) =>               false
-  (:done? (run forever-8 5)) =>               true
-  (:done? (run forever-8 111)) =>             true
-  (:done? (run just-basic 1926)) =>  false)
+  (:done? (run-n simple-things 0)) =>           false
+  (:done? (run-n simple-things 5)) =>           true
+  (:done? (run-n simple-things 111)) =>         true
+  (:done? (run-n simple-things 6)) =>           true
+  (:done? (run-n forever-8 0)) =>               false
+  (:done? (run-n forever-8 5)) =>               true
+  (:done? (run-n forever-8 111)) =>             true
+  (:done? (run-n just-basic 1926)) =>  false)
 
 
-(fact "`run` produces a log"
-    (u/get-stack (run simple-things 177) :log) => '({:item :boolean-or, :step 6}
+(fact "`run-n` produces a log"
+    (u/get-stack (run-n simple-things 177) :log) => '({:item :boolean-or, :step 6}
                                                     {:item true, :step 5} 
                                                     {:item :integer-add, :step 4} 
                                                     {:item false, :step 3} 
@@ -519,11 +519,20 @@
                                                     {:item 1, :step 1}))
 
 
+;; entire-run
+
+(fact "`entire-run` produces a lazy seq of all the steps from the initialization to the stated endpoint"
+  (count (entire-run simple-things 22)) => 22
+  (map #(u/get-stack % :integer) (entire-run simple-things 22)) =>
+    '(() (1) (2 1) (2 1) (3) (3) (3) (3) (3) (3)
+      (3) (3) (3) (3) (3) (3) (3) (3) (3) (3) (3) (3)))
+
+
 (fact "`run-until-done` runs an Interpreter until it reaches the first step when `:done?` is true"
   (:counter (run-until-done just-basic)) => 0
   (u/get-stack (run-until-done just-basic) :log) => '()
 
-  (:counter (run-until-done simple-things)) => (:counter (run simple-things 1000))
+  (:counter (run-until-done simple-things)) => (:counter (run-n simple-things 1000))
 
   (:counter (run-until-done forever-8)) => 0 ; because it's step-limit isn't set explicitly!
 

@@ -145,7 +145,7 @@
   [interpreter]
   (try
     (do
-      (println (str (:counter (run interpreter 10000)))))
+      (println (str (:counter (run-n interpreter 10000)))))
     (catch Exception e 
       (do 
         (println

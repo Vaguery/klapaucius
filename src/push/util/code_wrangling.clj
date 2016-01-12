@@ -48,15 +48,6 @@
                  collector)))))
 
 
-; (defn list-zip
-;   "Returns a zipper for nested lists (only), given a root list"
-;   [root]
-;     (zip/zipper list?
-;                 identity
-;                 (fn [node children] (with-meta children (meta node)))
-;                 root))
-
-
 (defn nth-code-point
   "`nth-code-point` takes a :code item (any clojure form) and an integer index, and traverses the code item as a tree (of nested lists and items) in a depth-first order, returning the indexed node."
   [code idx]

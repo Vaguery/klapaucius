@@ -347,7 +347,7 @@
       interpreter)))
 
 
-(defn run
+(defn run-n
   "Takes an Interpreter, calls `reset` on it, and calls `step`
   on that reset state for `tick` iterations. Returns the Interpreter
   state at the end.
@@ -357,6 +357,13 @@
   [interpreter tick]
   (let [start (assoc-in (reset-interpreter interpreter) [:config :step-limit] tick)]
     (nth (iterate step start) tick)))
+
+
+(defn entire-run
+  "Takes an Interpreter, calls `reset` on it, and returns a (lazy) seq containing all of the steps from the start to the specified end point."
+  [interpreter tick]
+  (let [start (assoc-in (reset-interpreter interpreter) [:config :step-limit] tick)]
+    (take tick (iterate step start))))
 
 
 (defn run-until-done
