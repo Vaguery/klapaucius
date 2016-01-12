@@ -521,11 +521,24 @@
 
 ;; entire-run
 
+
 (fact "`entire-run` produces a lazy seq of all the steps from the initialization to the stated endpoint"
   (count (entire-run simple-things 22)) => 22
   (map #(u/get-stack % :integer) (entire-run simple-things 22)) =>
     '(() (1) (2 1) (2 1) (3) (3) (3) (3) (3) (3)
       (3) (3) (3) (3) (3) (3) (3) (3) (3) (3) (3) (3)))
+
+
+;; last-changed-step
+
+
+(fact "`last-changed-step` returns the last point at which an interpreter stack contents change, within the specified number of steps, when running the specified program"
+  (:counter (last-changed-step simple-things 22000)) => 6
+  (u/get-stack (last-changed-step simple-things 22000) :exec) => '()
+
+  (:counter (last-changed-step forever-8 1000)) => 1000
+  (u/get-stack (last-changed-step forever-8 1000) :exec) => '(:exec-y 8)
+  )
 
 
 (fact "`run-until-done` runs an Interpreter until it reaches the first step when `:done?` is true"

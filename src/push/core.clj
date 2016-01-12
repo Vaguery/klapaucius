@@ -1,5 +1,5 @@
 (ns push.core
-  (:require [push.interpreter.core :as i-core])
+  (:require [push.interpreter.core :as interpreter])
   (:require [push.interpreter.templates.one-with-everything :as owe]))
 
 
@@ -33,7 +33,7 @@
 (defn run
   "Creates a new Push interpreter, using that to run the specified program for the specified number of steps. Uses :one-with-everything as a default template; other templates can be specified with the optional :template keyword argument; :input bindings can be specified (either in vector or map format) using the optional :input keyword argument."
   [program steps]
-  (i-core/run-n
+  (interpreter/run-n
     (owe/make-everything-interpreter
       :program program
       :config {:step-limit steps})

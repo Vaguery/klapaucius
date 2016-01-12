@@ -366,6 +366,19 @@
     (take tick (iterate step start))))
 
 
+(defn last-changed-step
+  "Runs a program in the specified interpreter (with a reset) and returns the last step at which the stacks changed"
+  [interpreter tick]
+  (loop [i (assoc-in (reset-interpreter interpreter) [:config :step-limit] tick)
+         stacks (:stacks i)]
+    (if (or
+          (>= (:counter i) tick)
+          (is-done? i)
+          (= (:stacks (step i)) stacks))
+      (step i)
+      (recur (step i) (:stacks (step i))))))
+
+
 (defn run-until-done
   "Takes an Interpreter, calls `reset` on it, and calls `step`
   on that reset state until :done? is true.
