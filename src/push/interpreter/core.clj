@@ -390,8 +390,7 @@
 
 
 
-;;;; Gazetteer
-
+;;;; introspection
 
 (defn produce-gazetteer
   "Produces a list of all registered instructions (keys only), inputs (and mapped values) and registered types, modules and stacks."
