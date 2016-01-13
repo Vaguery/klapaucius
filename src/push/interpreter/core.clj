@@ -40,8 +40,10 @@
 (defn register-module
   "Takes an Interpreter record, and a module; adds the module's internally defined instructions to the Interpreter's registry automatically."
   [interpreter module]
-  (let [old-instructions (:instructions interpreter)]
+  (let [old-types (:types interpreter)
+        old-instructions (:instructions interpreter)]
     (-> interpreter
+      (assoc :types (conj old-types module))
       (assoc :instructions (merge old-instructions (:instructions module))))))
 
 
@@ -389,13 +391,3 @@
     (first (filter is-done? (iterate step start)))))
 
 
-
-;;;; introspection
-
-(defn produce-gazetteer
-  "Produces a list of all registered instructions (keys only), inputs (and mapped values) and registered types, modules and stacks."
-  [interpreter]
-  {:instructions (sort (keys (:instructions interpreter)))
-   :inputs (:inputs interpreter)
-   :stacks (sort (keys (:stacks interpreter)))
-   :types (sort (map :name (:types interpreter)))})

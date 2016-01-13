@@ -414,13 +414,6 @@
   (:counter unready-to-pop) => (:counter (step unready-to-pop)))
 
 
-;; interrogating an Interpreter instance
-
-
-(future-fact "calling `produce-gazetteer` prints a list of all registered instructions, all bound inputs, all registered types and modules"
-  (produce-gazetteer (c/classic-interpreter :inputs [1 2 false 6.3 '(:code-do)])) => "")
-
-
 ;; `run-n`
 
 ;; a fixture or two

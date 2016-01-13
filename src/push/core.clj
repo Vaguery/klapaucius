@@ -1,5 +1,5 @@
 (ns push.core
-  (:require [push.interpreter.core :as interpreter])
+  (:require [push.interpreter.core :as i])
   (:require [push.interpreter.templates.one-with-everything :as owe]))
 
 
@@ -27,13 +27,31 @@
 (defn interpreter
   "Creates a new Push interpreter and returns it."
   []
-  (owe/make-everything-interpreter))
+  (i/reset-interpreter (owe/make-everything-interpreter)))
+
+
+(defn known-instructions
+  "Given an interpreter, returns a list of the keywords linked to defined instructions in that particular instance"
+  [interpreter]
+  (keys (:instructions interpreter)))
+
+
+(defn types-and-modules
+  "Given an interpreter, returns a list of the types and modules known to that instance"
+  [interpreter]
+  (map :name (:types interpreter)))
+
+
+(defn routing-list
+  "Given an interpreter, returns the list of items recognized by that particular instance's router"
+  [interpreter]
+  (map second (:router interpreter)))
 
 
 (defn run
   "Creates a new Push interpreter, using that to run the specified program for the specified number of steps. Uses :one-with-everything as a default template; other templates can be specified with the optional :template keyword argument; :input bindings can be specified (either in vector or map format) using the optional :input keyword argument."
   [program steps]
-  (interpreter/run-n
+  (i/run-n
     (owe/make-everything-interpreter
       :program program
       :config {:step-limit steps})

@@ -73,7 +73,6 @@ As it moves through successive stages of "done", you'll be able to
 3. tracing and reporting
   - `:log` stack
   - `:error` stack
-  - `produce-gazetteer`
 3. performance restrictions
   - halting problem
   - numeric overflow and underflow
