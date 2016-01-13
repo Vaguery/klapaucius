@@ -37,4 +37,4 @@
 
 
 (fact "I can run a Push program and get a named stack"
-  (p/get-stack (p/run [1 2 :integer-add] 100) :integer) => '(3))
+  (p/get-stack (p/run (p/interpreter) [1 2 :integer-add] 100) :integer) => '(3))

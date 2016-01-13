@@ -69,11 +69,11 @@
 
 (defn run
   "Creates a new Push interpreter, using that to run the specified program for the specified number of steps. Uses :one-with-everything as a default template; other templates can be specified with the optional :template keyword argument; :input bindings can be specified (either in vector or map format) using the optional :input keyword argument."
-  [program steps]
+  [interpreter program steps]
   (i/run-n
-    (owe/make-everything-interpreter
-      :program program
-      :config {:step-limit steps})
+    (-> interpreter
+      (assoc :program program)
+      (assoc :config (merge (:config interpreter) {:step-limit steps})))
     steps))
 
 
