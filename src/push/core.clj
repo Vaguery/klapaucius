@@ -68,12 +68,13 @@
 
 
 (defn run
-  "Creates a new Push interpreter, using that to run the specified program for the specified number of steps. Uses :one-with-everything as a default template; other templates can be specified with the optional :template keyword argument; :input bindings can be specified (either in vector or map format) using the optional :input keyword argument."
-  [interpreter program steps]
+  "Creates a new Push interpreter, using that to run the specified program for the specified number of steps. Uses :one-with-everything as a default template; :input bindings can be specified (only in map format) using the optional :input keyword argument."
+  [interpreter program steps & {:keys [inputs] :or {inputs {}}}]
   (i/run-n
     (-> interpreter
       (assoc :program program)
-      (assoc :config (merge (:config interpreter) {:step-limit steps})))
+      (assoc :config (merge (:config interpreter) {:step-limit steps}))
+      (assoc :inputs (merge (:inputs interpreter) inputs)))
     steps))
 
 

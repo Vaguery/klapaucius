@@ -38,3 +38,29 @@
 
 (fact "I can run a Push program and get a named stack"
   (p/get-stack (p/run (p/interpreter) [1 2 :integer-add] 100) :integer) => '(3))
+
+
+(fact "I can re-run an interpreter with bound inputs, replacing the input values"
+  (let [a-99 (p/interpreter :inputs {:a 99})]
+    (p/get-stack
+        (p/run
+          a-99
+          [:a 99 :integer-add]
+          100) :integer) => '(198)
+    (p/get-stack
+        (p/run
+          a-99
+          [:a 99 :integer-add]
+          100
+          :inputs {:a -99}) :integer) => '(0)
+    (p/get-stack
+        (p/run
+          a-99
+          [:a 99 :integer-add :b]
+          100
+          :inputs {:b -99}) :integer) => '(-99 198)))
+
+
+
+
+
