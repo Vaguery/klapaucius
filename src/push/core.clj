@@ -25,15 +25,34 @@
 
 
 (defn interpreter
-  "Creates a new Push interpreter and returns it."
-  []
-  (i/reset-interpreter (owe/make-everything-interpreter)))
+  "Creates a new Push interpreter and returns it. Keyword arguments permit setting the :program, :stacks, :inputs, :instructions, :config, :counter, or :done? flag."
+  [& {:keys [program stacks inputs config counter done?]
+      :or {program []
+           stacks {}
+           inputs {}
+           config {}
+           counter 0
+           done? false}}]
+  (i/reset-interpreter
+    (owe/make-everything-interpreter
+      :program program
+      :stacks stacks
+      :inputs inputs
+      :config config
+      :counter counter
+      :done? done?)))
 
 
 (defn known-instructions
   "Given an interpreter, returns a list of the keywords linked to defined instructions in that particular instance"
   [interpreter]
   (keys (:instructions interpreter)))
+
+
+(defn input-names
+  "Given an interpreter, returns a list of the keywords linked to defined inputs in that particular instance"
+  [interpreter]
+  (keys (:inputs interpreter)))
 
 
 (defn types-and-modules
