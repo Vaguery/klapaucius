@@ -533,7 +533,7 @@
 (defn translate-item
   [item]
   (cond 
-    (and (symbol? item) (re-seq #"^in\d" (str item)))
+    (and (symbol? item) (re-seq #"^in\d+" (str item)))
       (translate-input item)
     (symbol? item)
       (translate-instruction item)
