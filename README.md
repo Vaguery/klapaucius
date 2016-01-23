@@ -1,8 +1,117 @@
 # Push in Clojure
 
-This is a clean, (almost) fully tested, extensible and maintainable reimplementation of the Push interpreter, central to [Lee Spector's Clojush](https://github.com/lspector/Clojush) project. The intention in starting from scratch is to fully document the actual behavior of Push, to separate concerns that are confounded in the original project, and to better serve the user base seeking to reuse and extend the language for their domain-specific projects.
+This library includes a clean, fully tested, extensible and maintainable Push language interpreter. Push is a simple and robust programming language designed to be _evolved_ rather than hand-composed by human programmers, which originated in the [Hampshire College Computational Intelligence Lab](http://sites.hampshire.edu/ci-lab/). You may have run across it by way of [Lee Spector's Clojush](https://github.com/lspector/Clojush) project.
 
-The project depends on [Midje](https://github.com/marick/Midje/) for testing, and requires Clojure 1.7.
+## Requirements
+
+The project is written in Clojure 1.7, and depends heavily on [Midje](https://github.com/marick/Midje/) for testing.
+
+
+## Using the library
+
+### Project dependencies
+
+Using `leiningen`, add the following dependency to your `project.clj`
+
+```clojure
+(defproject my-new-project "0.0.1-SNAPSHOT"
+  :dependencies [[org.clojure/clojure "1.7.0"]
+                 [push-in-clojure "0.1.5-SNAPSHOT"]
+                 ;; ... your other dependencies here ...
+                 ] 
+  :profiles {:dev
+              {:dependencies [[midje "1.8.2"]]}})
+                            ;; ^^^^^ you should run the tests
+```
+
+### Using it in your project
+
+```clojure
+(ns my.fancy.namespace
+  (:require [push.core :as push])
+  (:require [push.interpreter.core :as interpreter])
+
+;; ...
+
+(def runner
+  (push/interpreter
+    :inputs {:speed 88.2 :burden 2 :african? false}))
+
+(def my-push-program [1 :burden :integer-add])
+
+(def final-integer-stack (push/run runner my-push-program))
+```
+
+### In the REPL
+
+(assuming you've run `lein repl` from within your project directory, and you have the dependency mentioned above in `project.clj`)
+
+```text
+user=> (require '[push.core :as push])
+;; nil
+
+user=> (def runner (push/interpreter :inputs {:speed 8.1 :burden 2 :african? false}))
+#'user/runner
+
+;; don't do this except to learn a lesson:
+user=> (push/run
+  #_=>   runner
+  #_=>   [1 :burden :integer-add]
+  #_=>   1000)
+#push.interpreter.core.Interpreter{:program [1 :burden :integer-add], :types ({:name :numeric-scaling, :attributes #{:numeric}, :instructions {:integer-few #push.instructions.core.Instruction{:token :integer-few, :docstring "`:integer-few` pops the top `:integer` value, and calculates `(mod 10 x)`.", :tags #{:numeric}, :needs {:integer 1}, :products {:integer 1}...
+
+;; (push/run INTERPRETER) returns the ENTIRE interpreter state after running the program, including all the instruction definitions, stack contents, logs and more!
+
+
+;; better to capture the state of the interpreter in a `var`
+user=> (def ran-it (push/run
+  #_=>   runner
+  #_=>   [1 :burden :integer-add]
+  #_=>   1000))
+#'user/ran-it
+
+
+user=> (push/get-stack ran-it :integer)
+(3)
+
+
+;; push/run requires 3 arguments: an interpreter, a program, and a step limit
+;; but it permits an optional :inputs argument (a hashmap)
+;; plus several other optional arguments (see docs)
+user=> (push/get-stack (push/run runner [1 :burden :integer-add] 300 :inputs {:burden 87}) :integer)
+(88)
+
+
+user=> (push/known-instructions runner)
+(:strings-cutflip :integers-yankdup :integer-max :line-circle-miss? :floats-length :string-cutstack :print-space :integer-multiply :strings-shatter :integers-contains? :char-lowercase? :booleans-rotate :float->boolean :string-butlast :code-return-pop :string-min :strings-stackdepth :set-return :integers-print :string-occurrencesofchar :push-inputset :integer-sign :circle-yank :char-max :exec-do*count :string-stackdepth :booleans-last :circle-swap :integers-set :integers-fromexample :vector-replace :code-flipstack :exec-pop :boolean-dup :integers-take :line-print :integer-mod :set-flipstack :integers-replacefirst :string>? :environment-stackdepth :string->float :vector-return-pop :set-pop :string->integer :floats-contains? :strings-equal?
+;;... a HUGE list of known instructions will follow
+)
+
+
+user=> (push/input-names runner)
+(:speed :burden :african?)
+
+
+user=> (:inputs runner)
+{:speed 8.1, :burden 2, :african? false}
+
+
+user=> (:program ran-it)
+[1 :burden :integer-add]
+
+
+user=> (:stacks ran-it)
+{:booleans (), :integers (), :unknown (), :exec (), :return (), :float (), :strings (), :circle (), :string (), :vector (), :print (), :integer (3), :chars (), :line (), :code (), :point (), :error (), :environment (), :set (), :log ({:step 4, :item :integer-add} {:step 3, :item 2} {:step 2, :item :burden} {:step 1, :item 1}), :boolean (), :char (), :floats ()}
+
+;; NOTICE THE :log STACK ^^^
+
+
+;; also not we saved the interpreter after "1000 steps" in 'ran-it but:
+user=> (:counter ran-it)
+4
+;; 
+```
+
 
 ## What It's For?
 

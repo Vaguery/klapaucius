@@ -1,4 +1,4 @@
-(defproject push-in-clojure "0.1.4-SNAPSHOT"
+(defproject push-in-clojure "0.1.5-SNAPSHOT"
   :description "Push language interpreter"
   :url "https://github.com/Vaguery/push-in-clojure"
   :dependencies [[org.clojure/clojure            "1.7.0"]
