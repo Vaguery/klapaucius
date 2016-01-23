@@ -6,8 +6,11 @@ This library includes a clean, fully tested, extensible and maintainable Push la
 
 The project is written in Clojure 1.7, and depends heavily on [Midje](https://github.com/marick/Midje/) for testing.
 
-
 ## Using the library
+
+### Project status
+
+`push-in-clojure "0.1.5-SNAPSHOT"` includes a fully working interpreter, but is undergoing rapid expansion (thus the `SNAPSHOT` designation). A number of non-critical issues and extensions will be put in place for the 0.2 stable release. No significant structural changes to the Push language should crop up in that period.
 
 ### Project dependencies
 
@@ -115,7 +118,7 @@ user=> (:counter ran-it)
 ```
 
 
-## What It's For?
+## What's it for?
 
 [Push](https://github.com/lspector/Clojush) is a small, expressive language for genetic programming. That is, it's a language specifically designed for _machines to write_, not for people: it's almost illegible in practice, but that lack of clarity is due to the extraordinarily flexible syntax that lets almost any program run without "errors".
 
@@ -144,49 +147,35 @@ The design of evolutionary fitness functions is for another day. In this library
 
 But the _reason_ we want an interpreter for a language people can't typically read is that we can _evolve the programs to do what we want_. Because Push (and languages like it) are able to run almost any sequence of defined tokens, and behave in so many diverse ways as they do so, it's possible to do [some amazing things](http://faculty.hampshire.edu/lspector/push.html) with artificial selection under random variation.
 
+## Features
 
+- A Push `type` is a suite of related instructions, associated with a `stack name` and `recognizer`. Whenever a literal item of that type appears in a running program, the `router` will use the `recognizer` function to send it to the indicated stack. For example, the `:boolean` type definition includes a `recognizer` which will send the literal values `true` and `false` (when they appear in a running Push program) to the `:boolean` stack.
+- A push `module` is a suite of related instructions and a `stack name`, which do _not_ have a `recognizer` and which therefore have no "objects" which can appear as literals in a Push program. For example, the `:exec` module contains many instructions which manipulate items on the `:exec` stack, but there is no such thing as an "`:exec` item" as such.
+- A Push `aspect` is a collection of instructions of shared functionality, which can be quickly associated with a `type` or `module`. For example, `(make-comparable mytype)` will automatically create and append the instructions `:mytype≤?`, `:mytype<?`, `:mytype>?`, `:mytype≥?`, `mytype-max` and `mytype-min`. Note that this may cause problems if your underlying (Clojure) `mytype` objects do not adhere to the `Comparable` protocol!
+- The `:log` stack automatically records each item that the interpreter pops from the `:exec` stack
+- the `:error` stack accumulates records of incidents (which normally occur in all Push interpreters) such as instructions encountered when some arguments are missing, attempted division by 0, and so forth
 
-
-## Examples
+## Use cases and examples
 
 **TBD**
 
-## Plan
+### Using an interpreter template
 
-1. first iteration [done]
-  - implement an `Interpreter` as a Clojure record
-  - implement `make-interpreter` constructor with core types
-  - "router" structure for handling literals
-  - `step` and `run` functions
-  - new "register instruction" function(s)
-  - basic `:integer` instructions
-  - basic `:boolean` instructions
-  - handle `:input` values
-  - step counting
-2. complete core instruction coverage
-  - `:char`
-  - `:code`
-  - `:environment` and `:return`
-  - `:exec`
-  - `:float`
-  - `:print`
-  - `:string`
-3. tracing and reporting
-  - `:log` stack
-  - `:error` stack
-3. performance restrictions
-  - halting problem
-  - numeric overflow and underflow
-  - memory management
-  - error handling
-  - large value handling
-3. extensibility for "new" types and instructions:
-  - standard library: vectors, printing, etc
-  - adding a type or instruction
-4. interface(s) for experiments:
-  - random code instructions
-  - `:genome` "types", etc
+### Creating a custom interpreter template
 
+### Adding a new instruction
+
+### Adding a new type or module
+
+### Running an interpreter several times with different inputs
+
+### Accessing interpreter state for "fitness scores"
+
+### Working with halting problems
+
+### Running a halted interpreter for more steps
+
+### "Lenient mode"
 
 ## How to run the tests
 
@@ -199,10 +188,10 @@ run again. Be sure to run this in its own shell, since it's not going to let you
 
 ## How to contribute
 
-- Wait for the first minimal release. I'm getting there.
-- Issues are always welcome.
+- If you are interested in adding new types or instruction sets for general-purpose or domain-specific projects, poke me and I will make sure the guide for adding those is up to date. In general, you should be able to look over the definitions in any of the type or module definitions in `push.types`.
+- If you notice bugs, please open an Issue
 - Feel free to point out where the code or documentation could be made more readable!
 - Make sure any new features you add are _thoroughly tested_ before submitting pull requests. "Thoroughly tested" means there should be human-readable, understandable unit and acceptance tests for the new functionality, and that every test in the entire project passes despite the changes you've made. I'd suggest you have a separate shell session running at all times with `lein midje :autotest` checking your changes constantly.
 - Avoid duplicating code
-- Don't add features involved in Genetic Programming, such as representations of "genomes" or "search operators"
-- If a function or other definition is long, consider how to make it shorter _and more readable_.
+- Please **do not** add features involved in Genetic Programming, such as representations of "genomes" or "search operators", unless you intend Push programs _themselves_ to manipulate those objects
+- If a function or other definition is long, consider how to make it shorter _and more readable_. If a function or definition does more than one thing, extract those things into separate functions that each do _one_ thing.
