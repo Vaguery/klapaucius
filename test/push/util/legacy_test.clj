@@ -57,4 +57,5 @@
     '[:integer-add :boolean-or (:float-divide 77)])
 
 
-
+(fact "there are a lot of recognized instruction names, so I thought you'd like to see how many"
+  (count (remove #(re-seq #"not-supported" (str %)) (vals merged-dictionary))) => 355)
