@@ -29,7 +29,7 @@
   - integer-type
   - float-type
   - log-module
-  - classic-print-module
+  - print-module
   - classic-string-type
 
   and the counter is 0.
@@ -80,7 +80,7 @@
                                push.types.modules.error/classic-error-module
                                push.types.modules.code/code-module
                                push.types.modules.environment/environment-module
-                               push.types.modules.print/classic-print-module
+                               push.types.modules.print/print-module
                                ])
         (i/register-inputs , inputs)
         )))

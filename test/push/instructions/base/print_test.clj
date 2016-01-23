@@ -12,7 +12,7 @@
 (tabular
   (fact ":print-newline pushes a single newline character to the :print stack"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-print-module ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items print-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items      ?instruction      ?get-stack     ?expected
     ;; start again
@@ -22,7 +22,7 @@
 (tabular
   (fact ":print-space pushes a single space character to the :print stack"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-print-module ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items print-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items      ?instruction      ?get-stack     ?expected
     ;; start again

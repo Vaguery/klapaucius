@@ -58,7 +58,7 @@
      classic-error-module
      code-module
      environment-module
-     classic-print-module
+     print-module
      
      standard-introspection-module
      numeric-scaling-module
@@ -78,7 +78,7 @@
   - integer-type
   - float-type
   - log-module
-  - classic-print-module
+  - print-module
   - classic-string-type
   - booleans-type
   - chars-type

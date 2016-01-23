@@ -6,15 +6,15 @@
 
 
 
-(fact "classic-print-module has :name ':print'"
-  (:name classic-print-module) => :print)
+(fact "print-module has :name ':print'"
+  (:name print-module) => :print)
 
 
-(fact "classic-print-module has the expected :attributes"
-  (:attributes classic-print-module) =>
+(fact "print-module has the expected :attributes"
+  (:attributes print-module) =>
     (contains #{:io}))
 
 
-(fact "classic-print-module knows how to print some literals"
-  (keys (:instructions classic-print-module)) =>
+(fact "print-module knows how to print some literals"
+  (keys (:instructions print-module)) =>
     (contains [:print-newline :print-space]))

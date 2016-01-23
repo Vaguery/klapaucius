@@ -24,7 +24,7 @@
     (d/push-onto :print :space)))
 
 
-(def classic-print-module
+(def print-module
   ( ->  (t/make-module  :print
                         :attributes #{:io :base})
         aspects/make-visible
