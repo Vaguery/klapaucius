@@ -407,7 +407,7 @@
 
 
 
-(def classic-code-module
+(def code-module
   ( ->  (t/make-module  :code
                         :attributes #{:complex :base})
         aspects/make-equatable

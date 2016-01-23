@@ -56,7 +56,7 @@
     [exec-module
      classic-log-module
      classic-error-module
-     classic-code-module
+     code-module
      classic-environment-module
      classic-print-module
      
@@ -72,7 +72,7 @@
   
   - boolean-type
   - char-type
-  - classic-code-module
+  - code-module
   - classic-environment-module
   - exec-module
   - classic-integer-type

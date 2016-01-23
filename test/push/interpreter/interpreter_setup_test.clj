@@ -363,7 +363,7 @@
     (contains push.types.base.float/classic-float-type))
 
 
-(fact "`classic-interpreter` has `classic-code-module` registered"
+(fact "`classic-interpreter` has `code-module` registered"
   (keys (:instructions classy)) =>
     (contains :code-stackdepth)) ;; there's probably a more appropriate check
 

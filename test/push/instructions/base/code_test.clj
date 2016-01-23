@@ -2,7 +2,7 @@
   (:use midje.sweet)
   (:use [push.util.test-helpers])
   (:require [push.interpreter.core :as i])
-  (:use [push.types.modules.code])            ;; sets up classic-code-module
+  (:use [push.types.modules.code])            ;; sets up code-module
   )
 
 
@@ -16,7 +16,7 @@
 (tabular
   (fact ":code-append concats two :code items, wrapping them in lists first if they aren't already"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-code-module ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; stick 'em together
@@ -35,7 +35,7 @@
 (tabular
   (fact ":code-atom? pushes true to :boolean if the top :code is not a list"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-code-module ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; are you alone?
@@ -48,7 +48,7 @@
 (tabular
   (fact ":code-cons conj's the second :code item onto the first, coercing it to a list if necessary"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-code-module ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; stick 'em together
@@ -68,7 +68,7 @@
 (tabular
   (fact ":code-container returns the smallest, first container of code/1 in code/2"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-code-module ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; stick 'em together
@@ -90,7 +90,7 @@
 (tabular
   (fact ":code-contains? returns true if the second item contains (or is) the first anywhere"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-code-module ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; stick 'em together
@@ -108,7 +108,7 @@
 (tabular
   (fact ":code-do executes the top :code item and :code-pop"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-code-module ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; do it
@@ -123,7 +123,7 @@
 (tabular
   (fact ":code-do* executes the top :code item and :code-pop"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-code-module ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; JUST do it
@@ -138,7 +138,7 @@
 (tabular
   (fact ":code-do*count does complicated things involving continuations (see tests)"
     (check-instruction-with-all-kinds-of-stack-stuff
-        ?new-stacks classic-code-module ?instruction) => (contains ?expected))
+        ?new-stacks code-module ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction             ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -173,7 +173,7 @@
 (tabular
   (fact ":code-do*range does complicated things involving continuations (see tests)"
     (check-instruction-with-all-kinds-of-stack-stuff
-        ?new-stacks classic-code-module ?instruction) => (contains ?expected))
+        ?new-stacks code-module ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction             ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -210,7 +210,7 @@
 (tabular
   (fact ":code-do*times does complicated things involving continuations (see tests)"
     (check-instruction-with-all-kinds-of-stack-stuff
-        ?new-stacks classic-code-module ?instruction) => (contains ?expected))
+        ?new-stacks code-module ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction             ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -245,7 +245,7 @@
 (tabular
   (fact ":code-drop drops the first n elements of a code item, using that modulo trick"
     (check-instruction-with-all-kinds-of-stack-stuff
-        ?new-stacks classic-code-module ?instruction) => (contains ?expected))
+        ?new-stacks code-module ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction             ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -277,7 +277,7 @@
 (tabular
   (fact ":code-extract picks an indexed item out of a :code item"
     (check-instruction-with-all-kinds-of-stack-stuff
-        ?new-stacks classic-code-module ?instruction) => (contains ?expected))
+        ?new-stacks code-module ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction             ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -321,7 +321,7 @@
 (tabular
   (fact ":code-first pushes the first item of the top :code item, if it's a list"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-code-module ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; pick a card
@@ -336,7 +336,7 @@
 (tabular
   (fact ":code-if pushes the second :code item to :exec if true, otherwise the first"
     (check-instruction-with-all-kinds-of-stack-stuff
-        ?new-stacks classic-code-module ?instruction) => (contains ?expected))
+        ?new-stacks code-module ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction             ?expected
 
@@ -366,7 +366,7 @@
 (tabular
   (fact ":code-insert pops an :integer and two :code items, and replaces the node at the indicated position in the second code with the first"
     (check-instruction-with-all-kinds-of-stack-stuff
-        ?new-stacks classic-code-module ?instruction) => (contains ?expected))
+        ?new-stacks code-module ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction             ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -415,7 +415,7 @@
 (tabular
   (fact ":code-length pushes the count of the top :code item (1 if a literal) onto :integer"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-code-module ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; pick a number
@@ -430,7 +430,7 @@
 (tabular
   (fact ":code-list puts the top 2 :code items into a list on the :code stack"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-code-module ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; stick 'em together
@@ -450,7 +450,7 @@
 (tabular
   (fact ":code-map does complicated things involving continuations (see tests)"
     (check-instruction-with-all-kinds-of-stack-stuff
-        ?new-stacks classic-code-module ?instruction) => (contains ?expected))
+        ?new-stacks code-module ?instruction) => (contains ?expected))
 
     ?new-stacks              ?instruction             ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -483,7 +483,7 @@
 (tabular
   (fact ":code-reduce does complicated things involving continuations (see tests)"
     (check-instruction-with-all-kinds-of-stack-stuff
-        ?new-stacks classic-code-module ?instruction) => (contains ?expected))
+        ?new-stacks code-module ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction             ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -513,7 +513,7 @@
 (tabular
   (fact ":code-member? pushes true if the second item is found in the root of the first"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-code-module ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; 
@@ -529,7 +529,7 @@
 (tabular
   (fact ":code-noop don't do shit"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-code-module ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; be vewwy quiet
@@ -540,7 +540,7 @@
 (tabular
   (fact ":code-nth takes the nth item of :code, using that modulo trick"
     (check-instruction-with-all-kinds-of-stack-stuff
-        ?new-stacks classic-code-module ?instruction) => (contains ?expected))
+        ?new-stacks code-module ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction             ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -568,7 +568,7 @@
 (tabular
   (fact ":code-null? pushes true to :boolean if the top :code item is an empty list, false otherwise"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-code-module ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; an echoing sound is heard
@@ -584,7 +584,7 @@
 (tabular
   (fact ":code-position finds the top :code item index in the second item, if at all; coerces second item to list if needed"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-code-module ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; say where
@@ -602,7 +602,7 @@
 (tabular
   (fact ":code-quote moves the top :exec item to :code"
     (check-instruction-with-all-kinds-of-stack-stuff
-        ?new-stacks classic-code-module ?instruction) => (contains ?expected))
+        ?new-stacks code-module ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction       ?expected
 
@@ -622,7 +622,7 @@
 (tabular
   (fact ":code-rest pushes all but the first item of a :code list; if the item is not a list, pushes an empty list"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-code-module ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; what's left for me now?
@@ -638,7 +638,7 @@
 (tabular
   (fact ":code-points counts the number of points in the top :code item"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-code-module ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; how many?
@@ -657,7 +657,7 @@
 (tabular
   (fact ":code-size counts the number of points in the top :code item, counting contents of every collection type"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-code-module ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; how many?
@@ -676,7 +676,7 @@
 (tabular
   (fact ":code-subst replaces all copies of arg2 in arg1 with arg3"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-code-module ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; changes…
@@ -699,7 +699,7 @@
 (tabular
   (fact ":code-wrap returns a :the top :code item in an extra list layer"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-code-module ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction      ?get-stack     ?expected
     ;; wrap
@@ -715,7 +715,7 @@
 (tabular
   (fact ":code-stackdepth returns the number of items on the :code stack (to :integer)"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-code-module ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; how many?
@@ -727,7 +727,7 @@
 (tabular
   (fact ":code-empty? returns the true (to :boolean stack) if the stack is empty"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-code-module ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction  ?get-stack     ?expected
     ;; none?
@@ -741,7 +741,7 @@
 (tabular
   (fact ":code-equal? returns a :boolean indicating whether :first = :second"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-code-module ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction      ?get-stack     ?expected
     ;; same?
@@ -758,7 +758,7 @@
 (tabular
   (fact ":code-notequal? returns a :boolean indicating whether :first ≠ :second"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-code-module ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items           ?instruction      ?get-stack     ?expected
     ;; different

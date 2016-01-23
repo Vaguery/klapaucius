@@ -23,7 +23,7 @@
   
   - boolean-type
   - char-type
-  - classic-code-module
+  - code-module
   - classic-environment-module
   - exec-module
   - classic-integer-type
@@ -78,7 +78,7 @@
         (i/register-modules , [push.types.modules.exec/exec-module
                                push.types.modules.log/classic-log-module
                                push.types.modules.error/classic-error-module
-                               push.types.modules.code/classic-code-module
+                               push.types.modules.code/code-module
                                push.types.modules.environment/classic-environment-module
                                push.types.modules.print/classic-print-module
                                ])
