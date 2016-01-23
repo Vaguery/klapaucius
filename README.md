@@ -1,4 +1,13 @@
-# Push in Clojure
+# Klapaucius
+
+> "Certainly not! I didn't build a machine to solve ridiculous crossword puzzles! That's hack work, not Great Art! Just give it a topic, any topic, as difficult as you like..."
+> 
+> Klapaucius thought, and thought some more. Finally he nodded and said:
+"Very well. Let's have a love poem, lyrical, pastoral, and expressed in the language of pure mathematics. Tensor algebra mainly, with a little topology and higher calculus, if need be. But with feeling, you understand, and in the cybernetic spirit."
+> 
+> "Love and tensor algebra?" Have you taken leave of your senses?" Trurl began, but stopped, for his electronic bard was already declaiming....
+
+(previously `push-in-clojure`)
 
 This library includes a clean, fully tested, extensible and maintainable Push language interpreter. Push is a simple and robust programming language designed to be _evolved_ rather than hand-composed by human programmers, which originated in the [Hampshire College Computational Intelligence Lab](http://sites.hampshire.edu/ci-lab/). You may have run across it by way of [Lee Spector's Clojush](https://github.com/lspector/Clojush) project.
 
