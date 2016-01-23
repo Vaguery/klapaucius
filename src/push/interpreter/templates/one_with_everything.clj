@@ -54,7 +54,7 @@
 (def all-kinds-of-modules
   (map extend-combinators
     [exec-module
-     classic-log-module
+     log-module
      classic-error-module
      code-module
      environment-module
@@ -77,7 +77,7 @@
   - exec-module
   - integer-type
   - float-type
-  - classic-log-module
+  - log-module
   - classic-print-module
   - classic-string-type
   - booleans-type

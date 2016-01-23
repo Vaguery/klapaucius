@@ -28,7 +28,7 @@
   - exec-module
   - integer-type
   - float-type
-  - classic-log-module
+  - log-module
   - classic-print-module
   - classic-string-type
 
@@ -76,7 +76,7 @@
                                ]
                                types))
         (i/register-modules , [push.types.modules.exec/exec-module
-                               push.types.modules.log/classic-log-module
+                               push.types.modules.log/log-module
                                push.types.modules.error/classic-error-module
                                push.types.modules.code/code-module
                                push.types.modules.environment/environment-module

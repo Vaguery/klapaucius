@@ -6,7 +6,7 @@
   )
 
 
-(def classic-log-module
+(def log-module
   ( ->  (t/make-module  :log
                         :attributes #{:internal :base})
         aspects/make-visible
