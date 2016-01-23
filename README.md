@@ -24,7 +24,7 @@ Using `leiningen`, add the following dependency to your `project.clj`
                             ;; ^^^^^ you should run the tests
 ```
 
-### Using it in your project
+## Usage
 
 ```clojure
 (ns my.fancy.namespace
@@ -39,7 +39,10 @@ Using `leiningen`, add the following dependency to your `project.clj`
 
 (def my-push-program [1 :burden :integer-add])
 
-(def final-integer-stack (push/run runner my-push-program))
+(def final-integer-stack
+  (push/get-stack
+    (push/run runner my-push-program 1000)
+    :integer))
 ```
 
 ### In the REPL
@@ -109,7 +112,6 @@ user=> (:stacks ran-it)
 ;; also not we saved the interpreter after "1000 steps" in 'ran-it but:
 user=> (:counter ran-it)
 4
-;; 
 ```
 
 
@@ -142,18 +144,8 @@ The design of evolutionary fitness functions is for another day. In this library
 
 But the _reason_ we want an interpreter for a language people can't typically read is that we can _evolve the programs to do what we want_. Because Push (and languages like it) are able to run almost any sequence of defined tokens, and behave in so many diverse ways as they do so, it's possible to do [some amazing things](http://faculty.hampshire.edu/lspector/push.html) with artificial selection under random variation.
 
-## Usage
 
-**TBD**
 
-The codebase is still shambling towards a minimal viable state. In the meantime, take a look at the tests, and (if you want to heat up your CPU) have a look and try running the acceptance tests, which create and run many thousands of random Push programs.
-
-As it moves through successive stages of "done", you'll be able to
-
-- load it as a dependency in your project, send it Push programs to run, and interrogate their states when they're done
-- run it from the command line
-- launch a worker daemon that accepts API requests of programs to run, and which returns specified details about the final state and performance
-- ?
 
 ## Examples
 
