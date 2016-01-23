@@ -32,7 +32,7 @@ In those rare situations where the result of an instruction you're writing might
 
 ### Defining Push types
 
-Exploring any interesting problem will entail writing new types. In this `Interpreter`, you can think of a "type" as a bundle of associated instruction definitions, _plus a recognizer_. So for example, [the core Push `:integer` type](https://github.com/Vaguery/push-in-clojure/blob/master/src/push/types/base/integer.clj#L143-L146) is _defined_ as simply as
+Exploring any interesting problem will entail writing new types. In this `Interpreter`, you can think of a "type" as a bundle of associated instruction definitions, _plus a recognizer_. So for example, [the core Push `:integer` type](https://github.com/Vaguery/klapaucius/blob/master/src/push/types/base/integer.clj#L143-L146) is _defined_ as simply as
 
 ~~~clojure
 (def integer-type
@@ -58,7 +58,7 @@ And in both cases, these Push literals could later be consumed as arguments by _
 
 Note though that when I defined a Push type a few paragraphs back, I said it was a bundle of "associated instructions". That's where the action really begins.
 
-When you look at the [actual definition of the `:integer` type in the Push-in-Clojure codebase](https://github.com/Vaguery/push-in-clojure/blob/master/src/push/types/base/integer.clj#L143-L146), you'll see it first defines a number of type-specific helper functions, then defines particular `:integer` instructions, and then it makes the tiny little stub with `make-type`, _and then it attaches the instructions to that stub_. Something more like this (as of this writing):
+When you look at the [actual definition of the `:integer` type in the Klapaucius codebase](https://github.com/Vaguery/push-in-clojure/blob/master/src/push/types/base/integer.clj#L143-L146), you'll see it first defines a number of type-specific helper functions, then defines particular `:integer` instructions, and then it makes the tiny little stub with `make-type`, _and then it attaches the instructions to that stub_. Something more like this (as of this writing):
 
 ~~~clojure
 (def integer-type

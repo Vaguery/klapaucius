@@ -19,7 +19,7 @@ The project is written in Clojure 1.8, and depends heavily on [Midje](https://gi
 
 ### Project status
 
-`push-in-clojure "0.1.5-SNAPSHOT"` includes a fully working interpreter, but is undergoing rapid expansion (thus the `SNAPSHOT` designation). A number of non-critical issues and extensions will be put in place for the 0.2 stable release. No significant structural changes to the Push language should crop up in that period.
+`klapaucius "0.1.5-SNAPSHOT"` includes a fully working interpreter, but is undergoing rapid expansion (thus the `SNAPSHOT` designation). A number of non-critical issues and extensions will be put in place for the 0.2 stable release. No significant structural changes to the Push language should crop up in that period.
 
 ### Project dependencies
 
@@ -28,7 +28,7 @@ Using `leiningen`, add the following dependency to your `project.clj`
 ```clojure
 (defproject my-new-project "0.0.1-SNAPSHOT"
   :dependencies [[org.clojure/clojure "1.8.0"]
-                 [push-in-clojure "0.1.5-SNAPSHOT"]
+                 [klapaucius "0.1.5-SNAPSHOT"]
                  ;; ... your other dependencies here ...
                  ] 
   :profiles {:dev
