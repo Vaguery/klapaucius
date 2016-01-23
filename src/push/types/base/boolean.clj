@@ -64,13 +64,13 @@
 
 (def bool-xor
   (t/simple-2-in-1-out-instruction
-    "`:boolean-or` pops the top two `:boolean` items, and pushes `true` if exactly one of them is `true`, or `false` otherwise"
+    "`:boolean-xor` pops the top two `:boolean` items, and pushes `true` if exactly one of them is `true`, or `false` otherwise"
     :boolean "xor" 'xor2))
 
 
 (def bool-not 
   (t/simple-1-in-1-out-instruction
-  "`:bool_not returns the logical negation of the top item on the `:boolean`
+  "`:boolean-not returns the logical negation of the top item on the `:boolean`
   stack"
   :boolean "not" 'not))
 
