@@ -55,7 +55,7 @@
   (map extend-combinators
     [exec-module
      log-module
-     classic-error-module
+     error-module
      code-module
      environment-module
      print-module

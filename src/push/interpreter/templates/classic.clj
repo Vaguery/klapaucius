@@ -77,7 +77,7 @@
                                types))
         (i/register-modules , [push.types.modules.exec/exec-module
                                push.types.modules.log/log-module
-                               push.types.modules.error/classic-error-module
+                               push.types.modules.error/error-module
                                push.types.modules.code/code-module
                                push.types.modules.environment/environment-module
                                push.types.modules.print/print-module
