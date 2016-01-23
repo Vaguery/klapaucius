@@ -4,7 +4,7 @@ This library includes a clean, fully tested, extensible and maintainable Push la
 
 ## Requirements
 
-The project is written in Clojure 1.7, and depends heavily on [Midje](https://github.com/marick/Midje/) for testing.
+The project is written in Clojure 1.8, and depends heavily on [Midje](https://github.com/marick/Midje/) for testing.
 
 ## Using the library
 
@@ -18,12 +18,12 @@ Using `leiningen`, add the following dependency to your `project.clj`
 
 ```clojure
 (defproject my-new-project "0.0.1-SNAPSHOT"
-  :dependencies [[org.clojure/clojure "1.7.0"]
+  :dependencies [[org.clojure/clojure "1.8.0"]
                  [push-in-clojure "0.1.5-SNAPSHOT"]
                  ;; ... your other dependencies here ...
                  ] 
   :profiles {:dev
-              {:dependencies [[midje "1.8.2"]]}})
+              {:dependencies [[midje "1.8.3"]]}})
                             ;; ^^^^^ you should run the tests
 ```
 
