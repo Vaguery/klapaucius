@@ -32,12 +32,12 @@
     [integer-type
     boolean-type
     char-type
-    classic-float-type
+    float-type
     classic-string-type
 
     (build-vectorized-type boolean-type)
     (build-vectorized-type char-type)
-    (build-vectorized-type classic-float-type)
+    (build-vectorized-type float-type)
     (build-vectorized-type integer-type)
     (build-vectorized-type classic-string-type)
 
@@ -76,7 +76,7 @@
   - environment-module
   - exec-module
   - integer-type
-  - classic-float-type
+  - float-type
   - classic-log-module
   - classic-print-module
   - classic-string-type

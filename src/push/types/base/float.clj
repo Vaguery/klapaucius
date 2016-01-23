@@ -138,7 +138,7 @@
   :float "tangent" #(Math/tan %1)))
 
 
-(def classic-float-type
+(def float-type
   ( ->  (t/make-type  :float
                       :recognizer float?
                       :attributes #{:numeric :base})

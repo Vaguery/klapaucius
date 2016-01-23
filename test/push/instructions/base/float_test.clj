@@ -2,7 +2,7 @@
   (:use midje.sweet)
   (:use [push.util.test-helpers])
   (:require [push.interpreter.core :as i])
-  (:use [push.types.base.float])            ;; sets up classic-float-type
+  (:use [push.types.base.float])            ;; sets up float-type
   )
 
 
@@ -12,7 +12,7 @@
   (fact ":integer->float, :boolean->float, :string->float, :char->float;
     also :boolean->signedfloat"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-float-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items float-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction           ?get-stack     ?expected
     :boolean    '(false)       :boolean->float       :float       '(0.0)
@@ -51,7 +51,7 @@
 (tabular
   (fact ":float->code move the top :float item to :code"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-float-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items float-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction      ?get-stack     ?expected
     ;; move it!
@@ -63,7 +63,7 @@
 (tabular
   (fact ":float-add returns the sum, auto-promoting overflows"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-float-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items float-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items      ?instruction  ?get-stack   ?expected
     ;; adding
@@ -83,7 +83,7 @@
 (tabular
   (fact ":float-cosine returns the cosine(x)"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-float-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items float-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items      ?instruction  ?get-stack   ?expected
     ;; wavy
@@ -101,7 +101,7 @@
 (tabular
   (fact ":float-divide returns the quotient, unless the denominator is 0.0"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-float-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items float-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items      ?instruction  ?get-stack   ?expected
     ;; division
@@ -129,7 +129,7 @@
 (tabular
   (fact ":float-mod returns the modulo (positive remainder), unless the denominator is 0.0"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-float-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items float-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items      ?instruction  ?get-stack   ?expected
     ;; leftovers
@@ -158,7 +158,7 @@
 (tabular
   (fact ":float-inc returns the number increased by 1.0"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-float-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items float-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items      ?instruction  ?get-stack   ?expected
     ;; up we go
@@ -178,7 +178,7 @@
 (tabular
   (fact ":float-dec returns the value reduced by 1.0"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-float-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items float-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items      ?instruction  ?get-stack   ?expected
     ;; down we go
@@ -196,7 +196,7 @@
 (tabular
   (fact ":float-multiply returns the sum, auto-promoting overflows"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-float-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items float-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items      ?instruction  ?get-stack   ?expected
     ;; multiplying
@@ -217,7 +217,7 @@
 (tabular
   (fact ":float-sine returns the sine(x)"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-float-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items float-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items      ?instruction  ?get-stack   ?expected
     ;; up we go
@@ -233,7 +233,7 @@
 (tabular
   (fact ":float-sign returns the sine(x)"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-float-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items float-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items      ?instruction  ?get-stack   ?expected
     ;; up we go
@@ -248,7 +248,7 @@
 (tabular
   (fact ":float-subtract returns the difference"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-float-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items float-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items      ?instruction  ?get-stack   ?expected
     ;; subtracting
@@ -267,7 +267,7 @@
 (tabular
   (fact ":float-tangent returns the tan(x)"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-float-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items float-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items      ?instruction  ?get-stack   ?expected
     ;; wavy
@@ -285,7 +285,7 @@
 (tabular
   (fact ":float-stackdepth returns the number of items on the :float stack (to :integer)"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-float-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items float-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; how many?
@@ -297,7 +297,7 @@
 (tabular
   (fact ":float-empty? returns the true (to :boolean stack) if the stack is empty"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-float-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items float-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction  ?get-stack     ?expected
     ;; none?
@@ -311,7 +311,7 @@
 (tabular
   (fact ":float-equal? returns a :boolean indicating whether :first = :second"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-float-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items float-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction      ?get-stack     ?expected
     ;; same?
@@ -328,7 +328,7 @@
 (tabular
   (fact ":float-notequal? returns a :boolean indicating whether :first ≠ :second"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-float-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items float-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items           ?instruction  ?get-stack     ?expected
     ;; different
@@ -348,7 +348,7 @@
 (tabular
   (fact ":float<? returns a :boolean indicating whether :first < :second"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-float-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items float-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items       ?instruction  ?get-stack     ?expected
     ;; float comparisons are pretty weird, actually
@@ -365,7 +365,7 @@
 (tabular
   (fact ":float≤? returns a :boolean indicating whether :first ≤ :second"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-float-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items float-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items       ?instruction  ?get-stack     ?expected
     ;; float comparisons are pretty weird, actually
@@ -383,7 +383,7 @@
 (tabular
   (fact ":float≥? returns a :boolean indicating whether :first ≥ :second"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-float-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items float-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items       ?instruction  ?get-stack     ?expected
     ;; float comparisons are pretty weird, actually
@@ -400,7 +400,7 @@
 (tabular
   (fact ":float>? returns a :boolean indicating whether :first > :second"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-float-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items float-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items       ?instruction  ?get-stack     ?expected
     ;; float comparisons are pretty weird, actually

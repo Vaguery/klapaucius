@@ -358,9 +358,9 @@
     (contains push.types.base.char/char-type))
 
 
-(fact "`classic-interpreter` has `classic-float-type` registered"
+(fact "`classic-interpreter` has `float-type` registered"
   (:types classy) =>
-    (contains push.types.base.float/classic-float-type))
+    (contains push.types.base.float/float-type))
 
 
 (fact "`classic-interpreter` has `code-module` registered"

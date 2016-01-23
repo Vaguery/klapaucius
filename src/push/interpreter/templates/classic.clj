@@ -27,7 +27,7 @@
   - environment-module
   - exec-module
   - integer-type
-  - classic-float-type
+  - float-type
   - classic-log-module
   - classic-print-module
   - classic-string-type
@@ -71,7 +71,7 @@
                               [push.types.base.integer/integer-type
                                push.types.base.boolean/boolean-type
                                push.types.base.char/char-type
-                               push.types.base.float/classic-float-type
+                               push.types.base.float/float-type
                                push.types.base.string/classic-string-type
                                ]
                                types))
