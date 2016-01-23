@@ -2,7 +2,7 @@
   (:use midje.sweet)
   (:use [push.util.test-helpers])
   (:require [push.interpreter.core :as i])
-  (:use [push.types.base.integer])  ;; sets up classic-integer-type
+  (:use [push.types.base.integer])  ;; sets up integer-type
   )
 
 
@@ -11,7 +11,7 @@
 (tabular
   (fact ":integer->code move the top :integer item to :code"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction      ?get-stack     ?expected
     ;; move it!
@@ -26,7 +26,7 @@
 (tabular
   (fact ":integer-add returns the sum, auto-promoting overflows"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items    ?instruction  ?get-stack   ?expected
     ;; adding
@@ -43,7 +43,7 @@
 (tabular
   (fact ":integer-subtract returns (- :second :first)"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items    ?instruction       ?get-stack     ?expected
     ;; just the math
@@ -60,7 +60,7 @@
 (tabular
   (fact ":integer-multiply returns the product, auto-promoting overflows"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items    ?instruction       ?get-stack     ?expected
     ;; just the math
@@ -78,7 +78,7 @@
 (tabular
   (fact ":integer-divide returns the quotient :second/:first, unless :first is zero"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items    ?instruction       ?get-stack     ?expected
     ;; just the math
@@ -97,7 +97,7 @@
 (tabular
   (fact ":integer-mod returns (mod :second :first)"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items    ?instruction    ?get-stack     ?expected
     ;; just the math
@@ -119,7 +119,7 @@
 (tabular
   (fact ":integer-inc takes one :integer and adds 1 to it"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction      ?get-stack     ?expected
     ;; just one more     
@@ -138,7 +138,7 @@
 (tabular
   (fact ":integer-dec takes one :integer and subtracts 1 from it"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction      ?get-stack     ?expected
     ;; just one more     
@@ -159,7 +159,7 @@
 (tabular
   (fact ":boolean->integer takes a :boolean value, and returns 1 if true, 0 if false"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction      ?get-stack     ?expected
     ;; simple     
@@ -176,7 +176,7 @@
 (tabular
   (fact ":boolean->signedint takes a :boolean value, and returns 1 if true, -1 if false"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction      ?get-stack     ?expected
     :boolean    '(false true)    :boolean->signedint      :integer       '(-1)
@@ -189,7 +189,7 @@
 (tabular
   (fact ":float->integer takes a :float value, and truncates it to an :integer"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction      ?get-stack     ?expected
     ;; simple     
@@ -214,7 +214,7 @@
 (tabular
   (fact ":string->integer"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction           ?get-stack     ?expected
 
@@ -237,7 +237,7 @@
 (tabular
   (fact ":char->integer takes a :char value, and converts it to an :integer"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction      ?get-stack     ?expected
     ;; simple     
@@ -255,7 +255,7 @@
 (tabular
   (fact ":integer-sign returns the sine(x)"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items      ?instruction  ?get-stack   ?expected
     ;; up we go
@@ -273,7 +273,7 @@
 (tabular
   (fact ":integer<? returns a :boolean indicating whether :first < :second"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items    ?instruction    ?get-stack     ?expected
     ;; just the math
@@ -290,7 +290,7 @@
 (tabular
   (fact ":integer≤? returns a :boolean indicating whether :first <= :second"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items    ?instruction    ?get-stack     ?expected
     ;; just the math
@@ -307,7 +307,7 @@
 (tabular
   (fact ":integer>? returns a :boolean indicating whether :first > :second"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items    ?instruction    ?get-stack     ?expected
     ;; just the math
@@ -324,7 +324,7 @@
 (tabular
   (fact ":integer≥? returns a :boolean indicating whether :first > :second"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items    ?instruction    ?get-stack     ?expected
     ;; just the math
@@ -342,7 +342,7 @@
   (fact ":integer-max takes two items from :integer and replaces the larger one;
     if they are the same, it still returns one of them only"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction      ?get-stack     ?expected
     ;; just the bigger one please     
@@ -359,7 +359,7 @@
   (fact ":integer-min takes two items from :integer and replaces the smaller one;
     if they are the same, it still returns one of them only"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction      ?get-stack     ?expected
     ;; just the smaller one please     
@@ -377,7 +377,7 @@
 (tabular
   (fact ":integer-empty? returns a :boolean indicating whether :integer is empty"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items    ?instruction    ?get-stack     ?expected
     ;; just the math
@@ -388,7 +388,7 @@
 (tabular
   (fact ":integer-stackdepth saves (count :integer) onto :integer"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items      ?instruction            ?get-stack     ?expected
     ;; just shifting things
@@ -404,7 +404,7 @@
 (tabular
   (fact ":integer-equal? returns a :boolean indicating whether :first = :second"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items    ?instruction    ?get-stack     ?expected
     ;; just the math
@@ -421,7 +421,7 @@
 (tabular
   (fact ":integer-notequal? returns a :boolean indicating whether :first ≠ :second"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items    ?instruction    ?get-stack     ?expected
     ;; just the math
@@ -441,7 +441,7 @@
 (tabular
   (fact ":integer-flush flushes the entire :integer stack"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items    ?instruction    ?get-stack     ?expected
     ;; just shifting things
@@ -455,7 +455,7 @@
 (tabular
   (fact ":integer-dup duplicates the top item from :integer"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items    ?instruction    ?get-stack     ?expected
     ;; just shifting things
@@ -469,7 +469,7 @@
 (tabular
   (fact ":integer-pop removes the top item from :integer"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items    ?instruction    ?get-stack     ?expected
     ;; just shifting things
@@ -483,7 +483,7 @@
 (tabular
   (fact ":integer-rotate shifts the top 3 items from :integer, putting 3rd on top"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items    ?instruction    ?get-stack     ?expected
     ;; just shifting things
@@ -500,7 +500,7 @@
     the next item to a new position specified by the index; uses
     `(mod arg (inc (count :integer)))` to place it in range [0,(count stack)]"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction      ?get-stack     ?expected
     ;; just shifting things     
@@ -519,7 +519,7 @@
 (tabular
   (fact ":integer-swap swaps the top two items from :integer"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items    ?instruction    ?get-stack     ?expected
     ;; just shifting things
@@ -534,7 +534,7 @@
   (fact ":integer-yank takes its index from :integer, then MOVES the (current)
     nth item up to the top of the stack; uses (mod arg (count :integer))"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction      ?get-stack     ?expected
     ;; just shifting things     
@@ -554,7 +554,7 @@
   (fact ":integer-yankdup takes its index from :integer, then COPIES the (current)
     nth item up to the top of the stack; uses (mod arg (count :integer))"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-integer-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction      ?get-stack     ?expected
     ;; just shifting things     

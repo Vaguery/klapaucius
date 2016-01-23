@@ -11,7 +11,7 @@
 (tabular
   (fact ":environment-new saves copies of all the stacks (the whole hash) to the :environment stack, then brings back the top item of the :exec stack, and empties the :return stack"
     (check-instruction-with-all-kinds-of-stack-stuff
-        ?new-stacks classic-environment-module ?instruction) => (contains ?expected))
+        ?new-stacks environment-module ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction             ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -77,7 +77,7 @@
 (tabular
   (fact ":environment-begin saves copies of all the stacks (the whole hash) to the :environment stack _except_ :exec, then clears the :return stack"
     (check-instruction-with-all-kinds-of-stack-stuff
-        ?new-stacks classic-environment-module ?instruction) => (contains ?expected))
+        ?new-stacks environment-module ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction             ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -47,7 +47,7 @@
 
 
 
-(def classic-environment-module
+(def environment-module
   ( ->  (t/make-module  :environment
                         :attributes #{:complex :base})
         aspects/make-visible

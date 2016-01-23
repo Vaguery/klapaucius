@@ -134,7 +134,7 @@
 
 
 
-(def classic-integer-type
+(def integer-type
   ( ->  (t/make-type  :integer
                       :recognizer integer?
                       :attributes #{:numeric})

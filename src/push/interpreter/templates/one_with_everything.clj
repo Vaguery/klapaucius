@@ -29,7 +29,7 @@
 
 (def all-kinds-of-types
   (map extend-combinators
-    [classic-integer-type
+    [integer-type
     boolean-type
     char-type
     classic-float-type
@@ -38,7 +38,7 @@
     (build-vectorized-type boolean-type)
     (build-vectorized-type char-type)
     (build-vectorized-type classic-float-type)
-    (build-vectorized-type classic-integer-type)
+    (build-vectorized-type integer-type)
     (build-vectorized-type classic-string-type)
 
     standard-vector-type
@@ -57,7 +57,7 @@
      classic-log-module
      classic-error-module
      code-module
-     classic-environment-module
+     environment-module
      classic-print-module
      
      standard-introspection-module
@@ -73,9 +73,9 @@
   - boolean-type
   - char-type
   - code-module
-  - classic-environment-module
+  - environment-module
   - exec-module
-  - classic-integer-type
+  - integer-type
   - classic-float-type
   - classic-log-module
   - classic-print-module

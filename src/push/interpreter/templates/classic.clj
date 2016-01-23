@@ -24,9 +24,9 @@
   - boolean-type
   - char-type
   - code-module
-  - classic-environment-module
+  - environment-module
   - exec-module
-  - classic-integer-type
+  - integer-type
   - classic-float-type
   - classic-log-module
   - classic-print-module
@@ -68,7 +68,7 @@
           counter
           done?)
         (i/register-types , (concat
-                              [push.types.base.integer/classic-integer-type
+                              [push.types.base.integer/integer-type
                                push.types.base.boolean/boolean-type
                                push.types.base.char/char-type
                                push.types.base.float/classic-float-type
@@ -79,7 +79,7 @@
                                push.types.modules.log/classic-log-module
                                push.types.modules.error/classic-error-module
                                push.types.modules.code/code-module
-                               push.types.modules.environment/classic-environment-module
+                               push.types.modules.environment/environment-module
                                push.types.modules.print/classic-print-module
                                ])
         (i/register-inputs , inputs)

@@ -5,11 +5,11 @@
   )
 
 
-(fact "classic-environment-module has :name ':environment'"
-  (:name classic-environment-module) => :environment)
+(fact "environment-module has :name ':environment'"
+  (:name environment-module) => :environment)
 
 
-(fact "classic-environment-module has the expected :attributes"
-  (:attributes classic-environment-module) =>
+(fact "environment-module has the expected :attributes"
+  (:attributes environment-module) =>
     (contains #{:complex :base}))
 

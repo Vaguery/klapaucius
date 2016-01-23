@@ -338,9 +338,9 @@
 ;; and their instructions on creation
 
 
-(fact "`classic-interpreter` has `classic-integer-type` registered"
+(fact "`classic-interpreter` has `integer-type` registered"
   (:types classy) =>
-    (contains push.types.base.integer/classic-integer-type))
+    (contains push.types.base.integer/integer-type))
 
 
 (fact "`classic-interpreter` has `boolean-type` registered"

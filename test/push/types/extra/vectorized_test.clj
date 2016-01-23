@@ -6,7 +6,7 @@
   )
 
 
-(def vector-of-integers (build-vectorized-type int/classic-integer-type))
+(def vector-of-integers (build-vectorized-type int/integer-type))
 
 (fact "I can make a vector type out of :integer"
   (:name vector-of-integers) => :integers)
