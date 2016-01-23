@@ -6,47 +6,47 @@
   )
 
 
-(fact "classic-boolean-type has :name ':boolean'"
-  (:name classic-boolean-type) => :boolean)
+(fact "boolean-type has :name ':boolean'"
+  (:name boolean-type) => :boolean)
 
 
-(fact "classic-boolean-type has the correct :recognizer"
-  (:recognizer classic-boolean-type) => (exactly boolean?))
+(fact "boolean-type has the correct :recognizer"
+  (:recognizer boolean-type) => (exactly boolean?))
 
 
-(fact "classic-boolean-type has the expected :attributes"
-  (:attributes classic-boolean-type) =>
+(fact "boolean-type has the expected :attributes"
+  (:attributes boolean-type) =>
     (contains #{:equatable :movable :logical :visible}))
 
 
-(fact "classic-boolean-type does NOT know any :comparable instructions"
-  (keys (:instructions classic-boolean-type)) =not=>
+(fact "boolean-type does NOT know any :comparable instructions"
+  (keys (:instructions boolean-type)) =not=>
     (contains [:boolean-max :boolean>? :boolean≤? :boolean<? :boolean-min :boolean≥?] :in-any-order :gaps-ok))
 
 
-(fact "classic-boolean-type knows the :equatable instructions"
-  (keys (:instructions classic-boolean-type)) =>
+(fact "boolean-type knows the :equatable instructions"
+  (keys (:instructions boolean-type)) =>
     (contains [:boolean-equal? :boolean-notequal?] :in-any-order :gaps-ok))
 
 
-(fact "classic-boolean-type knows the :visible instructions"
-  (keys (:instructions classic-boolean-type)) =>
+(fact "boolean-type knows the :visible instructions"
+  (keys (:instructions boolean-type)) =>
     (contains [:boolean-stackdepth :boolean-empty?] :in-any-order :gaps-ok))
 
 
-(fact "classic-boolean-type knows the :movable instructions"
-  (keys (:instructions classic-boolean-type)) =>
+(fact "boolean-type knows the :movable instructions"
+  (keys (:instructions boolean-type)) =>
     (contains [:boolean-shove :boolean-pop :boolean-dup :boolean-rotate :boolean-yank :boolean-yankdup :boolean-flush :boolean-swap] :in-any-order :gaps-ok))
 
 
-(fact "classic-boolean-type knows logic"
-  (keys (:instructions classic-boolean-type)) =>
+(fact "boolean-type knows logic"
+  (keys (:instructions boolean-type)) =>
   (contains [:boolean-and :boolean-not :boolean-or :boolean-xor] :in-any-order :gaps-ok))
 
 
-(fact "classic-boolean-type knows the :printable instructions"
-  (keys (:instructions classic-boolean-type)) => (contains [:boolean-print]))
+(fact "boolean-type knows the :printable instructions"
+  (keys (:instructions boolean-type)) => (contains [:boolean-print]))
 
 
-(fact "classic-boolean-type knows the :returnable instructions"
-  (keys (:instructions classic-boolean-type)) => (contains [:boolean-return]))
+(fact "boolean-type knows the :returnable instructions"
+  (keys (:instructions boolean-type)) => (contains [:boolean-return]))

@@ -2,7 +2,7 @@
   (:use midje.sweet)
   (:use [push.util.test-helpers])
   (:require [push.interpreter.core :as i])
-  (:use [push.types.base.boolean])  ;; sets up classic-boolean-type
+  (:use [push.types.base.boolean])  ;; sets up boolean-type
   )
 
 ;; all the conversions
@@ -12,7 +12,7 @@
          :intsign->boolean is false if neg, true otherwise
          ditto :float->boolean and :floatsign->boolean"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-boolean-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items boolean-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction           ?get-stack     ?expected
     :integer    '(0)         :integer->boolean      :boolean       '(false)
@@ -35,7 +35,7 @@
 (tabular
   (fact ":boolean->code move the top :boolean item to :code;"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-boolean-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items boolean-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; move it!
@@ -50,7 +50,7 @@
 (tabular
   (fact ":boolean-and returns the binary AND over the top two :boolean values"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-boolean-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items boolean-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction  ?get-stack   ?expected
     ;; anding
@@ -66,7 +66,7 @@
 (tabular
   (fact ":boolean-not returns the binary NOT of the top :boolean value"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-boolean-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items boolean-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction  ?get-stack   ?expected
     ;; anding
@@ -79,7 +79,7 @@
 (tabular
   (fact ":boolean-or returns the binary OR over the top two :boolean values"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-boolean-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items boolean-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction  ?get-stack   ?expected
     ;; anding
@@ -95,7 +95,7 @@
 (tabular
   (fact ":boolean-xor returns the binary XOR over the top two :boolean values"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-boolean-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items boolean-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction  ?get-stack   ?expected
     ;; anding
@@ -117,7 +117,7 @@
 (tabular
   (fact ":boolean-dup duplicates the top item from :boolean"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-boolean-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items boolean-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction    ?get-stack     ?expected
     ;; just shifting things
@@ -130,7 +130,7 @@
 (tabular
   (fact ":boolean-pop removes the top item from :boolean"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-boolean-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items boolean-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction    ?get-stack     ?expected
     ;; just shifting things
@@ -143,7 +143,7 @@
 (tabular
   (fact ":boolean-rotate shifts the top 3 items from :boolean, putting 3rd on top"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-boolean-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items boolean-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items             ?instruction        ?get-stack     ?expected
     ;; just shifting things
@@ -158,7 +158,7 @@
 (tabular
   (fact ":boolean-stackdepth saves (count :boolean) onto :boolean"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-boolean-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items boolean-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items               ?instruction            ?get-stack     ?expected
     ;; just shifting things
@@ -169,7 +169,7 @@
 (tabular
   (fact ":boolean-swap swaps the top two items from :boolean"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-boolean-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items boolean-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items     ?instruction    ?get-stack     ?expected
     ;; just shifting things
@@ -186,7 +186,7 @@
 (tabular
   (fact ":boolean-flush flushes the entire :boolean stack"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-boolean-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items boolean-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction    ?get-stack     ?expected
     ;; just shifting things

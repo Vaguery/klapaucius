@@ -89,7 +89,7 @@
   :char "whitespace?" #(Character/isWhitespace %1)))
 
 
-(def classic-char-type
+(def char-type
   ( ->  (t/make-type  :char
                       :recognizer char?
                       :attributes #{:string})

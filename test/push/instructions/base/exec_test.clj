@@ -10,7 +10,7 @@
 (tabular
   (fact ":exec-do*count does complicated things involving continuations (see tests)"
     (check-instruction-with-all-kinds-of-stack-stuff
-        ?new-stacks classic-exec-module ?instruction) => (contains ?expected))
+        ?new-stacks exec-module ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction             ?expected
 
@@ -40,7 +40,7 @@
 (tabular
   (fact ":exec-do*times does complicated things involving continuations (see tests)"
     (check-instruction-with-all-kinds-of-stack-stuff
-        ?new-stacks classic-exec-module ?instruction) => (contains ?expected))
+        ?new-stacks exec-module ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction             ?expected
 
@@ -68,7 +68,7 @@
 (tabular
   (fact ":exec-do*range does complicated things involving continuations (see tests)"
     (check-instruction-with-all-kinds-of-stack-stuff
-        ?new-stacks classic-exec-module ?instruction) => (contains ?expected))
+        ?new-stacks exec-module ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction             ?expected
 
@@ -109,7 +109,7 @@
 (tabular
   (fact ":exec-if pops either the top or second :exec item"
     (check-instruction-with-all-kinds-of-stack-stuff
-        ?new-stacks classic-exec-module ?instruction) => (contains ?expected))
+        ?new-stacks exec-module ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction       ?expected
 
@@ -134,7 +134,7 @@
 (tabular
   (fact ":exec-k applies the K combinator"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-exec-module ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items exec-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction      ?get-stack     ?expected
     ;; not the second one
@@ -147,7 +147,7 @@
 (tabular
   (fact ":exec-noop does nothing"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-exec-module ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items exec-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; nothing happens
@@ -159,7 +159,7 @@
 (tabular
   (fact ":exec-s applies the S combinator"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-exec-module ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items exec-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; forever
@@ -171,7 +171,7 @@
 (tabular
   (fact ":exec-do*while does complicated things involving continuations (see tests)"
     (check-instruction-with-all-kinds-of-stack-stuff
-        ?new-stacks classic-exec-module ?instruction) => (contains ?expected))
+        ?new-stacks exec-module ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction             ?expected
 
@@ -192,7 +192,7 @@
 (tabular
   (fact ":exec-when does complicated things involving continuations (see tests)"
     (check-instruction-with-all-kinds-of-stack-stuff
-        ?new-stacks classic-exec-module ?instruction) => (contains ?expected))
+        ?new-stacks exec-module ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction             ?expected
 
@@ -217,7 +217,7 @@
 (tabular
   (fact ":exec-while does complicated things involving continuations (see tests)"
     (check-instruction-with-all-kinds-of-stack-stuff
-        ?new-stacks classic-exec-module ?instruction) => (contains ?expected))
+        ?new-stacks exec-module ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction             ?expected
 
@@ -242,7 +242,7 @@
 (tabular
   (fact ":exec-y applies the Y combinator"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-exec-module ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items exec-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; forever
@@ -258,7 +258,7 @@
 (tabular
   (fact ":exec-stackdepth returns the number of items on the :exec stack (to :integer)"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-exec-module ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items exec-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; how many?
@@ -270,7 +270,7 @@
 (tabular
   (fact ":exec-empty? returns the true (to :boolean stack) if the stack is empty"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-exec-module ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items exec-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction  ?get-stack     ?expected
     ;; none?
@@ -284,7 +284,7 @@
 (tabular
   (fact ":exec-equal? returns a :boolean indicating whether :first = :second"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-exec-module ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items exec-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction      ?get-stack     ?expected
     ;; same?
@@ -301,7 +301,7 @@
 (tabular
   (fact ":exec-notequal? returns a :boolean indicating whether :first ≠ :second"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-exec-module ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items exec-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items           ?instruction      ?get-stack     ?expected
     ;; different

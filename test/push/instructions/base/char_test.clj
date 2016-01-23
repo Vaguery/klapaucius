@@ -2,7 +2,7 @@
   (:use midje.sweet)
   (:use [push.util.test-helpers])
   (:require [push.interpreter.core :as i])
-  (:use [push.types.base.char])  ;; sets up classic-char-type
+  (:use [push.types.base.char])  ;; sets up char-type
   )
 
 ;; quotable
@@ -10,7 +10,7 @@
 (tabular
   (fact ":char->code move the top :char item to :code"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; move it!
@@ -25,7 +25,7 @@
 (tabular
   (fact ":string->chars puts every char in the top :string onto the :char stack"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction  ?get-stack         ?expected
     ;; all the letters
@@ -40,7 +40,7 @@
 (tabular
   (fact ":char-digit? returns true when the :char item is an numeric digit"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction  ?get-stack   ?expected
     ;; exploring Java's recognizers
@@ -68,7 +68,7 @@
 (tabular
   (fact ":integer->asciichar drops the top :integer into [0..128] and pushes that ASCII character"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction  ?get-stack         ?expected
     ;; all the letters
@@ -88,7 +88,7 @@
 (tabular
   (fact ":integer->char drops the top :integer into [0..65535] and pushes that unicode character"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction  ?get-stack         ?expected
     ;; all the letters
@@ -109,7 +109,7 @@
 (tabular
   (fact ":float->asciichar drops the top :float down to an integer value in [0..128] and pushes that ASCII character"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction  ?get-stack         ?expected
     ;; all the letters
@@ -134,7 +134,7 @@
 (tabular
   (fact ":float->char drops the top :float down to an integer value in [0..65535] and pushes that ASCII character"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction  ?get-stack         ?expected
     ;; all the letters
@@ -158,7 +158,7 @@
 (tabular
   (fact ":char-letter? returns true when the :char item is an alphabetic letter (LC or UC)"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction  ?get-stack   ?expected
     ;; exploring Java's recognizers
@@ -181,7 +181,7 @@
 (tabular
   (fact ":char-lowercase? returns true when the :char item is lowercase (per Java)"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items     ?instruction  ?get-stack     ?expected
     ;; exploring Java's recognizers
@@ -206,7 +206,7 @@
 (tabular
   (fact ":char-uppercase? returns true when the :char item is uppercase (per Java)"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items     ?instruction  ?get-stack     ?expected
     ;; exploring Java's recognizers
@@ -236,7 +236,7 @@
 (tabular
   (fact ":char-whitespace? returns true when the :char item is any kind of whitespace"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items              ?instruction  ?get-stack     ?expected
     ;; exploring Java's recognizers
@@ -276,7 +276,7 @@
 (tabular
   (fact ":char-stackdepth returns the number of items on the :char stack (to :integer)"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items        ?instruction  ?get-stack     ?expected
     :char    '(\r \e \l \p)  :char-stackdepth   :integer     '(4)
@@ -287,7 +287,7 @@
 (tabular
   (fact ":char-empty? returns the true (to :boolean stack) if the stack is empty"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items        ?instruction  ?get-stack     ?expected
     :char    '(\r \e \l \p)  :char-empty?   :boolean     '(false)
@@ -300,7 +300,7 @@
 (tabular
   (fact ":char-equal? returns a :boolean indicating whether :first = :second"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items    ?instruction  ?get-stack     ?expected
     ;; identical
@@ -317,7 +317,7 @@
 (tabular
   (fact ":char-notequal? returns a :boolean indicating whether :first ≠ :second"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items    ?instruction  ?get-stack     ?expected
     ;; different
@@ -337,7 +337,7 @@
 (tabular
   (fact ":char<? returns a :boolean indicating whether :first < :second"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items    ?instruction  ?get-stack     ?expected
     ;; note: these use (compare A B), not (< A B)
@@ -354,7 +354,7 @@
 (tabular
   (fact ":char≤? returns a :boolean indicating whether :first ≤ :second"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items    ?instruction  ?get-stack     ?expected
     ;; note: these use (compare A B), not (< A B)
@@ -371,7 +371,7 @@
 (tabular
   (fact ":char≥? returns a :boolean indicating whether :first ≥ :second"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items    ?instruction  ?get-stack     ?expected
     ;; note: these use (compare A B), not (< A B)
@@ -388,7 +388,7 @@
 (tabular
   (fact ":char>? returns a :boolean indicating whether :first > :second"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items    ?instruction  ?get-stack     ?expected
     ;; note: these use (compare A B), not (< A B)
@@ -405,7 +405,7 @@
 (tabular
   (fact ":char-max returns the 'larger' of the top two :char items"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items    ?instruction  ?get-stack     ?expected
     ;; note: these use (compare A B), not (< A B)
@@ -421,7 +421,7 @@
 (tabular
   (fact ":char-min returns the 'smaller' of the top two :char items"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-char-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items    ?instruction  ?get-stack     ?expected
     ;; note: these use (compare A B), not (< A B)

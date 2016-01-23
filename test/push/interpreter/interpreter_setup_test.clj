@@ -343,9 +343,9 @@
     (contains push.types.base.integer/classic-integer-type))
 
 
-(fact "`classic-interpreter` has `classic-boolean-type` registered"
+(fact "`classic-interpreter` has `boolean-type` registered"
   (:types classy) =>
-    (contains push.types.base.boolean/classic-boolean-type))
+    (contains push.types.base.boolean/boolean-type))
 
 
 (fact "`classic-interpreter` has `classic-string-type` registered"
@@ -353,9 +353,9 @@
     (contains push.types.base.string/classic-string-type))
 
 
-(fact "`classic-interpreter` has `classic-char-type` registered"
+(fact "`classic-interpreter` has `char-type` registered"
   (:types classy) =>
-    (contains push.types.base.char/classic-char-type))
+    (contains push.types.base.char/char-type))
 
 
 (fact "`classic-interpreter` has `classic-float-type` registered"
@@ -368,7 +368,7 @@
     (contains :code-stackdepth)) ;; there's probably a more appropriate check
 
 
-(fact "`classic-interpreter` has `classic-exec-module` registered"
+(fact "`classic-interpreter` has `exec-module` registered"
   (keys (:instructions classy)) =>
     (contains :exec-stackdepth))  ;; there's probably a more appropriate check
 

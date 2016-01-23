@@ -30,13 +30,13 @@
 (def all-kinds-of-types
   (map extend-combinators
     [classic-integer-type
-    classic-boolean-type
-    classic-char-type
+    boolean-type
+    char-type
     classic-float-type
     classic-string-type
 
-    (build-vectorized-type classic-boolean-type)
-    (build-vectorized-type classic-char-type)
+    (build-vectorized-type boolean-type)
+    (build-vectorized-type char-type)
     (build-vectorized-type classic-float-type)
     (build-vectorized-type classic-integer-type)
     (build-vectorized-type classic-string-type)
@@ -53,7 +53,7 @@
 
 (def all-kinds-of-modules
   (map extend-combinators
-    [classic-exec-module
+    [exec-module
      classic-log-module
      classic-error-module
      classic-code-module
@@ -70,11 +70,11 @@
 
   With no arguments, it has an empty :program, and these types are loaded (in this order):
   
-  - classic-boolean-type
-  - classic-char-type
+  - boolean-type
+  - char-type
   - classic-code-module
   - classic-environment-module
-  - classic-exec-module
+  - exec-module
   - classic-integer-type
   - classic-float-type
   - classic-log-module

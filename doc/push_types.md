@@ -35,7 +35,7 @@ In those rare situations where the result of an instruction you're writing might
 Exploring any interesting problem will entail writing new types. In this `Interpreter`, you can think of a "type" as a bundle of associated instruction definitions, _plus a recognizer_. So for example, [the core Push `:integer` type](https://github.com/Vaguery/push-in-clojure/blob/master/src/push/types/base/integer.clj#L143-L146) is _defined_ as simply as
 
 ~~~clojure
-(def classic-integer-type
+(def integer-type
   (push.types.core/make-type :integer
                              :recognizer integer?
                              :attributes #{:numeric}))
@@ -61,7 +61,7 @@ Note though that when I defined a Push type a few paragraphs back, I said it was
 When you look at the [actual definition of the `:integer` type in the Push-in-Clojure codebase](https://github.com/Vaguery/push-in-clojure/blob/master/src/push/types/base/integer.clj#L143-L146), you'll see it first defines a number of type-specific helper functions, then defines particular `:integer` instructions, and then it makes the tiny little stub with `make-type`, _and then it attaches the instructions to that stub_. Something more like this (as of this writing):
 
 ~~~clojure
-(def classic-integer-type
+(def integer-type
   ( ->  (t/make-type  :integer
                       :recognizer integer?
                       :attributes #{:numeric})
@@ -107,7 +107,7 @@ That said, these are crucial collections of instructions, even though there are 
 [Have a look at the `:code` module definition](https://github.com/Vaguery/push-in-clojure/blob/master/src/push/types/modules/code.clj), and you'll see it's the same structure (more or less) as `:integer` was:
 
 ~~~clojure
-(def classic-code-module
+(def code-module
   ( ->  (t/make-module  :code
                         :attributes #{:complex :base})
         make-equatable

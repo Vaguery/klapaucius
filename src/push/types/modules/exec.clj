@@ -168,7 +168,7 @@
     (d/push-onto :exec :continuation)))
 
 
-(def classic-exec-module
+(def exec-module
   ( ->  (t/make-module  :exec
                         :attributes #{:complex :base})
         aspects/make-equatable

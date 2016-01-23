@@ -75,7 +75,7 @@
   :boolean "not" 'not))
 
 
-(def classic-boolean-type
+(def boolean-type
   ( ->  (t/make-type  :boolean
                       :recognizer boolean?
                       :attributes #{:logical})

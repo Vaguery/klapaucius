@@ -21,11 +21,11 @@
   With no arguments, it has an empty :program, the :stacks include
   core types and are empty, these types are loaded (in this order):
   
-  - classic-boolean-type
-  - classic-char-type
+  - boolean-type
+  - char-type
   - classic-code-module
   - classic-environment-module
-  - classic-exec-module
+  - exec-module
   - classic-integer-type
   - classic-float-type
   - classic-log-module
@@ -69,13 +69,13 @@
           done?)
         (i/register-types , (concat
                               [push.types.base.integer/classic-integer-type
-                               push.types.base.boolean/classic-boolean-type
-                               push.types.base.char/classic-char-type
+                               push.types.base.boolean/boolean-type
+                               push.types.base.char/char-type
                                push.types.base.float/classic-float-type
                                push.types.base.string/classic-string-type
                                ]
                                types))
-        (i/register-modules , [push.types.modules.exec/classic-exec-module
+        (i/register-modules , [push.types.modules.exec/exec-module
                                push.types.modules.log/classic-log-module
                                push.types.modules.error/classic-error-module
                                push.types.modules.code/classic-code-module
