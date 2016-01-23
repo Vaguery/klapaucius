@@ -348,9 +348,9 @@
     (contains push.types.base.boolean/boolean-type))
 
 
-(fact "`classic-interpreter` has `classic-string-type` registered"
+(fact "`classic-interpreter` has `string-type` registered"
   (:types classy) =>
-    (contains push.types.base.string/classic-string-type))
+    (contains push.types.base.string/string-type))
 
 
 (fact "`classic-interpreter` has `char-type` registered"

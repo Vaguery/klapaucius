@@ -33,13 +33,13 @@
     boolean-type
     char-type
     float-type
-    classic-string-type
+    string-type
 
     (build-vectorized-type boolean-type)
     (build-vectorized-type char-type)
     (build-vectorized-type float-type)
     (build-vectorized-type integer-type)
-    (build-vectorized-type classic-string-type)
+    (build-vectorized-type string-type)
 
     standard-vector-type
     standard-set-type
@@ -79,7 +79,7 @@
   - float-type
   - log-module
   - print-module
-  - classic-string-type
+  - string-type
   - booleans-type
   - chars-type
   - integers-type

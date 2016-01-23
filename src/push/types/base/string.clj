@@ -351,7 +351,7 @@
     (d/push-onto :string :leftovers)))
 
 
-(def classic-string-type
+(def string-type
   ( ->  (t/make-type  :string
                       :recognizer string?
                       :attributes #{:string :base})

@@ -5,40 +5,40 @@
   )
 
 
-(fact "classic-string-type has :name ':string'"
-  (:name classic-string-type) => :string)
+(fact "string-type has :name ':string'"
+  (:name string-type) => :string)
 
 
-(fact "classic-string-type has the correct :recognizer"
-  (:recognizer classic-string-type) => (exactly string?))
+(fact "string-type has the correct :recognizer"
+  (:recognizer string-type) => (exactly string?))
 
 
-(fact "classic-string-type has the expected :attributes"
-  (:attributes classic-string-type) =>
+(fact "string-type has the expected :attributes"
+  (:attributes string-type) =>
     (contains #{:equatable :comparable :movable :string :visible}))
 
 
-(fact "classic-string-type knows the :equatable instructions"
-  (keys (:instructions classic-string-type)) =>
+(fact "string-type knows the :equatable instructions"
+  (keys (:instructions string-type)) =>
     (contains [:string-equal? :string-notequal?] :in-any-order :gaps-ok))
 
 
-(fact "classic-string-type knows the :visible instructions"
-  (keys (:instructions classic-string-type)) =>
+(fact "string-type knows the :visible instructions"
+  (keys (:instructions string-type)) =>
     (contains [:string-stackdepth :string-empty?] :in-any-order :gaps-ok))
 
 
-(fact "classic-string-type knows the :movable instructions"
-  (keys (:instructions classic-string-type)) =>
+(fact "string-type knows the :movable instructions"
+  (keys (:instructions string-type)) =>
     (contains [:string-shove :string-pop :string-dup :string-rotate :string-yank :string-yankdup :string-flush :string-swap] :in-any-order :gaps-ok))
 
 
-(fact "classic-string-type knows the :printable instructions"
-  (keys (:instructions classic-string-type)) => (contains [:string-print]))
+(fact "string-type knows the :printable instructions"
+  (keys (:instructions string-type)) => (contains [:string-print]))
 
 
-(fact "classic-string-type knows the :returnable instructions"
-  (keys (:instructions classic-string-type)) => (contains [:string-return]))
+(fact "string-type knows the :returnable instructions"
+  (keys (:instructions string-type)) => (contains [:string-return]))
 
 
 ;;; utilities

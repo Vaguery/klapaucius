@@ -30,7 +30,7 @@
   - float-type
   - log-module
   - print-module
-  - classic-string-type
+  - string-type
 
   and the counter is 0.
 
@@ -72,7 +72,7 @@
                                push.types.base.boolean/boolean-type
                                push.types.base.char/char-type
                                push.types.base.float/float-type
-                               push.types.base.string/classic-string-type
+                               push.types.base.string/string-type
                                ]
                                types))
         (i/register-modules , [push.types.modules.exec/exec-module

@@ -2,7 +2,7 @@
   (:use midje.sweet)
   (:use [push.util.test-helpers])
   (:require [push.interpreter.core :as i])
-  (:use [push.types.base.string])  ;; sets up classic-string-type
+  (:use [push.types.base.string])  ;; sets up string-type
   )
 
 
@@ -15,7 +15,7 @@
 (tabular
   (fact ":integer->string, :boolean->string, :code->string, :exec->string, :float->string"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items string-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction           ?get-stack     ?expected
     :boolean    '(false)       :boolean->string      :string       '("false")
@@ -54,7 +54,7 @@
 (tabular
   (fact ":string->code move the top :string item to :code"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items string-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items       ?instruction      ?get-stack     ?expected
     ;; move it!
@@ -69,7 +69,7 @@
 (tabular
   (fact ":exec-string-iterate chops off characters from a string and 'applies' the top :exec item to them"
     (check-instruction-with-all-kinds-of-stack-stuff
-        ?new-stacks classic-string-type ?instruction) => (contains ?expected))
+        ?new-stacks string-type ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction       ?expected
 
@@ -131,7 +131,7 @@
 (tabular
   (fact ":string-butlast removes the last char from a string argument"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items string-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction  ?get-stack   ?expected
     ;; lost the tail
@@ -147,7 +147,7 @@
 (tabular
   (fact ":string-concat returns the second :string item tacked to the end of the first"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items string-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction  ?get-stack   ?expected
     ;; concatenation
@@ -168,7 +168,7 @@
 (tabular
   (fact ":string-conjchar attaches the top :char the end of the top :string"
     (check-instruction-with-all-kinds-of-stack-stuff
-        ?new-stacks classic-string-type ?instruction) => (contains ?expected))
+        ?new-stacks string-type ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction             ?expected
 
@@ -179,7 +179,7 @@
 (tabular
   (fact ":string-containschar? returns the true if the :char is in :string"
     (check-instruction-with-all-kinds-of-stack-stuff
-        ?new-stacks classic-string-type ?instruction) => (contains ?expected))
+        ?new-stacks string-type ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction       ?expected
 
@@ -202,7 +202,7 @@
 (tabular
   (fact ":string-contains? returns true if the second string is in the first"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items string-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction  ?get-stack   ?expected
     :string    '("foo" "bar")       :string-contains?  :boolean     '(false)
@@ -217,7 +217,7 @@
 (tabular
   (fact ":string-emptystring? returns true if the argument is exactly \"\""
     (register-type-and-check-instruction
-        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items string-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction  ?get-stack   ?expected
     ;; anything?
@@ -231,7 +231,7 @@
 (tabular
   (fact ":string-first returns the 1st :char of the string"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items string-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction  ?get-stack   ?expected
     ;; initial
@@ -249,7 +249,7 @@
 (tabular
   (fact ":string-indexofchar returns the index of :char (or -1)"
     (check-instruction-with-all-kinds-of-stack-stuff
-        ?new-stacks classic-string-type ?instruction) => (contains ?expected))
+        ?new-stacks string-type ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction       ?expected
 
@@ -294,7 +294,7 @@
 (tabular
   (fact ":string-last returns the last :char of the string"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items string-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction  ?get-stack   ?expected
     ;; final
@@ -312,7 +312,7 @@
 (tabular
   (fact ":string-length returns the second :string item tacked to the end of the first"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items string-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction  ?get-stack   ?expected
     ;; length
@@ -330,7 +330,7 @@
 (tabular
   (fact ":string-nth returns the indexed character (modulo length)"
     (check-instruction-with-all-kinds-of-stack-stuff
-        ?new-stacks classic-string-type ?instruction) => (contains ?expected))
+        ?new-stacks string-type ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction       ?expected
 
@@ -382,7 +382,7 @@
 (tabular
   (fact ":string-occurrencesofchar counts :char in :string (as :int)"
     (check-instruction-with-all-kinds-of-stack-stuff
-        ?new-stacks classic-string-type ?instruction) => (contains ?expected))
+        ?new-stacks string-type ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction       ?expected
 
@@ -420,7 +420,7 @@
 (tabular
   (fact ":string-removechar takes all occurrences of :char out"
     (check-instruction-with-all-kinds-of-stack-stuff
-        ?new-stacks classic-string-type ?instruction) => (contains ?expected))
+        ?new-stacks string-type ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction       ?expected
 
@@ -461,7 +461,7 @@
 (tabular
   (fact ":string-replace replaces all occurrences of :str/2 with :str/1 in :str/3"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items string-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction  ?get-stack   ?expected
     :string    '("X" "ab" "aabbaaabbb")         
@@ -488,7 +488,7 @@
 (tabular
   (fact ":string-replacefirst the first occurrence of :str/2 with :str/1 in :str/3"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items string-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction           ?get-stack   ?expected
     :string    '("X" "ab" "aabbaaabbb")         
@@ -510,7 +510,7 @@
 (tabular
   (fact ":string-replacechar replaces all occurrences of :char/1 with :char/2"
     (check-instruction-with-all-kinds-of-stack-stuff
-        ?new-stacks classic-string-type ?instruction) => (contains ?expected))
+        ?new-stacks string-type ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction       ?expected
 
@@ -557,7 +557,7 @@
 (tabular
   (fact ":string-replacefirstchar replaces the first occurrence of :char/1 with :char/2"
     (check-instruction-with-all-kinds-of-stack-stuff
-        ?new-stacks classic-string-type ?instruction) => (contains ?expected))
+        ?new-stacks string-type ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction       ?expected
 
@@ -604,7 +604,7 @@
 (tabular
   (fact ":string-rest removes the first char from a string argument"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items string-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction  ?get-stack   ?expected
     ;; lost the head
@@ -622,7 +622,7 @@
 (tabular
   (fact ":string-reverse returns the second :string item tacked to the end of the first"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items string-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction  ?get-stack   ?expected
     ;; backwards
@@ -641,7 +641,7 @@
 (tabular
   (fact ":string-setchar changes the char in position :int to :char, modulo :string's length"
     (check-instruction-with-all-kinds-of-stack-stuff
-        ?new-stacks classic-string-type ?instruction) => (contains ?expected))
+        ?new-stacks string-type ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction             ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -670,7 +670,7 @@
 (tabular
   (fact ":string-shatter pushes all the letters as individual strings"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items string-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction  ?get-stack   ?expected
     ;; shatter
@@ -687,7 +687,7 @@
 (tabular
   (fact ":string-solid? returns true if there is no whitespace anywhere in the string"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items string-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction  ?get-stack   ?expected
     ;; we good here?
@@ -707,7 +707,7 @@
 (tabular
   (fact ":string-spacey? returns true if there is no NON-whitespace anywhere in the string"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items string-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction  ?get-stack   ?expected
     ;; we good here?
@@ -723,7 +723,7 @@
 (tabular
   (fact ":string-splitonspaces pushes the space-delimited parts of :string onto the stack"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items string-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction  ?get-stack   ?expected
     ;; chunks
@@ -741,7 +741,7 @@
 (tabular
   (fact ":string-substring clips out the substring determined by two :int args (with cropping and sorting)"
     (check-instruction-with-all-kinds-of-stack-stuff
-        ?new-stacks classic-string-type ?instruction) => (contains ?expected))
+        ?new-stacks string-type ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction       ?expected
 
@@ -770,7 +770,7 @@
 (tabular
   (fact ":string-take returns first (mod idx (count string)) characters"
     (check-instruction-with-all-kinds-of-stack-stuff
-        ?new-stacks classic-string-type ?instruction) => (contains ?expected))
+        ?new-stacks string-type ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction       ?expected
 
@@ -818,7 +818,7 @@
 (tabular
   (fact ":string-stackdepth returns the number of items on the :string stack (to :integer)"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items string-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; how many?
@@ -830,7 +830,7 @@
 (tabular
   (fact ":string-empty? returns the true (to :boolean stack) if the stack is empty"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items string-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction  ?get-stack     ?expected
     ;; none?
@@ -844,7 +844,7 @@
 (tabular
   (fact ":string-equal? returns a :boolean indicating whether :first = :second"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items string-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction      ?get-stack     ?expected
     ;; same?
@@ -861,7 +861,7 @@
 (tabular
   (fact ":string-notequal? returns a :boolean indicating whether :first ≠ :second"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items string-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items           ?instruction  ?get-stack     ?expected
     ;; different
@@ -881,7 +881,7 @@
 (tabular
   (fact ":string<? returns a :boolean indicating whether :first < :second"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items string-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items       ?instruction  ?get-stack     ?expected
     ;; string comparisons are pretty weird, actually
@@ -904,7 +904,7 @@
 (tabular
   (fact ":string≤? returns a :boolean indicating whether :first ≤ :second"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items string-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items       ?instruction  ?get-stack     ?expected
     ;; string comparisons are pretty weird, actually
@@ -928,7 +928,7 @@
 (tabular
   (fact ":string≥? returns a :boolean indicating whether :first ≥ :second"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items string-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items       ?instruction  ?get-stack     ?expected
     ;; string comparisons are pretty weird, actually
@@ -951,7 +951,7 @@
 (tabular
   (fact ":string>? returns a :boolean indicating whether :first > :second"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items string-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items       ?instruction  ?get-stack     ?expected
     ;; string comparisons are pretty weird, actually
@@ -974,7 +974,7 @@
 (tabular
   (fact ":string-max returns the 'larger' of the top two :string items"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items string-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction  ?get-stack     ?expected
     ;; note: these use (compare A B), not (< A B)
@@ -990,7 +990,7 @@
 (tabular
   (fact ":string-min returns the 'smaller' of the top two :string items"
     (register-type-and-check-instruction
-        ?set-stack ?items classic-string-type ?instruction ?get-stack) => ?expected)
+        ?set-stack ?items string-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items           ?instruction  ?get-stack     ?expected
     ;; note: these use (compare A B), not (< A B)
