@@ -49,7 +49,7 @@
       (and (nil? num1) (nil? num2))
     :else
       (neg? (.compareTo
-              (ApfloatMath/abs (.subtract num1 num2))
+              (ApfloatMath/abs (.subtract (apf num1) (apf num2)))
               equality-cutoff))))
 
 
@@ -245,10 +245,10 @@
 (defn distance-between
   "returns the radial distance between two points"
   [p1 p2]
-    (let [x1 (:x p1)
-          y1 (:y p1)
-          x2 (:x p2)
-          y2 (:y p2)]
+    (let [x1 (apf (:x p1))
+          y1 (apf (:y p1))
+          x2 (apf (:x p2))
+          y2 (apf (:y p2))]
     (ApfloatMath/sqrt
       (.add (.multiply (.subtract x2 x1) (.subtract x2 x1))
             (.multiply (.subtract y2 y1) (.subtract y2 y1))))))
@@ -475,12 +475,12 @@
 (defn line-to-point-distance
   "given a line and a point, returns the shortest (perpendicular) distance"
   [line point]
-  (let [x0 (:x point)
-        y0 (:y point)
-        x1 (:x (:p1 line))
-        y1 (:y (:p1 line))
-        x2 (:x (:p2 line))
-        y2 (:y (:p2 line))
+  (let [x0 (apf (:x point))
+        y0 (apf (:y point))
+        x1 (apf (:x (:p1 line)))
+        y1 (apf (:y (:p1 line)))
+        x2 (apf (:x (:p2 line)))
+        y2 (apf (:y (:p2 line)))
         d (distance-between (:p1 line) (:p2 line))]
     (.divide
       (ApfloatMath/abs
@@ -981,37 +981,6 @@
     (d/calculate [:arg1 :arg2] #(not (circle-equal? %1 %2)) :as :result)
     (d/push-onto :boolean :result)))
 
-
-; [X] `:circle->points`  (produces (edge, origin) on :exec)
-; [X] `:circle<-points`  (takes (origin, edge) from :points)
-; [X] `:line->points`  (produces (B, A) on :exec)
-; [X] `:line<-points`  (takes (A, B) from :points)
-; [X] `:circle-coincide?`
-; [X] `:circle-concentric?` (shared centers)
-; [X] `:circle-equal?`
-; [X] `:circle-inside?`
-; [X] `:circle-intersect?`
-; [X] `:circle-intersections` (with another circle)
-; [X] `:circle-nested?`
-; [X] `:circle-notequal?`
-; [X] `:circle-separate?`
-; [X] `:circle-surrounds?`
-; [X] `:circle-tangent?` (to another circle)
-; [X] `:LC-intersect?` (line-circle)
-; [X] `:LC-intersections` zero, one or two `:point` items
-; [X] `:LC-miss?` (line-circle)
-; [X] `:LC-tangent?` (line-circle)
-; [X] `:line-coincide?`
-; [X] `:line-equal?`
-; [X] `:line-intersect?`
-; [X] `:line-intersection`
-; [X] `:line-notequal?`
-; [X] `:line-parallel?`
-; [X] `:point-equal?`
-; [X] `:point-inside?`
-; [X] `:point-notequal?`
-; [X] `:point-oncircle?`
-; [X] `:point-online?`
 
 
 ;;; push types

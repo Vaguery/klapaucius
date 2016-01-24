@@ -184,7 +184,7 @@
 (def code-first (t/simple-1-in-1-out-instruction 
   "`:code-first` examines the top `:code` item to determine if it's a Collection. If 
   it is, the function returns its first item, otherwise the item itself it returned."
-  :code "first" #(if (coll? %) (first %) %)))
+  :code "first" #(if (seq? %) (first %) %)))
 
 
 (def code-if

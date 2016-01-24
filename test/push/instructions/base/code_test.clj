@@ -324,13 +324,23 @@
         ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
-    ;; pick a card
     :code    '((1.1) (8 9))       :code-first        :code        '(1.1 (8 9))
     :code    '((2 3))             :code-first        :code        '(2)
     :code    '(() 3)              :code-first        :code        '(3)
     :code    '(2)                 :code-first        :code        '(2)
     :code    '(((3)))             :code-first        :code        '((3))
     :code    '()                  :code-first        :code        '())
+
+
+(tabular
+  (fact ":code-first does not affect other collection types (like maps, records or sets)"
+    (register-type-and-check-instruction
+        ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items            ?instruction      ?get-stack     ?expected
+    :code    '([1 2 3])           :code-first        :code        '([1 2 3])
+    :code    '({:a 8 :b 7})       :code-first        :code        '({:a 8 :b 7})
+    )
 
 
 (tabular
