@@ -51,7 +51,7 @@
       (t/attach-instruction , (v/x-do*each-instruction typename))
       (t/attach-instruction , (v/x-emptyitem?-instruction typename))
       (t/attach-instruction , (v/x-first-instruction typename componentname))
-      (t/attach-instruction , (v/x-fromexample-instruction typename componentname))
+      (t/attach-instruction , (v/x-byexample-instruction typename componentname))
       (t/attach-instruction , (v/x-indexof-instruction typename componentname))
       (t/attach-instruction , (v/x-last-instruction typename componentname))
       (t/attach-instruction , (v/x-length-instruction typename))

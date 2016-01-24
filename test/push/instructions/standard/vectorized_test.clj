@@ -181,26 +181,26 @@
 
 
 (tabular
-  (fact "`foos-fromexample` pops the top :foos item, and builds a new :foos from the :foo stack items (if there are enough), pushing both back to :foos"
+  (fact "`foos-byexample` pops the top :foos item, and builds a new :foos from the :foo stack items (if there are enough), pushing both back to :foos"
     (check-instruction-with-all-kinds-of-stack-stuff
         ?new-stacks foos-type ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction          ?expected
 
     {:foos   '([1 2 3])
-     :foo    '(9 8 7 6 5)}   :foos-fromexample   {:foos   '([9 8 7] [1 2 3])
+     :foo    '(9 8 7 6 5)}   :foos-byexample   {:foos   '([9 8 7] [1 2 3])
                                                   :foo    '(6 5)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos   '([1])
-     :foo    '(9 8 7 6 5)}   :foos-fromexample   {:foos   '([9] [1])
+     :foo    '(9 8 7 6 5)}   :foos-byexample   {:foos   '([9] [1])
                                                   :foo    '(8 7 6 5)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos   '([])
-     :foo    '(9 8 7 6 5)}   :foos-fromexample   {:foos   '([] [])
+     :foo    '(9 8 7 6 5)}   :foos-byexample   {:foos   '([] [])
                                                   :foo    '(9 8 7 6 5)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos   '([1 2 3])
-     :foo    '(9 8)}         :foos-fromexample   {:foos   '([1 2 3])
+     :foo    '(9 8)}         :foos-byexample   {:foos   '([1 2 3])
                                                   :foo    '(9 8)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )

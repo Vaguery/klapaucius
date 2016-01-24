@@ -180,7 +180,7 @@
 
 
 (tabular
-  (fact "`vector-fromexample` pops a :vector and builds a new one from :code items, of the same length"
+  (fact "`vector-byexample` pops a :vector and builds a new one from :code items, of the same length"
     (check-instruction-with-all-kinds-of-stack-stuff
       ?new-stacks standard-vector-type ?instruction) => 
     (contains ?expected))
@@ -188,15 +188,15 @@
     ?new-stacks             ?instruction             ?expected
 
     {:vector  '([1 2 3])
-     :code    '(7 8 9 7)}   :vector-fromexample     {:vector  '([7 8 9] [1 2 3])
+     :code    '(7 8 9 7)}   :vector-byexample     {:vector  '([7 8 9] [1 2 3])
                                                      :code '(7)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:vector  '([])
-     :code    '(7 8 9 7)}   :vector-fromexample     {:vector  '([] [])
+     :code    '(7 8 9 7)}   :vector-byexample     {:vector  '([] [])
                                                      :code '(7 8 9 7)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:vector  '([1 2 3])
-     :code    '(7 7)}       :vector-fromexample     {:vector  '([1 2 3])
+     :code    '(7 7)}       :vector-byexample     {:vector  '([1 2 3])
                                                      :code '(7 7)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )

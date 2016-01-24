@@ -98,7 +98,7 @@ user=> (push/get-stack (push/run runner [1 :burden :integer-add] 300 :inputs {:b
 
 
 user=> (push/known-instructions runner)
-(:strings-cutflip :integers-yankdup :integer-max :line-circle-miss? :floats-length :string-cutstack :print-space :integer-multiply :strings-shatter :integers-contains? :char-lowercase? :booleans-rotate :float->boolean :string-butlast :code-return-pop :string-min :strings-stackdepth :set-return :integers-print :string-occurrencesofchar :push-inputset :integer-sign :circle-yank :char-max :exec-do*count :string-stackdepth :booleans-last :circle-swap :integers-set :integers-fromexample :vector-replace :code-flipstack :exec-pop :boolean-dup :integers-take :line-print :integer-mod :set-flipstack :integers-replacefirst :string>? :environment-stackdepth :string->float :vector-return-pop :set-pop :string->integer :floats-contains? :strings-equal?
+(:strings-cutflip :integers-yankdup :integer-max :line-circle-miss? :floats-length :string-cutstack :print-space :integer-multiply :strings-shatter :integers-contains? :char-lowercase? :booleans-rotate :float->boolean :string-butlast :code-return-pop :string-min :strings-stackdepth :set-return :integers-print :string-occurrencesofchar :push-inputset :integer-sign :circle-yank :char-max :exec-do*count :string-stackdepth :booleans-last :circle-swap :integers-set :integers-byexample :vector-replace :code-flipstack :exec-pop :boolean-dup :integers-take :line-print :integer-mod :set-flipstack :integers-replacefirst :string>? :environment-stackdepth :string->float :vector-return-pop :set-pop :string->integer :floats-contains? :strings-equal?
 ;;... a HUGE list of known instructions will follow
 )
 
