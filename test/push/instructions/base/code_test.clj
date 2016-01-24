@@ -706,6 +706,19 @@
 
 
 
+
+(tabular
+  (fact ":code-subst DOES NOT change the contents of vectors, maps, records, sets etc"
+    (register-type-and-check-instruction
+        ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items            ?instruction      ?get-stack     ?expected
+    :code    '(99 2 [1 2 3 4])      :code-subst        :code        '([1 2 3 4])
+    :code    '(99 2 #{1 2 3 4})      :code-subst        :code        '(#{1 2 3 4})
+    :code    '(99 2 {2 1, 4 3})      :code-subst        :code        '({2 1, 4 3}))
+
+
+
 (tabular
   (fact ":code-wrap returns a :the top :code item in an extra list layer"
     (register-type-and-check-instruction

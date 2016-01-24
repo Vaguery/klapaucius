@@ -1,6 +1,5 @@
 (ns push.util.code-wrangling
   (:require [clojure.zip :as zip])
-  (:require [clojure.walk :as w])
   )
 
 
@@ -74,9 +73,25 @@
 
 (defn replace-in-code
   "Takes three Push :code items, and traverses the first argument in a depth-first order, replacing every occurrence of the second arg (if any) with the third."
-  [code old new]
-  (w/postwalk-replace {old new} code))
+  [code old-code new-code]
+  (let [placeholder (gensym)]
+    (loop [loc (zip/seq-zip code)]
+      (if (zip/end? loc)
+        (loop [fixing (zip/seq-zip (zip/root loc))]
+          (if (zip/end? fixing)
+            (zip/root fixing)
+            (recur
+              (if (= (zip/node fixing) placeholder)
+                (zip/next (zip/replace fixing new-code))
+                (zip/next fixing)))))
+        (recur
+          (if (= (zip/node loc) old-code)
+            (zip/next (zip/replace loc placeholder))
+            (zip/next loc)))))))
 
+
+
+  ; (w/postwalk-replace {old new} code)
 
 (defn replace-nth-in-code
   "Takes two Push :code items and an integer, and replaces the node (counted in depth-first order) of the first code with the second code item."
