@@ -461,6 +461,24 @@
                                :string  '(), 
                                :unknown '()}))
 
+;; checking for program typography for Lee et al
+
+(fact "I can run a program that is passed in as a seq"
+  (:stacks (run-n
+            (c/classic-interpreter 
+              :program '(1 2 ((false :integer-add) (true)) :boolean-or)
+              :config {:step-limit 1000}) 1000)) => (contains
+                              {:boolean '(true), 
+                               :char    '(), 
+                               :code    '(), 
+                               :error   '(), 
+                               :exec    '(), 
+                               :float   '(), 
+                               :integer '(3),
+                               :print   '(), 
+                               :string  '(), 
+                               :unknown '()}))
+
 
 (def forever-8
   (c/classic-interpreter :program [1 :exec-y 8]))
@@ -530,8 +548,7 @@
   (u/get-stack (last-changed-step simple-things 22000) :exec) => '()
 
   (:counter (last-changed-step forever-8 1000)) => 1000
-  (u/get-stack (last-changed-step forever-8 1000) :exec) => '(:exec-y 8)
-  )
+  (u/get-stack (last-changed-step forever-8 1000) :exec) => '(:exec-y 8))
 
 
 (fact "`run-until-done` runs an Interpreter until it reaches the first step when `:done?` is true"
@@ -542,5 +559,35 @@
 
   (:counter (run-until-done forever-8)) => 0 ; because it's step-limit isn't set explicitly!
 
-  (:counter (run-until-done (assoc-in forever-8 [:config :step-limit] 1300))) => 1300
-)
+  (:counter (run-until-done (assoc-in forever-8 [:config :step-limit] 1300))) => 1300)
+
+
+
+;; push-program-to-code
+
+
+(fact "push-program-to-code pushes the stored :program (as a code block) to :code stack"
+  (u/get-stack (push-program-to-code forever-8) :code) => '((1 :exec-y 8))
+
+  (u/get-stack (push-program-to-code simple-things) :code) =>
+    '((1 2 false :integer-add true :boolean-or)))
+
+
+;; reset-interpreter and push-program-to-code
+
+
+(fact "reset-interpreter will invoke push-program-to-code if :config contains {:preload-code? true}"
+  (u/get-stack (reset-interpreter knows-some-things) :code) => '()
+
+  (:config knows-some-things) => {:lenient? false, :max-collection-size 131072, :step-limit 23}
+  
+  (:config
+    (reset-interpreter
+      (reconfigure knows-some-things {:preload-code? true}))) =>
+    {:lenient? false, :preload-code? true, :max-collection-size 131072, :step-limit 23}
+
+
+  (u/get-stack
+    (reset-interpreter
+      (reconfigure knows-some-things {:preload-code? true}))
+    :code) => '((1.1 2.2 :intProductToFloat)))

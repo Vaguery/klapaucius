@@ -103,6 +103,16 @@
       (add-instruction interpreter instruction)))
 
 
+;;; reconfigure
+
+
+(defn reconfigure
+  "takes an interpreter and a map of configuration pairs, and merges the map with the current interpreter map"
+  [interpreter new-config]
+  (let [old-config (:config interpreter)]
+    (assoc interpreter :config (merge old-config new-config))))
+
+
 ;;; manipulating Interpreter state
 
 
@@ -252,6 +262,20 @@
       (reduce #(assoc %1 %2 '()) {} stacklist))))
 
 
+(defn push-program-to-code
+  "when called, this copies the stored `:program` into the `:code` stack as a block"
+  [interpreter]
+  (push-item interpreter :code (seq (:program interpreter))))
+
+
+(defn prep-code-stack
+  "when called, this checks the :config of the interpreter and if :preload-code? is truthy it will copy the :program to a code block on top of the :code stack"
+  [interpreter]
+  (if (get-in interpreter [:config :preload-code?])
+    (push-program-to-code interpreter)
+    interpreter))
+
+
 (defn reset-interpreter
   "takes an Interpreter instance and:
   - sets the counter to 0
@@ -261,7 +285,8 @@
     (-> interpreter
         (clear-all-stacks)
         (assoc , :counter 0)
-        (load-items :exec (:program interpreter))))
+        (load-items :exec (:program interpreter))
+        prep-code-stack))
 
 
 (defn recycle-interpreter

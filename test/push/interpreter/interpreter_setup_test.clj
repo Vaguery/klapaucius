@@ -28,6 +28,9 @@
   (:program (m/basic-interpreter :program [1 2 3])) => [1 2 3])
 
 
+(fact "a Push program can be passed as a seq if desired"
+  (:program (m/basic-interpreter :program '(1 2 3))) => [1 2 3])
+
 ;; config defaults
 
 
@@ -567,5 +570,17 @@
 (fact "push-item will create a stack if told to"
   (u/get-stack (push-item just-basic :foo [1 :weird :thing]) :foo) =>
     '([1 :weird :thing]))
+
+
+;; reconfigure
+
+
+(fact "reconfigure merges its argument hash with the interpreter's current :config"
+  (let [some-config (m/basic-interpreter :config {:lenient? true :foo 8})]
+    (:config some-config) => 
+      {:foo 8, :lenient? true, :max-collection-size 131072, :step-limit 0}
+      
+    (:config (reconfigure some-config {:foo nil :bar 888})) =>
+      {:bar 888, :foo nil, :lenient? true, :max-collection-size 131072, :step-limit 0}))
 
 
