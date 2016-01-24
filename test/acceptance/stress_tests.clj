@@ -8,6 +8,7 @@
   (:use [push.interpreter.core])
   (:use [push.interpreter.templates.one-with-everything])
   (:require [demo.examples.plane-geometry.definitions :as geom])
+  (:require [push.instructions.extra.stack-combinators :as combo])
   )
 
 
@@ -131,10 +132,21 @@
 ;; (timeout 100 #(do (Thread/sleep 1000) (println "I finished")))
 
 
+(def geometry-types
+  (map combo/extend-combinators
+    [geom/push-circle geom/push-line geom/push-point]))
+
+
+(defn overloaded-interpreter
+  [& args]
+  (-> (apply make-everything-interpreter args)
+      (register-types geometry-types)))
+
+
 (defn random-program-interpreter
   [i len]
   (let [some-junk (into [] (remove nil? (bunch-a-junk (make-everything-interpreter) i)))
-        interpreter (make-everything-interpreter 
+        interpreter (overloaded-interpreter 
                       :config {:step-limit 50000}
                       :inputs some-junk)]
     (assoc interpreter :program (into [] (bunch-a-junk interpreter len)))))

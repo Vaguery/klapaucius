@@ -44,9 +44,9 @@
     standard-vector-type
     standard-set-type
 
-    push-circle  ;; demo.examples.plane-geometry.definitions
-    push-line
-    push-point
+    ; push-circle  ;; demo.examples.plane-geometry.definitions
+    ; push-line
+    ; push-point
 
     ]))
 
