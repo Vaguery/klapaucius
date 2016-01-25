@@ -42,9 +42,6 @@
       `(push.instructions.dsl/push-onto ~typename :new-vector)))))
 
 
-
-
-
 (defn x-do*each-instruction
   ;; NOTE as a side-effect of the continuation form, there will be an empty vector at the end of the iteration; this will be sent to the :vector stack or the :unknown stack by the router, depending on what types are registered
   [typename]
