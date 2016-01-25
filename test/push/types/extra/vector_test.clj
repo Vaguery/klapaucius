@@ -47,3 +47,4 @@
 
 (fact "standard-vector-type knows the :returnable instructions"
   (keys (:instructions standard-vector-type)) => (contains [:vector-return]))
+

@@ -43,6 +43,44 @@
 
 
 (tabular
+  (fact "`foos-build` pushes a new :foos vector by consuming as many :foo items as the :integer indicates"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks foos-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction     ?expected
+
+    {:foos    '([1 2 3])
+     :foo     '(7 77 777 7777)
+     :integer '(1)}            :foos-build       {:foos    '([7] [1 2 3])
+                                                  :foo     '(77 777 7777)
+                                                  :integer '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos    '([1 2 3])
+     :foo     '(7 77 777 7777)
+     :integer '(-1)}           :foos-build       {:foos    '([7 77 777] [1 2 3])
+                                                  :foo     '(7777)
+                                                  :integer '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos    '([1 2 3])
+     :foo     '(7 77 777 7777)
+     :integer '(0)}            :foos-build       {:foos    '([] [1 2 3])
+                                                  :foo     '(7 77 777 7777)
+                                                  :integer '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos    '([1 2 3])
+     :foo     '(7)
+     :integer '(99)}           :foos-build       {:foos    '([] [1 2 3])
+                                                  :foo     '(7)
+                                                  :integer '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos    '([1 2 3])
+     :foo     '()
+     :integer '(99)}           :foos-build       {:foos    '([] [1 2 3])
+                                                  :foo     '()
+                                                  :integer '()})
+
+
+(tabular
   (fact "`foos-concat` concatenates the top two foos vectors"
     (register-type-and-check-instruction
         ?set-stack ?items foos-type ?instruction ?get-stack) => ?expected)

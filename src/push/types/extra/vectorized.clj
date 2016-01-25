@@ -22,6 +22,29 @@
 ;; instructions
 
 
+(defn x-build-instruction
+  [typename rootname]
+  (let [instruction-name (str (name typename) "-build")]
+    (eval (list
+      'push.instructions.core/build-instruction
+      instruction-name
+      (str "`" typename "-build` pops the top `:integer` item, and calculates an index modulo the size of the `:" rootname "` stack. It takes the stack, down to that index, and pushes a new `:" typename "` vector out of those elements (top element last in the vector).")
+      :tags #{:vector}
+      `(push.instructions.dsl/consume-top-of :integer :as :where)
+      `(push.instructions.dsl/consume-stack ~rootname :as :items) 
+      `(push.instructions.dsl/calculate 
+        [:where :items] #(fix/safe-mod %1 (count %2)) :as :idx)
+      `(push.instructions.dsl/calculate 
+        [:idx :items] #(into [] (take %1 %2)) :as :new-vector)
+      `(push.instructions.dsl/calculate 
+        [:idx :items] #(drop %1 %2) :as :new-stack)
+      `(push.instructions.dsl/replace-stack ~rootname :new-stack)
+      `(push.instructions.dsl/push-onto ~typename :new-vector)))))
+
+
+
+
+
 (defn x-do*each-instruction
   ;; NOTE as a side-effect of the continuation form, there will be an empty vector at the end of the iteration; this will be sent to the :vector stack or the :unknown stack by the router, depending on what types are registered
   [typename]
@@ -438,6 +461,7 @@
           aspects/make-quotable
           aspects/make-returnable
           (t/attach-instruction , (x-butlast-instruction typename))
+          (t/attach-instruction , (x-build-instruction typename rootname))
           (t/attach-instruction , (x-concat-instruction typename))
           (t/attach-instruction , (x-conj-instruction typename rootname))
           (t/attach-instruction , (x-contains?-instruction typename rootname))
