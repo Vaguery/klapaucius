@@ -184,6 +184,20 @@
 
 
 
+(def float-ln1p
+  (core/build-instruction
+    float-ln1p
+    "`:float-ln1p` pops the top `:float` value. If it is a value greater than -1.0, `(Math/log1p x)` is pushed; otherwise, it replaces the argument and an error is pushed to the :error stack."
+    :tags #{:arithmetic :base :dangerous}
+    (d/consume-top-of :float :as :arg)
+    (d/calculate [:arg] #(<= %1 -1.0) :as :bad-arg?)
+    (d/calculate [:bad-arg? :arg] #(if %1 %2 (Math/log1p %2)) :as :result)
+    (d/calculate [:bad-arg? :arg]
+      #(if %1 (str ":float-ln1p bad arg: " %2) nil) :as :warning)
+    (d/push-onto :float :result)
+    (d/record-an-error :from :warning)))
+
+
 (def float-log10
   (core/build-instruction
     float-log10
@@ -318,6 +332,7 @@
         (t/attach-instruction , float-π)
         (t/attach-instruction , float-inc)
         (t/attach-instruction , float-ln)
+        (t/attach-instruction , float-ln1p)
         (t/attach-instruction , float-log10)
         (t/attach-instruction , float-mod)
         (t/attach-instruction , float-multiply)

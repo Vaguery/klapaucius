@@ -267,6 +267,21 @@
                                     '({:item ":float-ln bad arg: 0.0", :step 0}))
 
 
+(tabular
+  (fact ":float-ln1p returns the natural logarithm of (1.0+x), or an error"
+    (register-type-and-check-instruction
+        ?set-stack ?items float-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items      ?instruction    ?get-stack   ?expected
+    :float      '(11.0)      :float-ln1p      :float      (list (Math/log1p 11))
+    :float      '(-11.0)     :float-ln1p      :float     '(-11.0)
+    :float      '(-11.0)     :float-ln1p      :error
+                                    '({:item ":float-ln1p bad arg: -11.0", :step 0})
+    :float      '(0.0)       :float-ln1p      :error       '()
+    :float      '(-1.0)      :float-ln1p      :error       
+                                    '({:step 0, :item ":float-ln1p bad arg: -1.0"}))
+
+
 
 (tabular
   (fact ":float-log10 returns the natural logarithm, or an error"
