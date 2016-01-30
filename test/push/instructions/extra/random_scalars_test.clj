@@ -11,15 +11,28 @@
 
 (tabular
   (fact ":integer-uniform returns a random integer between 0 and the top :integer value"
-    (prerequisite (rand-int anything) => ?diceroll)
+    (prerequisite (typesafe-rand-int anything) => ?diceroll)
     (register-type-and-check-instruction
       ?set-stack ?items random-scalars-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack   ?items    ?instruction     ?get-stack     ?expected         ?diceroll
     :integer     '(77)     :integer-uniform     :integer       '(33)           33
-    :integer     '(8)      :integer-uniform     :integer       '(2)            2
     :integer     '(0)      :integer-uniform     :integer       '(0)            812
-    :integer     '(-100)   :integer-uniform     :integer       '(-13)          13)
+    :integer     '(-100)   :integer-uniform     :integer       '(-13)          13
+    )
+
+
+(tabular
+  (fact ":integer-uniform does not throw a java.lang.IllegalArgumentException error when called with a BigInt argument"
+    (register-type-and-check-instruction
+      ?set-stack ?items random-scalars-module ?instruction ?get-stack) =not=>
+          (throws))
+
+    ?set-stack   ?items                                            ?instruction         ?get-stack
+    :integer     '(10000000000000000000000000000000000000000000N)  :integer-uniform     :integer     
+    :integer     '(115428383193968912)                             :integer-uniform     :integer     
+    )
+
 
 
 

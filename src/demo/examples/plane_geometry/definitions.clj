@@ -144,13 +144,14 @@
 (defn slope
   "returns the slope of a Push `:line` item, or the keyword `:infinity` if the line is vertical"
   [line]
-  (let [x1 (:x (:p1 line))
-        y1 (:y (:p1 line))
-        x2 (:x (:p2 line))
-        y2 (:y (:p2 line))]
+  (let [x1 (apf (:x (:p1 line)))
+        y1 (apf (:y (:p1 line)))
+        x2 (apf (:x (:p2 line)))
+        y2 (apf (:y (:p2 line)))]
     (if (pretty-much-equal? x1 x2)
       :infinity
       (.divide (.subtract y2 y1) (.subtract x2 x1)))))
+
 
 
 (defn vertical?
@@ -158,9 +159,11 @@
   (pretty-much-equal? (:x (:p1 line)) (:x (:p2 line))))
 
 
+
 (defn horizontal?
   [line]
   (pretty-much-equal? (:y (:p1 line)) (:y (:p2 line))))
+
 
 
 (defn intercept
@@ -176,6 +179,7 @@
       )))
   
 
+
 (defn lines-coincide?
   "returns `true` if the lines have the same canonical equation"
   [line1 line2]
@@ -188,6 +192,7 @@
       (and
         (pretty-much-equal? (slope line1) (slope line2))
         (pretty-much-equal? (intercept line1) (intercept line2)))))
+
 
 
 (defn lines-are-parallel?
