@@ -24,6 +24,17 @@
 
 
 (tabular
+  (fact ":integer-abs returns the absolute value"
+    (register-type-and-check-instruction
+        ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items    ?instruction       ?get-stack     ?expected
+    :integer    '(4 20)   :integer-abs       :integer        '(4 20)
+    :integer    '(-4 20)   :integer-abs      :integer        '(4 20)
+    :integer    '(0 20)   :integer-abs       :integer        '(0 20))
+
+
+(tabular
   (fact ":integer-add returns the sum, auto-promoting overflows"
     (register-type-and-check-instruction
         ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)

@@ -4,6 +4,7 @@
   (:require [push.instructions.dsl :as d])
   (:require [push.util.code-wrangling :as fix])
   (:require [push.instructions.aspects :as aspects])
+  (:require [clojure.math.numeric-tower :as math])
   )
 
 
@@ -13,6 +14,11 @@
 (defn sign [i] (compare i 0))
 
 
+(def integer-abs (t/simple-1-in-1-out-instruction
+  "`:integer-abs` pushes the absolute value of the top `:integer` item"
+  :integer "abs" 'math/abs))
+
+
 (def integer-add (t/simple-2-in-1-out-instruction
   "`:integer-add` pops the top two `:integer` items, and pushes their sum"
   :integer "add" '+'))
@@ -20,7 +26,7 @@
 
 (def integer-dec (t/simple-1-in-1-out-instruction
   "`:integer-dec` subtracts 1 from the top `:integer` item"
-  :integer "dec" 'dec'))
+  :integer "dec" 'dec))
 
 
 (def integer-divide
@@ -44,7 +50,7 @@
 
 (def integer-inc (t/simple-1-in-1-out-instruction
   "`:integer-inc` adds 1 to the top `:integer` item"
-  :integer "inc" 'inc'))
+  :integer "inc" 'inc))
 
 
 (def integer-mod
@@ -145,6 +151,7 @@
         aspects/make-printable
         aspects/make-quotable
         aspects/make-returnable
+        (t/attach-instruction , integer-abs)
         (t/attach-instruction , integer-add)
         (t/attach-instruction , integer-dec)
         (t/attach-instruction , integer-divide)

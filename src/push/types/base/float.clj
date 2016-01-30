@@ -3,7 +3,13 @@
   (:require [push.types.core :as t])
   (:require [push.instructions.dsl :as d])
   (:require [push.instructions.aspects :as aspects])
+  (:require [clojure.math.numeric-tower :as math])
   )
+
+
+(def float-abs (t/simple-1-in-1-out-instruction
+  "`:float-abs` pushes the abs of the top `:float` item"
+  :float "abs" 'math/abs))
 
 
 (def float-add (t/simple-2-in-1-out-instruction
@@ -149,6 +155,7 @@
         aspects/make-printable
         aspects/make-quotable
         aspects/make-returnable
+        (t/attach-instruction , float-abs)
         (t/attach-instruction , float-add)
         (t/attach-instruction , float-cosine)
         (t/attach-instruction , float-dec)

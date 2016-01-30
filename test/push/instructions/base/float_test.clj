@@ -176,6 +176,21 @@
 
 
 (tabular
+  (fact ":float-abs returns absolute value"
+    (register-type-and-check-instruction
+        ?set-stack ?items float-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items      ?instruction  ?get-stack   ?expected
+    ;; down we go
+    :float    '(11.0 -5.0)  :float-abs    :float     '(11.0 -5.0)
+    :float    '(-3.0 -5.0)  :float-abs    :float     '(3.0 -5.0)
+    ;; big numbers
+    :float    '(-3.1e-77M)  :float-abs   :float      '(3.1e-77M))
+
+
+
+
+(tabular
   (fact ":float-dec returns the value reduced by 1.0"
     (register-type-and-check-instruction
         ?set-stack ?items float-type ?instruction ?get-stack) => ?expected)
