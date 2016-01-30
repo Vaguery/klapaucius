@@ -97,6 +97,52 @@
     :float    '()           :float-cosine    :float     '())
 
 
+(tabular
+  (fact ":float-arccosine returns the arccosine(x), or an error if out of range"
+    (register-type-and-check-instruction
+        ?set-stack ?items float-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items      ?instruction  ?get-stack   ?expected
+    ;; 
+    :float    '(0.0)        :float-arccosine    :float     (list (/ Math/PI 2.0))
+    :float    '(1.0)        :float-arccosine    :float     '(0.0)
+    ;; bad args
+    :float    '(11.0)       :float-arccosine    :float     '(11.0)
+    :float    '(11.0)       :float-arccosine    :error 
+                                     '({:step 0, :item ":float-arccosine bad arg: 11.0"})
+    :float    '(-1.0)       :float-arccosine    :float      (list (Math/PI)))
+
+
+
+(tabular
+  (fact ":float-arcsine returns the arcsine(x), or an error if out of range"
+    (register-type-and-check-instruction
+        ?set-stack ?items float-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items      ?instruction  ?get-stack   ?expected
+    ;; 
+    :float    '(0.0)        :float-arcsine    :float     '(0.0)
+    :float    '(1.0)        :float-arcsine    :float     (list (/ Math/PI 2.0))
+    ;; bad args
+    :float    '(11.0)       :float-arcsine    :float     '(11.0)
+    :float    '(11.0)       :float-arcsine    :error 
+                                     '({:step 0, :item ":float-arcsine bad arg: 11.0"}))
+
+
+
+(tabular
+  (fact ":float-arctangent returns the arctangent(x)"
+    (register-type-and-check-instruction
+        ?set-stack ?items float-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items      ?instruction  ?get-stack   ?expected
+    ;; 
+    :float    '(0.0)        :float-arctangent    :float     '(0.0)
+    :float    '(2.0)        :float-arctangent    :float     (list (Math/atan 2.0))
+    ;; bad args
+    :float    '(1121221.0M) :float-arctangent    :float     (list (Math/atan 1121221.0M)))
+
+
 
 (tabular
   (fact ":float-divide returns the quotient, unless the denominator is 0.0"
@@ -333,10 +379,14 @@
         ?set-stack ?items float-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items      ?instruction  ?get-stack   ?expected
-    ;; wavy
     :float    '(0.0)        :float-tangent    :float     '(0.0)
     :float    (list 3.0)
                             :float-tangent    :float     (list (Math/tan 3.0))
+
+    ;; bad arguments
+    ;; 
+    ;; there doesn't appear to be a way to force a NaN result from (Math/tan x)
+    ;; so this test does not test the :error condition!
 
     ;; missing args
     :float    '()           :float-tangent    :float     '())

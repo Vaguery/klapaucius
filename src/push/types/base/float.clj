@@ -7,9 +7,11 @@
   )
 
 
+
 (def float-abs (t/simple-1-in-1-out-instruction
   "`:float-abs` pushes the abs of the top `:float` item"
   :float "abs" 'math/abs))
+
 
 
 (def float-add (t/simple-2-in-1-out-instruction
@@ -17,14 +19,53 @@
   :float "add" '+'))
 
 
+
 (def float-cosine (t/simple-1-in-1-out-instruction
   "`:float-cosine` pushes the cosine of the top `:float` item, read as radians"
   :float "cosine" #(Math/cos %1)))
 
 
+
+(def float-arccosine
+  (core/build-instruction
+    float-arccosine
+    "`:float-arccosine` pops the top `:float` value, and if it is between -1.0 and 1.0 it returns the arccos(theta), between 0.0 and π; otherwise it replaces the argument and adds an :error"
+    :tags #{:arithmetic :base :dangerous}
+    (d/consume-top-of :float :as :arg)
+    (d/calculate [:arg] #(or (> %1 1.0) (< %1 -1.0)) :as :bad-arg?)
+    (d/calculate [:bad-arg? :arg] #(if %1 %2 (Math/acos %2)) :as :result)
+    (d/calculate [:bad-arg? :arg]
+      #(if %1 (str ":float-arccosine bad arg: " %2) nil) :as :warning)
+    (d/push-onto :float :result)
+    (d/record-an-error :from :warning)))
+
+
+
+(def float-arcsine
+  (core/build-instruction
+    float-arcsine
+    "`:float-arcsine` pops the top `:float` value, and if it is between -1.0 and 1.0 it returns the arcsin(theta), between 0.0 and π; otherwise it replaces the argument and adds an :error"
+    :tags #{:arithmetic :base :dangerous}
+    (d/consume-top-of :float :as :arg)
+    (d/calculate [:arg] #(or (> %1 1.0) (< %1 -1.0)) :as :bad-arg?)
+    (d/calculate [:bad-arg? :arg] #(if %1 %2 (Math/asin %2)) :as :result)
+    (d/calculate [:bad-arg? :arg]
+      #(if %1 (str ":float-arcsine bad arg: " %2) nil) :as :warning)
+    (d/push-onto :float :result)
+    (d/record-an-error :from :warning)))
+
+
+
+(def float-arctangent (t/simple-1-in-1-out-instruction
+  ":`float-arctangent` pops the top `:float` and pushes atan(theta) (assuming the angle lies between ±π/2) to `:float`"
+  :float "arctangent" #(Math/atan %)))
+
+
+
 (def float-dec (t/simple-1-in-1-out-instruction
   ":`float-dec` reduces the top `:float` value by 1.0"
   :float "dec" 'dec'))
+
 
 
 (def float-divide
@@ -44,6 +85,7 @@
     (d/record-an-error :from :warning)))
 
 
+
 (def boolean->float
   (core/build-instruction
     boolean->float
@@ -52,6 +94,7 @@
     (d/consume-top-of :boolean :as :arg)
     (d/calculate [:arg] #(if %1 1.0 0.0) :as :result)
     (d/push-onto :float :result)))
+
 
 
 (def char->float
@@ -64,6 +107,7 @@
     (d/push-onto :float :result)))
 
 
+
 (def integer->float
   (core/build-instruction
     integer->float
@@ -72,6 +116,7 @@
     (d/consume-top-of :integer :as :arg)
     (d/calculate [:arg] #(double %1) :as :result)
     (d/push-onto :float :result)))
+
 
 
 (def string->float
@@ -86,6 +131,7 @@
     (d/push-onto :float :result)))
 
 
+
 (def boolean->signedfloat
   (core/build-instruction
     boolean->signedfloat
@@ -96,6 +142,7 @@
     (d/push-onto :float :result)))
 
 
+
 (def float-E
   (core/build-instruction
     float-E
@@ -103,6 +150,7 @@
     :tags #{:arithmetic :base}
     (d/calculate [] #(Math/E) :as :e)
     (d/push-onto :float :e)))
+
 
 
 (def float-π
@@ -118,6 +166,7 @@
 (def float-inc (t/simple-1-in-1-out-instruction
   "`:float-inc` adds 1.0 to the top `:float` item"
   :float "inc" 'inc'))
+
 
 
 (def float-ln
@@ -164,8 +213,8 @@
     (d/push-these-onto :float [:replacement :quotient])
     (d/calculate [:denominator]
       #(if (zero? %1) ":float-mod 0 denominator" nil) :as :warning)
-    (d/record-an-error :from :warning)
-))
+    (d/record-an-error :from :warning)))
+
 
 
 (def float-subtract (t/simple-2-in-1-out-instruction
@@ -173,9 +222,11 @@
   :float "subtract" '-'))
 
 
+
 (def float-multiply (t/simple-2-in-1-out-instruction
   "`:float-multiply` pops the top two `:float` items, and pushes the product"
   :float "multiply" '*'))
+
 
 
 (def float-sign (t/simple-1-in-1-out-instruction
@@ -183,14 +234,27 @@
   :float "sign" #(float (compare %1 0.0))))
 
 
+
 (def float-sine (t/simple-1-in-1-out-instruction
   "`:float-sine` pushes the sine of the top `:float` item, read as an angle in radians"
   :float "sine" #(Math/sin %1)))
 
 
-(def float-tangent (t/simple-1-in-1-out-instruction
-  "`:float-tangent` pushes the tangent of the top `:float` item, read as an angle in radians"
-  :float "tangent" #(Math/tan %1)))
+
+(def float-tangent
+  (core/build-instruction
+    float-tangent
+    "`:float-tangent` pops the top `:float` value and calculates tan(theta). If the result is a non-infinite number, it pushes that to :float; otherwise, it returns the argument to :float and pushes an :error"
+    :tags #{:arithmetic :base :dangerous}
+    (d/consume-top-of :float :as :arg)
+    (d/calculate [:arg] #(Double/isNaN (Math/tan %1)) :as :bad-arg?)
+    (d/calculate [:bad-arg? :arg] #(if %1 %2 (Math/tan %2)) :as :result)
+    (d/calculate [:bad-arg? :arg]
+      #(if %1 (str ":float-tangent bad arg: " %2) nil) :as :warning)
+    (d/push-onto :float :result)
+    (d/record-an-error :from :warning)))
+
+
 
 
 (def float-type
@@ -206,6 +270,9 @@
         aspects/make-returnable
         (t/attach-instruction , float-abs)
         (t/attach-instruction , float-add)
+        (t/attach-instruction , float-arccosine)
+        (t/attach-instruction , float-arcsine)
+        (t/attach-instruction , float-arctangent)
         (t/attach-instruction , float-cosine)
         (t/attach-instruction , float-dec)
         (t/attach-instruction , float-divide)
