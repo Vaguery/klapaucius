@@ -1,4 +1,4 @@
-(ns push.instructions.extra.random-numbers
+(ns push.instructions.extra.random-scalars
   (:require [push.instructions.core :as core])
   (:require [push.types.core :as t])
   (:require [push.instructions.dsl :as d])
@@ -29,13 +29,23 @@
 
 
 
+(def boolean-faircoin
+  (core/build-instruction
+    boolean-faircoin
+    "`:boolean-faircoin` pushes a random `:boolean` value, with equal probability `true` or `false`."
+    :tags #{:logical :random}
+    (d/calculate [] #(< (rand) 0.5) :as :result)
+    (d/push-onto :boolean :result)))
+
+
 ;;;;;;;;;;;;;;;;;
 
 
-(def random-numbers-module
-  ( ->  (t/make-module  :random-numbers
+(def random-scalars-module
+  ( ->  (t/make-module  :random-scalars
                         :attributes #{:numeric :random})
 
         (t/attach-instruction , integer-uniform)
         (t/attach-instruction , float-uniform)
+        (t/attach-instruction , boolean-faircoin)
         ))

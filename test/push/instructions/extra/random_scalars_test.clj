@@ -1,0 +1,51 @@
+(ns push.instructions.extra.random-scalars-test
+  (:use midje.sweet)
+  (:use [push.util.test-helpers])
+  (:require [push.interpreter.core :as i])
+  (:require [push.types.core :as t])
+  (:require [push.util.code-wrangling :as u])
+  (:use push.instructions.extra.random-scalars)
+  )
+
+
+
+(tabular
+  (fact ":integer-uniform returns a random integer between 0 and the top :integer value"
+    (prerequisite (rand-int anything) => ?diceroll)
+    (register-type-and-check-instruction
+      ?set-stack ?items random-scalars-module ?instruction ?get-stack) => ?expected)
+
+    ?set-stack   ?items    ?instruction     ?get-stack     ?expected         ?diceroll
+    :integer     '(77)     :integer-uniform     :integer       '(33)           33
+    :integer     '(8)      :integer-uniform     :integer       '(2)            2
+    :integer     '(0)      :integer-uniform     :integer       '(0)            812
+    :integer     '(-100)   :integer-uniform     :integer       '(-13)          13)
+
+
+
+(tabular
+  (fact ":float-uniform returns a random float between 0 and the top :float value"
+    (prerequisite (rand) => ?diceroll)
+    (register-type-and-check-instruction
+      ?set-stack ?items random-scalars-module ?instruction ?get-stack) => ?expected)
+
+    ?set-stack   ?items    ?instruction     ?get-stack     ?expected     ?diceroll
+    :float      '(50.0)    :float-uniform      :float         '(25.0)      0.5  
+    :float      '(8.0)     :float-uniform      :float         '(2.0)       0.25
+    :float      '(0.0)     :float-uniform      :float         '(0.0)       0.5
+    :float      '(-100.0)  :float-uniform      :float         '(-26.0)     0.26)
+
+
+
+(tabular
+  (fact ":boolean-faircoin returns a random :boolean value"
+    (prerequisite (rand) => ?diceroll )
+    (register-type-and-check-instruction
+      ?set-stack ?items random-scalars-module ?instruction ?get-stack) => ?expected)
+
+    ?set-stack   ?items    ?instruction         ?get-stack     ?expected     ?diceroll
+    :boolean     '()       :boolean-faircoin    :boolean       '(true)          0.1
+    :boolean     '()       :boolean-faircoin    :boolean       '(false)         0.9
+    :boolean     '()       :boolean-faircoin    :boolean       '(false)         0.5
+    :boolean     '()       :boolean-faircoin    :boolean       '(true)          0.0
+    )
