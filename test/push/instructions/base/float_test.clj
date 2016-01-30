@@ -322,6 +322,63 @@
                             :float-multiply   :float     '(7.5E-176))
 
 
+(tabular
+  (fact ":float-power returns `(Math/pow base exponent)` to :float, or an :error"
+    (register-type-and-check-instruction
+        ?set-stack ?items float-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items      ?instruction  ?get-stack   ?expected
+    :float    '(0.0 0.0)        :float-power    :float     '(1.0)
+    :float    '(1.0 0.0)        :float-power    :float     '(1.0)
+    :float    '(2.0 2.0)        :float-power    :float     '(4.0)
+    :float    '(2.0 1.0)        :float-power    :float     '(2.0)
+    :float    '(2.0 3.0)        :float-power    :float     '(8.0)
+    :float    '(4.0 0.5)        :float-power    :float     '(2.0)
+    :float    '(11.1 0.5)       :float-power    :float     (list (Math/sqrt 11.1))
+
+    ;; negative values
+    :float    '(-1.0 0.0)        :float-power    :float     '(1.0)
+    :float    '(-2.0 2.0)        :float-power    :float     '(4.0)
+    :float    '(2.0 -1.0)        :float-power    :float     '(0.5)
+    :float    '(-2.0 -3.0)       :float-power    :float     '(-0.125)
+    :float    '(16.0 -0.25)      :float-power    :float     '(0.5)
+
+    ;; round to 0.0
+    :float    '(9.0 -1000)         :float-power    :float     '(0.0)  
+    :float    '(-9.0 -1000)        :float-power    :float     '(0.0)    
+
+    ;; non-numeric results
+    :float    '(-1.0 0.5)        :float-power    :float     '(-1.0 0.5)  
+    :float    '(-1.0 0.5)        :float-power    :error
+                                        '({:step 0, :item "(Double/pow -1.0 0.5) is NaN"})  
+    :float    '(1111.0 1111.0)   :float-power    :float     '(1111.0 1111.0)  
+    :float    '(1111.0 1111.0)   :float-power    :error
+                                  '({:item "(Double/pow 1111.0 1111.0) is Infinity", :step 0})  
+    :float    '(-1111.0 1111.0)  :float-power    :float     '(-1111.0 1111.0)  
+    :float    '(-1111.0 1111.0)  :float-power    :error
+                                  '({:item "(Double/pow -1111.0 1111.0) is -Infinity", :step 0})  
+  )
+
+
+
+(tabular
+  (fact ":float-sqrt returns `(Math/sqrt arg)` to :float, or an :error"
+    (register-type-and-check-instruction
+        ?set-stack ?items float-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items      ?instruction  ?get-stack   ?expected
+    :float    '(0.0)        :float-sqrt    :float     '(0.0)
+    :float    '(4.0)        :float-sqrt    :float     '(2.0)
+    :float    '(16.0)       :float-sqrt    :float     '(4.0)
+    :float    '(0.25)       :float-sqrt    :float     '(0.5)
+    :float    '(0.81)       :float-sqrt    :float     '(0.9)
+
+    ;; negative values
+    :float    '(-1.0)        :float-sqrt    :float     '(-1.0)
+    :float    '(-1.0)        :float-sqrt    :error
+                                    '({:item ":float-sqrt bad arg: -1.0", :step 0}))
+
+
 
 (tabular
   (fact ":float-sine returns the sine(x)"
@@ -329,7 +386,6 @@
         ?set-stack ?items float-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items      ?instruction  ?get-stack   ?expected
-    ;; up we go
     :float    '(0.0)        :float-sine    :float     '(0.0)
     :float    (list (/ Math/PI 2))
                             :float-sine    :float     '(1.0)
@@ -337,6 +393,7 @@
     :float    '(-3.0)  :float-sine    :float     '(-0.1411200080598672)
     ;; missing args
     :float    '()           :float-sine    :float     '())
+
 
 
 (tabular

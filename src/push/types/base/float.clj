@@ -217,6 +217,40 @@
 
 
 
+(def float-power
+  (core/build-instruction
+    float-power
+    "`:float-power` pops the top two `:float` values (call them `base` and `exponent` respectively). It calculates `(Math/pow base exponent)`. If the result is a `Double`, it is pushed to `:float`; otherwise, the arguments are pushed back where they were, and an `:error` is pushed."
+    :tags #{:arithmetic :base :dangerous}
+    (d/consume-top-of :float :as :base)
+    (d/consume-top-of :float :as :exp)
+    (d/calculate [:base :exp] #(Math/pow %1 %2) :as :prelim)
+    (d/calculate [:prelim] #(or (Double/isNaN %1) (Double/isInfinite %1)) :as :bad-arg?)
+    (d/calculate [:bad-arg? :prelim :base] #(if %1 %3 %2) :as :result1)
+    (d/calculate [:bad-arg? :prelim :exp] #(if %1 %3 nil) :as :result2)
+    (d/calculate [:bad-arg? :prelim :base :exp]
+      #(if %1 (str "(Double/pow " %3 " " %4 ") is " %2) nil) :as :warning)
+    (d/push-these-onto :float [:result2 :result1])
+    (d/record-an-error :from :warning)
+  ))
+
+
+
+(def float-sqrt
+  (core/build-instruction
+    float-sqrt
+    "`:float-sqrt` pops the top `:float` value. If it's not negative, its square root is pushed; otherwise, the argument is replaced on `:float` and an error is pushed to the `:error` stack."
+    :tags #{:arithmetic :base :dangerous}
+    (d/consume-top-of :float :as :arg)
+    (d/calculate [:arg] #(neg? %1) :as :bad-arg?)
+    (d/calculate [:bad-arg? :arg] #(if %1 %2 (Math/sqrt %2)) :as :result)
+    (d/calculate [:bad-arg? :arg]
+      #(if %1 (str ":float-sqrt bad arg: " %2) nil) :as :warning)
+    (d/push-onto :float :result)
+    (d/record-an-error :from :warning)))
+
+
+
 (def float-subtract (t/simple-2-in-1-out-instruction
   "`:float-subtract` pops the top two `:float` items, and pushes the difference of the top item subtracted from the second"
   :float "subtract" '-'))
@@ -288,7 +322,9 @@
         (t/attach-instruction , float-mod)
         (t/attach-instruction , float-multiply)
         (t/attach-instruction , float-sine)
+        (t/attach-instruction , float-power)
         (t/attach-instruction , float-sign)
+        (t/attach-instruction , float-sqrt)
         (t/attach-instruction , boolean->signedfloat)
         (t/attach-instruction , float-subtract)
         (t/attach-instruction , float-tangent)

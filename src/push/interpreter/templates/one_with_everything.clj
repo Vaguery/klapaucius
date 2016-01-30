@@ -22,6 +22,7 @@
   (:use push.instructions.extra.stack-combinators)
   (:use push.instructions.extra.introspection)
   (:use push.instructions.extra.numeric-scaling)
+  (:use push.instructions.extra.random-scalars)
 
   (:use demo.examples.plane-geometry.definitions)
   )
@@ -62,6 +63,7 @@
      
      standard-introspection-module
      numeric-scaling-module
+     random-scalars-module
      ]))
 
 
