@@ -154,6 +154,25 @@
                             :float-mod   :float     '(2.7E-88M))
 
 
+(tabular
+  (fact ":float-E pushes the natural logarithm base"
+    (register-type-and-check-instruction
+        ?set-stack ?items float-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items      ?instruction  ?get-stack   ?expected
+    :float      '()         :float-E       :float      '(2.718281828459045))
+
+
+
+(tabular
+  (fact ":float-π pushes π to :float"
+    (register-type-and-check-instruction
+        ?set-stack ?items float-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items      ?instruction  ?get-stack   ?expected
+    :float      '()         :float-π       :float      '(3.141592653589793))
+
+
 
 (tabular
   (fact ":float-inc returns the number increased by 1.0"

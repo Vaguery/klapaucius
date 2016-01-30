@@ -96,6 +96,25 @@
     (d/push-onto :float :result)))
 
 
+(def float-E
+  (core/build-instruction
+    float-E
+    "`:float-E` pushes the value e (the base of the natural logarithms)."
+    :tags #{:arithmetic :base}
+    (d/calculate [] #(Math/E) :as :e)
+    (d/push-onto :float :e)))
+
+
+(def float-π
+  (core/build-instruction
+    float-π
+    "`:float-π` pushes the value e (the base of the natural logarithms)."
+    :tags #{:arithmetic :base}
+    (d/calculate [] #(Math/PI) :as :pi)
+    (d/push-onto :float :pi)))
+
+
+
 (def float-inc (t/simple-1-in-1-out-instruction
   "`:float-inc` adds 1.0 to the top `:float` item"
   :float "inc" 'inc'))
@@ -194,6 +213,8 @@
         (t/attach-instruction , char->float)
         (t/attach-instruction , integer->float)
         (t/attach-instruction , string->float)
+        (t/attach-instruction , float-E)
+        (t/attach-instruction , float-π)
         (t/attach-instruction , float-inc)
         (t/attach-instruction , float-ln)
         (t/attach-instruction , float-log10)
