@@ -181,11 +181,40 @@
         ?set-stack ?items float-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items      ?instruction  ?get-stack   ?expected
-    ;; down we go
     :float    '(11.0 -5.0)  :float-abs    :float     '(11.0 -5.0)
     :float    '(-3.0 -5.0)  :float-abs    :float     '(3.0 -5.0)
     ;; big numbers
     :float    '(-3.1e-77M)  :float-abs   :float      '(3.1e-77M))
+
+
+
+(tabular
+  (fact ":float-ln returns the natural logarithm, or an error"
+    (register-type-and-check-instruction
+        ?set-stack ?items float-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items      ?instruction  ?get-stack   ?expected
+    :float      '(11.0)      :float-ln      :float      (list (Math/log 11))
+    :float      '(-11.0)     :float-ln      :float     '(-11.0)
+    :float      '(-11.0)     :float-ln      :error
+                                    '({:item ":float-ln bad arg: -11.0", :step 0})
+    :float      '(0.0)       :float-ln      :error
+                                    '({:item ":float-ln bad arg: 0.0", :step 0}))
+
+
+
+(tabular
+  (fact ":float-log10 returns the natural logarithm, or an error"
+    (register-type-and-check-instruction
+        ?set-stack ?items float-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items      ?instruction  ?get-stack   ?expected
+    :float      '(11.0)      :float-log10      :float      (list (Math/log10 11))
+    :float      '(-11.0)     :float-log10      :float     '(-11.0)
+    :float      '(-11.0)     :float-log10      :error
+                                    '({:item ":float-log10 bad arg: -11.0", :step 0})
+    :float      '(0.0)       :float-log10      :error
+                                    '({:item ":float-log10 bad arg: 0.0", :step 0}))
 
 
 

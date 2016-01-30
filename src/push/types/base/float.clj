@@ -101,6 +101,36 @@
   :float "inc" 'inc'))
 
 
+(def float-ln
+  (core/build-instruction
+    float-ln
+    "`:float-ln` pops the top `:float` value. If it is a positive (non-zero) value, its natural logarithm is pushed; otherwise, it replaces the argument and an error is pushed to the :error stack."
+    :tags #{:arithmetic :base :dangerous}
+    (d/consume-top-of :float :as :arg)
+    (d/calculate [:arg] #( (complement pos?) %1) :as :bad-arg?)
+    (d/calculate [:bad-arg? :arg] #(if %1 %2 (Math/log %2)) :as :result)
+    (d/calculate [:bad-arg? :arg]
+      #(if %1 (str ":float-ln bad arg: " %2) nil) :as :warning)
+    (d/push-onto :float :result)
+    (d/record-an-error :from :warning)))
+
+
+
+(def float-log10
+  (core/build-instruction
+    float-log10
+    "`:float-log10` pops the top `:float` value. If it is a positive (non-zero) value, its base-10 logarithm is pushed; otherwise, it replaces the argument and an error is pushed to the :error stack."
+    :tags #{:arithmetic :base :dangerous}
+    (d/consume-top-of :float :as :arg)
+    (d/calculate [:arg] #( (complement pos?) %1) :as :bad-arg?)
+    (d/calculate [:bad-arg? :arg] #(if %1 %2 (Math/log10 %2)) :as :result)
+    (d/calculate [:bad-arg? :arg]
+      #(if %1 (str ":float-log10 bad arg: " %2) nil) :as :warning)
+    (d/push-onto :float :result)
+    (d/record-an-error :from :warning)))
+
+
+
 (def float-mod
   (core/build-instruction
     float-mod
@@ -165,6 +195,8 @@
         (t/attach-instruction , integer->float)
         (t/attach-instruction , string->float)
         (t/attach-instruction , float-inc)
+        (t/attach-instruction , float-ln)
+        (t/attach-instruction , float-log10)
         (t/attach-instruction , float-mod)
         (t/attach-instruction , float-multiply)
         (t/attach-instruction , float-sine)
