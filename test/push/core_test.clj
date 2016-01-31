@@ -9,8 +9,8 @@
 
 
 (fact "I can set input values"
-  (keys (:inputs (p/interpreter :inputs [7 2 3]))) => '(:input!1 :input!2 :input!3)
-  (:inputs (p/interpreter :inputs {:a 8 :b false})) =>  {:a 8, :b false})
+  (keys (:bindings (p/interpreter :bindings [7 2 3]))) => '(:input!1 :input!2 :input!3)
+  (:bindings (p/interpreter :bindings {:a 8 :b false})) =>  {:a 8, :b false})
 
 
 (fact "I can set a program"
@@ -24,7 +24,7 @@
 
 
 (fact "I can produce a list of input names (keywords) from an interpreter"
-  (p/input-names (p/interpreter :inputs {:a 2 :b 7})) => [:a :b] )
+  (p/binding-names (p/interpreter :bindings {:a 2 :b 7})) => [:a :b] )
 
 
 (fact "I can produce a list of types and modules loaded into the interpreter"
@@ -41,7 +41,7 @@
 
 
 (fact "I can re-run an interpreter with bound inputs, replacing the input values"
-  (let [a-99 (p/interpreter :inputs {:a 99})]
+  (let [a-99 (p/interpreter :bindings {:a 99})]
     (p/get-stack
         (p/run
           a-99
@@ -52,13 +52,13 @@
           a-99
           [:a 99 :integer-add]
           100
-          :inputs {:a -99}) :integer) => '(0)
+          :bindings {:a -99}) :integer) => '(0)
     (p/get-stack
         (p/run
           a-99
           [:a 99 :integer-add :b]
           100
-          :inputs {:b -99}) :integer) => '(-99 198)))
+          :bindings {:b -99}) :integer) => '(-99 198)))
 
 
 

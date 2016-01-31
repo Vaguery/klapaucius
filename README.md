@@ -47,7 +47,7 @@ Using `leiningen`, add the following dependency to your `project.clj`
 
 (def runner
   (push/interpreter
-    :inputs {:speed 88.2 :burden 2 :african? false}))
+    :bindings {:speed 88.2 :burden 2 :african? false}))
 
 (def my-push-program [1 :burden :integer-add])
 
@@ -65,7 +65,7 @@ Using `leiningen`, add the following dependency to your `project.clj`
 user=> (require '[push.core :as push])
 ;; nil
 
-user=> (def runner (push/interpreter :inputs {:speed 8.1 :burden 2 :african? false}))
+user=> (def runner (push/interpreter :bindings {:speed 8.1 :burden 2 :african? false}))
 #'user/runner
 
 ;; don't do this except to learn a lesson:
@@ -91,9 +91,9 @@ user=> (push/get-stack ran-it :integer)
 
 
 ;; push/run requires 3 arguments: an interpreter, a program, and a step limit
-;; but it permits an optional :inputs argument (a hashmap)
+;; but it permits an optional :bindings argument (a hashmap)
 ;; plus several other optional arguments (see docs)
-user=> (push/get-stack (push/run runner [1 :burden :integer-add] 300 :inputs {:burden 87}) :integer)
+user=> (push/get-stack (push/run runner [1 :burden :integer-add] 300 :bindings {:burden 87}) :integer)
 (88)
 
 
@@ -107,7 +107,7 @@ user=> (push/input-names runner)
 (:speed :burden :african?)
 
 
-user=> (:inputs runner)
+user=> (:bindings runner)
 {:speed 8.1, :burden 2, :african? false}
 
 

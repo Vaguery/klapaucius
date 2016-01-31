@@ -198,11 +198,11 @@ All scratch variables are referred to by Clojure keywords (not symbols). These a
 
   Saves the current interpreter counter value in `local`.
 
-- [X] `save-inputs [:as local]`
+- [X] `save-bindings [:as local]`
 
-  Example: `save-inputs :as :all-variables`
+  Example: `save-bindings :as :all-variables`
 
-  Saves a Clojure `set` containing all registered inputs names in scratch variable `local`.
+  Saves a Clojure `set` containing all registered bindings names in scratch variable `local`.
 
 - [X] `save-instructions [:as local]`
 

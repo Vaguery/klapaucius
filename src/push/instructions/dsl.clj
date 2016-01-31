@@ -390,10 +390,10 @@
       [interpreter (assoc scratch as result)])))
 
 
-(defn save-inputs
-  "Saves a set containing all the registered :input keywords to the named scratch variable"
+(defn save-bindings
+  "Saves a set containing all the registered :bindings keywords to the named scratch variable"
   [[interpreter scratch] & {:keys [as]}]
-  (let [varnames (into #{} (keys (:inputs interpreter)))]
+  (let [varnames (into #{} (keys (:bindings interpreter)))]
     (if (nil? as)
           (oops/throw-missing-key-exception :as)
        [interpreter (assoc scratch as varnames)])))

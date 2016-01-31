@@ -25,11 +25,11 @@
 
 
 (defn interpreter
-  "Creates a new Push interpreter and returns it. Keyword arguments permit setting the :program, :stacks, :inputs, :instructions, :config, :counter, or :done? flag."
-  [& {:keys [program stacks inputs config counter done?]
+  "Creates a new Push interpreter and returns it. Keyword arguments permit setting the :program, :stacks, :bindings, :instructions, :config, :counter, or :done? flag."
+  [& {:keys [program stacks bindings config counter done?]
       :or {program []
            stacks {}
-           inputs {}
+           bindings {}
            config {}
            counter 0
            done? false}}]
@@ -37,7 +37,7 @@
     (owe/make-everything-interpreter
       :program program
       :stacks stacks
-      :inputs inputs
+      :bindings bindings
       :config config
       :counter counter
       :done? done?)))
@@ -49,10 +49,10 @@
   (keys (:instructions interpreter)))
 
 
-(defn input-names
-  "Given an interpreter, returns a list of the keywords linked to defined inputs in that particular instance"
+(defn binding-names
+  "Given an interpreter, returns a list of the keywords linked to defined bindings in that particular instance"
   [interpreter]
-  (keys (:inputs interpreter)))
+  (keys (:bindings interpreter)))
 
 
 (defn types-and-modules
@@ -68,13 +68,13 @@
 
 
 (defn run
-  "Creates a new Push interpreter, using that to run the specified program for the specified number of steps. Uses :one-with-everything as a default template; :input bindings can be specified (only in map format) using the optional :input keyword argument."
-  [interpreter program steps & {:keys [inputs] :or {inputs {}}}]
+  "Creates a new Push interpreter, using that to run the specified program for the specified number of steps. Uses :one-with-everything as a default template; :bindings can be specified (only in map format) using the optional :binding keyword argument."
+  [interpreter program steps & {:keys [bindings] :or {bindings {}}}]
   (i/run-n
     (-> interpreter
       (assoc :program program)
       (assoc :config (merge (:config interpreter) {:step-limit steps}))
-      (assoc :inputs (merge (:inputs interpreter) inputs)))
+      (assoc :bindings (merge (:bindings interpreter) bindings)))
     steps))
 
 

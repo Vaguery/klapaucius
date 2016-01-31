@@ -96,15 +96,15 @@
 
   - :program (defaults to an empty vector)
   - :stacks (a hashmap, with contents)
-  - :inputs (either a vector of values or a hashmap of named bindings)
+  - :bindings (either a vector of values or a hashmap of named bindings)
   - :config
   - :counter
 
   (other interpreter values should be set after initialization)"
-  [& {:keys [program stacks inputs config counter done?]
+  [& {:keys [program stacks bindings config counter done?]
       :or {program []
            stacks {}
-           inputs {}
+           bindings {}
            instructions {}
            config {}
            counter 0
@@ -121,5 +121,5 @@
                         done?)
         (register-types all-kinds-of-types)
         (register-modules all-kinds-of-modules)
-        (register-inputs inputs)
+        (register-inputs bindings)
         )))

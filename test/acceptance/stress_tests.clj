@@ -90,7 +90,7 @@
 
 (defn any-input
   [interpreter]
-  (rand-nth (keys (:inputs interpreter))))
+  (rand-nth (keys (:bindings interpreter))))
 
 
 (defn any-instruction
@@ -148,7 +148,7 @@
   (let [some-junk (into [] (remove nil? (bunch-a-junk (make-everything-interpreter) i)))
         interpreter (overloaded-interpreter 
                       :config {:step-limit 50000}
-                      :inputs some-junk)]
+                      :bindings some-junk)]
     (assoc interpreter :program (into [] (bunch-a-junk interpreter len)))))
 
 
@@ -164,7 +164,7 @@
           (str "caught exception: " 
              (.getMessage e)
              " running "
-             (pr-str (:program interpreter)) "\n" (pr-str (:inputs interpreter))))
+             (pr-str (:program interpreter)) "\n" (pr-str (:bindings interpreter))))
           (throw (Exception. (.getMessage e)))))))
 
 
@@ -190,7 +190,7 @@
                       [:config :step-limit] 5000)] 
           (try
             (timeout 30000 #(do
-              ; (println (str "\n\n" n " : " (pr-str (:program rando)) "\n" (pr-str (:inputs rando))))
+              ; (println (str "\n\n" n " : " (pr-str (:program rando)) "\n" (pr-str (:bindings rando))))
               (loop [s rando]
                 (if (is-done? s)
                   (println (str n "  " (:counter s)))
@@ -202,7 +202,7 @@
                                       (str "caught exception: " 
                                          (.getMessage e)
                                          " running "
-                                         (pr-str (:program rando)) "\n" (pr-str (:inputs rando))))
+                                         (pr-str (:program rando)) "\n" (pr-str (:bindings rando))))
                                       (throw (Exception. (.getMessage e))))))))) =not=> (throws))
 
 

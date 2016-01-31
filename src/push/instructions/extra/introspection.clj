@@ -24,21 +24,21 @@
     (d/push-onto :set :dictionary)))
 
 
-(def push-inputset
+(def push-bindingset
   (core/build-instruction
-    push-inputset
-    "`:push-inputset` pushes a set containing all the registered :input keywords to the :set stack"
+    push-bindingset
+    "`:push-bindingset` pushes a set containing all the registered :bindings keywords to the :set stack"
     :tags #{:set :introspection}
-    (d/save-inputs :as :known)
+    (d/save-bindings :as :known)
     (d/push-onto :set :known)))
 
 
-(def push-inputs
+(def push-bindings
   (core/build-instruction
-    push-inputs
-    "`:push-inputs` pushes a list (in sorted order) containing all the registered :input keywords to the :code stack"
+    push-bindings
+    "`:push-bindings` pushes a list (in sorted order) containing all the registered :bindings keywords to the :code stack"
     :tags #{:introspection}
-    (d/save-inputs :as :known)
+    (d/save-bindings :as :known)
     (d/calculate [:known] #(into '() (reverse (sort %1))) :as :listed)
     (d/push-onto :code :listed)))
 
@@ -51,7 +51,7 @@
                         :attributes #{:introspection})
 
         (t/attach-instruction , push-counter)
-        (t/attach-instruction , push-inputs)
-        (t/attach-instruction , push-inputset)
+        (t/attach-instruction , push-bindings)
+        (t/attach-instruction , push-bindingset)
         (t/attach-instruction , push-instructionset)
         ))

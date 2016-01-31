@@ -30,7 +30,7 @@
       #'retrieve-all-stacks {}
       #'save-max-collection-size {}
       #'save-counter {}
-      #'save-inputs {}
+      #'save-bindings {}
       #'save-instructions {}
       #'save-nth-of {(second step) 1}
       #'save-stack {(second step) 0}
@@ -65,7 +65,7 @@
       #'record-an-error {:log 1}
       #'retrieve-all-stacks {}
       #'save-counter {:integer 1}
-      #'save-inputs {}
+      #'save-bindings {}
       #'save-instructions {}
       #'save-max-collection-size {}
       #'save-nth-of {}

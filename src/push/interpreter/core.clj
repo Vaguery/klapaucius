@@ -9,7 +9,7 @@
                         types
                         router
                         stacks
-                        inputs
+                        bindings
                         instructions 
                         config 
                         counter 
@@ -18,9 +18,9 @@
 
 (defn make-interpreter
   "simple wrapper around ->Interpreter"
-  [program types router stacks inputs instructions config counter done?]
+  [program types router stacks bindings instructions config counter done?]
   (->Interpreter
-    program types router stacks inputs instructions config counter done?))
+    program types router stacks bindings instructions config counter done?))
 
 
 (defn register-type
@@ -60,28 +60,28 @@
 
 
 (defn register-input
-  "Takes an Interpreter record, a keyword and any item, and adds the item as a value stored under the keyword in the :inputs hashmap."
+  "Takes an Interpreter record, a keyword and any item, and adds the item as a value stored under the keyword in the :bindings hashmap."
   ([interpreter value]
-    (let [next-index (inc (count (:inputs interpreter)))
+    (let [next-index (inc (count (:bindings interpreter)))
           next-input (keyword (str "input!" next-index))]
       (register-input interpreter next-input value)))
   ([interpreter kwd value]
-    (assoc-in interpreter [:inputs kwd] value)))
+    (assoc-in interpreter [:bindings kwd] value)))
 
 
 (defn register-inputs
-  "Takes an Interpreter record, and a hashmap of key-value items; merges them into the :inputs map if the Interpreter."
+  "Takes an Interpreter record, and a hashmap of key-value items; merges them into the :bindings map if the Interpreter."
   [interpreter values]
   (cond (vector? values)
     (reduce (partial register-input) interpreter values)
   :else
-    (assoc interpreter :inputs (merge (:inputs interpreter) values))))
+    (assoc interpreter :bindings (merge (:bindings interpreter) values))))
 
 
-(defn input?
-  "Takes an interpreter, and a keyword, and returns true if the keyword is a key in the :inputs hashmap"
+(defn bound-keyword?
+  "Takes an interpreter, and a keyword, and returns true if the keyword is a key in the :bindings hashmap"
   [interpreter kwd]
-  (contains? (:inputs interpreter) kwd))
+  (contains? (:bindings interpreter) kwd))
 
 
 (defn- add-instruction
@@ -239,14 +239,14 @@
 
 (defn handle-item
   "Takes an Interpreter and an item, and either recognizes and invokes
-  a keyword registered in that Interpreter as an input or instruction,
+  a keyword registered in that Interpreter as an binding or instruction,
   or sends the item to the correct stack (if it exists). Throws an
   exception if the Clojure expression is not recognized explicitly as
   a registered instruction or some other kind of Push literal."
   [interpreter item]
   (cond
-    (input? interpreter item)
-      (push-item interpreter :exec (item (:inputs interpreter)))
+    (bound-keyword? interpreter item)
+      (push-item interpreter :exec (item (:bindings interpreter)))
     (instruction? interpreter item)
       (execute-instruction interpreter item)
     (router-sees? interpreter item) (route-item interpreter item)
@@ -290,11 +290,11 @@
 
 
 (defn recycle-interpreter
-  "takes an Interpreter instance, a program and new inputs; resets and runs the new setup"
-  [interpreter program & {:keys [inputs] :or {inputs []}}]
+  "takes an Interpreter instance, a program and new bindings; resets and runs the new setup"
+  [interpreter program & {:keys [bindings] :or {bindings []}}]
     (-> interpreter
         (assoc , :program program)
-        (register-inputs , inputs)
+        (register-inputs , bindings)
         reset-interpreter))
 
 

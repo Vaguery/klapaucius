@@ -64,8 +64,8 @@
 ; - `instructions [:as kwd]`
 ;    save a list of all registered instructions in the named local
 
-; - `inputs [:as kwd]`
-;    save a list of all registered inputs in the named local
+; - `bindings [:as kwd]`
+;    save a list of all registered bindings in the named local
 
 ; - `counter [:as kwd]`
 ;    save the current interpreter counter value in the named local

@@ -30,7 +30,7 @@
     (throws #"Push Parsing Error: Cannot interpret '"))
 
 
-;; the router order is: :input? :instruction? [router] :unknown
+;; the router order is: :bound-keyword? :instruction? [router] :unknown
 
 
 (fact "`router-sees?` checks the router predicates and returns true if one matches"
@@ -194,11 +194,11 @@
 
 
 (fact "calling `recycle-interpreter` sets up new inputs (optionally)"
-  (:inputs knows-some-things) => {}
-  (:inputs (recycle-interpreter knows-some-things [])) => {}
-  (:inputs (recycle-interpreter knows-some-things [] :inputs [1 2 3])) =>
+  (:bindings knows-some-things) => {}
+  (:bindings (recycle-interpreter knows-some-things [])) => {}
+  (:bindings (recycle-interpreter knows-some-things [] :bindings [1 2 3])) =>
     {:input!1 1, :input!2 2, :input!3 3}
-  (:inputs (recycle-interpreter knows-some-things [] :inputs {:a 8 :b 11})) =>
+  (:bindings (recycle-interpreter knows-some-things [] :bindings {:a 8 :b 11})) =>
     {:a 8, :b 11})
 
 

@@ -37,7 +37,7 @@
 
   - :program (defaults to an empty vector)
   - :stacks (a hashmap, with contents)
-  - :inputs (either a vector of values or a hashmap of named bindings)
+  - :bindings (either a vector of values or a hashmap of named bindings)
   - :config
   - :router (a vector of routing rules)
   - :instructions (a hash-map of instructions by keyword name)
@@ -45,15 +45,15 @@
 
   (other interpreter values should be set after initialization)"
 
-  ; [program types router stacks inputs instructions config counter done?]
+  ; [program types router stacks bindings instructions config counter done?]
 
   [& {:keys 
-        [program types router stacks inputs instructions config counter done?]
+        [program types router stacks bindings instructions config counter done?]
       :or {program []
            types '()
            router []
            stacks {}
-           inputs {}
+           bindings {}
            instructions {}
            config {}
            counter 0
@@ -70,5 +70,5 @@
           counter
           done?)
         (i/register-types  , types)
-        (i/register-inputs , inputs)
+        (i/register-inputs , bindings)
   )))

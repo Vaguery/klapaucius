@@ -540,26 +540,26 @@
         (throws)))
 
 
-;; `save-inputs [:as where]`
+;; `save-bindings [:as where]`
 
 
-(facts "about `save-inputs`"
+(facts "about `save-bindings`"
 
-  (fact "all the inputs are saved as a set in the named scratch variable"
+  (fact "all the bindings are saved as a set in the named scratch variable"
     (get-local-from-dslblob :inp
-      (#'push.instructions.dsl/save-inputs [nada {}] :as :inp)) =>
+      (#'push.instructions.dsl/save-bindings [nada {}] :as :inp)) =>
         #{}
 
 
     (get-local-from-dslblob :inp
-      (#'push.instructions.dsl/save-inputs
-        [(m/basic-interpreter :inputs {:a 8 :b 6}) {}] :as :inp)) =>
+      (#'push.instructions.dsl/save-bindings
+        [(m/basic-interpreter :bindings {:a 8 :b 6}) {}] :as :inp)) =>
           #{:a :b})
 
 
   (fact "raises an exception when the :as arg is missing"
-      (#'push.instructions.dsl/save-inputs
-        [(m/basic-interpreter :inputs {:a 8 :b 6}) {}]) =>
+      (#'push.instructions.dsl/save-bindings
+        [(m/basic-interpreter :bindings {:a 8 :b 6}) {}]) =>
           (throws #"Push DSL argument error: missing key")))
 
 

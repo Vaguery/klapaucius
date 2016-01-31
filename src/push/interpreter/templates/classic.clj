@@ -38,20 +38,20 @@
 
   - :program (defaults to an empty vector)
   - :stacks (a hashmap, with contents)
-  - :inputs (either a vector of values or a hashmap of named bindings)
+  - :bindings (either a vector of values or a hashmap of named bindings)
   - :config
   - :counter
 
   (other interpreter values should be set after initialization)"
 
-  ; [program types router stacks inputs instructions config counter done?]
+  ; [program types router stacks bindings instructions config counter done?]
 
-  [& {:keys [program types router stacks inputs instructions config counter done?]
+  [& {:keys [program types router stacks bindings instructions config counter done?]
       :or {program []
            types '()
            router []
            stacks {}
-           inputs {}
+           bindings {}
            instructions {}
            config {}
            counter 0
@@ -82,6 +82,6 @@
                                push.types.modules.environment/environment-module
                                push.types.modules.print/print-module
                                ])
-        (i/register-inputs , inputs)
+        (i/register-inputs , bindings)
         )))
 

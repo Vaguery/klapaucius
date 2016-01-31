@@ -257,13 +257,13 @@
 ;; inputs
 
 
-(fact "a new Interpreter passed an :inputs vector will have the bindings registered"
-  (:inputs (m/basic-interpreter :inputs [1 2 3 4])) =>
+(fact "a new Interpreter passed an :bindings vector will have the bindings registered"
+  (:bindings (m/basic-interpreter :bindings [1 2 3 4])) =>
     {:input!1 1, :input!2 2, :input!3 3, :input!4 4})
 
 
-(fact "a new Interpreter passed an :inputs hashmap will have the bindings registered"
-  (:inputs (m/basic-interpreter :inputs {:a 2 :b 4})) => {:a 2, :b 4})
+(fact "a new Interpreter passed an :bindings hashmap will have the bindings registered"
+  (:bindings (m/basic-interpreter :bindings {:a 2 :b 4})) => {:a 2, :b 4})
 
 
 ;; config
@@ -384,10 +384,10 @@
   (:boolean (:stacks (c/classic-interpreter :stacks {:boolean '(:test)}))) => '(:test))
 
 
-(fact "`classic-interpreter` can have its :inputs set"
-  (:inputs classy) => {}
-  (:inputs (c/classic-interpreter :inputs [1 2 3])) => {:input!1 1, :input!2 2, :input!3 3}
-  (:inputs (c/classic-interpreter :inputs {:a 8 :b false})) => {:a 8, :b false})
+(fact "`classic-interpreter` can have its :bindings set"
+  (:bindings classy) => {}
+  (:bindings (c/classic-interpreter :bindings [1 2 3])) => {:input!1 1, :input!2 2, :input!3 3}
+  (:bindings (c/classic-interpreter :bindings {:a 8 :b false})) => {:a 8, :b false})
   
 
 (fact "`classic-interpreter` can have its :config set"
