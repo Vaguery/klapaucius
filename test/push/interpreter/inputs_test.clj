@@ -49,11 +49,19 @@
     (:bindings (bind-value knows-foo :foo 99)) => {:foo '(99 1 2 3)}))
 
 
-
-
 (fact "bind-value pushes the item onto a new stack, if it doesn't already exist"
   (let [knows-foo (assoc-in (m/basic-interpreter) [:bindings :foo] '(1 2 3))]
     (:bindings (bind-value knows-foo :bar 99)) => {:bar '(99), :foo '(1 2 3)}))
+
+
+(fact "bind-value does not push nil items"
+  (let [knows-foo (assoc-in (m/basic-interpreter) [:bindings :foo] '(1 2 3))]
+    (:bindings (bind-value knows-foo :foo nil)) => {:foo '(1 2 3)}))
+
+
+(fact "bind-value creates an empty stack even for nil items, if needed"
+  (let [knows-foo (assoc-in (m/basic-interpreter) [:bindings :foo] '(1 2 3))]
+    (:bindings (bind-value knows-foo :bar nil)) => {:bar '(), :foo '(1 2 3)}))
 
 
 ;; peek-at-binding

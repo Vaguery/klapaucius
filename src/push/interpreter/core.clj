@@ -60,10 +60,12 @@
 
 
 (defn bind-value
-  "Takes an interpreter, a keyword, and any item. If the keyword is already registered in the interpreter's :bindings hashmap, the item is pushed to that; otherwise, a new binding is made first."
+  "Takes an interpreter, a keyword, and any item. If the keyword is already registered in the interpreter's :bindings hashmap, the item is pushed to that; otherwise, a new binding is made first. If the item is nil, the binding is created (if necessary) but nothing is pushed to the stack."
   [interpreter kwd item]
   (let [current-stack (get-in interpreter [:bindings kwd] '())]
-    (assoc-in interpreter [:bindings kwd] (conj current-stack item))))
+    (if (nil? item)
+      (assoc-in interpreter [:bindings kwd] current-stack)
+      (assoc-in interpreter [:bindings kwd] (conj current-stack item)))))
 
 
 (defn peek-at-binding

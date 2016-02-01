@@ -9,33 +9,33 @@
   (:name ref-type) => :ref)
 
 
-(future-fact "ref-type has the expected :attributes"
+(fact "ref-type has the expected :attributes"
   (:attributes ref-type) =>
-    (contains #{:equatable :movable :complex :visible}))
+    (contains #{:equatable :movable :visible} :in-any-order :gaps-ok))
 
 
-(future-fact "ref-type knows the :equatable instructions"
+(fact "ref-type knows the :equatable instructions"
   (keys (:instructions ref-type)) =>
-    (contains [:code-equal? :code-notequal?] :in-any-order :gaps-ok))
+    (contains [:ref-equal? :ref-notequal?] :in-any-order :gaps-ok))
 
 
-(future-fact "ref-type does NOT know any :comparable instructions"
-  (keys (:instructions ref-type)) =not=> (contains [:code-max]))
+(fact "ref-type does NOT know any :comparable instructions"
+  (keys (:instructions ref-type)) =not=> (contains [:ref-max]))
 
 
-(future-fact "ref-type knows the :visible instructions"
+(fact "ref-type knows the :visible instructions"
   (keys (:instructions ref-type)) =>
-    (contains [:code-stackdepth :code-empty?] :in-any-order :gaps-ok))
+    (contains [:ref-stackdepth :ref-empty?] :in-any-order :gaps-ok))
 
 
-(future-fact "ref-type knows the :movable instructions"
+(fact "ref-type knows the :movable instructions"
   (keys (:instructions ref-type)) =>
-    (contains [:code-shove :code-pop :code-dup :code-rotate :code-yank :code-yankdup :code-flush :code-swap] :in-any-order :gaps-ok))
+    (contains [:ref-shove :ref-pop :ref-dup :ref-rotate :ref-yank :ref-yankdup :ref-flush :ref-swap] :in-any-order :gaps-ok))
 
 
-(future-fact "ref-type knows the :printable instructions"
-  (keys (:instructions ref-type)) => (contains [:code-print]))
+(fact "ref-type knows the :printable instructions"
+  (keys (:instructions ref-type)) => (contains [:ref-print]))
 
 
-(future-fact "ref-type knows the :returnable instructions"
-  (keys (:instructions ref-type)) => (contains [:code-return]))
+(fact "ref-type knows the :returnable instructions"
+  (keys (:instructions ref-type)) => (contains [:ref-return]))

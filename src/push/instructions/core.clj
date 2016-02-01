@@ -14,6 +14,7 @@
         resolved (resolve cmd)]
     (condp = resolved
       #'archive-all-stacks {:environment 0}
+      #'bind-item {}
       #'calculate {}
       #'consume-nth-of {(second step) 1}
       #'consume-stack {(second step) 0}
@@ -50,6 +51,7 @@
         resolved (resolve cmd)]
     (condp = resolved
       #'archive-all-stacks {}
+      #'bind-item {}
       #'calculate {}
       #'consume-nth-of {}
       #'consume-stack {}

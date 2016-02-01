@@ -872,9 +872,7 @@
   (let [prepped (core/recycle-interpreter
                 test-interpreter
                 [line1 line2 :line-intersection])]
-    (:stacks prepped) =>
-    `{:boolean (), :booleans (), :char (), :chars (), :circle (), :code (), :environment (), :error (), :exec (~line1 ~line2 :line-intersection), :float (), :floats (), :integer (), :integers (), :line (), :log (), :point (), :print (), :return (), :set (), :string (), :strings (), :unknown (), :vector ()}
-    
+    (u/get-stack prepped :exec) => (list line1 line2 :line-intersection)
     (u/get-stack (core/run-n prepped 1000) :point) => (list (make-point 3.0 4.0))))
 
 

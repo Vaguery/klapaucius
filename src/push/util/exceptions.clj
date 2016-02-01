@@ -16,6 +16,13 @@
                         "Unknown Push instruction:'" token "'"))))
 
 
+(defn throw-invalid-binding-key
+  [item]
+  (throw (Exception. (str 
+    "Push Runtime Error: Cannot use '" item "' as a :bindings key."))))
+
+
+
 (defn throw-unknown-push-item-error
   [item]
   (throw (Exception. (str 

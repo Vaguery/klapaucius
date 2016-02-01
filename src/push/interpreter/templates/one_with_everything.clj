@@ -8,6 +8,7 @@
   (:use push.types.base.float)
   (:use push.types.base.integer)
   (:use push.types.base.string)
+  (:use push.types.base.ref)
   (:use push.types.modules.environment)
   (:use push.types.modules.print)
   (:use push.types.modules.log)
@@ -34,12 +35,14 @@
     boolean-type
     char-type
     float-type
+    ref-type
     string-type
 
     (build-vectorized-type boolean-type)
     (build-vectorized-type char-type)
     (build-vectorized-type float-type)
     (build-vectorized-type integer-type)
+    (build-vectorized-type ref-type)
     (build-vectorized-type string-type)
 
     standard-vector-type

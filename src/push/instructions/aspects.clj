@@ -6,6 +6,7 @@
   (:use push.instructions.aspects.printable)
   (:use push.instructions.aspects.quotable)
   (:use push.instructions.aspects.returnable)
+  (:use push.instructions.aspects.storable)
   (:use push.instructions.aspects.visible)
   )
 
@@ -84,6 +85,14 @@
       (t/attach-instruction (return-pop-instruction pushtype))
       (assoc :attributes (conj (:attributes pushtype) :returnable))))
 
+
+
+(defn make-storable
+  "takes a PushType and adds the :storable attribute and the associated instructions"
+  [pushtype]
+  (-> pushtype
+      (t/attach-instruction (save-instruction pushtype))
+      (assoc :attributes (conj (:attributes pushtype) :storable))))
 
 
 (defn make-visible

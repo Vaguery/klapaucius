@@ -979,3 +979,34 @@
       (throws #"Push DSL argument error"))
 
   )
+
+
+;; `bind-item item :into kwd`
+
+(facts "about `bind-item`"
+
+  (fact "`bind-item` saves the item stored in the first arg into the ref stored in the :into arg"
+    (:bindings
+      (first 
+        (bind-item [afew {:foo 9 :bar :baz}] :foo :into :bar))) => {:baz '(9)})
+
+
+  (fact "`bind-item` saves the item into a new ref if none is named in :into"
+    (let [b (:bindings (first 
+              (bind-item [afew {:foo 9 :bar :baz}] :foo)))]
+      (vals b) => '((:foo))
+      (str (first (keys b))) => #":ref!\d+"))
+
+
+  (fact "`bind-item` throws an exception if the :into arg is not bound to a keyword"
+    (:bindings
+      (first 
+        (bind-item [afew {:foo 9 :bar "oops!"}] :foo :into :bar))) =>
+          (throws #"as a :bindings key"))
+
+
+  (fact "`bind-item` has no effect if the item argument is nil (and does not push nil!)"
+    (:bindings
+      (first 
+        (bind-item [afew {:foo nil :bar :baz}] :foo :into :bar))) => {:baz '()})
+  )

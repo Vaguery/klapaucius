@@ -5,29 +5,6 @@
   (:require [push.instructions.aspects :as aspects])
   )
 
-
-; Today I'm adding what I suppose is the _successor_ to the `:name` functionality from Push 3, based on the work we did in Nudge and Duck interpreters in the meantime.
-
-; There's a lot more introspection possible (based on the old Duck experiments several years back), and the responsibility for managing bindings is a bit better organized than what I understood from the Push 3 language specifications.
-
-; First, these will be called `:ref` items, and they include `:input` and runtime-generated "local" bindings of a Clojure keyword to a Push item of arbitrary complexity.
-
-; At the moment (before adding the `:ref` type), when  the interpreter encounters a Clojure keyword on the `:exec` stack, the order of routing is:
-
-; 1. is it a registered `instruction`? If so, do that thing.
-; 1. is it a registered `input`? If so, push the bound item to the `:exec` stack.
-; 1. send it to `:unknown`
-
-; After adding the `:ref` type, the order of routing will become:
-
-; 1. `instruction`? do the thing
-; 1. is it a bound `input` or `ref`?
-;   - is the interpreter in "quote mode"? if so, push the keyword itself to the `:ref` stack
-;   - the interpreter is not in "quote mode", so look up the bound value and push that to `:exec`
-; 1. the keyword is not found in the registered bindings, so send it to `:ref`
-
-; Notes:
-
 ; - The interpreter's "quote mode" is persistent, not a quick one-off toggle. An instruction explicitly handles that switch. Note that it does _not_ affect the interpretation of keywords _as instructions_, just as `input` or `ref` bindings
 ; - There can be circular references (which I learned to my surprise in some Duck interpreter experiments). Oh well, another thing not to do, evolution.
 ; - when the interpreter is in  "quote mode", `input` values are not looked up
@@ -55,7 +32,7 @@
   (core/build-instruction
     ref-new
     "`:ref-new` creates a new (randomly-named) `:ref` keyword and pushes it to that stack"
-    :tags #{:ref }
+    :tags #{:binding}
     (d/calculate [] #(keyword (gensym "ref!")) :as :newref)
     (d/push-onto :ref :newref)))
 
@@ -64,13 +41,15 @@
 (def ref-type
   ( ->  (t/make-type    :ref
                         :recognizer keyword?
-                        :attributes #{:internal :base})
+                        :attributes #{:base})
 
         (t/attach-instruction ref-new)
 
         aspects/make-equatable
         aspects/make-movable
+        aspects/make-printable
         aspects/make-quotable
+        aspects/make-returnable
         aspects/make-visible
 
         ))

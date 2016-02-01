@@ -2,6 +2,8 @@
   (:require [push.util.stack-manipulation :as u])
   (:require [push.util.code-wrangling :as fix])
   (:require [push.util.exceptions :as oops])
+  (:require [push.interpreter.core :as i])
+
   )
 
 
@@ -99,6 +101,18 @@
   (let [old-env (or (u/get-stack interpreter :environment) '())
         new-env (conj old-env (:stacks interpreter))] 
     [(u/set-stack interpreter :environment new-env) scratch]))
+
+
+
+(defn bind-item
+  "Binds the item stored in the second scratch variable under a keyword stored in the first scratch variable argument. If the first argument is not bound to a keyword, an exception is thrown."
+  [[interpreter scratch] item & {:keys [into]}]
+  (if (nil? into)
+    [(i/bind-value interpreter (keyword (gensym "ref!")) item) scratch]
+    (if-not (keyword? (into scratch))
+      (oops/throw-invalid-binding-key into)
+      [(i/bind-value interpreter (into scratch) (item scratch)) scratch])))
+
 
 
 (defn consume-stack
