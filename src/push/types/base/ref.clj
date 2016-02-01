@@ -13,8 +13,6 @@
 
 ; - `:push-quoterefs` (flag to turn on :ref quoting)
 ; - `:push-unquoterefs` (flag to turn off :ref quoting)
-; - `:push-allrefs` (return ordered list of all bound :ref keys)
-; - `:push-refset` (return :set of bound :ref keys)
 ; - `:push-flushrefs` (drops all :ref bindings)
 ; - `:ref-forget` (takes :ref, eliminates that binding)
 ; - `:ref-lookup` (takes :ref, pushes that value)
