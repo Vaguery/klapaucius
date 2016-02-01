@@ -100,6 +100,7 @@
         aspects/make-printable
         aspects/make-quotable
         aspects/make-returnable
+        aspects/make-storable
         (t/attach-instruction , string->chars)
         (t/attach-instruction , char-letter?)
         (t/attach-instruction , char-digit?)

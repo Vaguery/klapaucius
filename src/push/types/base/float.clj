@@ -316,6 +316,7 @@
         aspects/make-printable
         aspects/make-quotable
         aspects/make-returnable
+        aspects/make-storable
         (t/attach-instruction , float-abs)
         (t/attach-instruction , float-add)
         (t/attach-instruction , float-arccosine)

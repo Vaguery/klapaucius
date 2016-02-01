@@ -81,6 +81,7 @@
       aspects/make-printable
       aspects/make-quotable
       aspects/make-returnable
+      aspects/make-storable
       (t/attach-instruction , code->set)
       (t/attach-instruction , vector->set)
       (t/attach-instruction , set-difference)

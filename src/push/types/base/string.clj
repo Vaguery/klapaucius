@@ -362,6 +362,7 @@
         aspects/make-printable
         aspects/make-quotable
         aspects/make-returnable
+        aspects/make-storable
         (t/attach-instruction , exec-string-iterate)
         (t/attach-instruction , string-butlast)
         (t/attach-instruction , string-concat)

@@ -1001,6 +1001,7 @@
         aspects/make-printable
         aspects/make-quotable
         aspects/make-returnable
+        aspects/make-storable
         (t/attach-instruction point-equal?)
         (t/attach-instruction point-inside?)
         (t/attach-instruction point-notequal?)
@@ -1019,6 +1020,7 @@
       aspects/make-printable
       aspects/make-quotable
       aspects/make-returnable
+      aspects/make-storable
       (t/attach-instruction lc-intersect?)
       (t/attach-instruction lc-intersections)
       (t/attach-instruction lc-miss?)
@@ -1043,7 +1045,7 @@
       aspects/make-movable
       aspects/make-printable
       aspects/make-quotable
-      aspects/make-returnable
+      aspects/make-storable
       (t/attach-instruction circle->points)
       (t/attach-instruction circle<-points)
       (t/attach-instruction circle-coincide?)

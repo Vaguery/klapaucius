@@ -413,6 +413,7 @@
         aspects/make-movable
         aspects/make-printable
         aspects/make-returnable
+        aspects/make-storable
         aspects/make-visible 
         (t/attach-instruction , code-append)
         (t/attach-instruction , code-atom?)

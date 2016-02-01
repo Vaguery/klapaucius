@@ -151,6 +151,7 @@
         aspects/make-printable
         aspects/make-quotable
         aspects/make-returnable
+        aspects/make-storable
         (t/attach-instruction , integer-abs)
         (t/attach-instruction , integer-add)
         (t/attach-instruction , integer-dec)

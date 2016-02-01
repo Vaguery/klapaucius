@@ -42,6 +42,7 @@
       aspects/make-printable
       aspects/make-quotable
       aspects/make-returnable
+      aspects/make-storable
       (t/attach-instruction , vector-refilter)
       (t/attach-instruction , vector-refilterall)
       (t/attach-instruction , (v/x-butlast-instruction typename))

@@ -85,6 +85,7 @@
         aspects/make-printable
         aspects/make-quotable
         aspects/make-returnable
+        aspects/make-storable
         (t/attach-instruction , bool-and)
         (t/attach-instruction , integer->boolean)
         (t/attach-instruction , intsign->boolean)

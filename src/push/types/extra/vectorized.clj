@@ -457,6 +457,7 @@
           aspects/make-printable
           aspects/make-quotable
           aspects/make-returnable
+          aspects/make-storable
           (t/attach-instruction , (x-butlast-instruction typename))
           (t/attach-instruction , (x-build-instruction typename rootname))
           (t/attach-instruction , (x-concat-instruction typename))
