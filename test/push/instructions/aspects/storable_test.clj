@@ -44,5 +44,5 @@
 
 (fact "`make-storable` takes adds appropriate instructions to a PushType record"
   (keys (:instructions
-    (make-storable (make-type :foo)))) => '(:foo-save))
+    (make-storable (make-type :foo)))) => '(:foo-save :foo-store))
 

@@ -20,3 +20,19 @@
       `(push.instructions.dsl/bind-item :what :into :where)
       ))))
 
+
+
+(defn store-instruction
+  "returns a new x-stoer instruction for a PushType"
+  [pushtype]
+  (let [typename (:name pushtype)
+        instruction-name (str (name typename) "-store")]
+    (eval (list
+      'push.instructions.core/build-instruction
+      instruction-name
+      (str "`:" instruction-name "` pops the top `" typename "`, which is pushed to a new `:ref` created in the `:bindings` registry")
+      :tags #{:storable}
+      `(push.instructions.dsl/consume-top-of ~typename :as :what)
+      `(push.instructions.dsl/bind-item :what)
+      ))))
+

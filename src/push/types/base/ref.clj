@@ -50,6 +50,7 @@
         aspects/make-printable
         aspects/make-quotable
         aspects/make-returnable
+        aspects/make-storable
         aspects/make-visible
 
         ))

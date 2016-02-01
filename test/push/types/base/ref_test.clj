@@ -28,6 +28,11 @@
     (contains [:ref-stackdepth :ref-empty?] :in-any-order :gaps-ok))
 
 
+(fact "ref-type knows the :storable instructions"
+  (keys (:instructions ref-type)) =>
+    (contains [:ref-save :ref-store] :in-any-order :gaps-ok))
+
+
 (fact "ref-type knows the :movable instructions"
   (keys (:instructions ref-type)) =>
     (contains [:ref-shove :ref-pop :ref-dup :ref-rotate :ref-yank :ref-yankdup :ref-flush :ref-swap] :in-any-order :gaps-ok))
