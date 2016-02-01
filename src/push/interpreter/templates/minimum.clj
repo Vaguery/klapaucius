@@ -70,5 +70,5 @@
           counter
           done?)
         (i/register-types  , types)
-        (i/register-inputs , bindings)
+        (i/bind-inputs , bindings)
   )))

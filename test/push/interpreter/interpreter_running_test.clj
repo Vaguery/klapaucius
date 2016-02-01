@@ -16,18 +16,20 @@
 
 
 (fact "`handle-item` pushes an item to the :unknown stack if unrecognized when :config :lenient? is true"
-  (let [junk :this-is-an-unknown-item]
+  (let [junk {:x 1 :y 2}]
     (u/get-stack
       (handle-item 
         (c/classic-interpreter :config {:lenient? true})
         junk)
-      :unknown) => '(:this-is-an-unknown-item)))
+      :unknown) => '({:x 1, :y 2})))
 
 
-(fact "`handle-item` pushes an item to the :unknown stack if 
-  unrecognized when :config :lenient? is not true (or unset)"
-  (handle-item classy just-basic) => 
-    (throws #"Push Parsing Error: Cannot interpret '"))
+(fact "`handle-item` throws an exception on unrecognized items when :config :lenient? is not true (or unset)"
+  (handle-item classy just-basic) =>  (throws #"Push Parsing Error: "))
+
+
+(fact "handle-item pushes unknown keywords to the :ref stack, regardless of :lenient? setting"
+  (u/get-stack (handle-item just-basic :foo) :ref) => '(:foo))
 
 
 ;; the router order is: :bound-keyword? :instruction? [router] :unknown
@@ -133,7 +135,7 @@
  (let [foo (instr/make-instruction :foo :transaction (fn [a] 761))
        registry {:foo foo}
        he-knows-foo (m/basic-interpreter :instructions registry)]
-   (handle-item he-knows-foo :bar) => (throws #"Push Parsing Error:")))
+   (handle-item he-knows-foo {:thing 9}) => (throws #"Push Parsing Error:")))
 
 
 ;; some fixtures:
@@ -193,13 +195,14 @@
   (:program (recycle-interpreter knows-some-things [1 2 3 4])) => [1 2 3 4])
 
 
+
 (fact "calling `recycle-interpreter` sets up new inputs (optionally)"
   (:bindings knows-some-things) => {}
   (:bindings (recycle-interpreter knows-some-things [])) => {}
   (:bindings (recycle-interpreter knows-some-things [] :bindings [1 2 3])) =>
-    {:input!1 1, :input!2 2, :input!3 3}
+    {:input!1 '(1), :input!2 '(2), :input!3 '(3)}
   (:bindings (recycle-interpreter knows-some-things [] :bindings {:a 8 :b 11})) =>
-    {:a 8, :b 11})
+    {:a '(8), :b '(11)})
 
 
 

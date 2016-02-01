@@ -74,7 +74,7 @@
     (-> interpreter
       (assoc :program program)
       (assoc :config (merge (:config interpreter) {:step-limit steps}))
-      (assoc :bindings (merge (:bindings interpreter) bindings)))
+      (i/bind-inputs bindings))
     steps))
 
 

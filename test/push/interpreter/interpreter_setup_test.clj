@@ -259,11 +259,11 @@
 
 (fact "a new Interpreter passed an :bindings vector will have the bindings registered"
   (:bindings (m/basic-interpreter :bindings [1 2 3 4])) =>
-    {:input!1 1, :input!2 2, :input!3 3, :input!4 4})
+    {:input!1 '(1), :input!2 '(2), :input!3 '(3), :input!4 '(4)})
 
 
 (fact "a new Interpreter passed an :bindings hashmap will have the bindings registered"
-  (:bindings (m/basic-interpreter :bindings {:a 2 :b 4})) => {:a 2, :b 4})
+  (:bindings (m/basic-interpreter :bindings {:a 2 :b 4})) => {:a '(2), :b '(4)})
 
 
 ;; config
@@ -386,8 +386,9 @@
 
 (fact "`classic-interpreter` can have its :bindings set"
   (:bindings classy) => {}
-  (:bindings (c/classic-interpreter :bindings [1 2 3])) => {:input!1 1, :input!2 2, :input!3 3}
-  (:bindings (c/classic-interpreter :bindings {:a 8 :b false})) => {:a 8, :b false})
+  (:bindings (c/classic-interpreter :bindings [1 2 3])) =>
+    {:input!1 '(1), :input!2 '(2), :input!3 '(3)}
+  (:bindings (c/classic-interpreter :bindings {:a 8 :b false})) => {:a '(8), :b '(false)})
   
 
 (fact "`classic-interpreter` can have its :config set"
@@ -570,6 +571,10 @@
 (fact "push-item will create a stack if told to"
   (u/get-stack (push-item just-basic :foo [1 :weird :thing]) :foo) =>
     '([1 :weird :thing]))
+
+
+(fact "push-item will not change the interpreter if the item is nil"
+  (u/get-stack (push-item just-basic :integer nil) :integer) => '())
 
 
 ;; reconfigure

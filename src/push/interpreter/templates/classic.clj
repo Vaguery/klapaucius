@@ -82,6 +82,6 @@
                                push.types.modules.environment/environment-module
                                push.types.modules.print/print-module
                                ])
-        (i/register-inputs , bindings)
+        (i/bind-inputs , bindings)
         )))
 

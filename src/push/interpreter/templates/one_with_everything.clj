@@ -121,5 +121,5 @@
                         done?)
         (register-types all-kinds-of-types)
         (register-modules all-kinds-of-modules)
-        (register-inputs bindings)
+        (bind-inputs bindings)
         )))

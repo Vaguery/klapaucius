@@ -10,7 +10,7 @@
 
 (fact "I can set input values"
   (keys (:bindings (p/interpreter :bindings [7 2 3]))) => '(:input!1 :input!2 :input!3)
-  (:bindings (p/interpreter :bindings {:a 8 :b false})) =>  {:a 8, :b false})
+  (:bindings (p/interpreter :bindings {:a 8 :b false})) =>  {:a '(8), :b '(false)})
 
 
 (fact "I can set a program"

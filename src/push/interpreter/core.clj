@@ -59,23 +59,41 @@
   (reduce #(register-module %1 %2) interpreter modules))
 
 
-(defn register-input
-  "Takes an Interpreter record, a keyword and any item, and adds the item as a value stored under the keyword in the :bindings hashmap."
-  ([interpreter value]
+(defn bind-value
+  "Takes an interpreter, a keyword, and any item. If the keyword is already registered in the interpreter's :bindings hashmap, the item is pushed to that; otherwise, a new binding is made first."
+  [interpreter kwd item]
+  (let [current-stack (get-in interpreter [:bindings kwd] '())]
+    (assoc-in interpreter [:bindings kwd] (conj current-stack item))))
+
+
+(defn peek-at-binding
+  "Takes an interpreter and a keyword. Returns the top item (if any) on the indicated :bindings stack, or `nil` if the keyword is not recognized or there are no items on the stack."
+  [interpreter kwd]
+  (first (get-in interpreter [:bindings kwd])))
+
+
+(defn bind-input
+  "If the arguments are an Interpreter, a keyword and any item, it will store the item under the keyword key in the Interpreter's :bindings hashmap, pushing the item onto the top of the indicated value stack. If no keyword is given, one is constructed automatically."
+  ([interpreter item]
     (let [next-index (inc (count (:bindings interpreter)))
-          next-input (keyword (str "input!" next-index))]
-      (register-input interpreter next-input value)))
-  ([interpreter kwd value]
-    (assoc-in interpreter [:bindings kwd] value)))
+          next-key (keyword (str "input!" next-index))]
+      (bind-value interpreter next-key item)))
+  ([interpreter kwd item]
+    (bind-value interpreter kwd item)))
 
 
-(defn register-inputs
-  "Takes an Interpreter record, and a hashmap of key-value items; merges them into the :bindings map if the Interpreter."
+(defn bind-inputs
+  "Takes an Interpreter record, and a hashmap of key-value items. If the interpreter already has some of the bindings assigned, the new values are pushed onto the old stacks."
   [interpreter values]
-  (cond (vector? values)
-    (reduce (partial register-input) interpreter values)
-  :else
-    (assoc interpreter :bindings (merge (:bindings interpreter) values))))
+  (cond
+    (vector? values)
+      (reduce (partial bind-input) interpreter values)
+   (map? values)
+    (reduce-kv
+      (fn [i k v] (bind-input i k v))
+      interpreter
+      values)
+    :else (throw (Exception. "cannot bind inputs"))))
 
 
 (defn bound-keyword?
@@ -160,12 +178,12 @@
 
 
 (defn push-item
-  "Takes an Interpreter, a stack name and a Clojure expression, and
-  returns the Interpreter with the item pushed onto the specified
-  stack. If the stack doesn't already exist, it is created."
+  "Takes an Interpreter, a stack name and a Clojure expression, and returns the Interpreter with the item pushed onto the specified stack. If the stack doesn't already exist, it is created. If the item is nil, no change occurs."
   [interpreter stack item]
-  (let [old-stack (get-in interpreter [:stacks stack])]
-    (assoc-in interpreter [:stacks stack] (conj old-stack item))))
+  (if (nil? item)
+    interpreter
+    (let [old-stack (get-in interpreter [:stacks stack])]
+      (assoc-in interpreter [:stacks stack] (conj old-stack item)))))
 
 
 (defn missing-args-message
@@ -175,9 +193,7 @@
 
 
 (defn execute-instruction
-  "Takes an Interpreter and a token, and executes the registered
-  Instruction using the Interpreter as the (only) argument. Raises an
-  exception if the token is not registered."
+  "Takes an Interpreter and a token, and executes the registered Instruction using the Interpreter as the (only) argument. Raises an exception if the token is not registered."
   [interpreter token]
   (let [unrecognized (not (recognizes-instruction? interpreter token))
         ready (ready-for-instruction? interpreter token)]
@@ -227,14 +243,16 @@
       item)))
 
 
-(defn- handle-unknown-item
+(defn handle-unknown-item
   "Takes an Interpreter and an item. If the :config :lenient? flag is
   true, it pushes an unknown item to the :unknown stack; otherwise it
   calls `throw-unknown-push-item-error`"
   [interpreter item]
-  (if (get-in interpreter [:config :lenient?])
-    (push-item interpreter :unknown item)
-    (oops/throw-unknown-push-item-error item)))
+  (if (keyword? item)
+    (push-item interpreter :ref item)
+    (if (get-in interpreter [:config :lenient?])
+      (push-item interpreter :unknown item)
+      (oops/throw-unknown-push-item-error item))))
 
 
 (defn handle-item
@@ -246,7 +264,7 @@
   [interpreter item]
   (cond
     (bound-keyword? interpreter item)
-      (push-item interpreter :exec (item (:bindings interpreter)))
+      (push-item interpreter :exec (peek-at-binding interpreter item))
     (instruction? interpreter item)
       (execute-instruction interpreter item)
     (router-sees? interpreter item) (route-item interpreter item)
@@ -294,7 +312,8 @@
   [interpreter program & {:keys [bindings] :or {bindings []}}]
     (-> interpreter
         (assoc , :program program)
-        (register-inputs , bindings)
+        (assoc , :bindings {})
+        (bind-inputs , bindings)
         reset-interpreter))
 
 
