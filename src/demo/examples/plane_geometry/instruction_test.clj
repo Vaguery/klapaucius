@@ -14,7 +14,7 @@
 (def geo-interpreter
   (core/register-types
     (owe/make-everything-interpreter)
-    [push-point push-line push-circle]))
+    [precise-point precise-line precise-circle]))
 
 
 

@@ -991,7 +991,7 @@
 ;;; push types
 
 
-  (def push-point
+  (def precise-point
     (-> (t/make-type 
           :point 
           :recognizer #(instance? Point %))
@@ -1010,7 +1010,7 @@
         ))
 
     
-(def push-line
+(def precise-line
   (-> (t/make-type 
         :line 
         :recognizer #(instance? Line %))
@@ -1036,7 +1036,7 @@
       ))
 
 
-(def push-circle
+(def precise-circle
   (-> (t/make-type 
         :circle 
         :recognizer #(instance? Circle %))

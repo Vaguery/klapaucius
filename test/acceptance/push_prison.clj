@@ -17,7 +17,7 @@
   (-> (make-everything-interpreter :config {:step-limit 20000}
                                    :bindings (:bindings prisoner)
                                    :program (:program prisoner))
-      (register-types [push-circle push-line push-point])
+      (register-types [precise-circle precise-line precise-point])
       reset-interpreter))
 
 

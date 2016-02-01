@@ -134,7 +134,7 @@
 
 (def geometry-types
   (map combo/extend-combinators
-    [geom/push-circle geom/push-line geom/push-point]))
+    [geom/precise-circle geom/precise-line geom/precise-point]))
 
 
 (defn overloaded-interpreter
@@ -193,7 +193,7 @@
               ; (println (str "\n\n" n " : " (pr-str (:program rando)) "\n" (pr-str (:bindings rando))))
               (loop [s rando]
                 (if (is-done? s)
-                  (println (str n "  " (:counter s)))
+                  (println (str n "  " (:counter s) ))
                   (recur (do 
                     ; (println (u/peek-at-stack s :log)) 
                     (step s)))))))

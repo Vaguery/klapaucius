@@ -21,8 +21,6 @@
 
 ; Also, there will be a `storable` module which adds instructions for items that can be stored in `:ref` bindings (basically everything):
 
-; - `:x-bind` (pop top :ref, store item in that variable name)
-; - `:x-store` (create new :ref, store item in that)
 ; - `:x-bound` (return `:set` of :`ref` bindings that hold items of this type only)
 ; - `:x-bound?` pops `:x` stack, checks to see if that exact value is held in any of the current bindings
 ; - `:x-reverselookup` pops top of `:x` stack, checks the current bindings (including `inputs`) and returns the `:ref` key if a match is found

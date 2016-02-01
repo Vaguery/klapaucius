@@ -10,23 +10,43 @@
 
 ;;; Apfloat details
 
-(fact "I can compare and manipulate Apfloat items meaningfully, so I can compare geometric items"
+
+(fact "I can compare and manipulate Apfloat items meaningfully, but be careful!"
   (.equals (apf 2.000002) (apf 2.000003)) => false
   (= 2.000002 2.000003) => false
-  ;; NOTE: (= (apf 2.000002) (apf 2.000003)) => true
+  (= (apf 2.000002) (apf 2.000003)) => true  ;; whaaaaaa???
+
   (.subtract (apf 2.000002) (apf 2.000003)) => (apf 0.000001)
+  (.subtract 2.000002 2.000003) => (throws #"No matching method found: subtract")
   (- (apf 2.000002) (apf 2.000003)) => (apf 0.000001)
+
   (.multiply (apf 2.000002) (apf 2.000003)) => (apf 4.000010000006)
-  ;; NOTE: (* (apf 2.000002) (apf 2.000003)) => 4
+  (* (apf 2.000002) (apf 2.000003)) => 4     ;; whaaaaaa???
+
+  ;; this last appears to be something about Java boxed primitives?
   )
+
+
+(fact "a lot of these things just don't work with bare Clojure/Java primitives"
+  (.multiply 2.000002 2.000003) => (throws #"No matching method found: multiply"))
+
+
+(fact "apf helper makes an Apfloat item from a numeric argument"
+  (type 2) => java.lang.Long
+  (type (apf 2)) => org.apfloat.Apfloat
+  (type 2.0) => java.lang.Double
+  (type (apf 2.0)) => org.apfloat.Apfloat
+  (type 2.0M) => java.math.BigDecimal
+  (type (apf 2.0M)) => org.apfloat.Apfloat)
 
 
 (fact "apf? checks for Apfloat type"
   (apf? 3) => false
-  (apf? (apf 3)) => true
-)
+  (apf? (apf 3)) => true)
+
 
 ;; pretty-much-equal?
+
 
 (fact "pretty-much-equal? uses rounding to the specified precision to compare apf numbers"
   (.subtract
@@ -42,19 +62,19 @@
 ;; constructors
 
 (fact "I can make and recognize instances of :points, :lines and :circles"
-  ((:recognizer push-point) (make-point 3 9))         => true
-  ((:recognizer push-point) 9912)                     => false
+  ((:recognizer precise-point) (make-point 3 9))         => true
+  ((:recognizer precise-point) 9912)                     => false
 
-  ((:recognizer push-line)
+  ((:recognizer precise-line)
      (make-line (make-point 2 9) (make-point 2 1)))   => true
-  ((:recognizer push-line)
+  ((:recognizer precise-line)
      (make-point 2 9))                                => false
 
-  ((:recognizer push-circle)
+  ((:recognizer precise-circle)
      (make-circle (make-point 2 9) (make-point 2 1))) => true
-  ((:recognizer push-circle)
+  ((:recognizer precise-circle)
      (make-point 2 9))                                => false
-  ((:recognizer push-circle)
+  ((:recognizer precise-circle)
      (make-line (make-point 2 9) (make-point 2 1)))   => false)
 
 
@@ -64,21 +84,40 @@
   )
 
 
+(fact "stored values are Java apf objects"
+  (type (:x (make-point 1.0 2))) => org.apfloat.Apfloat
+  (type (:y (make-point 1.0 2))) => org.apfloat.Apfloat
+
+  (type (get-in (make-line-from-xyxy 1.0 2 3 4) [:p1 :x])) => org.apfloat.Apfloat
+  (type (get-in (make-line-from-xyxy 1.0 2 3 4) [:p1 :y])) => org.apfloat.Apfloat
+  (type (get-in (make-line-from-xyxy 1.0 2 3 4) [:p2 :x])) => org.apfloat.Apfloat
+  (type (get-in (make-line-from-xyxy 1.0 2 3 4) [:p2 :y])) => org.apfloat.Apfloat
+
+
+  (type (get-in (make-circle-from-xyxy 1.0 2 3 4) [:origin :x])) => org.apfloat.Apfloat
+  (type (get-in (make-circle-from-xyxy 1.0 2 3 4) [:origin :y])) => org.apfloat.Apfloat
+  (type (get-in (make-circle-from-xyxy 1.0 2 3 4) [:edgepoint :x])) => org.apfloat.Apfloat
+  (type (get-in (make-circle-from-xyxy 1.0 2 3 4) [:edgepoint :y])) => org.apfloat.Apfloat)
+
+
+
 (fact "`make-line` throws an Exception if both point arguments are the same"
   (make-line (make-point 1 2) (make-point 1 2)) => (throws #"points must differ"))
 
 
-
 (fact "`make-circle` throws an Exception if both point arguments are the same"
   (make-circle (make-point 1 2) (make-point 1 2)) => (throws #"points must differ")
-  (make-circle (make-point 1 2.000002) (make-point 1 2.000003)) =not=> (throws)
-  )
+  (make-circle (make-point 1 2.000002) (make-point 1 2.000003)) =not=> (throws))
 
 
 
 ; ;;; helpers
 
 ; ;; line slopes
+
+
+(fact "slope returns an apf"
+  (type (slope (make-line (make-point 2.0 2.0) (make-point 1.0 1.0)))) => org.apfloat.Apfloat)
 
 
 (fact "slope works as expected"
@@ -100,6 +139,11 @@
 
 
 ; ;; line intercepts
+
+
+(fact "intercept returns an apf"
+  (type (intercept (make-line (make-point 2.0 2.0) (make-point 1.0 1.0)))) => org.apfloat.Apfloat)
+
 
 (fact "intercept works as expected"
   (intercept (make-line (make-point 2.0 2.0) (make-point 1.0 1.0))) => (apf 0.0)
@@ -164,6 +208,7 @@
   (lines-coincide?
     (make-line (make-point 0 2) (make-point 0 11))
     (make-line (make-point 0 11) (make-point 0 3))) => true
+  
   (lines-coincide?
     (make-line (make-point 0 2) (make-point 0 11))
     (make-line (make-point 1 11) (make-point 1 3))) => false)
@@ -179,27 +224,27 @@
   (lines-coincide?
     (make-line (make-point 0.0 5.0) (make-point 1.0 10.0))
     (make-line (make-point 1.0 10.0) (make-point 2.0 15.0))) => true
+  
   (lines-coincide?
     (make-line (make-point 0 2) (make-point 10 7))
-    (make-line (make-point 10 7) (make-point 20 12))) => true
-
-
-
-  )
+    (make-line (make-point 10 7) (make-point 20 12))) => true)
 
 
 (facts "lines-coincide? works for horizontal lines"
   (lines-coincide?
     (make-line-from-xyxy 0  2 5  2)
     (make-line-from-xyxy 0 11 5 11)) => false
-  (pretty-much-equal?
-    (slope (make-line-from-xyxy 0  2 5  2))
-    (slope (make-line-from-xyxy 0 11 5 11))) => true
-  (intercept (make-line-from-xyxy 0  2 5  2)) => 2
-  (intercept (make-line-from-xyxy 0 11 5 11)) => 11
-  (pretty-much-equal? (apf 2) (apf 11))
 
-  )
+  (pretty-much-equal?
+    (slope (make-line-from-xyxy   0  2 5  2))
+    (slope (make-line-from-xyxy   0 11 5 11))) => true
+
+  (intercept (make-line-from-xyxy 0  2 5  2)) => 2
+
+  (intercept (make-line-from-xyxy 0 11 5 11)) => 11
+  
+  (pretty-much-equal? (apf 2) (apf 11)))
+
 
 ; ;; lines-are-parallel?
 
@@ -208,28 +253,33 @@
   (lines-are-parallel?
     (make-line-from-xyxy 0  2 0 11)
     (make-line-from-xyxy 5 11 5  2)) => true
+
   (pretty-much-equal?
     (slope (make-line-from-xyxy 0  2 5  2))
     (slope (make-line-from-xyxy 0 11 5 11))) => true
+  
   (pretty-much-equal?
     (intercept (make-line-from-xyxy 0  2 5  2))
     (intercept (make-line-from-xyxy 0 11 5 11))) => false
+  
   (lines-are-parallel?
     (make-line-from-xyxy 0  2 5  2)
     (make-line-from-xyxy 0 11 5 11)) => true
+  
   (lines-are-parallel?
     (make-line-from-xyxy 0 2 8 22)
-    (make-line-from-xyxy 1 3 9 23)) => true
-)
+    (make-line-from-xyxy 1 3 9 23)) => true)
 
 
 (fact "`lines-are-parallel?` doesn't detect identical, coincident or skew lines"
   (lines-are-parallel?
     (make-line (make-point 0 2) (make-point 0 11))
     (make-line (make-point 0 2) (make-point 0 11))) => false
+  
   (lines-are-parallel?
     (make-line (make-point 0 2) (make-point 5 2))
     (make-line (make-point 0 11) (make-point 5 2))) => false
+  
   (lines-are-parallel?
     (make-line (make-point 0 2) (make-point 8 22.0001))
     (make-line (make-point 1 3) (make-point 9 23))) => false)
@@ -827,7 +877,7 @@
 (def test-interpreter
   (core/register-types 
     (owe/make-everything-interpreter)
-    [push-point push-line push-circle]))
+    [precise-point precise-line precise-circle]))
 
 
 (def point-class (class (make-point 0.0 0.0)))
