@@ -19,7 +19,7 @@ The project is written in Clojure 1.8, and depends heavily on [Midje](https://gi
 
 ### Project status
 
-`klapaucius "0.1.7-SNAPSHOT"` includes a fully working interpreter, but is undergoing rapid expansion (thus the `SNAPSHOT` designation). While the current version is rigorously tested,  **substantial deep architectural changes** will be made leading up the 0.2 release. If you're going to work on it, please contact me during this great leap forward, and submit pull requests for small amounts of work in numerous git branches!
+`klapaucius "0.1.8-SNAPSHOT"` includes a fully working interpreter, but is undergoing rapid expansion (thus the `SNAPSHOT` designation). While the current version is rigorously tested,  **substantial deep architectural changes** will be made leading up the 0.2 release. If you're going to work on it, please contact me during this great leap forward, and submit pull requests for small amounts of work in numerous git branches!
 
 ### Project dependencies
 
@@ -98,12 +98,12 @@ user=> (push/get-stack (push/run runner [1 :burden :integer-add] 300 :bindings {
 
 
 user=> (push/known-instructions runner)
-(:strings-cutflip :integers-yankdup :integer-max :line-circle-miss? :floats-length :string-cutstack :print-space :integer-multiply :strings-shatter :integers-contains? :char-lowercase? :booleans-rotate :float->boolean :string-butlast :code-return-pop :string-min :strings-stackdepth :set-return :integers-print :string-occurrencesofchar :push-inputset :integer-sign :circle-yank :char-max :exec-do*count :string-stackdepth :booleans-last :circle-swap :integers-set :integers-byexample :vector-replace :code-flipstack :exec-pop :boolean-dup :integers-take :line-print :integer-mod :set-flipstack :integers-replacefirst :string>? :environment-stackdepth :string->float :vector-return-pop :set-pop :string->integer :floats-contains? :strings-equal?
+(:strings-cutflip :integers-yankdup :integer-max :line-circle-miss? :floats-length :string-cutstack :print-space :integer-multiply :strings-shatter :integers-contains? :char-lowercase? :booleans-rotate :float->boolean :string-butlast :code-return-pop :string-min :strings-stackdepth :set-return :integers-print :string-occurrencesofchar :push-bindingset :integer-sign :circle-yank :char-max :exec-do*count :string-stackdepth :booleans-last :circle-swap :integers-set :integers-byexample :vector-replace :code-flipstack :exec-pop :boolean-dup :integers-take :line-print :integer-mod :set-flipstack :integers-replacefirst :string>? :environment-stackdepth :string->float :vector-return-pop :set-pop :string->integer :floats-contains? :strings-equal?
 ;;... a HUGE list of known instructions will follow
 )
 
 
-user=> (push/input-names runner)
+user=> (push/binding-names runner)
 (:speed :burden :african?)
 
 
@@ -133,9 +133,9 @@ user=> (:counter ran-it)
 
 A Push interpreter has very few moving parts. There are a number of `stacks`, which are traditional LIFO stacks with (theoretically) unlimited capacity. The most important of these is the `:exec` stack, which holds the running code itself.
 
-A Push program is an arbitrary ordered list composed of _inputs_, _instructions_, _literals_ and sub-lists of those. In each step of executing a program that's been pushed onto the `:exec` stack, the interpreter pops off the top item, and
+A Push program is an arbitrary ordered list composed of _bindings_, _instructions_, _literals_ and sub-lists of those. In each step of executing a program that's been pushed onto the `:exec` stack, the interpreter pops off the top item, and
 
-- if an `input`, then the bound value is looked up and pushed to the `:exec` stack
+- if a `binding`, then the bound value is looked up and pushed to the `:exec` stack
 - if an `instruction`, the indicated changes are made to the interpreter state, usually by popping arguments from the various stacks
 - if a `literal` (of a recognized type), the item is pushed to a specified stack, which in the "basic model" includes
   - `:boolean` 
@@ -152,7 +152,7 @@ The interpreter (generally) will run until the `:exec` stack has been emptied. T
 
 By convention, Push programs have no "return value" as such. They are simply ambiguous dynamical processes manipulating the values on the stacks, and whatever meaning a particular program has for a user depends entirely on how they intend to interrogate that dynamical state. For example, when Push programs are used in [symbolic regression](https://en.wikipedia.org/wiki/Symbolic_regression) projects, the common convention is to let the program "finish" (see above), and then look at the top number on one of the number stacks as "the answer". That said, a lot is happening in most interesting Push programs, and "the right answer" may not be where you're looking.
 
-The design of evolutionary fitness functions is for another day. In this library, the only thing we're doing is running programs with specified `input` bindings until specified termination conditions are met, and then providing access to the whole pile of everything that happened in the meantime.
+The design of evolutionary fitness functions is for another day. In this library, the only thing we're doing is running programs with specified `binding` bindings until specified termination conditions are met, and then providing access to the whole pile of everything that happened in the meantime.
 
 But the _reason_ we want an interpreter for a language people can't typically read is that we can _evolve the programs to do what we want_. Because Push (and languages like it) are able to run almost any sequence of defined tokens, and behave in so many diverse ways as they do so, it's possible to do [some amazing things](http://faculty.hampshire.edu/lspector/push.html) with artificial selection under random variation.
 
@@ -176,7 +176,7 @@ But the _reason_ we want an interpreter for a language people can't typically re
 
 ### Adding a new type or module
 
-### Running an interpreter several times with different inputs
+### Running an interpreter several times with different bindings
 
 ### Accessing interpreter state for "fitness scores"
 
