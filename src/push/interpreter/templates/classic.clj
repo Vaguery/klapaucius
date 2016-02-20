@@ -1,17 +1,17 @@
 (ns push.interpreter.templates.classic
-  (:require [push.interpreter.templates.minimum :as min])
-  (:require [push.interpreter.core :as i])
-  (:require [push.types.base.boolean])
-  (:require [push.types.base.char])
-  (:require [push.types.modules.code])
-  (:require [push.types.modules.exec])
-  (:require [push.types.base.float])
-  (:require [push.types.base.integer])
-  (:require [push.types.base.string])
-  (:require [push.types.modules.environment])
-  (:require [push.types.modules.print])
-  (:require [push.types.modules.log])
-  (:require [push.types.modules.error])
+  (:require [push.interpreter.templates.minimum :as min]
+            [push.interpreter.core :as i]
+            [push.types.base.boolean]
+            [push.types.base.char]
+            [push.types.modules.code]
+            [push.types.modules.exec]
+            [push.types.base.float]
+            [push.types.base.integer]
+            [push.types.base.string]
+            [push.types.modules.environment]
+            [push.types.modules.print]
+            [push.types.modules.log]
+            [push.types.modules.error])
   )
 
 

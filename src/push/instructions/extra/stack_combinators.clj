@@ -1,8 +1,8 @@
 (ns push.instructions.extra.stack-combinators
-  (:require [push.instructions.core :as core])
-  (:require [push.types.core :as t])
-  (:require [push.instructions.dsl :as d])
-  (:require [push.util.code-wrangling :as u])
+  (:require [push.instructions.core :as core]
+            [push.types.core :as t]
+            [push.instructions.dsl :as d]
+            [push.util.code-wrangling :as u])
   )
 
 

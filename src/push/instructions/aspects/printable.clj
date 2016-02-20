@@ -1,7 +1,7 @@
 (ns push.instructions.aspects.printable
-  (:require [push.instructions.core :as core])
-  (:require [push.instructions.dsl :as dsl])
-  (:require [push.types.core :as t])
+  (:require [push.instructions.core :as core]
+            [push.instructions.dsl :as dsl]
+            [push.types.core :as t])
   )
 
 

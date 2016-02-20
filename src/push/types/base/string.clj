@@ -1,9 +1,9 @@
 (ns push.types.base.string
-  (:require [push.instructions.core :as core])
-  (:require [push.types.core :as t])
-  (:require [push.instructions.dsl :as d])
-  (:require [clojure.string :as strings])
-  (:require [push.instructions.aspects :as aspects])
+  (:require [push.instructions.core :as core]
+            [push.types.core :as t]
+            [push.instructions.dsl :as d]
+            [clojure.string :as strings]
+            [push.instructions.aspects :as aspects])
   )
 
 

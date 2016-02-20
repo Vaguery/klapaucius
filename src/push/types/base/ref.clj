@@ -1,8 +1,8 @@
 (ns push.types.base.ref
-  (:require [push.instructions.core :as core])
-  (:require [push.types.core :as t])
-  (:require [push.instructions.dsl :as d])
-  (:require [push.instructions.aspects :as aspects])
+  (:require [push.instructions.core :as core]
+            [push.types.core :as t]
+            [push.instructions.dsl :as d]
+            [push.instructions.aspects :as aspects])
   )
 
 ; - The interpreter's "quote mode" is persistent, not a quick one-off toggle. An instruction explicitly handles that switch. Note that it does _not_ affect the interpretation of keywords _as instructions_, just as `input` or `ref` bindings

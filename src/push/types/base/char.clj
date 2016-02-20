@@ -1,10 +1,10 @@
 (ns push.types.base.char
-  (:require [push.instructions.core :as core])
-  (:require [push.types.core :as t])
-  (:require [push.instructions.dsl :as d])
-  (:require [push.util.stack-manipulation :as u])
-  (:require [push.util.code-wrangling :as fix])
-  (:require [push.instructions.aspects :as aspects])
+  (:require [push.instructions.core :as core]
+            [push.types.core :as t]
+            [push.instructions.dsl :as d]
+            [push.util.stack-manipulation :as u]
+            [push.util.code-wrangling :as fix]
+            [push.instructions.aspects :as aspects])
   )
 
 
