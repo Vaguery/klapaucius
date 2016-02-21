@@ -31,10 +31,11 @@
       #'quote-no-bindings {}
       #'record-an-error {}
       #'retrieve-all-stacks {}
-      #'save-max-collection-size {}
-      #'save-counter {}
+      #'save-binding-stack {}
       #'save-bindings {}
+      #'save-counter {}
       #'save-instructions {}
+      #'save-max-collection-size {}
       #'save-nth-of {(second step) 1}
       #'save-stack {(second step) 0}
       #'save-top-of {(second step) 1}
@@ -70,8 +71,9 @@
       #'quote-no-bindings {}
       #'record-an-error {:log 1}
       #'retrieve-all-stacks {}
-      #'save-counter {:integer 1}
+      #'save-binding-stack {}
       #'save-bindings {}
+      #'save-counter {:integer 1}
       #'save-instructions {}
       #'save-max-collection-size {}
       #'save-nth-of {}

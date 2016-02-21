@@ -5,14 +5,6 @@
   (:require [push.instructions.aspects :as aspects])
   )
 
-; - The interpreter's "quote mode" is persistent, not a quick one-off toggle. An instruction explicitly handles that switch. Note that it does _not_ affect the interpretation of keywords _as instructions_, just as `input` or `ref` bindings
-; - There can be circular references (which I learned to my surprise in some Duck interpreter experiments). Oh well, another thing not to do, evolution.
-; - when the interpreter is in  "quote mode", `input` values are not looked up
-
-; A quick (and preliminary) sketch of the instruction set associated with this functionality:
-
-; - `:push-quoterefs` (flag to turn on :ref quoting)
-; - `:push-unquoterefs` (flag to turn off :ref quoting)
 ; - `:push-flushrefs` (drops all :ref bindings)
 ; - `:ref-forget` (takes :ref, eliminates that binding)
 ; - `:ref-lookup` (takes :ref, pushes that value)
@@ -29,6 +21,26 @@
     :tags #{:binding}
     (d/calculate [] #(keyword (gensym "ref!")) :as :newref)
     (d/push-onto :ref :newref)))
+
+
+(def ref-dump
+  (core/build-instruction
+    ref-dump
+    "`:ref-dump` pops the top `:ref` keyword and pushes the entire current contents of that binding's stack onto the `:exec` stack as a single block"
+    :tags #{:binding}
+    (d/consume-top-of :ref :as :arg)
+    (d/save-binding-stack :arg :as :newblock)
+    (d/push-onto :exec :newblock)))
+
+
+(def ref-fullquote
+  (core/build-instruction
+    ref-fullquote
+    "`:ref-fullquote` pops the top `:ref` keyword and pushes the entire current contents of that binding's stack onto the `:code` stack as a single block"
+    :tags #{:binding}
+    (d/consume-top-of :ref :as :arg)
+    (d/save-binding-stack :arg :as :newblock)
+    (d/push-onto :code :newblock)))
 
 
 (def quote-refs
@@ -55,6 +67,8 @@
 
         (t/attach-instruction quote-refs)
         (t/attach-instruction unquote-refs)
+        (t/attach-instruction ref-dump)
+        (t/attach-instruction ref-fullquote)
         (t/attach-instruction ref-new)
 
         aspects/make-equatable

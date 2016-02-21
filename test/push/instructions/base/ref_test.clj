@@ -39,3 +39,42 @@
     (:quote-refs? no) => true
     (:quote-refs? (i/execute-instruction no :push-unquoterefs)) => false
     ))
+
+
+
+(fact ":ref-fullquote copies the entire :ref binding stack onto the :code stack, w/o discarding it"
+  (let [hasref 
+    (assoc
+      (push.interpreter.templates.one-with-everything/make-everything-interpreter
+        :stacks {:ref '(:x)})
+      :bindings {:x '(1 2 (3 4))})]
+    (push.core/get-stack hasref :ref) => '(:x)
+    (push.core/get-stack hasref :code) => '()
+    (:bindings hasref) => {:x '(1 2 (3 4))}
+
+
+    (:bindings (i/execute-instruction hasref :ref-fullquote)) => {:x '(1 2 (3 4))}
+    (push.core/get-stack (i/execute-instruction hasref :ref-fullquote) :code) => '((1 2 (3 4)))
+    (push.core/get-stack
+      (i/execute-instruction (i/push-item hasref :ref :f) :ref-fullquote) :code) => '(())
+    ))
+
+
+
+(fact ":ref-dump copies the entire :ref binding stack onto the :exec stack, w/o discarding it"
+  (let [hasref 
+    (assoc
+      (push.interpreter.templates.one-with-everything/make-everything-interpreter
+        :stacks {:ref '(:x)})
+      :bindings {:x '(1 2 (3 4))})]
+    (push.core/get-stack hasref :ref) => '(:x)
+    (push.core/get-stack hasref :exec) => '()
+    (:bindings hasref) => {:x '(1 2 (3 4))}
+
+
+    (:bindings (i/execute-instruction hasref :ref-dump)) => {:x '(1 2 (3 4))}
+    (push.core/get-stack (i/execute-instruction hasref :ref-dump) :exec) => '((1 2 (3 4)))
+    (push.core/get-stack
+      (i/execute-instruction (i/push-item hasref :ref :f) :ref-dump) :exec) => '(())
+    ))
+

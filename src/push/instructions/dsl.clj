@@ -339,6 +339,14 @@
     [(u/merge-environment interpreter (using scratch)) scratch]))
 
 
+(defn save-binding-stack
+  "Takes a PushDSL blob, one scratch key (holding a :ref keyword) and a target scratch key, and copies the named binding's stack into the scratch variable (without deleting it). If no binding exists under the stored key, an empty list is saved. Raises an Exception if no :as argument is present"
+  [[interpreter scratch] which & {:keys [as]}]
+  (let [b (or (get-in interpreter [:bindings (which scratch)]) (list))]
+    (if (some? as)
+      [interpreter (assoc scratch as b)]
+      (oops/throw-missing-key-exception :as))))
+
 
 (defn save-stack
   "Takes a PushDSL blob, a stackname (keyword) and a scratch key (also
