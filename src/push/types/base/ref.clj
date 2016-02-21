@@ -17,8 +17,6 @@
 ; - `:ref-forget` (takes :ref, eliminates that binding)
 ; - `:ref-lookup` (takes :ref, pushes that value)
 
-; Also, there will be a `storable` module which adds instructions for items that can be stored in `:ref` bindings (basically everything):
-
 ; - `:x-bound` (return `:set` of :`ref` bindings that hold items of this type only)
 ; - `:x-bound?` pops `:x` stack, checks to see if that exact value is held in any of the current bindings
 ; - `:x-reverselookup` pops top of `:x` stack, checks the current bindings (including `inputs`) and returns the `:ref` key if a match is found
@@ -33,12 +31,30 @@
     (d/push-onto :ref :newref)))
 
 
+(def quote-refs
+  (core/build-instruction
+    push-quoterefs
+    "`:push-quoterefs` toggles the interpreter state so that all known binding keywords are pushed automatically to the :ref stack without being resolved"
+    :tags #{:binding}
+    (d/quote-all-bindings)))
+
+
+(def unquote-refs
+  (core/build-instruction
+    push-unquoterefs
+    "`:push-unquoterefs` toggles the interpreter state so that all known binding keywords are resolved immediately, not pushed to the :ref stack"
+    :tags #{:binding}
+    (d/quote-no-bindings)))
+
 
 (def ref-type
   ( ->  (t/make-type    :ref
                         :recognizer keyword?
                         :attributes #{:base})
 
+
+        (t/attach-instruction quote-refs)
+        (t/attach-instruction unquote-refs)
         (t/attach-instruction ref-new)
 
         aspects/make-equatable
@@ -48,6 +64,5 @@
         aspects/make-returnable
         aspects/make-storable
         aspects/make-visible
-
         ))
 

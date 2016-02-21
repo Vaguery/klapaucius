@@ -23,7 +23,7 @@
 
 
 (defn store-instruction
-  "returns a new x-stoer instruction for a PushType"
+  "returns a new x-store instruction for a PushType"
   [pushtype]
   (let [typename (:name pushtype)
         instruction-name (str (name typename) "-store")]

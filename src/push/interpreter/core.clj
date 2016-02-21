@@ -266,7 +266,9 @@
   [interpreter item]
   (cond
     (bound-keyword? interpreter item)
-      (push-item interpreter :exec (peek-at-binding interpreter item))
+      (if (:quote-refs? interpreter)
+        (push-item interpreter :ref item)
+        (push-item interpreter :exec (peek-at-binding interpreter item)))
     (instruction? interpreter item)
       (execute-instruction interpreter item)
     (router-sees? interpreter item) (route-item interpreter item)

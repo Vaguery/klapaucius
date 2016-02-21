@@ -7,6 +7,7 @@
   (:require [push.interpreter.templates.minimum :as m])
   (:require [push.interpreter.templates.classic :as c])
   (:require [push.instructions.aspects :as aspects])
+  (:require [push.interpreter.templates.one-with-everything :as owe])
   (:use [push.interpreter.core])
   )
 
@@ -30,6 +31,19 @@
 
 (fact "handle-item pushes unknown keywords to the :ref stack, regardless of :lenient? setting"
   (u/get-stack (handle-item just-basic :foo) :ref) => '(:foo))
+
+
+(fact "handle-item will push unregistered keywords, but not bound ones with empty bindings"
+  (u/get-stack (handle-item
+    (owe/make-everything-interpreter :bindings {:a 8}) :a) :ref) => '() ;; lookup
+  (u/get-stack (handle-item
+    (owe/make-everything-interpreter :bindings {:a 8}) :a) :exec) => '(8) ;; lookup
+  (u/get-stack (handle-item
+    (owe/make-everything-interpreter :bindings {:a 8 :b nil}) :X) :ref) => '(:X)
+  (u/get-stack (handle-item
+    (owe/make-everything-interpreter :bindings {:a 8 :b nil}) :b) :ref) => '()
+  )
+
 
 
 ;; the router order is: :bound-keyword? :instruction? [router] :unknown
@@ -68,6 +82,29 @@
   (u/get-stack (handle-item classy -8) :integer) => '(-8)
   (u/get-stack (handle-item (c/classic-interpreter :stacks {:integer '(1)}) -8) :integer) =>
     '(-8 1))
+
+
+; :quote-refs?
+
+
+(fact "if the :quote-refs? flag is true in the interpreter, all keywords ALWAYS go to :refs"
+  (let [knows-a (owe/make-everything-interpreter :bindings {:a 8})]
+    (:bindings knows-a) => {:a '(8)}
+    (bound-keyword? knows-a :a) => true
+    (u/get-stack (handle-item knows-a :a) :ref) => '()   ;; normal
+    (u/get-stack (handle-item knows-a :a) :exec) => '(8)) ;; normal
+
+  (let [kinda-knows-a
+          (assoc
+            (owe/make-everything-interpreter :bindings {:a 8})
+            :quote-refs?
+            true)]
+    (:bindings kinda-knows-a) => {:a '(8)}
+    (bound-keyword? kinda-knows-a :a) => true
+    (u/get-stack (handle-item kinda-knows-a :a) :ref) => '(:a)   ;; quoting!
+    (u/get-stack (handle-item kinda-knows-a :a) :exec) => '()    ;; quoting
+  ))
+
 
 
 ; (fact "handle-item handles integer overflow")
