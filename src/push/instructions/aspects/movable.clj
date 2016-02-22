@@ -132,3 +132,42 @@
       `(push.instructions.dsl/save-nth-of ~typename :at :index :as :yanked-item)
       `(push.instructions.dsl/push-onto ~typename :yanked-item)))))
 
+
+;;; new ones
+
+(defn againlater-instruction
+  "returns a new x-againlater instruction for a PushType"
+  [pushtype]
+  (let [typename (:name pushtype)
+        instruction-name (str (name typename) "-againlater")]
+    (eval (list
+      'push.instructions.core/build-instruction
+      instruction-name
+      (str "`:" instruction-name "` places a copy of the top `" typename
+        "` item at the tail of the `:exec` stack.")
+      :tags #{:combinator}
+      `(push.instructions.dsl/consume-top-of ~typename :as :item)
+      `(push.instructions.dsl/consume-stack :exec :as :oldstack)
+      `(push.instructions.dsl/calculate [:oldstack :item]
+          #(into '() (reverse (concat %1 (list %2)))) :as :newstack)
+      `(push.instructions.dsl/replace-stack :exec :newstack)
+      `(push.instructions.dsl/push-onto ~typename :item)
+      ))))
+
+
+(defn later-instruction
+  "returns a new x-later instruction for a PushType"
+  [pushtype]
+  (let [typename (:name pushtype)
+        instruction-name (str (name typename) "-later")]
+    (eval (list
+      'push.instructions.core/build-instruction
+      instruction-name
+      (str "`:" instruction-name "` pops the top `" typename
+        "` item and places it at the tail of the `:exec` stack.")
+      :tags #{:combinator}
+      `(push.instructions.dsl/consume-top-of ~typename :as :item)
+      `(push.instructions.dsl/consume-stack :exec :as :oldstack)
+      `(push.instructions.dsl/calculate [:oldstack :item]
+          #(into '() (reverse (concat %1 (list %2)))) :as :newstack)
+      `(push.instructions.dsl/replace-stack :exec :newstack)))))

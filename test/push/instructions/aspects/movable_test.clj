@@ -184,4 +184,4 @@
 (fact "`make-movable` takes adds appropriate instructions to a PushType record"
   (keys (:instructions
     (make-movable (make-type :foo)))) =>
-      '(:foo-dup :foo-flush :foo-pop :foo-rotate :foo-shove :foo-swap :foo-yank :foo-yankdup))
+      (contains [:foo-dup :foo-flush :foo-pop :foo-rotate :foo-shove :foo-swap :foo-yank :foo-yankdup :foo-againlater] :gaps-ok :in-any-order))

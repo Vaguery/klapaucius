@@ -53,11 +53,11 @@
 (fact "foo-type knows some things (just checking)"
   (keys (:instructions foo-type)) =>
     (contains
-      [:foo-stackdepth :foo-empty? :foo<? 
+      [:foo-againlater :foo-stackdepth :foo-empty? :foo<? 
       :foo≤? :foo>? :foo≥? :foo-min :foo-max 
       :foo-equal? :foo-notequal? :foo-dup :foo-flush 
       :foo-pop :foo-rotate :foo-shove :foo-swap 
-      :foo-yank :foo-yankdup] :in-any-order)
+      :foo-yank :foo-yankdup] :gaps-ok :in-any-order)
     (:name foo-type) => :foo)
 
 
@@ -71,9 +71,9 @@
 (fact "bar-type knows some things (also just checking)"
   (keys (:instructions bar-type)) =>
     (contains
-      '(:bar-notequal? :bar-dup :bar-swap :bar-rotate 
+      '(:bar-againlater :bar-notequal? :bar-dup :bar-swap :bar-rotate 
         :bar-flush :bar-stackdepth :bar-equal? :bar-empty? 
-        :bar-pop :bar-yank :bar-yankdup :bar-shove) :in-any-order)
+        :bar-pop :bar-yank :bar-yankdup :bar-shove) :gaps-ok :in-any-order)
     (:name bar-type) => :bar)
 
 
@@ -107,7 +107,7 @@
   (keys (:instructions (register-type just-basic foo-type))) => 
     (contains [:foo-rotate :foo-equal? :foo>? :foo-stackdepth :foo-notequal?
                 :foo<? :foo-pop :foo-flush :foo-empty? :foo-dup :foo-min :foo≥? 
-                :foo-swap :foo-max :foo-shove :foo≤? :foo-yankdup :foo-yank] :in-any-order))
+                :foo-swap :foo-max :foo-shove :foo≤? :foo-yankdup :foo-yank] :gaps-ok :in-any-order))
 
 
 (fact "`register-type` adds the :recognizer to the Interpreter's :router collection"
@@ -169,14 +169,14 @@
 
 
 (fact "`register-types` adds all the instructions"
-  (sort (keys (:instructions (register-types just-basic
-                                        [foo-type bar-type])))) => 
-    '(:bar-dup :bar-empty? :bar-equal? :bar-flush :bar-notequal? 
+  (keys (:instructions (register-types just-basic
+                                        [foo-type bar-type]))) => 
+    (contains [:bar-againlater :bar-dup :bar-empty? :bar-equal? :bar-flush :bar-notequal? 
       :bar-pop :bar-rotate :bar-shove :bar-stackdepth :bar-swap 
-      :bar-yank :bar-yankdup :foo-dup :foo-empty? :foo-equal? 
+      :bar-yank :bar-yankdup :foo-againlater :foo-dup :foo-empty? :foo-equal? 
       :foo-flush :foo-max :foo-min :foo-notequal? :foo-pop :foo-rotate 
       :foo-shove :foo-stackdepth :foo-swap :foo-yank :foo-yankdup 
-      :foo<? :foo>? :foo≤? :foo≥?))
+      :foo<? :foo>? :foo≤? :foo≥?] :gaps-ok :in-any-order))
 
 
 ;; register-modules
@@ -221,7 +221,7 @@
     (contains [:foo-rotate :foo-equal? :foo>? :foo-stackdepth :foo-notequal? 
                :foo<? :foo-pop :foo-flush :foo-empty? :foo-dup :foo-min 
                :foo≥? :foo-swap :foo-max :foo-shove :foo≤? :foo-yankdup 
-               :foo-yank] :in-any-order))
+               :foo-yank] :gaps-ok :in-any-order))
 
 
 (fact "if a PushType is passed into `basic-interpreter`, its recognizer is added to the :router"
@@ -244,7 +244,7 @@
                   :foo-pop :bar-flush :foo-flush :foo-empty? :bar-stackdepth 
                   :foo-dup :foo-min :foo≥? :bar-equal? :bar-empty? :foo-swap 
                   :foo-max :foo-shove :foo≤? :bar-pop :foo-yankdup :bar-yank 
-                  :bar-yankdup :bar-shove :foo-yank] :in-any-order)))
+                  :bar-yankdup :bar-shove :foo-yank] :gaps-ok :in-any-order)))
 
 
 ;; instructions

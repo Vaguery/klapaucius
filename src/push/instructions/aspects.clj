@@ -41,14 +41,13 @@
 
 
 (defn make-movable
-  "takes a PushType and adds the :movable attribute, and the
-  :pushtype-dup, :pushtype-flush, :pushtype-pop, :pushtype-rotate,
-  :pushtype-shove, :pushtype-swap, :pushtype-yank and
-  :pushtype-yankdup instructions to its :instructions collection"
+  "takes a PushType and adds the :movable attribute, and the :pushtype-againlater, :pushtype-dup, :pushtype-flush, :pushtype-later, :pushtype-pop, :pushtype-rotate, :pushtype-shove, :pushtype-swap, :pushtype-yank and :pushtype-yankdup instructions to its :instructions collection"
   [pushtype]
   (-> pushtype
+      (t/attach-instruction (againlater-instruction pushtype))
       (t/attach-instruction (dup-instruction pushtype))
       (t/attach-instruction (flush-instruction pushtype))
+      (t/attach-instruction (later-instruction pushtype))
       (t/attach-instruction (pop-instruction pushtype))
       (t/attach-instruction (rotate-instruction pushtype))
       (t/attach-instruction (shove-instruction pushtype))

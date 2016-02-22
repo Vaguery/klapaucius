@@ -42,6 +42,38 @@
 
 ;;;;;;;;;;;;;;;
 
+
+(tabular
+  (fact ":foo-againlater copies the top item from :foo to the tail of :exec"
+    (register-type-and-check-instruction
+        ?set-stack ?items foo-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items          ?instruction    ?get-stack         ?expected
+    :foo       '(1 2 3 4 5)    :foo-againlater   :foo              '(1 2 3 4 5)
+    :foo       '(1 2 3 4 5)    :foo-againlater   :exec             '(1)
+    ;; missing args
+    :foo       '()             :foo-againlater   :exec              '())
+
+
+
+(tabular
+  (fact "`foo-later` pops the top :foo and puts it at the end of :exec"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks foo-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction         ?expected
+
+    {:foo   '(9 8 7 6 5 4)
+     :exec  '(2)}             :foo-later      {:foo   '(8 7 6 5 4)
+                                               :exec  '(2 9)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foo   '(9)
+     :exec  '()}              :foo-later      {:foo   '()
+                                               :exec  '(9)}
+    
+    )
+
+
 (tabular
   (fact ":foo-flipstack reverses the whole :foo stack"
     (register-type-and-check-instruction
