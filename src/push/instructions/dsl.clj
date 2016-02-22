@@ -339,6 +339,15 @@
     [(u/merge-environment interpreter (using scratch)) scratch]))
 
 
+(defn save-top-of-binding
+  "Takes a PushDSL blob, a scratch keyword, and a second :as scratch keyword; looks up the top item in the binding keyed by the first argument, and stores that value (which may be nil) in the second scratch variable. Exception if there is no :as argument. Fine if the result is nil."
+  [[interpreter scratch] which & {:keys [as]}]
+  (let [v (i/peek-at-binding interpreter (which scratch))]
+    (if (nil? as)
+      (oops/throw-missing-key-exception ":as")
+      [interpreter (assoc scratch as v)])))
+
+
 (defn save-binding-stack
   "Takes a PushDSL blob, one scratch key (holding a :ref keyword) and a target scratch key, and copies the named binding's stack into the scratch variable (without deleting it). If no binding exists under the stored key, an empty list is saved. Raises an Exception if no :as argument is present"
   [[interpreter scratch] which & {:keys [as]}]

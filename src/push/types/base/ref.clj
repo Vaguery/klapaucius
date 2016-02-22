@@ -7,7 +7,6 @@
 
 ; - `:push-flushrefs` (drops all :ref bindings)
 ; - `:ref-forget` (takes :ref, eliminates that binding)
-; - `:ref-lookup` (takes :ref, pushes that value)
 
 ; - `:x-bound` (return `:set` of :`ref` bindings that hold items of this type only)
 ; - `:x-bound?` pops `:x` stack, checks to see if that exact value is held in any of the current bindings
@@ -31,6 +30,16 @@
     (d/consume-top-of :ref :as :arg)
     (d/save-binding-stack :arg :as :newblock)
     (d/push-onto :exec :newblock)))
+
+
+(def ref-lookup
+  (core/build-instruction
+    ref-lookup
+    "`:ref-lookup` pops the top `:ref` keyword and pushes a copy of the top item on its stack onto the `:exec` stack"
+    :tags #{:binding}
+    (d/consume-top-of :ref :as :arg)
+    (d/save-top-of-binding :arg :as :value)
+    (d/push-onto :exec :value)))
 
 
 (def ref-fullquote
@@ -69,6 +78,7 @@
         (t/attach-instruction unquote-refs)
         (t/attach-instruction ref-dump)
         (t/attach-instruction ref-fullquote)
+        (t/attach-instruction ref-lookup)
         (t/attach-instruction ref-new)
 
         aspects/make-equatable

@@ -39,6 +39,7 @@
       #'save-nth-of {(second step) 1}
       #'save-stack {(second step) 0}
       #'save-top-of {(second step) 1}
+      #'save-top-of-binding {}
       (oops/throw-unknown-DSL-exception cmd)  )))
 
 
@@ -79,6 +80,7 @@
       #'save-nth-of {}
       #'save-stack {}
       #'save-top-of {}
+      #'save-top-of-binding {}
       (oops/throw-unknown-DSL-exception cmd)  )))
 
 

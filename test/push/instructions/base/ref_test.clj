@@ -78,3 +78,21 @@
       (i/execute-instruction (i/push-item hasref :ref :f) :ref-dump) :exec) => '(())
     ))
 
+
+
+(fact ":ref-lookup pushes the bound :ref item to :exec"
+  (let [hasref 
+    (assoc
+      (push.interpreter.templates.one-with-everything/make-everything-interpreter
+        :stacks {:ref '(:x)})
+      :bindings {:x '(1 2 (3 4))})]
+    (push.core/get-stack hasref :ref) => '(:x)
+    (push.core/get-stack hasref :exec) => '()
+    (:bindings hasref) => {:x '(1 2 (3 4))}
+
+
+    (:bindings (i/execute-instruction hasref :ref-lookup)) => {:x '(1 2 (3 4))}
+    (push.core/get-stack (i/execute-instruction hasref :ref-lookup) :exec) => '(1)
+    (push.core/get-stack
+      (i/execute-instruction (i/push-item hasref :ref :f) :ref-lookup) :exec) => '()
+    ))
