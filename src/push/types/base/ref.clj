@@ -5,11 +5,9 @@
   (:require [push.instructions.aspects :as aspects])
   )
 
-; - `:push-flushrefs` (drops all :ref bindings)
+; - `:push-unbindall` (drops all :ref bindings)
 ; - `:ref-forget` (takes :ref, eliminates that binding)
-
-; - `:x-bound` (return `:set` of :`ref` bindings that hold items of this type only)
-; - `:x-bound?` pops `:x` stack, checks to see if that exact value is held in any of the current bindings
+; - `:x-similar` (return `:set` of :`ref` bindings that hold items of this type only)
 ; - `:x-reverselookup` pops top of `:x` stack, checks the current bindings (including `inputs`) and returns the `:ref` key if a match is found
 
 
