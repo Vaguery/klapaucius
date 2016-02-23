@@ -1,10 +1,10 @@
 (ns push.types.base.integer
-  (:require [push.instructions.core :as core])
-  (:require [push.types.core :as t])
-  (:require [push.instructions.dsl :as d])
-  (:require [push.util.code-wrangling :as fix])
-  (:require [push.instructions.aspects :as aspects])
-  (:require [clojure.math.numeric-tower :as math])
+  (:require [push.instructions.core :as core]
+            [push.types.core :as t]
+            [push.instructions.dsl :as d]
+            [push.util.code-wrangling :as fix]
+            [push.instructions.aspects :as aspects]
+            [clojure.math.numeric-tower :as math])
   )
 
 

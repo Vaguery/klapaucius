@@ -1,9 +1,9 @@
 (ns push.types.extra.vector
-  (:require [push.instructions.core :as core])
-  (:require [push.types.core :as t])
-  (:require [push.instructions.dsl :as d])
-  (:require [push.instructions.aspects :as aspects])
-  (:require [push.types.extra.vectorized :as v])
+  (:require [push.instructions.core :as core]
+            [push.types.core :as t]
+            [push.instructions.dsl :as d]
+            [push.instructions.aspects :as aspects]
+            [push.types.extra.vectorized :as v])
   )
 
 

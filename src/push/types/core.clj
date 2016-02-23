@@ -1,6 +1,6 @@
 (ns push.types.core
-  (:require [push.instructions.core :as core])
-  (:require [push.instructions.dsl :as dsl])
+  (:require [push.instructions.core :as core]
+            [push.instructions.dsl :as dsl])
   )
 
 

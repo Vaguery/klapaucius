@@ -1,6 +1,7 @@
 (ns push.interpreter.templates.one-with-everything
-  (:require [push.util.stack-manipulation :as u])
-  (:require [push.interpreter.templates.minimum :as m])
+  (:require [push.util.stack-manipulation :as u]
+            [push.interpreter.templates.minimum :as m]
+            [push.util.exceptions :as oops])
   (:use push.types.base.boolean)
   (:use push.types.base.char)
   (:use push.types.modules.code)
@@ -18,7 +19,6 @@
   (:use push.types.extra.set)
   (:use [push.interpreter.core])
   (:use [push.util.type-checkers])
-  (:require [push.util.exceptions :as oops])
 
   (:use push.instructions.extra.stack-combinators)
   (:use push.instructions.extra.introspection)

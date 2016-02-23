@@ -1,7 +1,7 @@
 (ns push.instructions.extra.random-scalars
-  (:require [push.instructions.core :as core])
-  (:require [push.types.core :as t])
-  (:require [push.instructions.dsl :as d])
+  (:require [push.instructions.core :as core]
+            [push.types.core :as t]
+            [push.instructions.dsl :as d])
   )
 
 

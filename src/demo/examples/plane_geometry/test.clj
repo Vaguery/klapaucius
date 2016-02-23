@@ -1,9 +1,9 @@
 (ns demo.examples.plane-geometry.test
   (:use midje.sweet)
-  (:require [push.interpreter.templates.one-with-everything :as owe])
-  (:require [push.interpreter.core :as core])
-  (:require [push.util.stack-manipulation :as u])
-  (:require [clojure.math.numeric-tower :as math])
+  (:require [push.interpreter.templates.one-with-everything :as owe]
+            [push.interpreter.core :as core]
+            [push.util.stack-manipulation :as u]
+            [clojure.math.numeric-tower :as math])
   (:use demo.examples.plane-geometry.definitions)
   (:import  [org.apfloat Apfloat ApfloatMath]))
 

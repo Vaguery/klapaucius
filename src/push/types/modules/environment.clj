@@ -1,9 +1,9 @@
 (ns push.types.modules.environment
-  (:require [push.instructions.core :as core])
-  (:require [push.types.core :as t])
-  (:require [push.instructions.dsl :as d])
-  (:require [push.util.stack-manipulation :as u])
-  (:require [push.instructions.aspects :as aspects])
+  (:require [push.instructions.core :as core]
+            [push.types.core :as t]
+            [push.instructions.dsl :as d]
+            [push.util.stack-manipulation :as u]
+            [push.instructions.aspects :as aspects])
   )
 
 

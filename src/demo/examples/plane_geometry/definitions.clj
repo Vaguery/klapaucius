@@ -1,10 +1,9 @@
 (ns demo.examples.plane-geometry.definitions
-  "Completed library for a set of experiments in plane geometry and compass-and-straightedge constructions. Continues work started in the Gorilla REPL file demo.examples.plane-geometry.cljw"
-  (:require [push.interpreter.core :as core])
-  (:require [push.types.core :as t])
-  (:require [push.instructions.core :as i])
-  (:require [push.instructions.dsl :as d])
-  (:require [push.instructions.aspects :as aspects])
+  (:require [push.interpreter.core :as core]
+            [push.types.core :as t]
+            [push.instructions.core :as i]
+            [push.instructions.dsl :as d]
+            [push.instructions.aspects :as aspects])
   (:import  [org.apfloat Apfloat ApfloatMath])
   )
 

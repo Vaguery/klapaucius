@@ -3,10 +3,10 @@
 ;; @@
 (ns x-plus-six
   (:use midje.sweet)
-  (:require [gorilla-plot.core :as plot])
-  (:require [push.interpreter.templates.one-with-everything :as owe])
-  (:require [push.interpreter.core :as core])
-  (:require [push.util.stack-manipulation :as u])
+  (:require [gorilla-plot.core :as plot]
+            [push.interpreter.templates.one-with-everything :as owe]
+            [push.interpreter.core :as core]
+            [push.util.stack-manipulation :as u])
   (:use clojure.pprint)
   )
 ;; @@

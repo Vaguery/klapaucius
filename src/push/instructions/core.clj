@@ -1,6 +1,6 @@
 (ns push.instructions.core
-  (:require [push.util.exceptions :as oops])
-  (:require [push.util.general :as util])
+  (:require [push.util.exceptions :as oops]
+            [push.util.general :as util])
   (:use [push.instructions.dsl])
   )
 
