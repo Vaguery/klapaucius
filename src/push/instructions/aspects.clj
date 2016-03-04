@@ -91,7 +91,9 @@
   [pushtype]
   (-> pushtype
       (t/attach-instruction (save-instruction pushtype))
+      (t/attach-instruction (savestack-instruction pushtype))
       (t/attach-instruction (store-instruction pushtype))
+      (t/attach-instruction (storestack-instruction pushtype))
       (assoc :attributes (conj (:attributes pushtype) :storable))))
 
 

@@ -976,9 +976,7 @@
 
   (fact "`record-an-error` throws an exception if it lacks the :from argument"
     (:stacks (first (record-an-error [afew {}]))) =>
-      (throws #"Push DSL argument error"))
-
-  )
+      (throws #"Push DSL argument error")))
 
 
 ;; `bind-item item :into kwd`
@@ -1008,5 +1006,47 @@
   (fact "`bind-item` has no effect if the item argument is nil (and does not push nil!)"
     (:bindings
       (first 
-        (bind-item [afew {:foo nil :bar :baz}] :foo :into :bar))) => {:baz '()})
-  )
+        (bind-item [afew {:foo nil :bar :baz}] :foo :into :bar))) => {:baz '()}))
+
+
+
+(facts "about `replace-binding`"
+
+  (fact "`replace-binding` creates a new binding if no `:into` is given"
+    (:bindings (first (replace-binding
+                        [afew {:foo 9}] :foo))) => {:xxx '(9)}
+      (provided (gensym anything) => (symbol "xxx")))
+
+
+  (fact "`replace-binding` uses a binding if `:into` is given"
+    (:bindings (first (replace-binding
+                        [afew {:foo 9 :bar :where}] :foo :into :bar))) => {:where '(9)})
+
+
+  (fact "`replace-binding` does not push `nil` if the item is `nil`"
+    (:bindings (first (replace-binding
+                        [afew {:foo nil :bar :where}] :foo :into :bar))) => {:where '()})
+
+
+
+  (fact "`replace-binding` throws an exception if `:into` is not a kw"
+    (:bindings (first (replace-binding
+                        [afew {:foo 9 :bar 8.2}] :foo :into :bar))) =>
+      (throws #"Cannot use '8.2' as a :bindings key"))
+
+
+  (fact "`replace-binding` constructs an entire stack if a seq is passed in"
+    (:bindings (first (replace-binding
+                        [afew {:foo '(1 2 3 4)}] :foo))) => {:xxx '(1 2 3 4)}
+      (provided (gensym anything) => (symbol "xxx"))
+
+    (:bindings (first (replace-binding
+                        [afew {:foo '(1 2 3) :bar :where}] :foo :into :bar))) =>
+      {:where '(1 2 3)})
+
+
+  (fact "`replace-binding` can be tricked into making a stack containing a list"
+    (:bindings (first (replace-binding
+                        [afew {:foo '((1 2 3 4))}] :foo))) => {:xxx '((1 2 3 4))}
+      (provided (gensym anything) => (symbol "xxx"))))
+

@@ -95,6 +95,7 @@
       [interpreter (assoc scratch as value)])))
 
 
+
 (defn archive-all-stacks
   "Pushes the hash-map of all the stacks currently present in the Interpreter onto that Interpreter's `:environement` stack. Does not change any of the stack contents."
   [[interpreter scratch]]
@@ -105,7 +106,7 @@
 
 
 (defn bind-item
-  "Binds the item stored in the second scratch variable under a keyword stored in the first scratch variable argument. If the first argument is not bound to a keyword, an exception is thrown."
+  "Binds the item stored in the second scratch variable under a keyword stored in the first scratch variable argument. If the :into argument is `nil`, a new binding name is generated automatically. If the item to be sotred is a keyword (referring to a scratch variable) an exception is thrown."
   [[interpreter scratch] item & {:keys [into]}]
   (if (nil? into)
     [(i/bind-value interpreter (keyword (gensym "ref!")) item) scratch]
@@ -139,6 +140,7 @@
       [(u/clear-stack interpreter stackname)
         (assoc scratch as old-stack)])
     (oops/throw-unknown-stack-exception stackname)))
+
 
 
 (defn consume-top-of
@@ -279,26 +281,6 @@
       (oops/throw-unknown-stack-exception stackname)))
 
 
-(defn replace-stack
-  "Takes a PushDSL blob, a stackname (keyword) and a scratch key (also
-  keyword), and replaces the named stack with the item stored in the
-  scratch variable. If the contents are a list, the stack is replaced
-  with the entire list; if nil, the stack is emptied; if a non-list
-  item the final stack will contain only that item.
-
-  Exceptions when:
-  - the stack doesn't exist
-  - (does not warn when the keyword isn't defined)"
-  [[interpreter scratch] stackname kwd]
-  (if (some? (u/get-stack interpreter stackname))
-    (let [replacement (kwd scratch)
-          new-stack (cond (nil? replacement) (list)
-                          (seq? replacement) replacement
-                          :else (list replacement))]
-      [(u/set-stack interpreter stackname new-stack) scratch])
-    (oops/throw-unknown-stack-exception stackname)))
-
-
 (defn push-onto
   "Takes a PushDSL blob, a stackname (keyword) and a scratch key (also
   keyword), and puts item stored in the scratch variable on top of the
@@ -347,6 +329,43 @@
   "Sets the Interpreter's `:quote-refs?` flag to `false`, so that any keyword that is registered is resolved by examining the items associated with it"
   [[interpreter scratch]]
   [(assoc interpreter :quote-refs? false) scratch])
+
+
+(defn replace-binding
+  "The `item` argument should contain a keyword reference to the scratch map; the optional `:into` argument should be a keyword referring to a scratch variable that holds a keyword (otherwise an exception is raised). If the `:into` argument is absent, a new `:ref` is generated automatically. If the item being stored is itself a `seq`, that list is bound _as the stack_ in the bindings table. If the item is not a `seq`, it becomes the only item stored in the binding."
+  [[interpreter scratch] item & {:keys [into]}]
+  (let [new-item (item scratch)
+        where    (if (nil? into) (keyword (gensym "ref!")) (into scratch))]
+    (cond
+      (not (keyword? where))
+        (oops/throw-invalid-binding-key where)
+      (nil? new-item)
+        [(assoc-in interpreter [:bindings where] '()) scratch] ;; basically clear it        
+      (seq? new-item)
+        [(assoc-in interpreter [:bindings where] new-item) scratch]
+      :else
+        [(assoc-in interpreter [:bindings where] (list new-item)) scratch])))
+
+
+
+(defn replace-stack
+  "Takes a PushDSL blob, a stackname (keyword) and a scratch key (also
+  keyword), and replaces the named stack with the item stored in the
+  scratch variable. If the contents are a list, the stack is replaced
+  with the entire list; if nil, the stack is emptied; if a non-list
+  item the final stack will contain only that item.
+
+  Exceptions when:
+  - the stack doesn't exist
+  - (does not warn when the keyword isn't defined)"
+  [[interpreter scratch] stackname kwd]
+  (if (some? (u/get-stack interpreter stackname))
+    (let [replacement (kwd scratch)
+          new-stack (cond (nil? replacement) (list)
+                          (seq? replacement) replacement
+                          :else (list replacement))]
+      [(u/set-stack interpreter stackname new-stack) scratch])
+    (oops/throw-unknown-stack-exception stackname)))
 
 
 (defn retrieve-all-stacks

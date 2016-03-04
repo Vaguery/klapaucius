@@ -57,6 +57,8 @@
       (s/set-stack hasref :ref '(:bad)) :ref-clear)) => '{:x (1 2 (3 4))}
     ))
 
+
+
 (fact ":ref-fullquote copies the entire :ref binding stack onto the :code stack, w/o discarding it"
   (let [hasref 
     (assoc

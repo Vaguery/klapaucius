@@ -44,5 +44,55 @@
 
 (fact "`make-storable` takes adds appropriate instructions to a PushType record"
   (keys (:instructions
-    (make-storable (make-type :foo)))) => '(:foo-save :foo-store))
+    (make-storable (make-type :foo)))) => '(:foo-save :foo-savestack :foo-store :foo-storestack))
+
+
+
+(fact "savestack-instruction returns an Instruction with the correct stuff"
+  (let [foo-ss (savestack-instruction (make-type :foo))]
+    
+    (class foo-ss) => push.instructions.core.Instruction
+    
+    (:needs foo-ss) => {:foo 0 :ref 1}
+    
+    (:token foo-ss) => :foo-savestack
+
+    (:bindings (i/execute-instruction
+      (i/register-instruction 
+        (m/basic-interpreter :stacks {:foo '(111 2) :ref '(:x)}) foo-ss)
+      :foo-savestack)) => {:x '(111 2)}
+
+    (:bindings (i/execute-instruction
+      (i/register-instruction 
+        (m/basic-interpreter
+          :stacks {:foo '(111 2) :ref '(:x)}
+          :bindings {:x '(:a :b :c)}) foo-ss)
+      :foo-savestack)) => {:x '(111 2)}
+    
+    (:bindings (i/execute-instruction
+      (i/register-instruction 
+        (m/basic-interpreter :stacks {:foo '()}) foo-ss)
+      :foo-savestack)) => {}))
+
+
+
+(fact "storestack-instruction returns an Instruction with the correct stuff"
+  (let [foo-ss (storestack-instruction (make-type :foo))]
+    
+    (class foo-ss) => push.instructions.core.Instruction
+    
+    (:needs foo-ss) => {:foo 0}
+    
+    (:token foo-ss) => :foo-storestack
+
+    (first (vals (:bindings (i/execute-instruction
+      (i/register-instruction 
+        (m/basic-interpreter :stacks {:foo '(111 2) :ref '(:x)}) foo-ss)
+      :foo-storestack)))) => '(111 2)
+    
+    (first (vals (:bindings (i/execute-instruction
+      (i/register-instruction 
+        (m/basic-interpreter :stacks {:foo '()}) foo-ss)
+      :foo-storestack)))) => '()))
+
 

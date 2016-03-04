@@ -32,6 +32,7 @@
       #'quote-all-bindings {}
       #'quote-no-bindings {}
       #'record-an-error {}
+      #'replace-binding {}
       #'retrieve-all-stacks {}
       #'save-binding-stack {}
       #'save-bindings {}
@@ -75,6 +76,7 @@
       #'quote-all-bindings {}
       #'quote-no-bindings {}
       #'record-an-error {:log 1}
+      #'replace-binding {}
       #'retrieve-all-stacks {}
       #'save-binding-stack {}
       #'save-bindings {}

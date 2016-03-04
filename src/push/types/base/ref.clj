@@ -5,7 +5,6 @@
   (:require [push.instructions.aspects :as aspects])
   )
 
-; - `:push-unbindall` (drops all :ref bindings)
 ; - `:x-similar` (return `:set` of :`ref` bindings that hold items of this type only)
 ; - `:x-reverselookup` pops top of `:x` stack, checks the current bindings (including `inputs`) and returns the `:ref` key if a match is found
 
@@ -88,6 +87,7 @@
     "`:push-unquoterefs` toggles the interpreter state so that all known binding keywords are resolved immediately, not pushed to the :ref stack"
     :tags #{:binding}
     (d/quote-no-bindings)))
+
 
 
 (def ref-type
