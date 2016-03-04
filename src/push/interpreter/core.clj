@@ -1,6 +1,6 @@
 (ns push.interpreter.core
-  (:require [push.util.stack-manipulation :as u])
-  (:require [push.util.exceptions :as oops])
+  (:require [push.util.stack-manipulation :as u]
+            [push.util.exceptions :as oops])
   (:use [push.util.type-checkers])
   )
 

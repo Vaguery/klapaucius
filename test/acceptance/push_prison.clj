@@ -1,10 +1,10 @@
 (ns acceptance.push-prison
+  (:require [push.instructions.dsl :as dsl]
+            [push.instructions.core :as instr]
+            [push.types.core :as types]
+            [push.util.stack-manipulation :as u]
+            [clojure.string :as s])
   (:use midje.sweet)
-  (:require [push.instructions.dsl :as dsl])
-  (:require [push.instructions.core :as instr])
-  (:require [push.types.core :as types])
-  (:require [push.util.stack-manipulation :as u])
-  (:require [clojure.string :as s])
   (:use [push.interpreter.core])
   (:use [push.interpreter.templates.one-with-everything])
   (:use demo.examples.plane-geometry.definitions)

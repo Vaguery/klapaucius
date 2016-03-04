@@ -1,7 +1,7 @@
 (ns push.core-test
-  (:use midje.sweet)
-  (:require [push.interpreter.core :as i])
-  (:require [push.core :as p]))
+  (:require [push.interpreter.core :as i]
+            [push.core :as p])
+  (:use midje.sweet))
 
 
 (fact "I can produce a generic interpreter"

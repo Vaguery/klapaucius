@@ -1,7 +1,7 @@
 (ns push.instructions.base.float_test
+  (:require [push.interpreter.core :as i])
   (:use midje.sweet)
   (:use [push.util.test-helpers])
-  (:require [push.interpreter.core :as i])
   (:use [push.types.base.float])            ;; sets up float-type
   )
 

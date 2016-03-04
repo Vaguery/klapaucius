@@ -1,9 +1,9 @@
 (ns push.types.core-test
+  (:require [push.interpreter.core :as i]
+            [push.instructions.core :as instr]
+            [push.instructions.dsl :as d]
+            [push.instructions.aspects :as aspects])
   (:use midje.sweet)
-  (:require [push.interpreter.core :as i])
-  (:require [push.instructions.core :as instr])
-  (:require [push.instructions.dsl :as d])
-  (:require [push.instructions.aspects :as aspects])
   (:use [push.types.core])
   )
 

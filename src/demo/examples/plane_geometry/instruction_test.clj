@@ -1,11 +1,11 @@
 (ns demo.examples.plane-geometry.instruction-test
+  (:require [push.interpreter.templates.one-with-everything :as owe]
+            [push.interpreter.core :as core]
+            [push.util.stack-manipulation :as u])
   (:use midje.sweet)
-  (:require [push.interpreter.templates.one-with-everything :as owe])
-  (:require [push.interpreter.core :as core])
-  (:require [push.util.stack-manipulation :as u])
   (:use demo.examples.plane-geometry.definitions)
-  (:import  [org.apfloat Apfloat ApfloatMath])
   (:use push.util.test-helpers)
+  (:import  [org.apfloat Apfloat ApfloatMath])
   )
 
 

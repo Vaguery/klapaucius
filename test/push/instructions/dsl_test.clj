@@ -1,10 +1,10 @@
 (ns push.instructions.dsl-test
+  (:require [push.util.stack-manipulation :as u]
+            [push.interpreter.core :as i]
+            [push.instructions.core :as inst]
+            [push.interpreter.templates.minimum :as m]
+            [push.interpreter.templates.classic :as c])
   (:use midje.sweet)
-  (:require [push.util.stack-manipulation :as u])
-  (:require [push.interpreter.core :as i])
-  (:require [push.instructions.core :as inst])
-  (:require [push.interpreter.templates.minimum :as m])
-  (:require [push.interpreter.templates.classic :as c])
   (:use push.instructions.dsl)
   )
 

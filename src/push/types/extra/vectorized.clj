@@ -1,9 +1,9 @@
 (ns push.types.extra.vectorized
-  (:require [push.instructions.core :as core])
-  (:require [push.types.core :as t])
-  (:require [push.instructions.dsl])
-  (:require [push.instructions.aspects :as aspects])
-  (:require [push.util.code-wrangling :as fix])
+  (:require [push.instructions.core :as core]
+            [push.types.core :as t]
+            [push.instructions.dsl]
+            [push.instructions.aspects :as aspects]
+            [push.util.code-wrangling :as fix])
   )
 
 

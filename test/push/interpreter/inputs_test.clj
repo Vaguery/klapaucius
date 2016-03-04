@@ -1,8 +1,8 @@
 (ns push.interpreter.inputs-test
+  (:require [push.interpreter.templates.minimum :as m]
+            [push.util.stack-manipulation :as u])
   (:use midje.sweet)
-  (:require [push.util.stack-manipulation :as u])
   (:use [push.interpreter.core])
-  (:require [push.interpreter.templates.minimum :as m])
   )
 
 

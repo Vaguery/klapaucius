@@ -1,15 +1,15 @@
 (ns push.interpreter.interpreter-setup-test
+  (:require [push.util.stack-manipulation :as u]
+            [push.instructions.core :as i]
+            [push.instructions.dsl :as d]
+            [push.types.core :as types]
+            [push.interpreter.templates.one-with-everything :as everything]
+            [push.instructions.aspects :as aspects]
+            [push.interpreter.templates.minimum :as m]
+            [push.interpreter.templates.classic :as c])
   (:use midje.sweet)
-  (:require [push.util.stack-manipulation :as u])
-  (:require [push.instructions.core :as i])
-  (:require [push.instructions.dsl :as d])
-  (:require [push.types.core :as types])
-  (:require [push.interpreter.templates.one-with-everything :as everything])
   (:use [push.util.type-checkers :only (boolean?)])
   (:use push.interpreter.core)
-  (:require [push.instructions.aspects :as aspects])
-  (:require [push.interpreter.templates.minimum :as m])
-  (:require [push.interpreter.templates.classic :as c])
   )
 
 

@@ -1,14 +1,14 @@
 (ns acceptance.stress-tests
+  (:require [push.instructions.dsl :as dsl]
+            [push.instructions.core :as instr]
+            [push.types.core :as types]
+            [push.util.stack-manipulation :as u]
+            [clojure.string :as s]
+            [demo.examples.plane-geometry.definitions :as geom]
+            [push.instructions.extra.stack-combinators :as combo])
   (:use midje.sweet)
-  (:require [push.instructions.dsl :as dsl])
-  (:require [push.instructions.core :as instr])
-  (:require [push.types.core :as types])
-  (:require [push.util.stack-manipulation :as u])
-  (:require [clojure.string :as s])
   (:use [push.interpreter.core])
   (:use [push.interpreter.templates.one-with-everything])
-  (:require [demo.examples.plane-geometry.definitions :as geom])
-  (:require [push.instructions.extra.stack-combinators :as combo])
   )
 
 

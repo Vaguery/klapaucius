@@ -1,10 +1,10 @@
 (ns push.types.modules.code
-  (:require [push.instructions.core :as core])
-  (:require [push.types.core :as t])
-  (:require [push.instructions.dsl :as d])
-  (:require [push.util.stack-manipulation :as stacks])
-  (:require [push.util.code-wrangling :as u])
-  (:require [push.instructions.aspects :as aspects])
+  (:require [push.instructions.core :as core]
+            [push.types.core :as t]
+            [push.instructions.dsl :as d]
+            [push.util.stack-manipulation :as stacks]
+            [push.util.code-wrangling :as u]
+            [push.instructions.aspects :as aspects])
   )
 
 

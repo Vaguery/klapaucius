@@ -1,7 +1,7 @@
 (ns push.instructions.base.boolean_test
+  (:require [push.interpreter.core :as i])
   (:use midje.sweet)
   (:use [push.util.test-helpers])
-  (:require [push.interpreter.core :as i])
   (:use [push.types.base.boolean])  ;; sets up boolean-type
   )
 

@@ -42,8 +42,8 @@ Using `leiningen`, add the following dependency to your `project.clj`
 
 ```clojure
 (ns my.fancy.namespace
-  (:require [push.core :as push])
-  (:require [push.interpreter.core :as interpreter])
+  (:require [push.core :as push]
+            [push.interpreter.core :as interpreter])
 
 ;; ...
 

@@ -1,6 +1,6 @@
 (ns push.util.code-wrangling-test
-  (:use midje.sweet)
   (:require [push.util.stack-manipulation :as fix])
+  (:use midje.sweet)
   (:use push.util.code-wrangling)
   )
 

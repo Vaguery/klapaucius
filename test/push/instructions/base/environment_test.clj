@@ -1,9 +1,9 @@
 (ns push.instructions.base.environment_test
+  (:require [push.interpreter.core :as i]
+            [push.util.stack-manipulation :as u]
+            [push.interpreter.templates.classic :as c])
   (:use midje.sweet)
   (:use [push.util.test-helpers])
-  (:require [push.interpreter.core :as i])
-  (:require [push.util.stack-manipulation :as u])
-  (:require [push.interpreter.templates.classic :as c])
   (:use [push.types.modules.environment])
   )
 

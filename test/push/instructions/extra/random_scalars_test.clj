@@ -1,9 +1,9 @@
 (ns push.instructions.extra.random-scalars-test
+  (:require [push.interpreter.core :as i]
+            [push.types.core :as t]
+            [push.util.code-wrangling :as u])
   (:use midje.sweet)
   (:use [push.util.test-helpers])
-  (:require [push.interpreter.core :as i])
-  (:require [push.types.core :as t])
-  (:require [push.util.code-wrangling :as u])
   (:use push.instructions.extra.random-scalars)
   )
 

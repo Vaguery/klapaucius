@@ -1,8 +1,8 @@
 (ns push.instructions.aspects.equatable-test
+  (:require [push.interpreter.core :as i]
+            [push.interpreter.templates.minimum :as m])
   (:use midje.sweet)
   (:use push.util.stack-manipulation)
-  (:require [push.interpreter.core :as i])
-  (:require [push.interpreter.templates.minimum :as m])
   (:use push.types.core)
   (:use push.instructions.aspects)
   (:use push.instructions.aspects.equatable)

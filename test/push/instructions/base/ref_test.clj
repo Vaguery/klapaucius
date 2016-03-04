@@ -1,9 +1,9 @@
 (ns push.instructions.base.ref_test
+  (:require [push.interpreter.core :as i]
+            [push.util.stack-manipulation :as s]
+            [push.types.core :as t])
   (:use midje.sweet)
   (:use [push.util.test-helpers])
-  (:require [push.interpreter.core :as i])
-  (:require [push.util.stack-manipulation :as s])
-  (:require [push.types.core :as t])
   (:use [push.types.base.ref])
   )
 

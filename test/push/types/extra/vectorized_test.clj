@@ -1,8 +1,8 @@
 (ns push.types.extra.vectorized_test
+  (:require [push.types.base.integer :as int])
   (:use midje.sweet)
   (:use [push.util.test-helpers])
   (:use [push.types.extra.vectorized])
-  (:require [push.types.base.integer :as int])
   )
 
 

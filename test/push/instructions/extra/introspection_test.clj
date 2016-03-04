@@ -1,10 +1,10 @@
 (ns push.instructions.extra.introspection-test
+  (:require [push.interpreter.core :as i]
+            [push.types.core :as t]
+            [push.util.code-wrangling :as u]
+            [push.interpreter.templates.classic :as c])
   (:use midje.sweet)
   (:use [push.util.test-helpers])
-  (:require [push.interpreter.core :as i])
-  (:require [push.types.core :as t])
-  (:require [push.util.code-wrangling :as u])
-  (:require [push.interpreter.templates.classic :as c])
   (:use push.instructions.extra.introspection)
   )
 

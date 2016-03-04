@@ -1,8 +1,8 @@
 (ns push.instructions.dsl
-  (:require [push.util.stack-manipulation :as u])
-  (:require [push.util.code-wrangling :as fix])
-  (:require [push.util.exceptions :as oops])
-  (:require [push.interpreter.core :as i])
+  (:require [push.util.stack-manipulation :as u]
+            [push.util.code-wrangling :as fix]
+            [push.util.exceptions :as oops]
+            [push.interpreter.core :as i])
 
   )
 

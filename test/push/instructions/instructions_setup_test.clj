@@ -1,10 +1,10 @@
 (ns push.instructions.instructions-setup-test
+  (:require [push.util.stack-manipulation :as u]
+            [push.instructions.dsl :as d]
+            [push.interpreter.core :as i]
+            [push.types.core :as t]
+            [push.interpreter.templates.minimum :as m])
   (:use midje.sweet)
-  (:require [push.util.stack-manipulation :as u])
-  (:require [push.instructions.dsl :as d])
-  (:require [push.interpreter.core :as i])
-  (:require [push.types.core :as t])
-  (:require [push.interpreter.templates.minimum :as m])
   (:use [push.instructions.aspects.visible])
   (:use [push.instructions.aspects.equatable])
   (:use [push.instructions.aspects.comparable])

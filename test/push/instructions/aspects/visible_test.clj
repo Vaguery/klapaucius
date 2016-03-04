@@ -1,8 +1,8 @@
 (ns push.instructions.aspects.visible-test
+  (:require [push.interpreter.core :as i]
+            [push.interpreter.templates.minimum :as m])
   (:use midje.sweet)
   (:use push.util.stack-manipulation)
-  (:require [push.interpreter.core :as i])
-  (:require [push.interpreter.templates.minimum :as m])
   (:use push.instructions.aspects.visible)
   (:use push.instructions.aspects)
   (:use push.types.core)
