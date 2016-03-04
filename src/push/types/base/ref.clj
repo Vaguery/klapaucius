@@ -6,7 +6,6 @@
   )
 
 ; - `:push-unbindall` (drops all :ref bindings)
-; - `:ref-forget` (takes :ref, eliminates that binding)
 ; - `:x-similar` (return `:set` of :`ref` bindings that hold items of this type only)
 ; - `:x-reverselookup` pops top of `:x` stack, checks the current bindings (including `inputs`) and returns the `:ref` key if a match is found
 
@@ -17,6 +16,16 @@
     "`:push-quoterefs` toggles the interpreter state so that all known binding keywords are pushed automatically to the :ref stack without being resolved"
     :tags #{:binding}
     (d/quote-all-bindings)))
+
+
+
+(def ref-clear
+  (core/build-instruction
+    ref-clear
+    "`:ref-clear` pops the top `:ref` keyword and clears all items currently bound to that keyword in the Interpreter's binding table. The variable remains recognized, it simply has no bound values."
+    :tags #{:binding}
+    (d/consume-top-of :ref :as :arg)
+    (d/clear-binding :arg)))
 
 
 
@@ -89,6 +98,7 @@
 
         (t/attach-instruction quote-refs)
         (t/attach-instruction unquote-refs)
+        (t/attach-instruction ref-clear)
         (t/attach-instruction ref-dump)
         (t/attach-instruction ref-forget)
         (t/attach-instruction ref-fullquote)

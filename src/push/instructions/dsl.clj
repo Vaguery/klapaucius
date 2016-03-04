@@ -115,6 +115,16 @@
 
 
 
+(defn clear-binding
+  "Takes a PushDSL blob and a scratch keyword. All items stored in the named `:binding` are deleted, though the key itself will remain. If for some reason the scratch argument is not a known binding, there is no bad effect."
+  [[interpreter scratch] kwd]
+  (let [binding-name (kwd scratch)]
+    (if (some #{binding-name} (keys (:bindings interpreter)))
+      [(assoc-in interpreter [:bindings binding-name] '()) scratch]
+      [interpreter scratch])))
+
+
+
 (defn consume-stack
   "Removes an entire named stack; if an `:as local` argument is given,
   it saves the stack in that scratch variable. If no local is given,

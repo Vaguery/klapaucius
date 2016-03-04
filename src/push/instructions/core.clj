@@ -16,6 +16,7 @@
       #'archive-all-stacks {:environment 0}
       #'bind-item {}
       #'calculate {}
+      #'clear-binding {}
       #'consume-nth-of {(second step) 1}
       #'consume-stack {(second step) 0}
       #'consume-top-of {(second step) 1}
@@ -58,6 +59,7 @@
       #'archive-all-stacks {}
       #'bind-item {}
       #'calculate {}
+      #'clear-binding {}
       #'consume-nth-of {}
       #'consume-stack {}
       #'consume-top-of {}

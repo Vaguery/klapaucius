@@ -43,6 +43,20 @@
 
 
 
+(fact ":ref-clear completely clears a binding"
+  (let [hasref 
+    (assoc
+      (push.interpreter.templates.one-with-everything/make-everything-interpreter
+        :stacks {:ref '(:x)})
+      :bindings {:x '(1 2 (3 4))})]
+
+    (push.core/get-stack hasref :ref) => '(:x)
+
+    (:bindings (i/execute-instruction hasref :ref-clear)) => {:x '()}
+    (:bindings (i/execute-instruction
+      (s/set-stack hasref :ref '(:bad)) :ref-clear)) => '{:x (1 2 (3 4))}
+    ))
+
 (fact ":ref-fullquote copies the entire :ref binding stack onto the :code stack, w/o discarding it"
   (let [hasref 
     (assoc
@@ -78,8 +92,6 @@
     (push.core/get-stack
       (i/execute-instruction (i/push-item hasref :ref :f) :ref-dump) :exec) => '(())
     ))
-
-
 
 
 (fact ":ref-forget completely forgets a binding"
