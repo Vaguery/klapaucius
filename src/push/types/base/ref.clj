@@ -11,13 +11,13 @@
 ; - `:x-reverselookup` pops top of `:x` stack, checks the current bindings (including `inputs`) and returns the `:ref` key if a match is found
 
 
-(def ref-new
+(def quote-refs
   (core/build-instruction
-    ref-new
-    "`:ref-new` creates a new (randomly-named) `:ref` keyword and pushes it to that stack"
+    push-quoterefs
+    "`:push-quoterefs` toggles the interpreter state so that all known binding keywords are pushed automatically to the :ref stack without being resolved"
     :tags #{:binding}
-    (d/calculate [] #(keyword (gensym "ref!")) :as :newref)
-    (d/push-onto :ref :newref)))
+    (d/quote-all-bindings)))
+
 
 
 (def ref-dump
@@ -30,14 +30,15 @@
     (d/push-onto :exec :newblock)))
 
 
-(def ref-lookup
+
+(def ref-forget
   (core/build-instruction
-    ref-lookup
-    "`:ref-lookup` pops the top `:ref` keyword and pushes a copy of the top item on its stack onto the `:exec` stack"
+    ref-forget
+    "`:ref-forget` pops the top `:ref` keyword and clears the entire binding currently associated with it, key and all. NOTE: this is permitted to erase an `:input` binding."
     :tags #{:binding}
     (d/consume-top-of :ref :as :arg)
-    (d/save-top-of-binding :arg :as :value)
-    (d/push-onto :exec :value)))
+    (d/forget-binding :arg)))
+
 
 
 (def ref-fullquote
@@ -50,12 +51,26 @@
     (d/push-onto :code :newblock)))
 
 
-(def quote-refs
+
+(def ref-lookup
   (core/build-instruction
-    push-quoterefs
-    "`:push-quoterefs` toggles the interpreter state so that all known binding keywords are pushed automatically to the :ref stack without being resolved"
+    ref-lookup
+    "`:ref-lookup` pops the top `:ref` keyword and pushes a copy of the top item on its stack onto the `:exec` stack"
     :tags #{:binding}
-    (d/quote-all-bindings)))
+    (d/consume-top-of :ref :as :arg)
+    (d/save-top-of-binding :arg :as :value)
+    (d/push-onto :exec :value)))
+
+
+
+(def ref-new
+  (core/build-instruction
+    ref-new
+    "`:ref-new` creates a new (randomly-named) `:ref` keyword and pushes it to that stack"
+    :tags #{:binding}
+    (d/calculate [] #(keyword (gensym "ref!")) :as :newref)
+    (d/push-onto :ref :newref)))
+
 
 
 (def unquote-refs
@@ -75,6 +90,7 @@
         (t/attach-instruction quote-refs)
         (t/attach-instruction unquote-refs)
         (t/attach-instruction ref-dump)
+        (t/attach-instruction ref-forget)
         (t/attach-instruction ref-fullquote)
         (t/attach-instruction ref-lookup)
         (t/attach-instruction ref-new)

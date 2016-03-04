@@ -236,6 +236,14 @@
             [(u/set-stack interpreter stackname (rest old-stack)) scratch]))))
 
 
+(defn forget-binding
+  "Takes a PushDSL blob and a scratch keyword. The interpreter forgets (permanently) the `:binding` stored under in the keyword. If for some reason the scratch argument is not a known binding, there is no bad effect."
+  [[interpreter scratch] kwd]
+  (let [binding-name (kwd scratch)
+        old-bindings (:bindings interpreter)]
+    [(assoc interpreter :bindings (dissoc old-bindings binding-name)) scratch]))
+
+
 (defn insert-as-nth-of
   "Usage: `insert-of-nth-of [stackname local :at where]`
 

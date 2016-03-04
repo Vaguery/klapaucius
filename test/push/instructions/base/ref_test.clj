@@ -2,6 +2,7 @@
   (:use midje.sweet)
   (:use [push.util.test-helpers])
   (:require [push.interpreter.core :as i])
+  (:require [push.util.stack-manipulation :as s])
   (:require [push.types.core :as t])
   (:use [push.types.base.ref])
   )
@@ -76,6 +77,23 @@
     (push.core/get-stack (i/execute-instruction hasref :ref-dump) :exec) => '((1 2 (3 4)))
     (push.core/get-stack
       (i/execute-instruction (i/push-item hasref :ref :f) :ref-dump) :exec) => '(())
+    ))
+
+
+
+
+(fact ":ref-forget completely forgets a binding"
+  (let [hasref 
+    (assoc
+      (push.interpreter.templates.one-with-everything/make-everything-interpreter
+        :stacks {:ref '(:x)})
+      :bindings {:x '(1 2 (3 4))})]
+
+    (push.core/get-stack hasref :ref) => '(:x)
+
+    (:bindings (i/execute-instruction hasref :ref-forget)) => {}
+    (:bindings (i/execute-instruction
+      (s/set-stack hasref :ref '(:bad)) :ref-forget)) => '{:x (1 2 (3 4))}
     ))
 
 
