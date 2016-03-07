@@ -33,7 +33,7 @@
 
 (fact "I can produce the router list for an interpreter"
   (p/routing-list (p/interpreter)) =>
-    (contains [:ref :refs :integer :boolean :char :float :string :booleans :chars :floats :integers :strings :vector :set] :in-any-order))
+    (contains [:ref :refs :integer :boolean :char :float :generator :string :booleans :chars :floats :integers :strings :vector :set] :in-any-order))
 
 
 (fact "I can run a Push program and get a named stack"

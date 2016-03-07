@@ -14,6 +14,7 @@
   (:use push.types.modules.print)
   (:use push.types.modules.log)
   (:use push.types.modules.error)
+  (:use push.types.extra.generator)
   (:use push.types.extra.vectorized)
   (:use push.types.extra.vector)
   (:use push.types.extra.set)
@@ -35,6 +36,7 @@
     boolean-type
     char-type
     float-type
+    generator-type
     ref-type
     string-type
 
@@ -82,8 +84,10 @@
   - exec-module
   - integer-type
   - float-type
+  - generator-type
   - log-module
   - print-module
+  - ref-type
   - string-type
   - booleans-type
   - chars-type
