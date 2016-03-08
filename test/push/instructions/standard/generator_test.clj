@@ -82,6 +82,18 @@
         ))
 
 
+(fact ":generator-next will return `nil` if the generator disappears during update"
+  (let [gstep (push.interpreter.templates.one-with-everything/make-everything-interpreter
+        :stacks {:generator (list (make-generator 8 (constantly nil)))})
+        result  (first 
+                  (push.core/get-stack 
+                    (i/execute-instruction gstep :generator-next) 
+                    :exec))]
+        result => nil
+        ))
+
+
+
 (fact ":generator-reset creates a resets a :generator to its :origin"
   (let [g (push.interpreter.templates.one-with-everything/make-everything-interpreter
         :stacks {:generator (list (make-generator 8 dec 351))})
