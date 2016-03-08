@@ -4,6 +4,7 @@
             [push.instructions.dsl :as d]
             [clojure.string :as strings]
             [push.instructions.aspects :as aspects])
+  (:use push.types.extra.generator)
   )
 
 
@@ -355,14 +356,16 @@
   ( ->  (t/make-type  :string
                       :recognizer string?
                       :attributes #{:string :base})
-        aspects/make-visible 
+        aspects/make-cycling
         aspects/make-equatable
         aspects/make-comparable
         aspects/make-movable
         aspects/make-printable
         aspects/make-quotable
+        aspects/make-repeatable
         aspects/make-returnable
         aspects/make-storable
+        aspects/make-visible 
         (t/attach-instruction , exec-string-iterate)
         (t/attach-instruction , string-butlast)
         (t/attach-instruction , string-concat)

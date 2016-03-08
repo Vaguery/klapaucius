@@ -5,6 +5,7 @@
             [push.util.stack-manipulation :as stacks]
             [push.util.code-wrangling :as u]
             [push.instructions.aspects :as aspects])
+  (:use push.types.extra.generator)
   )
 
 
@@ -409,9 +410,11 @@
 (def code-module
   ( ->  (t/make-module  :code
                         :attributes #{:complex :base})
+        aspects/make-cycling
         aspects/make-equatable
         aspects/make-movable
         aspects/make-printable
+        aspects/make-repeatable
         aspects/make-returnable
         aspects/make-storable
         aspects/make-visible 

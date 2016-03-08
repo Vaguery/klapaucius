@@ -7,6 +7,19 @@
   )
 
 
+(fact ":generator-again creates a list of the current state and the unchanged generator, pushed to :exec"
+  (let [gstep (push.interpreter.templates.one-with-everything/make-everything-interpreter
+        :stacks {:generator (list (make-generator 8 dec))})
+        result  (first 
+                  (push.core/get-stack 
+                    (i/execute-instruction gstep :generator-again) 
+                    :exec))]
+        (first result) => 8
+        (second result) => generator?
+        (:state (second result)) => 8
+        (:origin (second result)) => 8
+        ))
+
 
 (tabular
   (fact ":generator-counter pops an :integer and makes an incrementer from it"

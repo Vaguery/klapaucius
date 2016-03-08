@@ -5,6 +5,7 @@
             [push.util.code-wrangling :as fix]
             [push.instructions.aspects :as aspects]
             [clojure.math.numeric-tower :as math])
+  (:use push.types.extra.generator)
   )
 
 
@@ -150,6 +151,7 @@
         aspects/make-movable
         aspects/make-printable
         aspects/make-quotable
+        aspects/make-repeatable
         aspects/make-returnable
         aspects/make-storable
         (t/attach-instruction , integer-abs)

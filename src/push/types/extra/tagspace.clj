@@ -2,7 +2,9 @@
   (:require [push.instructions.core :as core]
             [push.types.core :as t]
             [push.instructions.dsl :as d]
-            [push.instructions.aspects :as aspects]))
+            [push.instructions.aspects :as aspects])
+  (:use push.types.extra.generator)
+)
 
 
 (defrecord TagSpace [contents])
@@ -45,12 +47,14 @@
                     :recognizer tagspace?
                     :attributes #{:collection :tagspace})
       (t/attach-instruction , tagspace-new)
-      aspects/make-visible 
+      aspects/make-cycling
       aspects/make-equatable
       aspects/make-movable
       aspects/make-printable
       aspects/make-quotable
+      aspects/make-repeatable
       aspects/make-returnable
       aspects/make-storable
+      aspects/make-visible 
       )))
 

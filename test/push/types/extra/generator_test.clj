@@ -41,6 +41,16 @@
     (:state (step-generator (step-generator g))) => "foo"))
 
 
+(fact "stepping that returns nil destroys the generator itself"
+  (let [g (make-generator 3 (fn [x] constantly nil))]
+    (:state g) => 3
+    (step-generator g) => nil
+  ))
+
+
+(future-fact "stepping causes the generator to disappear if it produces nil"
+  () => false)
+
 (fact "generator-type knows some instructions"
   (keys (:instructions generator-type)) =>
     (contains [:generator-dup :generator-save] :in-any-order :gaps-ok))

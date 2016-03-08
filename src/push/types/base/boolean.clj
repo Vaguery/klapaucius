@@ -2,7 +2,8 @@
   (:require [push.instructions.core :as core]
             [push.types.core :as t]
             [push.instructions.dsl :as d])
-  (:use [push.instructions.aspects :as aspects])
+  (:use [push.instructions.aspects])
+  (:use push.types.extra.generator)
   (:use [push.util.type-checkers :only (boolean?)])
   )
 
@@ -79,13 +80,14 @@
   ( ->  (t/make-type  :boolean
                       :recognizer boolean?
                       :attributes #{:logical})
-        aspects/make-visible 
-        aspects/make-equatable
-        aspects/make-movable
-        aspects/make-printable
-        aspects/make-quotable
-        aspects/make-returnable
-        aspects/make-storable
+        make-visible 
+        make-equatable
+        make-movable
+        make-printable
+        make-quotable
+        make-repeatable
+        make-returnable
+        make-storable
         (t/attach-instruction , bool-and)
         (t/attach-instruction , integer->boolean)
         (t/attach-instruction , intsign->boolean)

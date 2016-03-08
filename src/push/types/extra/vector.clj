@@ -4,6 +4,7 @@
             [push.instructions.dsl :as d]
             [push.instructions.aspects :as aspects]
             [push.types.extra.vectorized :as v])
+  (:use push.types.extra.generator)
   )
 
 
@@ -36,13 +37,15 @@
   (-> (t/make-type  :vector
                       :recognizer vector?
                       :attributes #{:collection :vector})
-      aspects/make-visible 
+      aspects/make-cycling
       aspects/make-equatable
       aspects/make-movable
       aspects/make-printable
       aspects/make-quotable
+      aspects/make-repeatable
       aspects/make-returnable
       aspects/make-storable
+      aspects/make-visible 
       (t/attach-instruction , vector-refilter)
       (t/attach-instruction , vector-refilterall)
       (t/attach-instruction , (v/x-butlast-instruction typename))

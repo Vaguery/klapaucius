@@ -5,7 +5,8 @@
             [push.util.stack-manipulation :as u]
             [push.util.code-wrangling :as fix]
             [push.instructions.aspects :as aspects])
-  )
+  (:use push.types.extra.generator)
+)
 
 
 ;; character-specific
@@ -99,6 +100,7 @@
         aspects/make-movable
         aspects/make-printable
         aspects/make-quotable
+        aspects/make-repeatable
         aspects/make-returnable
         aspects/make-storable
         (t/attach-instruction , string->chars)

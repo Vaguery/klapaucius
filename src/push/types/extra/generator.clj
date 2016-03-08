@@ -9,11 +9,13 @@
 
 
 (defn make-generator
-  "Takes an initial state and a generator function that transforms the state into its next value. Stores the initial state in the :origin field so it can reset and detect loops. The function should have arity 1 and return a new state value."
+  "Takes an initial state and a generator function that transforms the state into its next value. Stores the initial state in the :origin field so it can reset and detect loops. The function should have arity 1 and return a new state value. If the state turns out to be nil, no record is built and nil is returned instead."
   ([state step-function origin]
-    (->Generator state step-function origin))
+    (if (nil? state)
+      nil
+      (->Generator state step-function origin)))
   ([state step-function]
-    (->Generator state step-function state)))
+    (make-generator state step-function state)))
 
 
 (defn generator?
@@ -27,13 +29,27 @@
   [g]
   (let [gen       (:step-function g) 
         new-value (apply gen (list (:state g)))]
-    (make-generator new-value gen (:origin g))))
+    (if (nil? new-value) nil (make-generator new-value gen (:origin g)))))
 
 
 ;; instructions
+;; - generator-jump
 ;; - generator-range
 ;; - generator-reset
-;; etc
+
+
+;; instructions
+
+
+(def generator-again
+  (core/build-instruction
+    generator-again
+    "`:generator-again` pops the top `:generator` and produces a code block containing the current `:state` and the unchanged generator, which is pushed to the `:exec` stack."
+    :tags #{:generator}
+    (d/consume-top-of :generator :as :arg)
+    (d/calculate [:arg] #(list (:state %) %) :as :results)
+    (d/push-onto :exec :results)))
+
 
 
 (def generator-counter
@@ -88,6 +104,7 @@
   (-> (t/make-type  :generator
                     :recognizer generator?
                     :attributes #{:generator})
+      (t/attach-instruction , generator-again)
       (t/attach-instruction , generator-counter)
       (t/attach-instruction , generator-next)
       (t/attach-instruction , generator-reset)
@@ -95,6 +112,7 @@
       aspects/make-visible 
       aspects/make-movable
       aspects/make-quotable
+      aspects/make-repeatable
       aspects/make-returnable
       aspects/make-storable
       )))

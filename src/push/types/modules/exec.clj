@@ -3,6 +3,7 @@
             [push.types.core :as t]
             [push.instructions.dsl :as d]
             [push.instructions.aspects :as aspects])
+  (:use push.types.extra.generator)
   )
 
 
@@ -171,9 +172,11 @@
 (def exec-module
   ( ->  (t/make-module  :exec
                         :attributes #{:complex :base})
+        aspects/make-cycling
         aspects/make-equatable
         aspects/make-movable
         aspects/make-printable
+        aspects/make-repeatable
         aspects/make-returnable
         aspects/make-storable
         aspects/make-visible 

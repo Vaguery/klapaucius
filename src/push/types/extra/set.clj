@@ -4,6 +4,7 @@
             [push.instructions.dsl :as d]
             [push.instructions.aspects :as aspects]
             [clojure.set :as sets])
+  (:use push.types.extra.generator)
   )
 
 (def code->set
@@ -75,13 +76,15 @@
   (-> (t/make-type  :set
                     :recognizer set?
                     :attributes #{:collection :set})
-      aspects/make-visible 
+      aspects/make-cycling
       aspects/make-equatable
       aspects/make-movable
       aspects/make-printable
       aspects/make-quotable
+      aspects/make-repeatable
       aspects/make-returnable
       aspects/make-storable
+      aspects/make-visible 
       (t/attach-instruction , code->set)
       (t/attach-instruction , vector->set)
       (t/attach-instruction , set-difference)

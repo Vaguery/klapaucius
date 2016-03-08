@@ -4,6 +4,7 @@
             [push.instructions.dsl]
             [push.instructions.aspects :as aspects]
             [push.util.code-wrangling :as fix])
+  (:use push.types.extra.generator)
   )
 
 
@@ -451,13 +452,15 @@
     ( ->  (t/make-type  typename
                         :recognizer #(vector-of-type? % content-type)
                         :attributes #{:vector})
-          aspects/make-visible
+          aspects/make-cycling
           aspects/make-equatable
           aspects/make-movable
           aspects/make-printable
           aspects/make-quotable
+          aspects/make-repeatable
           aspects/make-returnable
           aspects/make-storable
+          aspects/make-visible
           (t/attach-instruction , (x-butlast-instruction typename))
           (t/attach-instruction , (x-build-instruction typename rootname))
           (t/attach-instruction , (x-concat-instruction typename))

@@ -114,10 +114,10 @@
                                      9 (random-floats 40)
                                      10  (random-chars)
                                      11 (random-strings)
-                                     12 (random-point)
-                                     13 (random-circle)
-                                     14 (random-line)
-                                     15 (into #{} (bunch-a-junk interpreter 8))
+                                     ; 12 (random-point)
+                                     ; 13 (random-circle)
+                                     ; 14 (random-line)
+                                     12 (into #{} (bunch-a-junk interpreter 8))
 
                                      (any-instruction interpreter)))))
 

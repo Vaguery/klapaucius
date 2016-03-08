@@ -1,10 +1,12 @@
 (ns push.instructions.aspects
   (:require [push.types.core :as t])
   (:use [push.instructions.aspects.comparable])
+  (:use [push.instructions.aspects.cycling])
   (:use [push.instructions.aspects.equatable])
   (:use push.instructions.aspects.movable)
   (:use push.instructions.aspects.printable)
   (:use push.instructions.aspects.quotable)
+  (:use push.instructions.aspects.repeatable)
   (:use push.instructions.aspects.returnable)
   (:use push.instructions.aspects.storable)
   (:use push.instructions.aspects.visible)
@@ -73,6 +75,26 @@
   (-> pushtype
       (t/attach-instruction (tocode-instruction pushtype))
       (assoc :attributes (conj (:attributes pushtype) :quotable))))
+
+
+(defn make-repeatable
+  "takes a PushType and adds the :repeatable attribute, and the
+  :pushtype-echo instruction to its :instructions collection"
+  [pushtype]
+  (-> pushtype
+      (t/attach-instruction (echo-instruction pushtype))
+      (assoc :attributes (conj (:attributes pushtype) :repeatable))))
+
+
+(defn make-cycling
+  "takes a PushType and adds the :cycling attribute, and the
+  :pushtype-cycler, :pushtype-indexedcycler, :pushtype-items instructions to its :instructions collection"
+  [pushtype]
+  (-> pushtype
+      (t/attach-instruction (comprehension-instruction pushtype))
+      (t/attach-instruction (cycler-instruction pushtype))
+      (assoc :attributes (conj (:attributes pushtype) :cycling))))
+
 
 
 

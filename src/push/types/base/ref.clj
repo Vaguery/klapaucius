@@ -3,6 +3,7 @@
             [push.types.core :as t]
             [push.instructions.dsl :as d]
             [push.instructions.aspects :as aspects])
+  (:use push.types.extra.generator)
   )
 
 ; - `:x-similar` (return `:set` of :`ref` bindings that hold items of this type only)
@@ -109,6 +110,7 @@
         aspects/make-movable
         aspects/make-printable
         aspects/make-quotable
+        aspects/make-repeatable
         aspects/make-returnable
         aspects/make-storable
         aspects/make-visible

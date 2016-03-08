@@ -136,7 +136,7 @@
 ;;; manipulating Interpreter state
 
 
-(defn- contains-at-least?
+(defn contains-at-least?
   "Takes an interpreter, a stack name, and a count; returns true if
   the named stack exists, and has at least that many items on it"
   [interpreter stack limit]
@@ -146,14 +146,14 @@
       (some? that-stack))))
 
 
-(defn- recognizes-instruction?
+(defn recognizes-instruction?
   "Takes an Interpreter and an instruction token, and returns true if
   the token is registered."
   [interpreter token]
   (contains? (:instructions interpreter) token))
 
 
-(defn- ready-for-instruction?
+(defn ready-for-instruction?
   "Takes an Interpreter (with registered instructions) and a keyword
   instruction token, and returns true if the number of items on the
   stacks meets or exceeds all the specified :needs for that
@@ -169,12 +169,12 @@
         needs))))
 
 
-(defn- get-instruction
+(defn get-instruction
   [interpreter token]
   (get-in interpreter [:instructions token]))
 
 
-(defn- apply-instruction
+(defn apply-instruction
   [interpreter token]
   ((:transaction (get-instruction interpreter token)) interpreter))
 
