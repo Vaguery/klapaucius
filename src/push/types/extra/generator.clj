@@ -70,7 +70,8 @@
     :tags #{:generator}
     (d/consume-top-of :generator :as :arg)
     (d/calculate [:arg]
-      #(let [n (step-generator %1)] (list (:state n) n)) :as :results)
+      #(let [n (step-generator %1)]
+        (if (nil? n) nil (list (:state n) n))) :as :results)
     (d/push-onto :exec :results)))
 
 

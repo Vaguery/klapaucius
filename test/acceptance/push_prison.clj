@@ -32,10 +32,11 @@
           (if (is-done? s)
             (println "DONE")
             (recur (do 
-              (println (str (pr-str (u/peek-at-stack s :log))
-                            ; "\n >> int: " (pr-str (u/get-stack s :integer))
-                            ; " >> " (pr-str (map count (vals (:stacks s))))
-                            ; " >> " (u/peek-at-stack s :booleans)
+              (println (str "\n >> generator: " (pr-str (u/get-stack s :generator))
+                            "\n >> exec: " (pr-str (u/get-stack s :exec))
+                            "\n\n"
+                            (pr-str (u/peek-at-stack s :log))
+                            
                               ))
               (step s))))))
       (catch Exception e (do 
