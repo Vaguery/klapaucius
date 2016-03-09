@@ -125,7 +125,7 @@
           (list 
             (make-generator 
               '(1 [2 3])
-              (partial push.instructions.aspects.cycling/dissect-step)
+              (partial push.instructions.aspects.repeatable-and-cycling/dissect-step)
               '(1 [2 3])))})
         result  (first 
                   (push.core/get-stack 
