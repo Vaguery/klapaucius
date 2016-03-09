@@ -5,6 +5,7 @@
 
 
 (defn splittable?
+  "Returns true if the item is a collection (but not a record), or a string, and is not empty."
   [item]
   (and (cond
           (record? item) false
@@ -16,6 +17,7 @@
 
 
 (defn dissect-collection
+  "Takes an item that is a collection and produces a 'dissected list' composed of `(first item)` and `(rest item)`, or returns nil if that is imposeible."
   [item]
   (if (splittable? item)
     (list (first item) (rest item))
@@ -23,6 +25,7 @@
 
 
 (defn dissect-step
+  "Takes the tuple from a :comprehension :state and returns the next step, if possible. Returns `nil` if the contents are exhausted."
   [item-and-items]
   (let [item  (first item-and-items)
         items (second item-and-items)]
@@ -32,6 +35,7 @@
 
 
 (defn cycle-collection
+  "Takes an item and attempts to produce an initial :cycler item's :state tuple. Returns `nil` if it's not possible."
   [item]
   (if (splittable? item)
     (list (first item) (concat (drop 1 item) (take 1 item)))
@@ -40,6 +44,7 @@
 
 
 (defn cycle-step
+  "Takes the tuple from a :cycler :state and returns the next step, if possible. Returns `nil` if the contents are inappropriate."
   [item-and-items]
   (let [item  (first item-and-items)
         items (second item-and-items)]

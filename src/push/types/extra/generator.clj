@@ -33,7 +33,6 @@
 
 
 ;; instructions
-;; - generator-jump
 ;; - generator-range
 ;; - generator-reset
 
@@ -63,6 +62,22 @@
 
 
 
+(def generator-jump
+  (core/build-instruction
+    generator-jump
+    "`:generator-jump` pops the top `:generator` and the top `:integer`, and calls the `:generator`'s  `step` function as many times as the `:integer` indicates. The number of steps is calculated modulo 100. The advanced `:generator` is pushed to the `:generator` stack. If the `:integer` is negative or zero, there is no change to the state. If the `:generator` is exhausted in the process, it is discarded."
+    :tags #{:generator}
+    (d/consume-top-of :generator :as :arg)
+    (d/consume-top-of :integer :as :steps)
+    (d/calculate [:arg :steps]
+      #(first 
+        (drop (mod %2 100)
+          (iterate (fn [g] (if (nil? g) nil (step-generator g))) %1))) :as :result)
+    (d/push-onto :generator :result)))
+
+
+
+
 (def generator-next
   (core/build-instruction
     generator-next
@@ -73,6 +88,8 @@
       #(let [n (step-generator %1)]
         (if (nil? n) nil (list (:state n) n))) :as :results)
     (d/push-onto :exec :results)))
+
+
 
 
 
@@ -107,6 +124,7 @@
                     :attributes #{:generator})
       (t/attach-instruction , generator-again)
       (t/attach-instruction , generator-counter)
+      (t/attach-instruction , generator-jump)
       (t/attach-instruction , generator-next)
       (t/attach-instruction , generator-reset)
       (t/attach-instruction , generator-stepper)

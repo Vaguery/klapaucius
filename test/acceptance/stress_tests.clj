@@ -189,11 +189,19 @@
         (let [rando (assoc-in (reset-interpreter (random-program-interpreter 10 200))
                       [:config :step-limit] 5000)] 
           (try
-            (timeout 30000 #(do
+            (timeout 120000 #(do
               ; (println (str "\n\n" n " : " (pr-str (:program rando)) "\n" (pr-str (:bindings rando))))
               (loop [s rando]
                 (if (is-done? s)
-                  (println (str n "  " (:counter s) ))
+                  (println (str n
+                                "  "
+                                (:counter s) 
+                                (reduce-kv
+                                  (fn [line k v]
+                                    (str line "," (count (get-in s [:stacks k]))))
+                                  ""
+                                  (:stacks s))
+                            ))
                   (recur (do 
                     ; (println (u/peek-at-stack s :log)) 
                     (step s)))))))

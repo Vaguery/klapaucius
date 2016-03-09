@@ -94,7 +94,7 @@
 
 
 
-(fact ":generator-reset creates a resets a :generator to its :origin"
+(fact ":generator-reset resets a :generator to its :origin"
   (let [g (push.interpreter.templates.one-with-everything/make-everything-interpreter
         :stacks {:generator (list (make-generator 8 dec 351))})
         result  (first 
@@ -104,3 +104,33 @@
         (:state result) => 351
         (:origin result) => 351
         ))
+
+
+
+(fact ":generator-jump jumps ahead N steps"
+  (let [g (push.interpreter.templates.one-with-everything/make-everything-interpreter
+        :stacks {:integer '(711) :generator (list (make-generator 8 dec 351))})
+        result  (first 
+                  (push.core/get-stack 
+                    (i/execute-instruction g :generator-jump) 
+                    :generator))]
+        (:state result) => -3  ;; note the jump was (mod 711 100) steps
+        (:origin result) => 351
+        ))
+
+
+(fact ":generator-jump is OK if the generator disappears"
+  (let [g (push.interpreter.templates.one-with-everything/make-everything-interpreter
+        :stacks {:integer '(120) :generator
+          (list 
+            (make-generator 
+              '(1 [2 3])
+              (partial push.instructions.aspects.cycling/dissect-step)
+              '(1 [2 3])))})
+        result  (first 
+                  (push.core/get-stack 
+                    (i/execute-instruction g :generator-jump) 
+                    :generator))]
+        result => nil
+        ))
+
