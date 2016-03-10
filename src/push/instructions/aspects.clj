@@ -82,7 +82,7 @@
   [pushtype]
   (-> pushtype
       (t/attach-instruction (echo-instruction pushtype))
-      ; (t/attach-instruction (echoall-instruction pushtype))
+      (t/attach-instruction (echoall-instruction pushtype))
       (t/attach-instruction (rerunall-instruction pushtype))
       (assoc :attributes (conj (:attributes pushtype) :repeatable))))
 

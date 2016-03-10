@@ -72,9 +72,12 @@
         "` item. If it is a non-empty collection, it pushes a new `:generator` that will return a list containing the first item and the remaining ones until there are none.")
       :tags #{:generator :cycling}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg)
-      `(push.instructions.dsl/calculate [:arg]
+      `(push.instructions.dsl/save-max-collection-size :as :limit)
+      `(push.instructions.dsl/calculate [:arg :limit]
           #(push.types.extra.generator/make-generator
-              (dissect-collection %)
+              (if (< (wrangling/count-collection-points %1) %2)
+                (dissect-collection %)
+                nil)
               (partial dissect-step)) :as :g)
       `(push.instructions.dsl/push-onto :generator :g)))))
 
@@ -133,8 +136,11 @@
         "` stack into a new `:generator` that will return the entire stack (as a list pushed to the `:exec` stack) every time it's called.")
       :tags #{:generator :repeatable}
       `(push.instructions.dsl/save-stack ~typename :as :all)
-      `(push.instructions.dsl/calculate [:all]
-          #(push.types.extra.generator/make-generator %1 (partial (constantly %1))) :as :g)
+      `(push.instructions.dsl/save-max-collection-size :as :limit)
+      `(push.instructions.dsl/calculate [:all :limit]
+          #(push.types.extra.generator/make-generator
+            (if (< (wrangling/count-collection-points %1) %2) %1 nil)
+              (partial (constantly %1))) :as :g)
       `(push.instructions.dsl/push-onto :generator :g)))))
 
 

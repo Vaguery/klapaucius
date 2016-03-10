@@ -33,7 +33,7 @@
             (println "DONE")
             (recur (do 
               (println (str 
-                            "\n >> generator: " (pr-str (u/get-stack s :generator))
+                            ; "\n >> generator: " (pr-str (u/get-stack s :generator))
                             ; ; "\n >> exec: " (pr-str (u/get-stack s :exec))
                             ; "\n >> error: " (pr-str (u/get-stack s :error))
                             "\n\n"

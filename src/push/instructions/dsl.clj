@@ -285,7 +285,7 @@
 (defn oversized-stack?
   "Returns `true` if adding the item to the stack would push it over the interpreter's max-collection-size limit, or false if it would be OK. Counts the items in the stack and the _program points_ in the item."
   [interpreter stack item]
-  (let [item-size (fix/count-code-points item)
+  (let [item-size (fix/count-collection-points item)
         stack-size (count stack)
         limit (get-max-collection-size interpreter)]
     (< limit (+ item-size stack-size))))
