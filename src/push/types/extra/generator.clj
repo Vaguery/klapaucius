@@ -43,7 +43,7 @@
 (def generator-again
   (core/build-instruction
     generator-again
-    "`:generator-again` pops the top `:generator` and produces a code block containing the current `:state` and the unchanged generator, which is pushed to the `:exec` stack."
+    "`:generator-again` pops the top `:generator` and produces a code block containing the current `:state` and the unchanged generator, which is pushed to the `:exec` stack. If the number of points exceeds the "
     :tags #{:generator}
     (d/consume-top-of :generator :as :arg)
     (d/calculate [:arg] #(list (:state %) %) :as :results)

@@ -201,6 +201,12 @@
                                     (str line "," (count (get-in s [:stacks k]))))
                                   ""
                                   (:stacks s))
+                                (reduce-kv
+                                  (fn [line k v]
+                                    (str line "," (count (get-in s [:bindings k]))))
+                                  "**"
+                                  (:bindings s))
+
                             ))
                   (recur (do 
                     ; (println (u/peek-at-stack s :log)) 

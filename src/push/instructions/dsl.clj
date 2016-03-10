@@ -7,7 +7,7 @@
   )
 
 
-;;;; a "PushDSL blob" is just a vector continaing an interpreter and a hashmap
+;;;; a "PushDSL blob" is just a vector containing an interpreter and a hashmap
 
 
 ;; utilities
@@ -282,11 +282,7 @@
 
 
 (defn push-onto
-  "Takes a PushDSL blob, a stackname (keyword) and a scratch key (also
-  keyword), and puts item stored in the scratch variable on top of the
-  named stack. If the scratch item is nil, there is no effect (and no
-  exception); if it is a list, that is pushed _as a single item_ onto
-  the stack (not concatenated). No type checking is used.
+  "Takes a PushDSL blob, a stackname (keyword) and a scratch key (also keyword), and puts item stored in the scratch variable on top of the named stack. If the scratch item is nil, there is no effect (and no exception); if it is a list, that is pushed _as a single item_ onto the stack (not concatenated). No type checking is used. If the total number of items in the stack and program-points in the item is more than the interpreter's `max-collection-size`, the item is not pushed and an :error is pushed to that stack instead.
 
   Exceptions when:
   - the stack doesn't exist
