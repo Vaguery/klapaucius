@@ -16,7 +16,7 @@
 
 
 (defn count-code-points
-  "Takes a nested list and counts the total number of seqs and non-seq items in those collections. Literal 'nil' is 1; an empty list '() or #{} or {} is 1. In other words, it only counts lists and things inside lists, not vectors, maps, or other kinsd of collection (and is thus different from `count-collection-points`)."
+  "Takes a nested list and counts the total number of seqs and non-seq items in those collections. Literal 'nil' is 1; an empty list '() or #{} or {} is 1. In other words, it only counts lists and things inside lists, not vectors, maps, or other kinds of collection (and is thus different from `count-collection-points`)."
   [item & {:keys [counter] :or {counter 0}}]
   (cond
     (seq? item)

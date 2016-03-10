@@ -281,6 +281,17 @@
       (oops/throw-unknown-stack-exception stackname)))
 
 
+
+(defn oversized-stack?
+  "Returns `true` if adding the item to the stack would push it over the interpreter's max-collection-size limit, or false if it would be OK. Counts the items in the stack and the _program points_ in the item."
+  [interpreter stack item]
+  (let [item-size (fix/count-code-points item)
+        stack-size (count stack)
+        limit (get-max-collection-size interpreter)]
+    (< limit (+ item-size stack-size))))
+
+
+
 (defn push-onto
   "Takes a PushDSL blob, a stackname (keyword) and a scratch key (also
   keyword), and puts item stored in the scratch variable on top of the
@@ -293,11 +304,21 @@
   - (does not warn when the keyword isn't defined)"
   [[interpreter scratch] stackname kwd]
   (if-let [old-stack (u/get-stack interpreter stackname)]
-    (let [new-item (kwd scratch)
-          new-stack (if (nil? new-item)
-                      old-stack 
-                      (conj old-stack new-item))]
-      [(u/set-stack interpreter stackname new-stack) scratch])
+    (let [new-item    (kwd scratch)
+          too-big?    (oversized-stack? interpreter old-stack new-item)
+          error-stack (u/get-stack interpreter :error)
+          counter     (:counter interpreter)
+          new-stack   (if (or (nil? new-item) too-big?)
+                        old-stack
+                        (conj old-stack new-item))]
+      (if too-big?
+        [(u/set-stack
+            interpreter
+            :error
+            (conj error-stack 
+                  {:step counter
+                   :item (str "oversized push-onto attempted to " stackname)})) scratch]
+      [(u/set-stack interpreter stackname new-stack) scratch]))
     (oops/throw-unknown-stack-exception stackname)))
 
 
