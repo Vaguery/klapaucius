@@ -34,9 +34,10 @@
             (recur (do 
               (println (str "\n >> generator: " (pr-str (count (u/get-stack s :generator)))
                             ; "\n >> exec: " (pr-str (u/get-stack s :exec))
-                            ; "\n >> integer: " (pr-str (u/get-stack s :integer))
+                            "\n >> error: " (pr-str (u/get-stack s :error))
                             "\n\n"
                             (pr-str (u/peek-at-stack s :log))
+                            "\n" (get-in s [:config :max-collection-size])
                             
                               ))
               (step s))))))
