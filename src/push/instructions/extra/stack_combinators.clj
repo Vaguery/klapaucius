@@ -69,7 +69,7 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`:" instruction-name "` takes an `:integer` argument, makes that into an index modulo the `" typename "` stack size, 'cuts' the stack after the first [idx] items and copies everything below that point onto the top as a block. If the result has more than `max-collection-size` items, the change is undone.")
+      (str "`:" instruction-name "` takes an `:integer` argument, makes that into an index modulo the `" typename "` stack size, 'cuts' the stack after the first [idx] items and copies everything below that point onto the top as a block. If the result would have more points (at any level) than `max-collection-size`, the change is undone.")
       :tags #{:combinator}
       `(push.instructions.dsl/consume-top-of :integer :as :where)
       `(push.instructions.dsl/consume-stack ~typename :as :old)
@@ -79,7 +79,7 @@
         #(into '() (reverse (concat (drop %2 %1) %1))) :as :new)
       '(push.instructions.dsl/save-max-collection-size :as :limit)
       `(push.instructions.dsl/calculate [:new :limit :old]
-        #(if (> (count %1) %2) %3 %1) :as :new)
+        #(if (> (u/count-collection-points %1) %2) %3 %1) :as :new)
       `(push.instructions.dsl/replace-stack ~typename :new)))))
 
 
@@ -93,7 +93,7 @@
       (t/attach-instruction (flipstack-instruction pushtype))
       (t/attach-instruction (cutflip-instruction pushtype))
       (t/attach-instruction (cutstack-instruction pushtype))
-      ; (t/attach-instruction (liftstack-instruction pushtype))
+      (t/attach-instruction (liftstack-instruction pushtype))
       ))
 
 
