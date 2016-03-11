@@ -159,6 +159,64 @@
 
 
 
+
+(let 
+  [taggy (make-tagspace {1 2 3 4 5 6})]
+(tabular
+  (fact "`:tagspace-offsetfloat` pops a :float and a :tagspace and moves the keys"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks tagspace-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction              ?expected
+
+    {:float '(0.5)
+     :tagspace (list taggy)}    :tagspace-offsetfloat   {:float  '()
+                                                        :tagspace (list
+                                                          (make-tagspace {1.5 2, 3.5 4, 5.5 6}))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:float '(-11.5)
+     :tagspace (list taggy)}    :tagspace-offsetfloat   {:float  '()
+                                                        :tagspace (list
+                                                        (make-tagspace {-10.5 2, -8.5 4, -6.5 6}))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:float '(-0.0)
+     :tagspace (list taggy)}    :tagspace-offsetfloat   {:float  '()
+                                                        :tagspace (list
+                                                        (make-tagspace {1.0 2 3.0 4 5.0 6}))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ))
+
+
+
+
+(let 
+  [taggy (make-tagspace {1 2 3 4 5 6})]
+(tabular
+  (fact "`:tagspace-offsetint` pops a :float and a :tagspace and moves the keys"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks tagspace-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction              ?expected
+
+    {:integer '(17)
+     :tagspace (list taggy)}    :tagspace-offsetint   {:integer  '()
+                                                        :tagspace (list
+                                                          (make-tagspace {18 2, 20 4, 22 6}))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:integer '(-121)
+     :tagspace (list taggy)}    :tagspace-offsetint   {:integer  '()
+                                                        :tagspace (list
+                                                        (make-tagspace {-120 2, -118 4, -116 6}))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:integer '(0)
+     :tagspace (list taggy)}    :tagspace-offsetint   {:integer  '()
+                                                        :tagspace (list
+                                                        (make-tagspace {1 2 3 4 5 6}))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ))
+
+
+
 (let 
   [taggy (make-tagspace {1 2 3 4 5 6})]
 (tabular

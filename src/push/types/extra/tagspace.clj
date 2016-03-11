@@ -44,8 +44,6 @@
 ; - :tagspace-offset
 ; - :tagspace-invertrange
 ; - :tagspace-link
-; - :tagspace-splitatinteger
-; - :tagspace-splitatfloat
 
 
 (def tagspace-lookupint
@@ -93,6 +91,41 @@
     "`:tagspace-new` creates a new, empty `:tagspace` item and pushes it to the stack."
     :tags #{:tagspace}
     (d/calculate [] #(make-tagspace) :as :result)
+    (d/push-onto :tagspace :result)))
+
+
+
+(def tagspace-offsetfloat
+  (core/build-instruction
+    tagspace-offsetfloat
+    "`:tagspace-offsetfloat` pops the top `:tagspace` item and the top `:float`, and pushes a new `:tagspace` in which the numeric keys have all had the `:float` added to them."
+    :tags #{:tagspace :collection}
+    (d/consume-top-of :tagspace :as :arg1)
+    (d/consume-top-of :float :as :offset)
+    (d/calculate [:arg1 :offset]
+      #(make-tagspace
+        (reduce-kv
+          (fn [r k v] (assoc r (+ k %2) v))
+          (sorted-map)
+          (:contents %1))) :as :result)
+    (d/push-onto :tagspace :result)))
+
+
+
+
+(def tagspace-offsetint
+  (core/build-instruction
+    tagspace-offsetint
+    "`:tagspace-offsetint` pops the top `:tagspace` item and the top `:integer`, and pushes a new `:tagspace` in which the numeric keys have all had the `:integer` added to them."
+    :tags #{:tagspace :collection}
+    (d/consume-top-of :tagspace :as :arg1)
+    (d/consume-top-of :integer :as :offset)
+    (d/calculate [:arg1 :offset]
+      #(make-tagspace
+        (reduce-kv
+          (fn [r k v] (assoc r (+ k %2) v))
+          (sorted-map)
+          (:contents %1))) :as :result)
     (d/push-onto :tagspace :result)))
 
 
@@ -183,6 +216,8 @@
       (t/attach-instruction , tagspace-lookupfloat)
       (t/attach-instruction , tagspace-merge)
       (t/attach-instruction , tagspace-new)
+      (t/attach-instruction , tagspace-offsetfloat)
+      (t/attach-instruction , tagspace-offsetint)
       (t/attach-instruction , tagspace-scalefloat)
       (t/attach-instruction , tagspace-scaleint)
       (t/attach-instruction , tagspace-splitwithfloat)
