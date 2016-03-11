@@ -53,7 +53,7 @@
 
 
 (defn random-char
-  [] (char (+ 8 (random-integer 5000))))
+  [] (char (+ 8 (random-integer 200))))
 
 
 (defn random-chars
@@ -187,7 +187,7 @@
   (do (println "creating and running 10000 random programs")
       (dotimes [n 10000] 
         (let [rando (assoc-in (reset-interpreter (random-program-interpreter 10 200))
-                      [:config :step-limit] 5000)] 
+                      [:config :step-limit] 3000)] 
           (try
             (timeout 120000 #(do
               ; (println (str "\n\n" n " : " (pr-str (:program rando)) "\n" (pr-str (:bindings rando))))

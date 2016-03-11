@@ -97,6 +97,43 @@
     (d/push-onto :tagspace :result)))
 
 
+
+(def tagspace-scalefloat
+  (core/build-instruction
+    tagspace-scalefloat
+    "`:tagspace-scalefloat` pops the top `:tagspace` item and the top `:float`, and pushes a new `:tagspace` in which the numeric keys have all been multipled by the `:float` (even if it is negative or zero)."
+    :tags #{:tagspace :collection}
+    (d/consume-top-of :tagspace :as :arg1)
+    (d/consume-top-of :float :as :scale)
+    (d/calculate [:arg1 :scale]
+      #(make-tagspace
+        (reduce-kv
+          (fn [r k v] (assoc r (* k %2) v))
+          (sorted-map)
+          (:contents %1))) :as :result)
+    (d/push-onto :tagspace :result)))
+
+
+
+
+(def tagspace-scaleint
+  (core/build-instruction
+    tagspace-scaleint
+    "`:tagspace-scaleint` pops the top `:tagspace` item and the top `:integer`, and pushes a new `:tagspace` in which the numeric keys have all been multipled by the `:integer` (even if it is negative or zero)."
+    :tags #{:tagspace :collection}
+    (d/consume-top-of :tagspace :as :arg1)
+    (d/consume-top-of :integer :as :scale)
+    (d/calculate [:arg1 :scale]
+      #(make-tagspace
+        (reduce-kv
+          (fn [r k v] (assoc r (* k %2) v))
+          (sorted-map)
+          (:contents %1))) :as :result)
+    (d/push-onto :tagspace :result)))
+
+
+
+
 (def tagspace-type
   "builds the `:tagspace` collection type, which can hold arbitrary and mixed contents and uses numeric indices"
   (let [typename :tagspace]
@@ -107,6 +144,8 @@
       (t/attach-instruction , tagspace-lookupfloat)
       (t/attach-instruction , tagspace-merge)
       (t/attach-instruction , tagspace-new)
+      (t/attach-instruction , tagspace-scalefloat)
+      (t/attach-instruction , tagspace-scaleint)
       aspects/make-cycling
       aspects/make-equatable
       aspects/make-movable

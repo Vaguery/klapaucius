@@ -156,3 +156,60 @@
                                                           :float  '(71.71)
                                                           :tagspace (list taggy)}
     ))
+
+
+
+(let 
+  [taggy (make-tagspace {1 2 3 4 5 6})]
+(tabular
+  (fact "`:tagspace-scaleint` pops an :integer and a :tagspace and scales the keys"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks tagspace-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction              ?expected
+
+    {:integer '(3)
+     :tagspace (list taggy)}    :tagspace-scaleint       {:integer  '()
+                                                          :tagspace (list
+                                                            (make-tagspace {3 2, 9 4, 15 6}))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:integer '(-3)
+     :tagspace (list taggy)}    :tagspace-scaleint       {:integer  '()
+                                                          :tagspace (list
+                                                            (make-tagspace {-3 2, -9 4, -15 6}))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:integer '(0)
+     :tagspace (list taggy)}    :tagspace-scaleint       {:integer  '()
+                                                          :tagspace (list
+                                                            (make-tagspace {0 6}))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ))
+
+
+
+(let 
+  [taggy (make-tagspace {1 2 3 4 5 6})]
+(tabular
+  (fact "`:tagspace-scalefloat` pops a :float and a :tagspace and scales the keys"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks tagspace-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction              ?expected
+
+    {:float '(0.5)
+     :tagspace (list taggy)}    :tagspace-scalefloat   {:float  '()
+                                                        :tagspace (list
+                                                          (make-tagspace {0.5 2, 1.5 4, 2.5 6}))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:float '(-1.5)
+     :tagspace (list taggy)}    :tagspace-scalefloat   {:float  '()
+                                                        :tagspace (list
+                                                        (make-tagspace {-7.5 6, -4.5 4, -1.5 2}))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:float '(-0.0)
+     :tagspace (list taggy)}    :tagspace-scalefloat   {:float  '()
+                                                        :tagspace (list
+                                                        (make-tagspace {0.0 6}))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ))
+
