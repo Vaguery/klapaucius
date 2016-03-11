@@ -42,10 +42,9 @@
 ;; instructions
 
 ; - :tagspace-scale
-; - :tagspace-shift
+; - :tagspace-offset
 ; - :tagspace-invertrange
 ; - :tagspace-link
-; - :tagspace-merge
 ; - :tagspace-splitatinteger
 ; - :tagspace-splitatfloat
 
@@ -76,6 +75,19 @@
 
 
 
+(def tagspace-merge
+  (core/build-instruction
+    tagspace-merge
+    "`:tagspace-merge` pops the top two `:tagspace` items (call them A and B respectively) and pushes a new `:tagspace` item with the contents of A merged into B."
+    :tags #{:tagspace :collection}
+    (d/consume-top-of :tagspace :as :arg2)
+    (d/consume-top-of :tagspace :as :arg1)
+    (d/calculate [:arg1 :arg2]
+      #(make-tagspace (into (sorted-map) (merge (:contents %1) (:contents %2)))) :as :result)
+    (d/push-onto :tagspace :result)))
+
+
+
 (def tagspace-new
   (core/build-instruction
     tagspace-new
@@ -93,6 +105,7 @@
                     :attributes #{:collection :tagspace})
       (t/attach-instruction , tagspace-lookupint)
       (t/attach-instruction , tagspace-lookupfloat)
+      (t/attach-instruction , tagspace-merge)
       (t/attach-instruction , tagspace-new)
       aspects/make-cycling
       aspects/make-equatable

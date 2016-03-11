@@ -111,6 +111,29 @@
 
 
 (let 
+  [taggy1  (make-tagspace {1 2 3 4 5 6})
+   taggy2  (make-tagspace {1 -2 3 -4 5.5 6.6})]
+
+(tabular
+  (fact "`:tagspace-merge` merges two tagspaces"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks tagspace-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction              ?expected
+
+    {:tagspace (list taggy1 taggy2)}
+                               :tagspace-merge          {:tagspace (list
+                                                          (make-tagspace {5.5 6.6, 1 2, 3 4, 5 6}))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:tagspace (list taggy2 taggy1)}
+                               :tagspace-merge          {:tagspace (list
+                                                          (make-tagspace {5.5 6.6, 1 -2, 3 -4, 5 6}))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ))
+
+
+
+(let 
   [foo-type     (make-taggable (t/make-type :foo))
    taggy        (make-tagspace)]
 
