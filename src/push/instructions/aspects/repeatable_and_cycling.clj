@@ -103,6 +103,14 @@
 
 
 
+(defn rand-nth-seq-function
+  [items]
+  (if (splittable? items)
+    (fn [_] (rand-nth (seq items)))
+    nil))
+
+
+
 (defn sampler-instruction
   "returns a new x-sampler instruction for the given type or module"
   [pushtype]
@@ -118,7 +126,7 @@
       `(push.instructions.dsl/calculate [:arg]
           #(push.types.extra.generator/make-generator
               (if (splittable? %1) (rand-nth (seq %1)) nil)
-              ~(fn [_] (rand-nth `(seq %1)))
+              (rand-nth-seq-function %1)
               (if (splittable? %1) (rand-nth (seq %1)) nil)) :as :g)
       `(push.instructions.dsl/push-onto :generator :g)))))
 
