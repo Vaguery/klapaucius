@@ -41,9 +41,18 @@
 
 ;; instructions
 
-; - :tagspace-offset
 ; - :tagspace-invertrange
 ; - :tagspace-link
+; - :set->tagspace
+; - :code->tagspace
+; - :binding->tagspace
+; - :vector->tagspace
+; - :tagspace-keys
+; - :tagspace-values
+; - :tagspace->vectors
+; - :tagspace-count
+; - :tagspace-min
+; - :tagspace-max
 
 
 (def tagspace-lookupint

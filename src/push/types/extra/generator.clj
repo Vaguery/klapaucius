@@ -35,6 +35,7 @@
 ;; instructions
 ;; - generator-range
 ;; - generator-reset
+;; - generator-totalisticnumbers
 
 
 ;; instructions
@@ -88,8 +89,6 @@
       #(let [n (step-generator %1)]
         (if (nil? n) nil (list (:state n) n))) :as :results)
     (d/push-onto :exec :results)))
-
-
 
 
 
