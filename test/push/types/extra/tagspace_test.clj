@@ -66,6 +66,8 @@
     (find-in-tagspace xy 35/6) => :x
     (find-in-tagspace xy 81002102002M) => :z
     (find-in-tagspace xy -2123/99) => :z
+
+    (find-in-tagspace (make-tagspace) 88) => nil
     ))
 
 

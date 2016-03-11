@@ -21,6 +21,68 @@
 
 
 
+(let 
+  [taggy (make-tagspace {1 2 3 4 5 6})]
+(tabular
+  (fact "`:tagspace-lookupint` pops an :integer and a :tagspace and retrieves the indicated item"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks tagspace-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction              ?expected
+
+    {:exec '()
+     :integer '(3)
+     :tagspace (list taggy)}    :tagspace-lookupint      {:exec     '(4)
+                                                          :integer  '()
+                                                          :tagspace (list taggy)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec '()
+     :integer '(33)
+     :tagspace (list taggy)}    :tagspace-lookupint      {:exec     '(2)
+                                                          :integer  '()
+                                                          :tagspace (list taggy)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec '()
+     :integer '(33)
+     :tagspace (list (make-tagspace))}  
+                                :tagspace-lookupint      {:exec     '()
+                                                          :integer  '()
+                                                          :tagspace (list (make-tagspace))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ))
+
+
+(let 
+  [taggy (make-tagspace {1 2 3 4 5 6})]
+(tabular
+  (fact "`:tagspace-lookupfloat` pops an :float and a :tagspace and retrieves the indicated item"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks tagspace-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction              ?expected
+
+    {:exec '()
+     :float '(2.2)
+     :tagspace (list taggy)}    :tagspace-lookupfloat    {:exec    '(4)
+                                                          :float   '()
+                                                          :tagspace (list taggy)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec '()
+     :float '(33.0)
+     :tagspace (list taggy)}    :tagspace-lookupfloat    {:exec    '(2)
+                                                          :float   '()
+                                                          :tagspace (list taggy)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec '()
+     :float '(-33.0)
+     :tagspace (list (make-tagspace))}  
+                                :tagspace-lookupfloat    {:exec    '()
+                                                          :float   '()
+                                                          :tagspace (list (make-tagspace))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ))
+
+
 
 (let 
   [foo-type     (make-taggable (t/make-type :foo))

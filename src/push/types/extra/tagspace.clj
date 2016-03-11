@@ -50,15 +50,30 @@
 ; - :tagspace-splitatfloat
 
 
-; (def tagspace-lookupint
-;   (core/build-instruction
-;     tagspace-lookupint
-;     "`:tagspace-lookupint` pops the top `:integer` and the top `:tagspace`, and pushes a list containing the item stored at or after the index, and the tagspace."
-;     :tags #{:tagspace :collection}
-;     (d/consume-top-of :integer :as :idx)
-;     (d/consume-top-of :tagspace :as :ts)
-;     (d/calculate [:idx :ts] #(lookup-in-tagspace %2 %1) :as :result)
-;     (d/push-onto :tagspace :result)))
+(def tagspace-lookupint
+  (core/build-instruction
+    tagspace-lookupint
+    "`:tagspace-lookupint` pops the top `:integer` and the top `:tagspace`. The indicated item is looked up and pushed to `:exec`; if the `:tagspace` is empty, no item is pushed to `:exec`. The `:tagspace` is returned to that stack."
+    :tags #{:tagspace :collection}
+    (d/consume-top-of :integer :as :idx)
+    (d/consume-top-of :tagspace :as :ts)
+    (d/calculate [:idx :ts] #(find-in-tagspace %2 %1) :as :result)
+    (d/push-onto :exec :result)
+    (d/push-onto :tagspace :ts)))
+
+
+
+(def tagspace-lookupfloat
+  (core/build-instruction
+    tagspace-lookupfloat
+    "`:tagspace-lookupfloat` pops the top `:float` and the top `:tagspace`. The indicated item is looked up and pushed to `:exec`; if the `:tagspace` is empty, no item is pushed to `:exec`. The `:tagspace` is returned to that stack."
+    :tags #{:tagspace :collection}
+    (d/consume-top-of :float :as :idx)
+    (d/consume-top-of :tagspace :as :ts)
+    (d/calculate [:idx :ts] #(find-in-tagspace %2 %1) :as :result)
+    (d/push-onto :exec :result)
+    (d/push-onto :tagspace :ts)))
+
 
 
 (def tagspace-new
@@ -76,6 +91,8 @@
   (-> (t/make-type  :tagspace
                     :recognizer tagspace?
                     :attributes #{:collection :tagspace})
+      (t/attach-instruction , tagspace-lookupint)
+      (t/attach-instruction , tagspace-lookupfloat)
       (t/attach-instruction , tagspace-new)
       aspects/make-cycling
       aspects/make-equatable
