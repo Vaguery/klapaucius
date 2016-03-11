@@ -50,7 +50,6 @@
 ; - :tagspace-keys
 ; - :tagspace-values
 ; - :tagspace->vectors
-; - :tagspace-count
 
 
 
@@ -62,6 +61,16 @@
     (d/consume-top-of :tagspace :as :arg)
     (d/calculate [:arg] #(list (count (:contents %1)) %1) :as :countlist)
     (d/push-onto :exec :countlist)))
+
+
+(def tagspace-keys
+  (core/build-instruction
+    tagspace-keys
+    "`:tagspace-keys` pops the top `:tagspace` item and pushes a list containing all of its keys (as a list) and the tagspace itself onto the `:exec` stack."
+    :tags #{:tagspace :collection}
+    (d/consume-top-of :tagspace :as :arg)
+    (d/calculate [:arg] #(list (or (keys (:contents %1)) (list)) %1) :as :keylist)
+    (d/push-onto :exec :keylist)))
 
 
 
@@ -151,7 +160,6 @@
           (sorted-map)
           (:contents %1))) :as :result)
     (d/push-onto :tagspace :result)))
-
 
 
 
@@ -248,6 +256,18 @@
     (d/push-onto :exec :result)))
 
 
+
+(def tagspace-values
+  (core/build-instruction
+    tagspace-values
+    "`:tagspace-values` pops the top `:tagspace` item and pushes a list containing all of its stored values (as a list) and the tagspace itself onto the `:exec` stack."
+    :tags #{:tagspace :collection}
+    (d/consume-top-of :tagspace :as :arg)
+    (d/calculate [:arg] #(list (or (vals (:contents %1)) (list)) %1) :as :valList)
+    (d/push-onto :exec :valList)))
+
+
+
 (def tagspace-type
   "builds the `:tagspace` collection type, which can hold arbitrary and mixed contents and uses numeric indices"
   (let [typename :tagspace]
@@ -255,6 +275,7 @@
                     :recognizer tagspace?
                     :attributes #{:collection :tagspace})
       (t/attach-instruction , tagspace-count)
+      (t/attach-instruction , tagspace-keys)
       (t/attach-instruction , tagspace-lookupint)
       (t/attach-instruction , tagspace-lookupfloat)
       (t/attach-instruction , tagspace-max)
@@ -267,6 +288,7 @@
       (t/attach-instruction , tagspace-scaleint)
       (t/attach-instruction , tagspace-splitwithfloat)
       (t/attach-instruction , tagspace-splitwithint)
+      (t/attach-instruction , tagspace-values)
       aspects/make-cycling
       aspects/make-equatable
       aspects/make-movable
