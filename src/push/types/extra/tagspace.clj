@@ -41,7 +41,6 @@
 
 ;; instructions
 
-; - :tagspace-scale
 ; - :tagspace-offset
 ; - :tagspace-invertrange
 ; - :tagspace-link
@@ -115,7 +114,6 @@
 
 
 
-
 (def tagspace-scaleint
   (core/build-instruction
     tagspace-scaleint
@@ -133,6 +131,47 @@
 
 
 
+(def tagspace-splitwithfloat
+  (core/build-instruction
+    tagspace-splitwithfloat
+    "`:tagspace-splitwithfloat` pops the top `:tagspace` item and the top `:float`, and pushes two new `:tagspace` items in a list to `:exec`, which contain all the items with keys _below_ the `:float`, and all the keys above (inclusive)."
+    :tags #{:tagspace :collection}
+    (d/consume-top-of :tagspace :as :arg1)
+    (d/consume-top-of :float :as :cutoff)
+    (d/calculate [:arg1 :cutoff]
+      #(map 
+          make-tagspace
+          (vals 
+            (reduce-kv
+              (fn [r k v] (if (< k %2) 
+                            (assoc-in r [:low k] v)
+                            (assoc-in r [:high k] v)))
+              {:low (sorted-map) :high (sorted-map)}
+              (:contents %1)))) :as :result)
+    (d/push-onto :exec :result)))
+
+
+
+
+(def tagspace-splitwithint
+  (core/build-instruction
+    tagspace-splitwithint
+    "`:tagspace-splitwithint` pops the top `:tagspace` item and the top `:integer`, and pushes two new `:tagspace` items in a list to `:exec`, which contain all the items with keys _below_ the `:integer`, and all the keys above (inclusive)."
+    :tags #{:tagspace :collection}
+    (d/consume-top-of :tagspace :as :arg1)
+    (d/consume-top-of :integer :as :cutoff)
+    (d/calculate [:arg1 :cutoff]
+      #(map 
+          make-tagspace
+          (vals 
+            (reduce-kv
+              (fn [r k v] (if (< k %2) 
+                            (assoc-in r [:low k] v)
+                            (assoc-in r [:high k] v)))
+              {:low (sorted-map) :high (sorted-map)}
+              (:contents %1)))) :as :result)
+    (d/push-onto :exec :result)))
+
 
 (def tagspace-type
   "builds the `:tagspace` collection type, which can hold arbitrary and mixed contents and uses numeric indices"
@@ -146,6 +185,8 @@
       (t/attach-instruction , tagspace-new)
       (t/attach-instruction , tagspace-scalefloat)
       (t/attach-instruction , tagspace-scaleint)
+      (t/attach-instruction , tagspace-splitwithfloat)
+      (t/attach-instruction , tagspace-splitwithint)
       aspects/make-cycling
       aspects/make-equatable
       aspects/make-movable

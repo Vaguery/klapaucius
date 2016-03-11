@@ -211,5 +211,87 @@
                                                         :tagspace (list
                                                         (make-tagspace {0.0 6}))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:float '(-0.0)
+     :tagspace (list (make-tagspace))}    :tagspace-scalefloat   {:float  '()
+                                                        :tagspace (list
+                                                        (make-tagspace))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ))
+
+
+
+
+(let 
+  [taggy (make-tagspace {1 2 3 4 5 6})]
+(tabular
+  (fact "`:tagspace-splitwithint` pops an :integer and a :tagspace and produces two new tagspaces (pushed to :exec)"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks tagspace-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction              ?expected
+
+    {:integer '(3)
+     :tagspace (list taggy)}  :tagspace-splitwithint     {:integer  '()
+                                                          :exec (list (list
+                                                            (make-tagspace {1 2})
+                                                            (make-tagspace {3 4 5 6})))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:integer '(4)
+     :tagspace (list taggy)}  :tagspace-splitwithint     {:integer  '()
+                                                          :exec (list (list
+                                                            (make-tagspace {1 2 3 4})
+                                                            (make-tagspace {5 6})))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:integer '(-22)
+     :tagspace (list taggy)}  :tagspace-splitwithint     {:integer  '()
+                                                          :exec (list (list
+                                                            (make-tagspace {})
+                                                            (make-tagspace {1 2 3 4 5 6})))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:integer '(77123)
+     :tagspace (list taggy)}  :tagspace-splitwithint     {:integer  '()
+                                                          :exec (list (list
+                                                            (make-tagspace {1 2 3 4 5 6})
+                                                            (make-tagspace {})))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ))
+
+
+
+
+
+(let 
+  [taggy (make-tagspace {1 2 3 4 5 6})]
+(tabular
+  (fact "`:tagspace-splitwithfloat` pops an :float and a :tagspace and produces two new tagspaces (pushed to :exec)"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks tagspace-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction              ?expected
+
+    {:float '(3.0)
+     :tagspace (list taggy)}  :tagspace-splitwithfloat     {:float  '()
+                                                          :exec (list (list
+                                                            (make-tagspace {1 2})
+                                                            (make-tagspace {3 4 5 6})))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:float '(3.1)
+     :tagspace (list taggy)}  :tagspace-splitwithfloat     {:float  '()
+                                                          :exec (list (list
+                                                            (make-tagspace {1 2 3 4})
+                                                            (make-tagspace {5 6})))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:float '(-22.0)
+     :tagspace (list taggy)}  :tagspace-splitwithfloat     {:float  '()
+                                                          :exec (list (list
+                                                            (make-tagspace {})
+                                                            (make-tagspace {1 2 3 4 5 6})))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:float '(77123.7)
+     :tagspace (list taggy)}  :tagspace-splitwithfloat     {:float  '()
+                                                          :exec (list (list
+                                                            (make-tagspace {1 2 3 4 5 6})
+                                                            (make-tagspace {})))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ))
 
