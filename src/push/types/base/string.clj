@@ -365,6 +365,7 @@
         aspects/make-repeatable
         aspects/make-returnable
         aspects/make-storable
+        aspects/make-taggable
         aspects/make-visible 
         (t/attach-instruction , exec-string-iterate)
         (t/attach-instruction , string-butlast)

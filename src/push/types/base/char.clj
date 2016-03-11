@@ -94,15 +94,16 @@
   ( ->  (t/make-type  :char
                       :recognizer char?
                       :attributes #{:string})
-        aspects/make-visible 
-        aspects/make-equatable
         aspects/make-comparable
+        aspects/make-equatable
         aspects/make-movable
         aspects/make-printable
         aspects/make-quotable
         aspects/make-repeatable
         aspects/make-returnable
         aspects/make-storable
+        aspects/make-taggable
+        aspects/make-visible 
         (t/attach-instruction , string->chars)
         (t/attach-instruction , char-letter?)
         (t/attach-instruction , char-digit?)

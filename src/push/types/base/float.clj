@@ -310,15 +310,16 @@
   ( ->  (t/make-type  :float
                       :recognizer float?
                       :attributes #{:numeric :base})
-        aspects/make-visible 
-        aspects/make-equatable
         aspects/make-comparable
+        aspects/make-equatable
         aspects/make-movable
         aspects/make-printable
         aspects/make-quotable
         aspects/make-repeatable
         aspects/make-returnable
         aspects/make-storable
+        aspects/make-taggable
+        aspects/make-visible 
         (t/attach-instruction , float-abs)
         (t/attach-instruction , float-add)
         (t/attach-instruction , float-arccosine)

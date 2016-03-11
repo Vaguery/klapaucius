@@ -103,6 +103,27 @@
 
 
 
+(defn sampler-instruction
+  "returns a new x-sampler instruction for the given type or module"
+  [pushtype]
+  (let [typename (:name pushtype)
+        instruction-name (str (name typename) "-sampler")]
+    (eval (list
+      'push.instructions.core/build-instruction
+      instruction-name
+      (str "`:" instruction-name "` pops the top `" typename
+        "` item and pushes a new `:generator` that will return a random element (sampled uniformly) from the collection.")
+      :tags #{:generator :random}
+      `(push.instructions.dsl/consume-top-of ~typename :as :arg)
+      `(push.instructions.dsl/calculate [:arg]
+          #(push.types.extra.generator/make-generator
+              (if (splittable? %1) (rand-nth (seq %1)) nil)
+              ~(fn [_] (rand-nth `(seq %1)))
+              (if (splittable? %1) (rand-nth (seq %1)) nil)) :as :g)
+      `(push.instructions.dsl/push-onto :generator :g)))))
+
+
+
 ;; ECHOES
 
 

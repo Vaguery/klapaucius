@@ -8,6 +8,7 @@
   (:use push.instructions.aspects.repeatable-and-cycling)
   (:use push.instructions.aspects.returnable)
   (:use push.instructions.aspects.storable)
+  (:use push.instructions.aspects.taggable)
   (:use push.instructions.aspects.visible)
   )
 
@@ -94,8 +95,8 @@
   (-> pushtype
       (t/attach-instruction (comprehension-instruction pushtype))
       (t/attach-instruction (cycler-instruction pushtype))
+      (t/attach-instruction (sampler-instruction pushtype))
       (assoc :attributes (conj (:attributes pushtype) :cycling))))
-
 
 
 
@@ -118,6 +119,17 @@
       (t/attach-instruction (store-instruction pushtype))
       (t/attach-instruction (storestack-instruction pushtype))
       (assoc :attributes (conj (:attributes pushtype) :storable))))
+
+
+
+(defn make-taggable
+  "takes a PushType and adds the :taggable attribute and the associated instructions"
+  [pushtype]
+  (-> pushtype
+      (t/attach-instruction (tagwithfloat-instruction pushtype))
+      (t/attach-instruction (tagwithint-instruction pushtype))
+      (assoc :attributes (conj (:attributes pushtype) :taggable))))
+
 
 
 (defn make-visible

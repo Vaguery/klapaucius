@@ -179,6 +179,7 @@
         aspects/make-repeatable
         aspects/make-returnable
         aspects/make-storable
+        aspects/make-taggable
         aspects/make-visible 
         (t/attach-instruction , exec-do*count)
         (t/attach-instruction , exec-do*range)

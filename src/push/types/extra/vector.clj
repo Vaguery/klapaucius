@@ -45,6 +45,7 @@
       aspects/make-repeatable
       aspects/make-returnable
       aspects/make-storable
+      aspects/make-taggable
       aspects/make-visible 
       (t/attach-instruction , vector-refilter)
       (t/attach-instruction , vector-refilterall)

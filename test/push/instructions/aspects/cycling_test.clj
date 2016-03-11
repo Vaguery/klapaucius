@@ -116,3 +116,62 @@
       )
     )) 
 
+
+
+(fact "sampler-instruction returns an Instruction with the correct stuff"
+
+  (let [foo-sampler (sampler-instruction (make-type :foo))
+        context (-> (push.core/interpreter)
+                    (assoc-in , [:stacks :generator]  '())
+                    (assoc-in , [:stacks :foo]  '("abcd")) ) ]
+
+    (class foo-sampler) => push.instructions.core.Instruction
+    
+    (:needs foo-sampler) => {:foo 1, :generator 0}
+    (:products foo-sampler) => {:generator 1}
+
+    (:token foo-sampler) => :foo-sampler
+
+    (keys (:instructions (i/register-instruction context foo-sampler))) => (contains :foo-sampler)
+
+    (i/contains-at-least? context :foo 1) => true
+
+    (get-stack
+      (i/execute-instruction (i/register-instruction context foo-sampler) :foo-sampler)
+      :foo) => '()
+
+
+    (fact 
+      (against-background (rand-nth anything) =streams=> (cycle [\X \Y \Z \W]))
+      (let [new-g (first (get-stack
+                            (i/execute-instruction
+                              (i/register-instruction context foo-sampler) :foo-sampler)
+                            :generator))]
+        (:state new-g) => \X
+        (:origin new-g) => \Y
+        (:state (push.types.extra.generator/step-generator new-g)) => \Z
+          
+        (:state (push.types.extra.generator/step-generator
+                  (push.types.extra.generator/step-generator new-g))) => \X 
+        (:state (push.types.extra.generator/step-generator
+                  (push.types.extra.generator/step-generator
+                    (push.types.extra.generator/step-generator new-g)))) => \W
+        ))
+
+    (let [new-g (first (get-stack
+                          (i/execute-instruction
+                            (i/register-instruction 
+                              (set-stack context :foo '([])) foo-sampler) :foo-sampler)
+                          :generator))]
+      new-g => nil
+      )
+
+    (let [new-g (first (get-stack
+                          (i/execute-instruction
+                            (i/register-instruction 
+                              (set-stack context :foo '(88)) foo-sampler) :foo-sampler)
+                          :generator))]
+      new-g => nil
+      )
+    )) 
+

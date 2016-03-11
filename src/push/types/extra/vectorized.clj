@@ -460,6 +460,7 @@
           aspects/make-repeatable
           aspects/make-returnable
           aspects/make-storable
+          aspects/make-taggable
           aspects/make-visible
           (t/attach-instruction , (x-butlast-instruction typename))
           (t/attach-instruction , (x-build-instruction typename rootname))

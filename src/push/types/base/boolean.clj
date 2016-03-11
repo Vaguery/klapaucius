@@ -80,7 +80,6 @@
   ( ->  (t/make-type  :boolean
                       :recognizer boolean?
                       :attributes #{:logical})
-        make-visible 
         make-equatable
         make-movable
         make-printable
@@ -88,6 +87,8 @@
         make-repeatable
         make-returnable
         make-storable
+        make-taggable
+        make-visible 
         (t/attach-instruction , bool-and)
         (t/attach-instruction , integer->boolean)
         (t/attach-instruction , intsign->boolean)
