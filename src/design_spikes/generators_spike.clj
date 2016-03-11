@@ -27,6 +27,9 @@
   (apply str (map add-em (cycle-triples (wrap string window) window))))
 
 
+; (println (cycle-triples "abcde" 3))
+
+
 ; (println (for [x (range 2881291 2881300)]
 ;   (str (format (str "%0" 7 "d") x) ": " (count (set (take 10000 (iterate #(step % 3) (n-digitize x 7))))))
 ;   ))

@@ -187,6 +187,45 @@
     ))
 
 
+(let 
+  [taggy (make-tagspace {6 5 -4 3 2 1})]
+(tabular
+  (fact "`:tagspace-max` pushes the smallest key to :exec"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks tagspace-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction              ?expected
+
+    {:tagspace (list taggy)}    :tagspace-max           {:exec  (list (list 6 taggy))
+                                                        :tagspace '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:tagspace (list (make-tagspace))}   
+                                :tagspace-max           {:exec  (list (make-tagspace))
+                                                        :tagspace '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ))
+
+
+
+(let 
+  [taggy (make-tagspace {6 5 -4 3 2 1})]
+(tabular
+  (fact "`:tagspace-min` pushes the smallest key to :exec"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks tagspace-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction              ?expected
+
+    {:tagspace (list taggy)}    :tagspace-min           {:exec  (list (list -4 taggy))
+                                                        :tagspace '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:tagspace (list (make-tagspace))}   
+                                :tagspace-min           {:exec  (list (make-tagspace))
+                                                        :tagspace '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ))
+
+
 
 
 (let 

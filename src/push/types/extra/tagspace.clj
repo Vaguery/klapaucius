@@ -81,6 +81,18 @@
 
 
 
+(def tagspace-max
+  (core/build-instruction
+    tagspace-max
+    "`:tagspace-max` pops the top `:tagspace` item and pushes a list containing its highest-valued key and the tagspace itself onto the `:exec` stack. If there is no key, only the tagspace is pushed."
+    :tags #{:tagspace :collection}
+    (d/consume-top-of :tagspace :as :arg)
+    (d/calculate [:arg] #(first (last (seq (:contents %1)))) :as :key)
+    (d/calculate [:arg :key] #(if (nil? %2) %1 (list %2 %1)) :as :maxkeylist)
+    (d/push-onto :exec :maxkeylist)))
+
+
+
 (def tagspace-merge
   (core/build-instruction
     tagspace-merge
@@ -92,6 +104,17 @@
       #(make-tagspace (into (sorted-map) (merge (:contents %1) (:contents %2)))) :as :result)
     (d/push-onto :tagspace :result)))
 
+
+
+(def tagspace-min
+  (core/build-instruction
+    tagspace-min
+    "`:tagspace-min` pops the top `:tagspace` item and pushes a list containing its lowest-valued key and the tagspace itself onto the `:exec` stack. If there is no key, only the tagspace is pushed."
+    :tags #{:tagspace :collection}
+    (d/consume-top-of :tagspace :as :arg)
+    (d/calculate [:arg] #(first (first (seq (:contents %1)))) :as :key)
+    (d/calculate [:arg :key] #(if (nil? %2) %1 (list %2 %1)) :as :minkeylist)
+    (d/push-onto :exec :minkeylist)))
 
 
 (def tagspace-new
@@ -223,7 +246,9 @@
                     :attributes #{:collection :tagspace})
       (t/attach-instruction , tagspace-lookupint)
       (t/attach-instruction , tagspace-lookupfloat)
+      (t/attach-instruction , tagspace-max)
       (t/attach-instruction , tagspace-merge)
+      (t/attach-instruction , tagspace-min)
       (t/attach-instruction , tagspace-new)
       (t/attach-instruction , tagspace-offsetfloat)
       (t/attach-instruction , tagspace-offsetint)

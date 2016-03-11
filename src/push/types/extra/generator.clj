@@ -63,6 +63,16 @@
 
 
 
+; (def generator-totalisticint
+;   (core/build-instruction
+;     generator-totalisticint
+;     "`:generator-totalisticint` pops an `:integer` and uses that to create a `:generator` that will cycle through a digitwise totalistic rewrite rule of width 3."
+;     :tags #{:generator}
+;     (d/consume-top-of :integer :as :arg)
+;     (d/calculate [:arg] #(make-generator %1 inc) :as :g)
+;     (d/push-onto :generator :g)))
+
+
 (def generator-jump
   (core/build-instruction
     generator-jump
