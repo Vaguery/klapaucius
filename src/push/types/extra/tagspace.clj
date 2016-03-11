@@ -51,8 +51,18 @@
 ; - :tagspace-values
 ; - :tagspace->vectors
 ; - :tagspace-count
-; - :tagspace-min
-; - :tagspace-max
+
+
+
+(def tagspace-count
+  (core/build-instruction
+    tagspace-count
+    "`:tagspace-count` pops the top `:tagspace` item and pushes a list containing the number of keys and the tagspace itself onto the `:exec` stack."
+    :tags #{:tagspace :collection}
+    (d/consume-top-of :tagspace :as :arg)
+    (d/calculate [:arg] #(list (count (:contents %1)) %1) :as :countlist)
+    (d/push-onto :exec :countlist)))
+
 
 
 (def tagspace-lookupint
@@ -244,6 +254,7 @@
   (-> (t/make-type  :tagspace
                     :recognizer tagspace?
                     :attributes #{:collection :tagspace})
+      (t/attach-instruction , tagspace-count)
       (t/attach-instruction , tagspace-lookupint)
       (t/attach-instruction , tagspace-lookupfloat)
       (t/attach-instruction , tagspace-max)

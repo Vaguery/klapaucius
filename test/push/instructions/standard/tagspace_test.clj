@@ -20,6 +20,24 @@
     :tagspace   '()         :tagspace-new    :tagspace    (list (make-tagspace)))
 
 
+(let 
+  [taggy (make-tagspace {6 5 -4 3 2 1})]
+(tabular
+  (fact "`:tagspace-count` pushes the smallest key to :exec"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks tagspace-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction              ?expected
+
+    {:tagspace (list taggy)}    :tagspace-count           {:exec  (list (list 3 taggy))
+                                                        :tagspace '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:tagspace (list (make-tagspace))}   
+                                :tagspace-count           {:exec  (list (list 0 (make-tagspace)))
+                                                        :tagspace '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ))
+
 
 (let 
   [taggy (make-tagspace {1 2 3 4 5 6})]
