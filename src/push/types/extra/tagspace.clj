@@ -74,7 +74,7 @@
 (def tagspace-lookupint
   (core/build-instruction
     tagspace-lookupint
-    "`:tagspace-lookupint` pops the top `:integer` and the top `:tagspace`. The indicated item is looked up and pushed to `:exec`; if the `:tagspace` is empty, no item is pushed to `:exec`. The `:tagspace` is returned to that stack."
+    "`:tagspace-lookupint` pops the top `:integer` and the top `:tagspace`. The indicated item is looked up and pushed to `:exec`; if the `:tagspace` is empty, no item is pushed to `:exec`. The `:tagspace` is returned to that stack. (Note this behavior differs from most other `:tagspace` functions in that the `:tagspace` is returned immediately.)"
     :tags #{:tagspace :collection}
     (d/consume-top-of :integer :as :idx)
     (d/consume-top-of :tagspace :as :ts)
@@ -84,15 +84,40 @@
 
 
 
+(def tagspace-lookupintegers
+  (core/build-instruction
+    tagspace-lookupintegers
+    "`:tagspace-lookupintegers` pops the top `:integers` item and the top `:tagspace`. Every element of the `:integers` is used as a key and looked up, consolidated into a list, and pushed to `:exec`; if the `:tagspace` is empty, no item is pushed to `:exec`. The `:tagspace` is returned to that stack."
+    :tags #{:tagspace :collection}
+    (d/consume-top-of :integers :as :indices)
+    (d/consume-top-of :tagspace :as :ts)
+    (d/calculate [:indices :ts] #(map (fn [k] (find-in-tagspace %2 k)) %1) :as :results)
+    (d/push-onto :exec :results)
+    (d/push-onto :tagspace :ts)))
+
+
 (def tagspace-lookupfloat
   (core/build-instruction
     tagspace-lookupfloat
-    "`:tagspace-lookupfloat` pops the top `:float` and the top `:tagspace`. The indicated item is looked up and pushed to `:exec`; if the `:tagspace` is empty, no item is pushed to `:exec`. The `:tagspace` is returned to that stack."
+    "`:tagspace-lookupfloat` pops the top `:float` and the top `:tagspace`. The indicated item is looked up and pushed to `:exec`; if the `:tagspace` is empty, no item is pushed to `:exec`. The `:tagspace` is returned to that stack. (Note this behavior differs from most other `:tagspace` functions in that the `:tagspace` is returned immediately.)"
     :tags #{:tagspace :collection}
     (d/consume-top-of :float :as :idx)
     (d/consume-top-of :tagspace :as :ts)
     (d/calculate [:idx :ts] #(find-in-tagspace %2 %1) :as :result)
     (d/push-onto :exec :result)
+    (d/push-onto :tagspace :ts)))
+
+
+
+(def tagspace-lookupfloats
+  (core/build-instruction
+    tagspace-lookupfloats
+    "`:tagspace-lookupfloats` pops the top `:floats` item and the top `:tagspace`. Every element of the `:floats` is used as a key and looked up, consolidated into a list, and pushed to `:exec`; if the `:tagspace` is empty, no item is pushed to `:exec`. The `:tagspace` is returned to that stack."
+    :tags #{:tagspace :collection}
+    (d/consume-top-of :floats :as :indices)
+    (d/consume-top-of :tagspace :as :ts)
+    (d/calculate [:indices :ts] #(map (fn [k] (find-in-tagspace %2 k)) %1) :as :results)
+    (d/push-onto :exec :results)
     (d/push-onto :tagspace :ts)))
 
 
@@ -274,7 +299,9 @@
       (t/attach-instruction , tagspace-count)
       (t/attach-instruction , tagspace-keys)
       (t/attach-instruction , tagspace-lookupint)
+      (t/attach-instruction , tagspace-lookupintegers)
       (t/attach-instruction , tagspace-lookupfloat)
+      (t/attach-instruction , tagspace-lookupfloats)
       (t/attach-instruction , tagspace-max)
       (t/attach-instruction , tagspace-merge)
       (t/attach-instruction , tagspace-min)
