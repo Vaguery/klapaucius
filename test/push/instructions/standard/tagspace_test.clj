@@ -164,9 +164,9 @@
                                                           :tagspace (list taggy)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec '()
-     :integers '()
+     :integers '([1 8])
      :tagspace (list (make-tagspace))}  
-                                :tagspace-lookupintegers      {:exec     '()
+                                :tagspace-lookupintegers      {:exec     '(())
                                                           :integers  '()
                                                           :tagspace (list (make-tagspace))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -196,9 +196,9 @@
                                                           :tagspace (list taggy)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec '()
-     :floats '()
+     :floats '([8.1 9.2])
      :tagspace (list (make-tagspace))}  
-                                :tagspace-lookupfloats      {:exec     '()
+                                :tagspace-lookupfloats      {:exec     '(())
                                                           :floats  '()
                                                           :tagspace (list (make-tagspace))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

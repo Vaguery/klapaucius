@@ -91,7 +91,8 @@
     :tags #{:tagspace :collection}
     (d/consume-top-of :integers :as :indices)
     (d/consume-top-of :tagspace :as :ts)
-    (d/calculate [:indices :ts] #(map (fn [k] (find-in-tagspace %2 k)) %1) :as :results)
+    (d/calculate [:indices :ts] 
+      #(remove nil? (map (fn [k] (find-in-tagspace %2 k)) %1)) :as :results)
     (d/push-onto :exec :results)
     (d/push-onto :tagspace :ts)))
 
@@ -116,7 +117,8 @@
     :tags #{:tagspace :collection}
     (d/consume-top-of :floats :as :indices)
     (d/consume-top-of :tagspace :as :ts)
-    (d/calculate [:indices :ts] #(map (fn [k] (find-in-tagspace %2 k)) %1) :as :results)
+    (d/calculate [:indices :ts]
+      #(remove nil? (map (fn [k] (find-in-tagspace %2 k)) %1)) :as :results)
     (d/push-onto :exec :results)
     (d/push-onto :tagspace :ts)))
 

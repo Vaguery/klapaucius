@@ -36,7 +36,7 @@
                             ; "\n >> generator: " (pr-str (u/get-stack s :generator))
                             "\n items on :exec " (count (u/get-stack s :exec))
                             "\n items on :generator " (count (u/get-stack s :generator))
-                            "\n top item on :error " (u/peek-at-stack s :error)
+                            "\n items on  :tagspace " (u/get-stack s :tagspace)
                             ; "\n >> error: " (pr-str (u/get-stack s :error))
                             "\n\n"
                             (pr-str (u/peek-at-stack s :log))
@@ -55,10 +55,216 @@
 
 (def prisoners
   [
+  ;; caught exception: java.lang.Exception: Push Parsing Error: Cannot interpret '' as a Push item. running
     {
-    :program [:integers-last [0.05859375 0.0703125 0.11328125 0.0859375 0.03515625 0.109375 0.1328125 0.015625] true '(:line-later \Ì [] "¾" :booleans-first) [\n \] #{202.33984375 :chars-yankdup :refs-replace [0.03125 0.0234375 0.14453125 0.109375 0.01171875 0.0390625 0.125] :code-subst #{["Ä.ÏG¦\\-." "vvªx!LÕ-LV¿" "E^¤;" "Ç8}u\\b"] [] #{231.32421875 :input!2 '(:chars-build :set-cutflip ["Å1_¾N#" "-!µhrm­^" "U¥je%rH¥" "fGF" "cdo\\(" "U±ÐÒG§"] :point-cutflip :vector-nth) :integer-save :floats->code :point-inside? :booleans-storestack :exec-return} :code-stackdepth 444326838 ";_¸kl" :exec-cutstack :point-empty?} \: [0.05859375 0.1484375 0.00390625 0.0390625 0.0 0.02734375 0.13671875]} [3654 1288 359 131 3635 1843 3034 2463 4707] :string-replacefirst :input!7 :boolean->signedfloat ["¹>wed¥^<ÃA©]^" "iÄo3%²=Q3Åº>" "R 2*G·Ë¶*Â¯>q" "5¾&z" "Æ$" "Ò0«8¼^¡£¨4@" "¸l]?C&" "'ª"] :integer-equal? :string-splitonspaces :integer-many [1039 4892 3164 2315 2770 971 2248 2440 1440] [\7 \Z \Ó \¤ \&] \± :set-echo [false false false false false false true true] :floats-print [ \ \H \ ] :line-circle-tangent? :input!8 :booleans-sampler :code-later :vector-print :booleans-stackdepth :vector-butlast ["'Xµ" "»7f*»0j^" "¥«" "]F~»¡SÅÍÀ·Ð" "·KF-É,F<y©" "¥ÏnN¦7¾_XG?¹%Ñr0" "cQZº" "|ÑZRIJÐ" "+¤r}<¦"] :set->code :ref-dump :booleans-length [0.046875 0.0] :integer-many [2541 4119 4782 4338 3136 3582 4757 1925 2285] :char-flush :refs-swap [2942 3945 3335 272] :code-reduce :generator-tagwithinteger [\µ \O  \D \® \+] false "LME'Y?Ô¸£n¢»" 775165731 :integer-print :code-map [0.1328125 0.02734375 0.1328125 0.03125] :tagspace-flush :ref-liftstack :input!7 333.20703125 ["LNw!uª'" "ªBÊÆ>MÌ"] [false false false true true false] :strings-new :refs-generalize :tagspace->code 910303112 :boolean-liftstack [0.0546875 0.08203125 0.00390625 0.0546875 0.0078125 0.078125 0.0390625] :code-null? :set-notequal? false 170.51171875 :set-empty? :generator-return :booleans-new :float-print :ref-equal? 315.03515625 #{:code-first [] :set-flush :float-tagwithfloat 301.76171875 :input!5 :circle-cutstack :tagspace-return-pop} false [true true true true true false true] :string-contains? :generator-flipstack [false false false false true true false] :code-do*range :string-cycler "o=Y0yÕ°dSG§@B¯¹92o" ")Ã­" :set-againlater :float-arcsine :push-quoterefs \J :vector-flush :refs-store :float-ln :chars-conj :floats-build :point-savestack :ref-echo :floats-portion :generator-flush :float->asciichar [4542 678 4528 5 3101] :float-pop :exec-save :float-echoall :input!6 :vector-flipstack :code-tagwithinteger :tagspace-againlater "ÁZ" :booleans-cutstack [] '(["Ã~jpÑLSaÒ­%b" "*~y/Vrj"] :boolean-storestack :generator-again [true true false] :floats-shove) [746] :point->code 963082656 :chars-reverse \Â :strings-indexof :char-return :exec-y :generator-echoall [208 2356] [3928 2690 2569 2966 1131] #{[] :vector-new 142410936 :float-return true :integers-reverse :print-stackdepth [0.06640625 0.08984375 0.0859375 0.109375 0.1171875 0.05078125 0.14453125 0.00390625]} :boolean-echoall :tagspace-scaleint :integers-shove :generator-pop :floats-rest [false true true true true false false] :booleans-tagwithfloat [] :code-do*count :point-storestack :set-empty? [2054] :code-tagwithfloat :exec-dup :booleans-rerunall [402 1136 2489 2554] :vector-yank ["ªi" "\\uvµ+`[='©yALª¸" "¾>'b]­e" "W¬&IÁZ" "\"DY>" "®ÍÎ"] :boolean-empty? [ \0 \l ] :booleans-indexof :integer->boolean :float-arcsine :chars-flush '(:ref-shove :char-tagwithinteger [852 4247] \z :input!4) 344752803 :char<? :string-cycler :char-stackdepth [2876 766] 127771942 ["RIBÇ2bÅ6qSN" "0ª0%Á^|" "\"`©" "#d" "·B$Fµ-¢5¢À"] 128360035 '(\, [4242 739 719] :float-tagwithfloat :line-yank []) [4346 2454 4948 3408 3567] :tagspace-offsetint \@ \¸ :ref-rerunall :float-sign :input!2 '(#{:set-cutflip :code-nth "Ì@!ÌK!J" true ["(ÍE¼¹I§§mr\\³Xº"] :strings-first :string-concat :tagspace-yank} :booleans-later "" :booleans-do*each :ref-store) :refs-cycler :exec-cycler :code-length :vector-remove true :booleans-remove :set-stackdepth :floats-indexof :generator-next :string-last :input!7 [] :circle-pop :integers-tagwithinteger :char-pop [0.0546875 0.11328125 0.1171875 0.0703125 0.14453125 0.08984375 0.01953125 0.05078125] [1004 4310] :integer-flipstack :code-equal? :input!6 ["T¥`ÁÈ:vºYj?7" "Æ=,#lÀÁ<M®¦'" "»\\ª" "v8/Ñ]oÊÂ|WWk?" " ®È-¾Pµu[" "B//EY¹EM" "ºd¯]" "" "7N"] :generator-pop :booleans-replacefirst :input!10 \d :code-tagwithinteger [582 1098] :booleans-take "ZÁ¹'ÒË¶" :input!3 :string-first "P=- #wÇ ª·Bek" '(:float-dup :input!2 (#{25.03125 [0.140625] :exec-do*count :vector-rotate ["79"] :char-pop [false false true false true] [\3 \ \u \ \V \$]} :code-length [4413] #{\@ 64.69140625 :vector-byexample :integers-rest [\¬ ] :chars-tagwithinteger :vector-liftstack} :refs-last) [] "}s¶®_qFºRÈ°º") [\ \ \' \ \e \ \ \E] 417001723 :chars-shatter [0.140625] :code-quote [3060] \± #{:string-yankdup :boolean-cutstack :set-yankdup :vector-take :chars-replacefirst :string->code :floats-rotate "®p:tGÑ¼xCEºb0jÆNX"}]
-
-   :bindings {:input!2 :vector-cutflip, :input!9 :integer->code, :input!3 :refs-liftstack, :input!10 5443695, :input!1 :generator-againlater, :input!8 #{:float-save :set-notequal? :set-return-pop :integer->string #{:float-abs [1765 3644 1070] :float-storestack :strings-rotate :code-liftstack :tagspace-yank [0.12890625]} "°Q nK«4R´|.u}A" :refs-pop}, :input!4 :char->string, :input!7 "glcy5", :input!5 [".V«µ«" " ³ %" "Ð" "h" "1Q%Z" "1("], :input!6 :chars-cutflip}}
+    :program  [
+      #{\$
+      [4583 1557 2337 3923 3334 3216 446]
+      :set-savestack 
+      :set-cutstack 
+      '(:booleans-concat :chars-byexample :refs-print :integer-store :circle-nested?)
+      ["§i" "zÀEi/b^" "0K­uÉ" "^ÁISkk"]
+      '(false #{:integer-multiply :string-occurrencesofchar :integers-set [\Ä \M \1 \®] :code-do*times :log-stackdepth false 968965594} #{:integer-sign "¦ÀË&" :code-againlater \j :line-cutflip :integers-reverse [\V \i] (:line-intersect? :boolean-echo :float-ln [2771 1622 979] true)} :set-comprehension ([0.01953125 0.09765625 0.12109375 0.02734375 0.125] :booleans-last 293.9921875 781196427 (:string-equal? [] :strings-pop :float-later :boolean-flipstack)))
+      '([true false false] :booleans-emptyitem? :chars-stackdepth [1670 2863 811 1721 1980 2937 3949 4074 3979] [\¾ \µ \Ð \e  \m \¥])
+      }
+      :string-echoall
+      :tagspace-new
+      :booleans-portion
+      [0.1484375 0.09765625 0.0625]
+      :point-stackdepth
+      :floats-rotate
+      :strings->code
+      :integer->float
+      []
+      :char-dup
+      :booleans-echo
+      :integer-echoall
+      \@
+      :set-cycler
+      :char-savestack
+      [true false true true false true false]
+      :ref-swap
+      :floats-savestack
+      :char-flipstack
+      :code-notequal?
+      :code-liftstack
+      :string-echoall
+      :ref-cutflip
+      :line-later
+      [true]
+      true
+      337.3203125
+      '(:float-arccosine [0.06640625 0.11328125 0.1328125 0.0703125] true #{217.6171875 [] :boolean-swap \K :chars-swap #{:booleans->code [true false false true] :set-dup [4608] :tagspace-echoall :input!4 :string-yank ["=QAÒ7" "|*/Ñ]2£" "QIGLÎK" ":tJm·½aÆ" "¶{ÓU" "b" "&3F|­¾!&([º´±teÂ"]} 70912956 :tagspace-return-pop} 86.1875)
+      [true false false false]
+      :string-store
+      :floats-butlast
+      :circle-later
+      :generator-reset
+      '(false 133.625 :input!10 #{:point-storestack 173.9609375 :line->points :vector-concat ["8ª-ÁÎabµ¬oÍFÉzs1" "eÐe" "_È[Nºf" "F»2Ð?<*u­m" "ºR#~KÇoº" ">Fn5P" "ÏP¢f)ÓnfM4¡2zÍ®"] :vector-sampler (:floats-echoall :strings-replace :exec-comprehension :circle-storestack :exec-comprehension) :chars-contains?} :circle-tangent?)
+      :input!8
+      :char-echoall
+      :log-stackdepth
+      []
+      "XC"
+      :floats-storestack
+      '([3568 186 3747 1426] false [\space \¿ \Æ] :line-intersect? :booleans-stackdepth)
+      :booleans-length
+      :vector-echo
+      :integer-notequal?
+      :float-liftstack
+      :integers-build
+      :integer-few
+      ["£-ÈÌE|ZN" "¾#&hµiW}#(~" "BÏ"]
+      :input!4
+      :string-storestack
+      :strings-cutstack
+      :chars-reverse
+      [0.07421875 0.12109375 0.015625 0.125 0.0859375 0.12109375]
+      :float->asciichar
+      :exec-noop
+      [false false]
+      '(["f¯Q8"] :point-cutstack "EÔ¢5D¶K5Ge!b" :strings-rerunall :integers-comprehension)
+      :exec-save
+      true
+      :float-π
+      :tagspace-lookupintegers
+      :code-notequal?
+      :code-if
+      :push-counter
+      [0.09375 0.078125 0.0546875 0.04296875 0.12890625]
+      :generator-save
+      :booleans-portion
+      72984301
+      :chars-conj
+      :refs-print
+      :refs-return
+      :input!1
+      [0.0625 0.078125 0.10546875 0.06640625 0.1484375]
+      false
+      600895337
+      false
+      :chars-pop
+      :exec-pop
+      '(:code-empty? [false false false true true true] :input!4 :exec-return-pop :code-append)
+      ["EË" " q6Ó" "²k¢©," "(ÄÕÂWIGLV%/®rl" "qvDÉdtRm=S³6P"]
+      298.265625
+      ["¿" "¯lu Å} T"]
+      '(true :floats-yank "kHSJUµa1f" :refs-echo :integer-flush)
+      :input!8
+      "_fR¾5Ä^O6¬)"
+      :ref-flush
+      :booleans-storestack
+      :refs-set
+      #{46.796875 :refs-stackdepth :generator-savestack "RRz5(ÒÒQs*ÄF)°b" [2263 4020 2897] "^b!gAyº¥!J" :integers-dup :integers-flush}
+      false
+      :ref-cutstack
+      :exec-s
+      :chars-againlater
+      :input!1
+      false
+      :float-store
+      :refs-echo
+      :circle-store
+      [\Q \È \É \ª \· ]
+      :string-replace
+      [true]
+      :ref-flush
+      ["Vev5" "±'?cH%±;Y«_g" "?<vvy|z1&" "Ð¬¦h%°n=j$^ÑsÒ"]
+      \~
+      [true true false true]
+      [\ \L]
+      :string-occurrencesofchar
+      [0.03125 0.125 0.09765625 0.04296875 0.0234375 0.015625 0.1328125 0.11328125]
+      :input!1
+      "¶NYTi{®»"
+      :integers-butlast
+      :integers-empty?
+      "Ï&:¢6¿[/®¶f!Ãa"
+      :strings-butlast
+      [\ \À \Õ \o \ \R]
+      '("¸y" false :integer-echoall :set-tagwithinteger #{:float->boolean (:refs-take :chars-shove :string-solid? :line-equal? :chars-echo) :refs-tagwithinteger true :strings-yank [false true false false true true false false] :chars-shatter :point-save})
+      384.69140625
+      :floats-againlater
+      :strings-occurrencesof
+      :exec-s
+      302.1171875
+      '(:refs-notequal? [307 3657 2041] ["T³" "0³_Æeq" "S²dÇReI¬,·" "ÆÍs~³u³¾¿»"] true :code-drop)
+      #{67.1484375 :float->boolean :float-dup :char-pop :code-cons :code-savestack :chars-shatter :chars-nth}
+      :input!7
+      '(#{:exec-do*count :string-flush :boolean-liftstack :tagspace-cutflip :float-store true ("$9#±r=Y~" :point-equal? :tagspace-liftstack ["nÊb^w" "ÁElÅsm¸"] (false :float-subtract "8" :circle-cutstack "ºs«VW¶_Ç")) (:floats-notequal? [0.125 0.09375 0.05078125 0.00390625 0.08203125 0.0546875 0.0703125 0.05859375] [\Q \ \½ \Y] [] :integers-build)} :float-dec :refs-shatter :tagspace->code :input!9)
+      :refs-contains?
+      ["¤LªÏAÁ" "É¥¾" "¾<="]
+      :generator-yankdup
+      "1PC"
+      [0.02734375 0.015625]
+      :string-max
+      "r]$pSsÒÈ¿²j"
+      [0.13671875]
+      ["ÍuP4Ge'¼" "_k¨SJaAS" "Êtbªd" "&7" "KyFN&¾©33ÌNÓ©UÈ_"]
+      :refs-notequal?
+      :char-rotate
+      305.13671875
+      :float-pop
+      [4204 845]
+      317.359375
+      []
+      :boolean-pop
+      :string->chars
+      [0.1015625 0.02734375 0.078125 0.01953125 0.02734375 0.11328125]
+      "V°7·ª)7ÑEIÌ6©©>"
+      [0.05078125 0.10546875 0.09765625 0.05859375 0.125 0.02734375 0.09765625 0.078125 0.0390625]
+      :code-list
+      :input!4
+      [\Ç \ \P \r \ \W \L \ \.]
+      :boolean-againlater
+      []
+      '(:floats-tagwithfloat false true ["Æ­ÊµD]}4h}lU¤ov"] :tagspace-swap)
+      [true true true]
+      :circle-pop
+      :strings-yankdup
+      :chars-yank
+      :floats-last
+      false
+      :point-shove
+      :generator-swap
+      [1503 3111 137 3857 1450 2230 4309]
+      :refs-return
+      :tagspace-shove
+      :chars-concat
+      :booleans-flush
+      :vector-replacefirst
+      \j
+      :boolean-flush
+      342.3359375
+      #{:environment-new "Ê'J" :integer->string true :ref-rerunall false [false false] :booleans-tagwithinteger}
+      :vector-echoall
+      :code-store
+      :generator-totalisticint3
+      '((:strings-conj :code-yankdup "ZWIpJB¾-" \m :line-storestack) [false true false true true false false true false] 307.1796875 [4032 3293] [879 4021 678 982])
+      :chars-swap
+      :integer-lots
+      :generator-shove
+      :generator-stepper
+      :char≤?
+      [\ \Ì \ \Ð \® \Ð ]
+      :char<?
+      :float-store
+      :float-shove
+      :chars-indexof
+      [3955 673 4344 2442 475 327 264 1558]
+      :integer-later
+      [0.0 0.12109375 0.01953125 0.0859375 0.09375 0.078125 0.0625 0.0234375]
+      [0.015625]
+      '([0.07421875 0.04296875 0.0 0.1015625 0.015625 0.015625 0.01171875 0.015625] :float-storestack :exec-savestack [0.03515625 0.015625 0.15234375 0.0078125] :strings-rerunall)
+      :generator-flipstack
+      [" ;&@#7KVI" "nk½Æ " "¤®NS>?__¸P"]
+      :ref-forget
+      :integers-portion
+      :generator-dup
+      370016329
+      :strings-empty?]
+  :bindings {:input!2 [\1 \k \b \$ \S \$], :input!9 :exec-do*range, :input!3 :integers-yank, :input!10 :char-cutflip, :input!1 65.05859375, :input!8 [1472 0 3034], :input!4 :set-echoall, :input!7 :vector-portion, :input!5 :float-tagwithinteger, :input!6 :tagspace-flush}
+  }
   ])
 
 
