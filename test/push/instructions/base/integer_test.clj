@@ -106,6 +106,45 @@
 
 
 (tabular
+  (fact ":integer-digits pushes a vector of digits"
+    (register-type-and-check-instruction
+        ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items    ?instruction       ?get-stack     ?expected
+    :integer    '(1182)     :integer-digits   :exec      '((1 1 8 2))
+    :integer    '(-39812M)  :integer-digits   :exec      '((3 9 8 1 2))
+    :integer    '(1191N)    :integer-digits   :exec      '((1 1 9 1))
+    )
+
+
+(fact "rewrite-digits"
+  (rewrite-digits 12345 3) => 69208
+  (rewrite-digits 63119988 3) => 5196527
+  (rewrite-digits 8 1) => 8
+  (rewrite-digits 8 2) => 6
+  (rewrite-digits 8 3) => 4
+  (rewrite-digits -63119988 3) => -5196527
+  (rewrite-digits -50000 3) => -50055)
+
+
+(tabular
+  (fact ":integer-totalistic3 does some weird stuff"
+    (register-type-and-check-instruction
+        ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items    ?instruction             ?get-stack     ?expected
+    :integer    '(1182)     :integer-totalistic3   :integer      '(114)
+    :integer    '(-39812M)  :integer-totalistic3   :integer      '(-8164)
+    :integer    '(235235235)       
+                            :integer-totalistic3   :integer      '(0)
+    :integer    '(16112002112012012191N)
+                            :integer-totalistic3   :integer      '(88432234433333342118N)
+    )
+
+
+
+
+(tabular
   (fact ":integer-mod returns (mod :second :first)"
     (register-type-and-check-instruction
         ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)

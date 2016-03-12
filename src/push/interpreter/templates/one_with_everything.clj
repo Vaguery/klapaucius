@@ -15,6 +15,7 @@
   (:use push.types.modules.log)
   (:use push.types.modules.error)
   (:use push.types.extra.generator)
+  (:use push.types.extra.tagspace)
   (:use push.types.extra.vectorized)
   (:use push.types.extra.vector)
   (:use push.types.extra.set)
@@ -39,6 +40,7 @@
     generator-type
     ref-type
     string-type
+    tagspace-type
 
     (build-vectorized-type boolean-type)
     (build-vectorized-type char-type)
@@ -95,6 +97,7 @@
   - floats-type
   - strings-type
   - standard-set-type
+  - tagspace-type
   - standard-vector-type (loaded last as a default)
   - extra-stack-combinators (for all types that are :movable)
   and the counter is 0.

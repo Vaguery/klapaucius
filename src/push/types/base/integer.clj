@@ -30,6 +30,18 @@
   :integer "dec" 'dec))
 
 
+(def integer-digits
+  (core/build-instruction
+    integer-digits
+    "`:integer-digits` pops the top `:integer` and pushes a list of its digits (not including negative sign or bigint decorations) to `:exec` (so they end up back on `:integer` quickly."
+    :tags #{:numeric :conversion}
+    (d/consume-top-of :integer :as :arg)
+    (d/calculate [:arg]
+      #(map (fn [d] (- (int d) 48)) 
+        (filter #{\0 \1 \2 \3 \4 \5 \6 \7 \8 \9} (seq (str %1)))) :as :numbers)
+    (d/push-onto :exec :numbers)))
+
+
 (def integer-divide
   (core/build-instruction
     integer-divide
@@ -45,7 +57,6 @@
     (d/calculate [:denominator]
       #(if (zero? %1) ":integer-divide 0 denominator" nil) :as :warning)
     (d/record-an-error :from :warning)
-
     ))
 
 
@@ -140,6 +151,48 @@
     (d/push-onto :integer :result)))
 
 
+;; exotic
+
+(defn char-to-digits
+  [c]
+  (- (int c) 48))
+
+
+(defn extend-short-list
+  [items target]
+  (loop [extended items
+         n 0]
+    (if (>= (count extended) target)
+      extended
+      (recur (concat extended (list (nth extended n)))
+             (inc n)))))
+
+
+(defn rewrite-digits
+  [number window]
+  (let [digits    (seq (str (max number (- number))))
+        extended  (extend-short-list digits (+ (count digits) (dec window)))
+        windows   (partition window 1 extended)
+        sums      (map #(apply + (map char-to-digits %)) windows)
+        rewrote   (apply str (map #(mod % 10) sums))
+        chomped   (clojure.string/replace-first rewrote #"(^0+)" "")
+        as-number (eval (read-string (if (empty? chomped) "0" chomped)))]
+    (if (neg? number)
+      (- as-number)
+      as-number)))
+
+
+(def integer-totalistic3
+  (core/build-instruction
+    integer-totalistic3
+    "`:integer-totalistic3` pops the top `:integer`. Each digit is replaced by the sum of its current value and the two neighbors to the right, modulo 10, wrapping cyclically around the number. If it is negative, the result returned is still negative."
+    :tags #{:numeric :conversion}
+    (d/consume-top-of :integer :as :arg)
+    (d/calculate [:arg] #(rewrite-digits %1 3) :as :result)
+    (d/push-onto :integer :result)))
+
+
+
 
 (def integer-type
   ( ->  (t/make-type  :integer
@@ -158,6 +211,7 @@
         (t/attach-instruction , integer-abs)
         (t/attach-instruction , integer-add)
         (t/attach-instruction , integer-dec)
+        (t/attach-instruction , integer-digits)
         (t/attach-instruction , integer-divide)
         (t/attach-instruction , boolean->integer)
         (t/attach-instruction , char->integer)
@@ -169,5 +223,6 @@
         (t/attach-instruction , integer-sign)
         (t/attach-instruction , boolean->signedint)
         (t/attach-instruction , integer-subtract)
+        (t/attach-instruction , integer-totalistic3)
         ))
 

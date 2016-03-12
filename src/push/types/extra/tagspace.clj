@@ -47,8 +47,6 @@
 ; - :code->tagspace
 ; - :binding->tagspace
 ; - :vector->tagspace
-; - :tagspace-keys
-; - :tagspace-values
 ; - :tagspace->vectors
 
 
