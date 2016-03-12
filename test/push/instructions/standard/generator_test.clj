@@ -44,6 +44,16 @@
 
 
 
+(fact ":generator-totalisticint13"
+  (let [genny (make-generator 71253 (fn [x] (push.util.exotics/rewrite-digits x 3)))]
+    (:state genny) => 71253
+    (:state (step-generator genny)) => 8051
+    (:state (nth (iterate step-generator genny) 2)) => 3649
+    (:state (nth (iterate step-generator genny) 12)) => 8370
+    (:state (nth (iterate step-generator genny) 201)) => 8051
+    ))
+
+
 (fact ":generator-stepper creates a new generator that jumps by increments"
   (let [gstep (push.interpreter.templates.one-with-everything/make-everything-interpreter
         :stacks {:integer '(3 -8)})]

@@ -41,7 +41,6 @@
 
 ;; instructions
 
-; - :tagspace-invertrange
 ; - :tagspace-link
 ; - :set->tagspace
 ; - :code->tagspace

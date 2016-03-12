@@ -2,6 +2,7 @@
   (:require [push.interpreter.core :as i])
   (:use midje.sweet)
   (:use [push.util.test-helpers])
+  (:use [push.util.exotics])
   (:use [push.types.base.integer])  ;; sets up integer-type
   )
 

@@ -4,7 +4,8 @@
             [push.instructions.dsl :as d]
             [push.util.code-wrangling :as fix]
             [push.instructions.aspects :as aspects]
-            [clojure.math.numeric-tower :as math])
+            [clojure.math.numeric-tower :as math]
+            [push.util.exotics :as exotics])
   (:use push.types.extra.generator)
   )
 
@@ -153,34 +154,6 @@
 
 ;; exotic
 
-(defn char-to-digits
-  [c]
-  (- (int c) 48))
-
-
-(defn extend-short-list
-  [items target]
-  (loop [extended items
-         n 0]
-    (if (>= (count extended) target)
-      extended
-      (recur (concat extended (list (nth extended n)))
-             (inc n)))))
-
-
-(defn rewrite-digits
-  [number window]
-  (let [digits    (seq (str (max number (- number))))
-        extended  (extend-short-list digits (+ (count digits) (dec window)))
-        windows   (partition window 1 extended)
-        sums      (map #(apply + (map char-to-digits %)) windows)
-        rewrote   (apply str (map #(mod % 10) sums))
-        chomped   (clojure.string/replace-first rewrote #"(^0+)" "")
-        as-number (eval (read-string (if (empty? chomped) "0" chomped)))]
-    (if (neg? number)
-      (- as-number)
-      as-number)))
-
 
 (def integer-totalistic3
   (core/build-instruction
@@ -188,7 +161,7 @@
     "`:integer-totalistic3` pops the top `:integer`. Each digit is replaced by the sum of its current value and the two neighbors to the right, modulo 10, wrapping cyclically around the number. If it is negative, the result returned is still negative."
     :tags #{:numeric :conversion}
     (d/consume-top-of :integer :as :arg)
-    (d/calculate [:arg] #(rewrite-digits %1 3) :as :result)
+    (d/calculate [:arg] #(exotics/rewrite-digits %1 3) :as :result)
     (d/push-onto :integer :result)))
 
 

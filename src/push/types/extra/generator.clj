@@ -2,7 +2,9 @@
   (:require [push.instructions.core :as core]
             [push.types.core :as t]
             [push.instructions.dsl :as d]
-            [push.instructions.aspects :as aspects]))
+            [push.instructions.aspects :as aspects]
+            [push.util.exotics :as exotics])
+  )
 
 
 (defrecord Generator [state step-function origin])
@@ -63,14 +65,16 @@
 
 
 
-; (def generator-totalisticint
-;   (core/build-instruction
-;     generator-totalisticint
-;     "`:generator-totalisticint` pops an `:integer` and uses that to create a `:generator` that will cycle through a digitwise totalistic rewrite rule of width 3."
-;     :tags #{:generator}
-;     (d/consume-top-of :integer :as :arg)
-;     (d/calculate [:arg] #(make-generator %1 inc) :as :g)
-;     (d/push-onto :generator :g)))
+(def generator-totalisticint3
+  (core/build-instruction
+    generator-totalisticint3
+    "`:generator-totalisticint3` pops an `:integer` and uses that to create a `:generator` that will cycle through a digitwise totalistic rewrite rule of width 3."
+    :tags #{:generator}
+    (d/consume-top-of :integer :as :arg)
+    (d/calculate [:arg]
+      #(make-generator %1 (fn [x] (exotics/rewrite-digits x 3))) :as :g)
+    (d/push-onto :generator :g)))
+
 
 
 (def generator-jump
@@ -137,6 +141,7 @@
       (t/attach-instruction , generator-next)
       (t/attach-instruction , generator-reset)
       (t/attach-instruction , generator-stepper)
+      (t/attach-instruction , generator-totalisticint3)
       aspects/make-visible 
       aspects/make-movable
       aspects/make-quotable
