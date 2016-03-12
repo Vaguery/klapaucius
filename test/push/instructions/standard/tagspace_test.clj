@@ -206,6 +206,36 @@
 
 
 
+(let 
+  [taggy (make-tagspace {1 2 3 4 5 6})]
+(tabular
+  (fact "`:tagspace-lookupvector` pops an :vector and a :tagspace and retrieves ALL the indicated items"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks tagspace-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction              ?expected
+
+    {:exec '()
+     :vector '([-3.2 :foo 3 6 9])
+     :tagspace (list taggy)}    :tagspace-lookupvector  {:exec     '((2 :foo 4 2 2))
+                                                          :vector  '()
+                                                          :tagspace (list taggy)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec '()
+     :vector '([-3 :foo \g :integer-add [6.2] 11/8])
+     :tagspace (list taggy)}    :tagspace-lookupvector   {:exec 
+                                                            '((2 :foo \g :integer-add [6.2] 4))
+                                                          :vector  '()
+                                                          :tagspace (list taggy)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec '()
+     :vector '([1 8])
+     :tagspace (list (make-tagspace))}  
+                                :tagspace-lookupvector   {:exec     '(())
+                                                          :vector  '()
+                                                          :tagspace (list (make-tagspace))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ))
 
 
 

@@ -87,7 +87,7 @@
 (def tagspace-lookupintegers
   (core/build-instruction
     tagspace-lookupintegers
-    "`:tagspace-lookupintegers` pops the top `:integers` item and the top `:tagspace`. Every element of the `:integers` is used as a key and looked up, consolidated into a list, and pushed to `:exec`; if the `:tagspace` is empty, no item is pushed to `:exec`. The `:tagspace` is returned to that stack."
+    "`:tagspace-lookupintegers` pops the top `:integers` item and the top `:tagspace`. Every element of the `:integers` is used as a key and looked up, consolidated into a list, and pushed to `:exec`; if the `:tagspace` is empty, an empty list is pushed to `:exec`. The `:tagspace` is returned to that stack."
     :tags #{:tagspace :collection}
     (d/consume-top-of :integers :as :indices)
     (d/consume-top-of :tagspace :as :ts)
@@ -113,12 +113,29 @@
 (def tagspace-lookupfloats
   (core/build-instruction
     tagspace-lookupfloats
-    "`:tagspace-lookupfloats` pops the top `:floats` item and the top `:tagspace`. Every element of the `:floats` is used as a key and looked up, consolidated into a list, and pushed to `:exec`; if the `:tagspace` is empty, no item is pushed to `:exec`. The `:tagspace` is returned to that stack."
+    "`:tagspace-lookupfloats` pops the top `:floats` item and the top `:tagspace`. Every element of the `:floats` is used as a key and looked up, consolidated into a list, and pushed to `:exec`; if the `:tagspace` is empty, an empty list is pushed to `:exec`. The `:tagspace` is returned to that stack."
     :tags #{:tagspace :collection}
     (d/consume-top-of :floats :as :indices)
     (d/consume-top-of :tagspace :as :ts)
     (d/calculate [:indices :ts]
       #(remove nil? (map (fn [k] (find-in-tagspace %2 k)) %1)) :as :results)
+    (d/push-onto :exec :results)
+    (d/push-onto :tagspace :ts)))
+
+
+
+(def tagspace-lookupvector
+  (core/build-instruction
+    tagspace-lookupvector
+    "`:tagspace-lookupvector` pops the top `:vector` item and the top `:tagspace`. For each item in the `:vector`, if it is not a number it is copied into the result list, and if it is a number it is used to look up an item in the `:tagspace`. If the `:tagspace` is empty, the result will be the `:vector` with all numbers removed. The `:tagspace` is returned to that stack."
+    :tags #{:tagspace :collection}
+    (d/consume-top-of :vector :as :keys)
+    (d/consume-top-of :tagspace :as :ts)
+    (d/calculate [:keys :ts]
+      #(remove nil?
+        (map
+          (fn [k] (if (number? k) (find-in-tagspace %2 k) k))
+          %1)) :as :results)
     (d/push-onto :exec :results)
     (d/push-onto :tagspace :ts)))
 
@@ -304,6 +321,7 @@
       (t/attach-instruction , tagspace-lookupintegers)
       (t/attach-instruction , tagspace-lookupfloat)
       (t/attach-instruction , tagspace-lookupfloats)
+      (t/attach-instruction , tagspace-lookupvector)
       (t/attach-instruction , tagspace-max)
       (t/attach-instruction , tagspace-merge)
       (t/attach-instruction , tagspace-min)
