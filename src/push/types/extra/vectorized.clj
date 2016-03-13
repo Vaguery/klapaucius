@@ -3,9 +3,8 @@
             [push.types.core :as t]
             [push.instructions.dsl]
             [push.instructions.aspects :as aspects]
-            [push.util.code-wrangling :as fix])
-  (:use push.types.extra.generator)
-  )
+            [push.util.code-wrangling :as fix]
+            ))
 
 
 ;; helper

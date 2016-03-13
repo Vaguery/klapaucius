@@ -2,9 +2,8 @@
   (:require [push.instructions.core :as core]
             [push.types.core :as t]
             [push.instructions.dsl :as d]
-            [push.instructions.aspects :as aspects])
-  (:use push.types.extra.generator)
-  )
+            [push.instructions.aspects :as aspects]
+            ))
 
 
 (def exec-do*count

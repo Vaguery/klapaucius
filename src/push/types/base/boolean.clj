@@ -1,8 +1,8 @@
 (ns push.types.base.boolean
-  (:use [push.instructions.aspects])
   (:use push.types.extra.generator)
   (:use [push.util.type-checkers :only (boolean?)])
-  (:require [push.instructions.core :as core]
+  (:require [push.instructions.aspects :as aspects]
+            [push.instructions.core :as core]
             [push.types.core :as t]
             [push.instructions.dsl :as d]
             [push.util.exotics :as exotics]
@@ -136,15 +136,15 @@
   ( ->  (t/make-type  :boolean
                       :recognizer boolean?
                       :attributes #{:logical})
-        make-equatable
-        make-movable
-        make-printable
-        make-quotable
-        make-repeatable
-        make-returnable
-        make-storable
-        make-taggable
-        make-visible 
+        aspects/make-equatable
+        aspects/make-movable
+        aspects/make-printable
+        aspects/make-quotable
+        aspects/make-repeatable
+        aspects/make-returnable
+        aspects/make-storable
+        aspects/make-taggable
+        aspects/make-visible 
         (t/attach-instruction , boolean-2bittable)
         (t/attach-instruction , boolean-3bittable)
         (t/attach-instruction , bool-and)

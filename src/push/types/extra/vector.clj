@@ -3,9 +3,8 @@
             [push.types.core :as t]
             [push.instructions.dsl :as d]
             [push.instructions.aspects :as aspects]
-            [push.types.extra.vectorized :as v])
-  (:use push.types.extra.generator)
-  )
+            [push.types.extra.vectorized :as v]
+            ))
 
 
 

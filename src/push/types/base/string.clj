@@ -4,7 +4,6 @@
             [push.instructions.dsl :as d]
             [clojure.string :as strings]
             [push.instructions.aspects :as aspects])
-  (:use push.types.extra.generator)
   )
 
 

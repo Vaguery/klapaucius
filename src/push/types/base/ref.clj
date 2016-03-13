@@ -3,7 +3,6 @@
             [push.types.core :as t]
             [push.instructions.dsl :as d]
             [push.instructions.aspects :as aspects])
-  (:use push.types.extra.generator)
   )
 
 ; - `:x-similar` (return `:set` of :`ref` bindings that hold items of this type only)

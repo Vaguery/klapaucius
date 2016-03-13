@@ -3,9 +3,8 @@
             [push.types.core :as t]
             [push.instructions.dsl :as d]
             [push.instructions.aspects :as aspects]
-            [clojure.math.numeric-tower :as math])
-  (:use push.types.extra.generator)
-  )
+            [clojure.math.numeric-tower :as math]
+            ))
 
 
 
@@ -320,6 +319,9 @@
         aspects/make-storable
         aspects/make-taggable
         aspects/make-visible 
+        (t/attach-instruction , boolean->float)
+        (t/attach-instruction , boolean->signedfloat)
+        (t/attach-instruction , char->float)
         (t/attach-instruction , float-abs)
         (t/attach-instruction , float-add)
         (t/attach-instruction , float-arccosine)
@@ -328,12 +330,7 @@
         (t/attach-instruction , float-cosine)
         (t/attach-instruction , float-dec)
         (t/attach-instruction , float-divide)
-        (t/attach-instruction , boolean->float)
-        (t/attach-instruction , char->float)
-        (t/attach-instruction , integer->float)
-        (t/attach-instruction , string->float)
         (t/attach-instruction , float-E)
-        (t/attach-instruction , float-π)
         (t/attach-instruction , float-inc)
         (t/attach-instruction , float-ln)
         (t/attach-instruction , float-ln1p)
@@ -344,8 +341,10 @@
         (t/attach-instruction , float-power)
         (t/attach-instruction , float-sign)
         (t/attach-instruction , float-sqrt)
-        (t/attach-instruction , boolean->signedfloat)
         (t/attach-instruction , float-subtract)
         (t/attach-instruction , float-tangent)
+        (t/attach-instruction , float-π)
+        (t/attach-instruction , integer->float)
+        (t/attach-instruction , string->float)
         ))
 

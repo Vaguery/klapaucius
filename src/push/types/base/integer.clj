@@ -1,5 +1,4 @@
 (ns push.types.base.integer
-  (:use push.types.extra.generator)
   (:require [push.instructions.core :as core]
             [push.types.core :as t]
             [push.instructions.dsl :as d]

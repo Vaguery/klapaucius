@@ -4,7 +4,6 @@
             [push.instructions.dsl :as d]
             [push.instructions.aspects :as aspects]
             [clojure.set :as sets])
-  (:use push.types.extra.generator)
   )
 
 (def code->set

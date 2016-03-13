@@ -4,9 +4,8 @@
             [push.instructions.dsl :as d]
             [push.util.stack-manipulation :as stacks]
             [push.util.code-wrangling :as u]
-            [push.instructions.aspects :as aspects])
-  (:use push.types.extra.generator)
-  )
+            [push.instructions.aspects :as aspects]
+            ))
 
 
 ;; code-specific instructions
