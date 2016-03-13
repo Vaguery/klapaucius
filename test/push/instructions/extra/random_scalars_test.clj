@@ -4,7 +4,7 @@
             [push.util.code-wrangling :as u])
   (:use midje.sweet)
   (:use [push.util.test-helpers])
-  (:use push.instructions.extra.random-scalars)
+  (:use push.types.module.random-scalars)
   )
 
 

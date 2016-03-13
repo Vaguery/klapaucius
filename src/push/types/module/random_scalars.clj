@@ -1,8 +1,8 @@
-(ns push.instructions.extra.random-scalars
+(ns push.types.module.random-scalars
   (:require [push.instructions.core :as core]
             [push.types.core :as t]
-            [push.instructions.dsl :as d])
-  )
+            [push.instructions.dsl :as d]
+            ))
 
 
 (defn typesafe-rand-int

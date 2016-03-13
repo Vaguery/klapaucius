@@ -22,8 +22,8 @@
   (:use [push.interpreter.core])
   (:use [push.util.type-checkers])
 
-  (:use push.instructions.extra.introspection)
-  (:use push.instructions.extra.random-scalars)
+  (:use push.types.module.introspection)
+  (:use push.types.module.random-scalars)
   )
 
 

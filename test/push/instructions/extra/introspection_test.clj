@@ -5,7 +5,7 @@
             [push.interpreter.templates.classic :as c])
   (:use midje.sweet)
   (:use [push.util.test-helpers])
-  (:use push.instructions.extra.introspection)
+  (:use push.types.module.introspection)
   )
 
 
