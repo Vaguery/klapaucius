@@ -7,8 +7,6 @@
   (:use midje.sweet)
   (:use [push.interpreter.core])
   (:use [push.interpreter.templates.one-with-everything])
-  (:use demo.examples.plane-geometry.definitions)
-
   )
 
 
@@ -17,7 +15,6 @@
   (-> (make-everything-interpreter :config {:step-limit 20000}
                                    :bindings (:bindings prisoner)
                                    :program (:program prisoner))
-      (register-types [precise-circle precise-line precise-point])
       reset-interpreter))
 
 

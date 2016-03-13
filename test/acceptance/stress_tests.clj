@@ -4,7 +4,6 @@
             [push.types.core :as types]
             [push.util.stack-manipulation :as u]
             [clojure.string :as s]
-            [demo.examples.plane-geometry.definitions :as geom]
             )
   (:use midje.sweet)
   (:use [push.interpreter.core])
@@ -68,26 +67,6 @@
   [] (into [] (repeatedly (random-integer 10) #(random-string))))
 
 
-(defn random-point
-  [] (geom/make-point (random-float) (random-integer)))
-
-
-(defn random-circle
-  [] (geom/make-circle-from-xyxy
-        (random-float) 
-        (random-integer) 
-        (random-float) 
-        (random-integer)))
-
-
-(defn random-line
-  [] (geom/make-line-from-xyxy
-        (random-float) 
-        (random-integer) 
-        (random-float) 
-        (random-integer)))
-
-
 (defn any-input
   [interpreter]
   (rand-nth (keys (:bindings interpreter))))
@@ -114,9 +93,6 @@
                                      9 (random-floats 40)
                                      10  (random-chars)
                                      11 (random-strings)
-                                     ; 12 (random-point)
-                                     ; 13 (random-circle)
-                                     ; 14 (random-line)
                                      12 (into #{} (bunch-a-junk interpreter 8))
 
                                      (any-instruction interpreter)))))
@@ -132,14 +108,10 @@
 ;; (timeout 100 #(do (Thread/sleep 1000) (println "I finished")))
 
 
-(def geometry-types
-  [geom/precise-circle geom/precise-line geom/precise-point])
-
 
 (defn overloaded-interpreter
   [& args]
-  (-> (apply make-everything-interpreter args)
-      (register-types geometry-types)))
+ (apply make-everything-interpreter args))
 
 
 (defn random-program-interpreter

@@ -24,8 +24,6 @@
 
   (:use push.instructions.extra.introspection)
   (:use push.instructions.extra.random-scalars)
-
-  (:use demo.examples.plane-geometry.definitions)
   )
 
 
