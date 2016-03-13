@@ -44,6 +44,31 @@
 
 
 
+(def integer->bits
+  (core/build-instruction
+    integer->bits
+    "`:integer->bits` pops the top `:integer` and pushes a vector of its 'bits' (as `true` and `false` in low-to-high order) to the `:booleans` stack. Negative numbers are made positive. The minimal binary representation is used, but always at least two bits are produced."
+    :tags #{:numeric :conversion}
+    (d/consume-top-of :integer :as :arg)
+    (d/calculate [:arg]
+      #(exotics/integer-to-truth-table (math/abs %1) 1) :as :bits)
+    (d/push-onto :booleans :bits)))
+
+
+
+
+(def integer->numerals
+  (core/build-instruction
+    integer->numerals
+    "`:integer->numerals` pops the top `:integer` and pushes a vector of its numerals (not including negative sign or bigint decorations) to `:chars` "
+    :tags #{:numeric :conversion}
+    (d/consume-top-of :integer :as :arg)
+    (d/calculate [:arg]
+      #(into [] (filter #{\0 \1 \2 \3 \4 \5 \6 \7 \8 \9} (seq (str %1)))) :as :numbers)
+    (d/push-onto :chars :numbers)))
+
+
+
 
 (def integer-dec (t/simple-1-in-1-out-instruction
   "`:integer-dec` subtracts 1 from the top `:integer` item"
@@ -245,26 +270,28 @@
         aspects/make-storable
         aspects/make-taggable
         aspects/make-visible 
+        (t/attach-instruction , boolean->integer)
+        (t/attach-instruction , boolean->signedint)
+        (t/attach-instruction , char->integer)
+        (t/attach-instruction , float->integer)
         (t/attach-instruction , integer-abs)
         (t/attach-instruction , integer-add)
         (t/attach-instruction , integer-bits)
         (t/attach-instruction , integer-dec)
         (t/attach-instruction , integer-digits)
         (t/attach-instruction , integer-divide)
+        (t/attach-instruction , integer-inc)
         (t/attach-instruction , integer-few)
         (t/attach-instruction , integer-lots)
         (t/attach-instruction , integer-many)
-        (t/attach-instruction , integer-some)
-        (t/attach-instruction , boolean->integer)
-        (t/attach-instruction , char->integer)
-        (t/attach-instruction , float->integer)
-        (t/attach-instruction , string->integer)
-        (t/attach-instruction , integer-inc)
         (t/attach-instruction , integer-mod)
         (t/attach-instruction , integer-multiply)
         (t/attach-instruction , integer-sign)
-        (t/attach-instruction , boolean->signedint)
+        (t/attach-instruction , integer-some)
         (t/attach-instruction , integer-subtract)
         (t/attach-instruction , integer-totalistic3)
+        (t/attach-instruction , integer->bits)
+        (t/attach-instruction , integer->numerals)
+        (t/attach-instruction , string->integer)
         ))
 

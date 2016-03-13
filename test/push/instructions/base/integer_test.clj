@@ -118,9 +118,54 @@
     )
 
 
+(tabular
+  (fact ":integer->numerals pushes a vector of numeric :chars"
+    (register-type-and-check-instruction
+        ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items    ?instruction       ?get-stack     ?expected
+    :integer    '(1182)     :integer->numerals   :chars      '([\1 \1 \8 \2])
+    :integer    '(-39812M)  :integer->numerals   :chars      '([\3 \9 \8 \1 \2])
+    :integer    '(1191N)    :integer->numerals   :chars      '([\1 \1 \9 \1])
+    )
+
 
 (tabular
-  (fact ":integer-digits pushes a vector of true/false bits"
+  (fact ":integer->bits pushes a vector of numeric :booleans"
+    (register-type-and-check-instruction
+        ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items     ?instruction     ?get-stack     ?expected
+    :integer    '(0)       :integer->bits   :booleans      '([false false])
+    :integer    '(1)       :integer->bits   :booleans      '([true false])
+    :integer    '(3)       :integer->bits   :booleans      '([true true])
+    :integer    '(127)     :integer->bits   :booleans      '([true true true true
+                                                              true true true])
+    :integer    '(128)     :integer->bits   :booleans      '([false false false false
+                                                              false false false true])
+    :integer    '(-128)    :integer->bits   :booleans      '([false false false false
+                                                              false false false true])
+    :integer    '(-1771277172712712728M)
+                            :integer->bits  :booleans      '([false false false true
+                                                             true  false false false
+                                                             false true false true
+                                                             false true false true
+                                                             false false true true
+                                                             false false true false
+                                                             false true true false
+                                                             true true false false
+                                                             false false true false
+                                                             true true false false
+                                                             true true true false
+                                                             true false true true
+                                                             false false true false
+                                                             true false false true
+                                                             false false false true
+                                                             true]))
+
+
+(tabular
+  (fact ":integer-bits pushes a list of true/false bits"
     (register-type-and-check-instruction
         ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
 
@@ -166,8 +211,7 @@
                                                              false false true false
                                                              true false false true
                                                              false false false true
-                                                             true))
-    )
+                                                             true)))
 
 
 

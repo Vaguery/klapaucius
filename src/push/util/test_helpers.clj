@@ -1,7 +1,9 @@
 (ns push.util.test-helpers
   (:require [push.util.stack-manipulation :as u]
             [push.interpreter.core :as i]
-            [push.interpreter.templates.minimum :as m])
+            [push.interpreter.templates.minimum :as m]
+            [push.core :as push]
+            )
   (:use midje.sweet)
   )
 
@@ -30,7 +32,7 @@
   [setup-stack items type-under-test instruction-token read-stack]
   (let [setup (u/set-stack 
                 (i/register-type
-                  (m/basic-interpreter)
+                  (push/interpreter)
                   type-under-test)
                 setup-stack items)
         after (i/execute-instruction setup instruction-token)]
