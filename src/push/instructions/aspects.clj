@@ -1,5 +1,4 @@
 (ns push.instructions.aspects
-  (:require [push.types.core :as t])
   (:use [push.instructions.aspects.comparable])
   (:use [push.instructions.aspects.equatable])
   (:use push.instructions.aspects.movable)
@@ -10,7 +9,8 @@
   (:use push.instructions.aspects.storable)
   (:use push.instructions.aspects.taggable)
   (:use push.instructions.aspects.visible)
-  )
+  (:require [push.types.core :as t]
+            ))
 
 
 
@@ -47,9 +47,13 @@
   [pushtype]
   (-> pushtype
       (t/attach-instruction (againlater-instruction pushtype))
+      (t/attach-instruction (cutflip-instruction pushtype))
+      (t/attach-instruction (cutstack-instruction pushtype))
       (t/attach-instruction (dup-instruction pushtype))
+      (t/attach-instruction (flipstack-instruction pushtype))
       (t/attach-instruction (flush-instruction pushtype))
       (t/attach-instruction (later-instruction pushtype))
+      (t/attach-instruction (liftstack-instruction pushtype))
       (t/attach-instruction (pop-instruction pushtype))
       (t/attach-instruction (rotate-instruction pushtype))
       (t/attach-instruction (shove-instruction pushtype))

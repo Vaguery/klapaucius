@@ -1,8 +1,9 @@
 (ns push.instructions.aspects.storable
   (:require [push.instructions.core :as core]
             [push.instructions.dsl :as dsl]
-            [push.types.core :as t])
-  )
+            [push.types.core :as t]
+            ))
+
 
 
 (defn save-instruction
@@ -17,8 +18,7 @@
       :tags #{:storable}
       '(push.instructions.dsl/consume-top-of :ref :as :where)
       `(push.instructions.dsl/consume-top-of ~typename :as :what)
-      `(push.instructions.dsl/bind-item :what :into :where)
-      ))))
+      `(push.instructions.dsl/bind-item :what :into :where)))))
 
 
 
@@ -33,8 +33,8 @@
       (str "`:" instruction-name "` pops the top `" typename "`, which is pushed to a new `:ref` created in the `:bindings` registry")
       :tags #{:storable}
       `(push.instructions.dsl/consume-top-of ~typename :as :what)
-      `(push.instructions.dsl/replace-binding :what)
-      ))))
+      `(push.instructions.dsl/replace-binding :what)))))
+
 
 
 (defn savestack-instruction
@@ -49,8 +49,7 @@
       :tags #{:storable}
       '(push.instructions.dsl/consume-top-of :ref :as :where)
       `(push.instructions.dsl/save-stack ~typename :as :all)
-      `(push.instructions.dsl/replace-binding :all :into :where)
-      ))))
+      `(push.instructions.dsl/replace-binding :all :into :where)))))
 
 
 
@@ -65,5 +64,4 @@
       (str "`:" instruction-name "` copies the entire `" typename "` stack into a new `:ref` created in the `:bindings` registry. The stack contents are not consumed.")
       :tags #{:storable}
       `(push.instructions.dsl/save-stack ~typename :as :all)
-      `(push.instructions.dsl/replace-binding :all)
-      ))))
+      `(push.instructions.dsl/replace-binding :all)))))

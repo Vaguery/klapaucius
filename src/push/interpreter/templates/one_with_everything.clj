@@ -22,9 +22,7 @@
   (:use [push.interpreter.core])
   (:use [push.util.type-checkers])
 
-  (:use push.instructions.extra.stack-combinators)
   (:use push.instructions.extra.introspection)
-  (:use push.instructions.extra.numeric-scaling)
   (:use push.instructions.extra.random-scalars)
 
   (:use demo.examples.plane-geometry.definitions)
@@ -32,8 +30,7 @@
 
 
 (def all-kinds-of-types
-  (map extend-combinators
-    [integer-type
+  [ integer-type
     boolean-type
     char-type
     float-type
@@ -51,27 +48,19 @@
 
     standard-vector-type
     standard-set-type
-
-    ; precise-circle  ;; demo.examples.plane-geometry.definitions
-    ; precise-line
-    ; precise-point
-
-    ]))
+  ])
 
 
 (def all-kinds-of-modules
-  (map extend-combinators
-    [exec-module
-     log-module
-     error-module
-     code-module
-     environment-module
-     print-module
-     
-     standard-introspection-module
-     numeric-scaling-module
-     random-scalars-module
-     ]))
+  [ exec-module
+    log-module
+    error-module
+    code-module
+    environment-module
+    print-module
+    
+    standard-introspection-module
+    random-scalars-module])
 
 
 (defn make-everything-interpreter
@@ -99,7 +88,6 @@
   - standard-set-type
   - tagspace-type
   - standard-vector-type (loaded last as a default)
-  - extra-stack-combinators (for all types that are :movable)
   and the counter is 0.
 
   Optional arguments include

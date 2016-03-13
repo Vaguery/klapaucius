@@ -2,9 +2,8 @@
   (:require [push.util.stack-manipulation :as u]
             [push.util.code-wrangling :as fix]
             [push.util.exceptions :as oops]
-            [push.interpreter.core :as i])
-
-  )
+            [push.interpreter.core :as i]
+            ))
 
 
 ;;;; a "PushDSL blob" is just a vector containing an interpreter and a hashmap

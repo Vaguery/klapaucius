@@ -5,7 +5,7 @@
             [push.util.stack-manipulation :as u]
             [clojure.string :as s]
             [demo.examples.plane-geometry.definitions :as geom]
-            [push.instructions.extra.stack-combinators :as combo])
+            )
   (:use midje.sweet)
   (:use [push.interpreter.core])
   (:use [push.interpreter.templates.one-with-everything])
@@ -133,8 +133,7 @@
 
 
 (def geometry-types
-  (map combo/extend-combinators
-    [geom/precise-circle geom/precise-line geom/precise-point]))
+  [geom/precise-circle geom/precise-line geom/precise-point])
 
 
 (defn overloaded-interpreter

@@ -1,8 +1,9 @@
 (ns push.instructions.aspects.quotable
   (:require [push.instructions.core :as core]
             [push.instructions.dsl :as dsl]
-            [push.types.core :as t])
-  )
+            [push.types.core :as t]
+            ))
+
 
 
 (defn tocode-instruction
@@ -13,8 +14,7 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`:" instruction-name "` moves the top item of the `"
-        typename "` stack to the `:code` stack.")
+      (str "`:" instruction-name "` moves the top item of the `" typename "` stack to the `:code` stack.")
       :tags #{:visible}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg)
       '(push.instructions.dsl/push-onto :code :arg)))))

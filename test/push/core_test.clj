@@ -28,7 +28,7 @@
 
 
 (fact "I can produce a list of types and modules loaded into the interpreter"
-  (p/types-and-modules (p/interpreter)) => (contains [:numeric-scaling :introspection :print :environment :code :error :log :exec :set :vector :strings :integers :floats :chars :booleans :string :float :char :boolean :integer] :in-any-order :gaps-ok))
+  (p/types-and-modules (p/interpreter)) => (contains [:introspection :print :environment :code :error :log :exec :set :vector :strings :integers :floats :chars :booleans :string :float :char :boolean :integer] :in-any-order :gaps-ok))
 
 
 (fact "I can produce the router list for an interpreter"

@@ -1,8 +1,11 @@
 (ns push.instructions.aspects.taggable
   (:require [push.instructions.core :as core]
             [push.instructions.dsl :as dsl]
-            [push.types.core :as t])
-  )
+            [push.types.core :as t]
+            ))
+
+
+;; SUPPORT
 
 
 (defn store-in-tagspace
@@ -11,6 +14,7 @@
   (assoc-in ts [:contents idx] item))
 
 
+;; INSTRUCTIONS
 
 
 (defn tagwithint-instruction
@@ -21,8 +25,7 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`:" instruction-name "` pops the top `:integer`, the top `:tagspace` and the top `" typename
-        "` items. The item is stored in the `:tagspace` under the index specified by the `:integer`.")
+      (str "`:" instruction-name "` pops the top `:integer`, the top `:tagspace` and the top `" typename "` items. The item is stored in the `:tagspace` under the index specified by the `:integer`.")
       :tags #{:tagspace :collection}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg)
       `(push.instructions.dsl/consume-top-of :tagspace :as :ts)
@@ -41,8 +44,7 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`:" instruction-name "` pops the top `:float`, the top `:tagspace` and the top `" typename
-        "` items. The item is stored in the `:tagspace` under the index specified by the `:float`.")
+      (str "`:" instruction-name "` pops the top `:float`, the top `:tagspace` and the top `" typename "` items. The item is stored in the `:tagspace` under the index specified by the `:float`.")
       :tags #{:tagspace :collection}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg)
       `(push.instructions.dsl/consume-top-of :tagspace :as :ts)

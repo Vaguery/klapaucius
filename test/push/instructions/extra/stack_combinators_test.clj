@@ -5,40 +5,18 @@
   (:require [push.types.core :as t])
   (:require [push.util.code-wrangling :as u])
   (:use push.instructions.aspects)
-  (:use push.instructions.extra.stack-combinators)
+  (:use push.instructions.aspects.movable)
   )
 
 
 ;;;;;;;;;;;;;
 
-(def foo-type (t/make-type  :foo
-                              :recognizer number?
-                              :attributes #{:foo}))
-
-
-(fact "extend-combinators will not add these instructions unless the type is already :movable"
-  (extend-combinators foo-type) => foo-type
-  (keys (:instructions (extend-combinators foo-type))) =not=>
-    (contains :foo-flipstack))
-
-
-(def foo-type (make-movable (t/make-type  :foo
-                              :recognizer number?
-                              :attributes #{:foo})))
-
-
-(fact "extend-combinators will add these instructions if the type is already :movable"
-  (extend-combinators foo-type) =not=> foo-type
-  (keys (:instructions (extend-combinators foo-type))) =>
-    (contains :foo-flipstack))
-
+;; fixtures
 
 (def foo-type (-> (t/make-type  :foo
                                 :recognizer number?
                                 :attributes #{:foo})
-                   make-movable
-                   extend-combinators))
-
+                   make-movable))
 
 ;;;;;;;;;;;;;;;
 
@@ -70,7 +48,6 @@
     {:foo   '(9)
      :exec  '()}              :foo-later      {:foo   '()
                                                :exec  '(9)}
-    
     )
 
 

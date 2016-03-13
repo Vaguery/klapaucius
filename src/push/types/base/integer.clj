@@ -1,19 +1,23 @@
 (ns push.types.base.integer
+  (:use push.types.extra.generator)
   (:require [push.instructions.core :as core]
             [push.types.core :as t]
             [push.instructions.dsl :as d]
             [push.util.code-wrangling :as fix]
             [push.instructions.aspects :as aspects]
             [clojure.math.numeric-tower :as math]
-            [push.util.exotics :as exotics])
-  (:use push.types.extra.generator)
-  )
+            [push.util.exotics :as exotics]
+            ))
 
 
-;; arithmetic
+;; SUPPORT
 
 
 (defn sign [i] (compare i 0))
+
+
+;; INSTRUCTIONS
+
 
 
 (def integer-abs (t/simple-1-in-1-out-instruction
@@ -21,14 +25,17 @@
   :integer "abs" 'math/abs))
 
 
+
 (def integer-add (t/simple-2-in-1-out-instruction
   "`:integer-add` pops the top two `:integer` items, and pushes their sum"
   :integer "add" '+'))
 
 
+
 (def integer-dec (t/simple-1-in-1-out-instruction
   "`:integer-dec` subtracts 1 from the top `:integer` item"
   :integer "dec" 'dec))
+
 
 
 (def integer-digits
@@ -41,6 +48,7 @@
       #(map (fn [d] (- (int d) 48)) 
         (filter #{\0 \1 \2 \3 \4 \5 \6 \7 \8 \9} (seq (str %1)))) :as :numbers)
     (d/push-onto :exec :numbers)))
+
 
 
 (def integer-divide
@@ -57,13 +65,45 @@
     (d/push-these-onto :integer [:replacement :quotient])
     (d/calculate [:denominator]
       #(if (zero? %1) ":integer-divide 0 denominator" nil) :as :warning)
-    (d/record-an-error :from :warning)
-    ))
+    (d/record-an-error :from :warning)))
+
+
+
+(def integer-few
+  (core/build-instruction
+    integer-few
+    "`:integer-few` pops the top `:integer` value, and calculates `(mod 10 x)`."
+    :tags #{:numeric}
+    (d/consume-top-of :integer :as :arg)
+    (d/calculate [:arg] #(mod %1 10) :as :scaled)
+    (d/push-onto :integer :scaled)))
+
 
 
 (def integer-inc (t/simple-1-in-1-out-instruction
   "`:integer-inc` adds 1 to the top `:integer` item"
   :integer "inc" 'inc))
+
+
+
+(def integer-lots
+  (core/build-instruction
+    integer-lots
+    "`:integer-lots` pops the top `:integer` value, and calculates `(mod 10000 x)`."
+    :tags #{:numeric}
+    (d/consume-top-of :integer :as :arg)
+    (d/calculate [:arg] #(mod %1 10000) :as :scaled)
+    (d/push-onto :integer :scaled)))
+
+
+(def integer-many
+  (core/build-instruction
+    integer-many
+    "`:integer-many` pops the top `:integer` value, and calculates `(mod 1000 x)`."
+    :tags #{:numeric}
+    (d/consume-top-of :integer :as :arg)
+    (d/calculate [:arg] #(mod %1 1000) :as :scaled)
+    (d/push-onto :integer :scaled)))
 
 
 (def integer-mod
@@ -91,6 +131,17 @@
 (def integer-sign (t/simple-1-in-1-out-instruction
   "`:integer-sign` examines the top `:integer` item, and pushes -1 if negative, 0 if zero, and 1 if positive"
   :integer  "sign" 'sign))
+
+
+
+(def integer-some
+  (core/build-instruction
+    integer-some
+    "`:integer-some` pops the top `:integer` value, and calculates `(mod 100 x)`."
+    :tags #{:numeric}
+    (d/consume-top-of :integer :as :arg)
+    (d/calculate [:arg] #(mod %1 100) :as :scaled)
+    (d/push-onto :integer :scaled)))
 
 
 (def integer-subtract (t/simple-2-in-1-out-instruction
@@ -186,6 +237,10 @@
         (t/attach-instruction , integer-dec)
         (t/attach-instruction , integer-digits)
         (t/attach-instruction , integer-divide)
+        (t/attach-instruction , integer-few)
+        (t/attach-instruction , integer-lots)
+        (t/attach-instruction , integer-many)
+        (t/attach-instruction , integer-some)
         (t/attach-instruction , boolean->integer)
         (t/attach-instruction , char->integer)
         (t/attach-instruction , float->integer)

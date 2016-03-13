@@ -7,7 +7,7 @@
 
 
 
-;; CYCLERS
+;; SUPPORT FOR CYCLERS
 
 
 (defn splittable?
@@ -48,7 +48,6 @@
     nil))
 
 
-
 (defn cycle-step
   "Takes the tuple from a :cycler :state and returns the next step, if possible. Returns `nil` if the contents are inappropriate."
   [item-and-items]
@@ -59,6 +58,15 @@
       nil)))
 
 
+(defn rand-nth-seq-function
+  [items]
+  (if (splittable? items)
+    (fn [_] (rand-nth (seq items)))
+    nil))
+
+
+;; CYCLER INSTRUCTIONS
+
 
 (defn comprehension-instruction
   "returns a new x-comprehension instruction for the given type or module."
@@ -68,8 +76,7 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`:" instruction-name "` pops the top `" typename
-        "` item. If it is a non-empty collection, it pushes a new `:generator` that will return a list containing the first item and the remaining ones until there are none.")
+      (str "`:" instruction-name "` pops the top `" typename "` item. If it is a non-empty collection, it pushes a new `:generator` that will return a list containing the first item and the remaining ones until there are none.")
       :tags #{:generator :cycling}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg)
       `(push.instructions.dsl/save-max-collection-size :as :limit)
@@ -91,8 +98,7 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`:" instruction-name "` pops the top `" typename
-        "` item and pushes a new `:generator` that will return a list containing an item and the contents rotated head->tail.")
+      (str "`:" instruction-name "` pops the top `" typename "` item and pushes a new `:generator` that will return a list containing an item and the contents rotated head->tail.")
       :tags #{:generator :cycling}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg)
       `(push.instructions.dsl/calculate [:arg]
@@ -100,14 +106,6 @@
               (cycle-collection %)
               (partial cycle-step)) :as :g)
       `(push.instructions.dsl/push-onto :generator :g)))))
-
-
-
-(defn rand-nth-seq-function
-  [items]
-  (if (splittable? items)
-    (fn [_] (rand-nth (seq items)))
-    nil))
 
 
 
@@ -119,8 +117,7 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`:" instruction-name "` pops the top `" typename
-        "` item and pushes a new `:generator` that will return a random element (sampled uniformly) from the collection.")
+      (str "`:" instruction-name "` pops the top `" typename "` item and pushes a new `:generator` that will return a random element (sampled uniformly) from the collection.")
       :tags #{:generator :random}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg)
       `(push.instructions.dsl/calculate [:arg]
@@ -131,8 +128,7 @@
       `(push.instructions.dsl/push-onto :generator :g)))))
 
 
-
-;; ECHOES
+;; ECHO GENERATORS
 
 
 (defn echo-instruction
@@ -143,8 +139,7 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`:" instruction-name "` pops the top `" typename
-        "` item and pushes a new `:generator` that will return that item every time it's called.")
+      (str "`:" instruction-name "` pops the top `" typename "` item and pushes a new `:generator` that will return that item every time it's called.")
       :tags #{:generator :repeatable}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg)
       `(push.instructions.dsl/calculate [:arg]
@@ -161,8 +156,7 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`:" instruction-name "` copies the entire `" typename
-        "` stack into a new `:generator` that will return the entire stack (as a list pushed to the `:exec` stack) every time it's called.")
+      (str "`:" instruction-name "` copies the entire `" typename "` stack into a new `:generator` that will return the entire stack (as a list pushed to the `:exec` stack) every time it's called.")
       :tags #{:generator :repeatable}
       `(push.instructions.dsl/save-stack ~typename :as :all)
       `(push.instructions.dsl/save-max-collection-size :as :limit)
@@ -173,6 +167,7 @@
       `(push.instructions.dsl/push-onto :generator :g)))))
 
 
+
 (defn rerunall-instruction
   "returns a new x-rerunall instruction for the given type or module."
   [pushtype]
@@ -181,8 +176,7 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`:" instruction-name "` copies the `" typename
-        "` stack into a new _cycler_ `:generator` instance, if the stack is not empty.")
+      (str "`:" instruction-name "` copies the `" typename "` stack into a new _cycler_ `:generator` instance, if the stack is not empty.")
       :tags #{:generator :cycling}
       `(push.instructions.dsl/save-stack ~typename :as :all)
       `(push.instructions.dsl/calculate [:all]

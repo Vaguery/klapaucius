@@ -1,8 +1,9 @@
 (ns push.instructions.aspects.returnable
   (:require [push.instructions.core :as core]
             [push.instructions.dsl :as dsl]
-            [push.types.core :as t])
-  )
+            [push.types.core :as t]
+            ))
+
 
 
 (defn return-instruction
@@ -13,11 +14,11 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`:" instruction-name "` pops the top `" typename
-        "` item and pushes it to the `:return` stack.")
+      (str "`:" instruction-name "` pops the top `" typename "` item and pushes it to the `:return` stack.")
       :tags #{:io}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
       `(push.instructions.dsl/push-onto :return :arg1)))))
+
 
 
 (defn return-pop-instruction
@@ -29,11 +30,9 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`:" instruction-name "` creates a new `" typename
-        "-pop` token shoves it to the _bottom_ of the `:return` stack.")
+      (str "`:" instruction-name "` creates a new `" typename "-pop` token shoves it to the _bottom_ of the `:return` stack.")
       :tags #{:io}
       `(push.instructions.dsl/consume-stack :return :as :old-stack)
       `(push.instructions.dsl/calculate [:old-stack] 
           #(concat %1 (list ~token)) :as :new-stack)
       `(push.instructions.dsl/replace-stack :return :new-stack)))))
-

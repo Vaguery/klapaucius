@@ -1,8 +1,9 @@
 (ns push.instructions.aspects.equatable
   (:require [push.instructions.core :as core]
             [push.instructions.dsl :as dsl]
-            [push.types.core :as t])
-  )
+            [push.types.core :as t]
+            ))
+
 
 
 (defn equal?-instruction
@@ -22,6 +23,7 @@
       '(push.instructions.dsl/push-onto :boolean :check)))))
 
 
+
 (defn notequal?-instruction
   "returns a new x-notequal? instruction for a PushType"
   [pushtype]
@@ -37,5 +39,3 @@
       `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
       '(push.instructions.dsl/calculate [:arg1 :arg2] #(not= %1 %2) :as :check)
       '(push.instructions.dsl/push-onto :boolean :check)))))
-
-
