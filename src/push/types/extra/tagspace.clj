@@ -41,13 +41,11 @@
 
 ;; instructions
 
-; - :tagspace-link
 ; - :set->tagspace
 ; - :code->tagspace
 ; - :binding->tagspace
 ; - :vector->tagspace
 ; - :tagspace->vectors
-
 
 
 (def tagspace-count
@@ -175,6 +173,7 @@
     (d/calculate [:arg] #(first (first (seq (:contents %1)))) :as :key)
     (d/calculate [:arg :key] #(if (nil? %2) %1 (list %2 %1)) :as :minkeylist)
     (d/push-onto :exec :minkeylist)))
+
 
 
 (def tagspace-new
