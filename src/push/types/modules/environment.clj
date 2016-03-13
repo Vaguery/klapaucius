@@ -3,20 +3,11 @@
             [push.types.core :as t]
             [push.instructions.dsl :as d]
             [push.util.stack-manipulation :as u]
-            [push.instructions.aspects :as aspects])
-  )
+            [push.instructions.aspects :as aspects]
+            ))
 
 
-(def environment-new
-  (core/build-instruction
-    environment-new
-    "`environment-new` pops the top `:exec` item, archives all the remaining current stacks to a new :environment item, and then continues with only the popped item in place of the archived `:exec` stack, and an empty `:return` stack."
-    :tags #{:complex :base}
-    (d/consume-top-of :exec :as :run-this)
-    (d/archive-all-stacks)
-    (d/delete-stack :return)
-    (d/delete-stack :exec)
-    (d/push-onto :exec :run-this)))
+;; INSTRUCTIONS
 
 
 (def environment-begin
@@ -29,6 +20,7 @@
     (d/archive-all-stacks)
     (d/delete-stack :return)
     (d/replace-stack :exec :old-exec)))
+
 
 
 (def environment-end
@@ -47,12 +39,24 @@
 
 
 
+(def environment-new
+  (core/build-instruction
+    environment-new
+    "`environment-new` pops the top `:exec` item, archives all the remaining current stacks to a new :environment item, and then continues with only the popped item in place of the archived `:exec` stack, and an empty `:return` stack."
+    :tags #{:complex :base}
+    (d/consume-top-of :exec :as :run-this)
+    (d/archive-all-stacks)
+    (d/delete-stack :return)
+    (d/delete-stack :exec)
+    (d/push-onto :exec :run-this)))
+
+
 (def environment-module
   ( ->  (t/make-module  :environment
                         :attributes #{:complex :base})
         aspects/make-visible
-        (t/attach-instruction , environment-new)
         (t/attach-instruction , environment-begin)
         (t/attach-instruction , environment-end)
+        (t/attach-instruction , environment-new)
 ))
 

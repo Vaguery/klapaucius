@@ -1,4 +1,4 @@
-(ns push.types.extra.vectorized
+(ns push.types.type.vectorized
   (:require [push.instructions.core :as core]
             [push.types.core :as t]
             [push.instructions.dsl]
@@ -7,7 +7,7 @@
             ))
 
 
-;; helper
+;; SUPPORT
 
 
 (defn replacefirst
@@ -19,7 +19,16 @@
     (into [] (concat front new-tail))))
 
 
-;; instructions
+
+(defn vector-of-type?
+  [item type]
+  (let [checker (:recognizer type)]
+    (and  (vector? item)
+          (boolean (seq item))
+          (every? #(checker %) item))))
+
+
+;; EXTERNAL TYPES
 
 
 (defn x-build-instruction
@@ -42,26 +51,6 @@
       `(push.instructions.dsl/push-onto ~typename :new-vector)))))
 
 
-(defn x-do*each-instruction
-  ;; NOTE as a side-effect of the continuation form, there will be an empty vector at the end of the iteration; this will be sent to the :vector stack or the :unknown stack by the router, depending on what types are registered
-  [typename]
-  (let [instruction-name (str (name typename) "-do*each")]
-    (eval (list
-      'push.instructions.core/build-instruction
-      instruction-name
-      (str "`" typename "-do*each` pops the top `" typename "` item and the top of the `:exec` stack, and pushes this continuation form to `:exec`: `([first vector] [exec item] [rest vector] " instruction-name " [exec item])`.")
-      :tags #{:vector}
-      `(push.instructions.dsl/consume-top-of ~typename :as :arg)
-      `(push.instructions.dsl/consume-top-of :exec :as :actor)
-      `(push.instructions.dsl/calculate [:arg :actor]
-          #(list (or (first %1) '())
-                 %2
-                 (into [] (rest %1))
-                 (keyword ~instruction-name)
-                 %2)
-          :as :continuation)
-      `(push.instructions.dsl/push-onto :exec :continuation)))))
-
 
 (defn x-butlast-instruction
   [typename]
@@ -74,80 +63,6 @@
       `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
       '(push.instructions.dsl/calculate [:arg1] #(into [] (butlast %1)) :as :most)
       `(push.instructions.dsl/push-onto ~typename :most)))))
-
-
-(defn x-concat-instruction
-  [typename]
-  (let [instruction-name (str (name typename) "-concat")]
-    (eval (list
-      'push.instructions.core/build-instruction
-      instruction-name
-      (str "`" typename "-concat` pops the top two `" typename "` items and pushes the the concatenation of the top one onto the second one.")
-      :tags #{:vector}
-      `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
-      `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
-      '(push.instructions.dsl/calculate [:arg1 :arg2]
-          #(into [] (concat %1 %2)) :as :concatted)
-      '(push.instructions.dsl/save-max-collection-size :as :limit)
-      `(push.instructions.dsl/calculate [:concatted :limit] #(if (< (count %1) %2) %1 nil) :as :result)
-      `(push.instructions.dsl/push-onto ~typename :result)))))
-
-
-(defn x-conj-instruction
-  [typename rootname]
-  (let [instruction-name (str (name typename) "-conj")]
-    (eval (list
-      'push.instructions.core/build-instruction
-      instruction-name
-      (str "`" typename "-conj` pops the top `" typename "` item and the top `" rootname "` item, and appends the latter to the former, pushing the result.")
-      :tags #{:vector}
-      `(push.instructions.dsl/consume-top-of ~rootname :as :arg2)
-      `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
-      '(push.instructions.dsl/calculate [:arg1 :arg2]
-          #(conj %1 %2) :as :conjed)
-      `(push.instructions.dsl/push-onto ~typename :conjed)))))
-
-
-(defn x-contains?-instruction
-  [typename rootname]
-  (let [instruction-name (str (name typename) "-contains?")]
-    (eval (list
-      'push.instructions.core/build-instruction
-      instruction-name
-      (str "`" typename "-contains?` pops the top `" typename "` item and the top `" rootname "` item, and pushes `true` to the `:boolean` stack if the latter is present in the former.")
-      :tags #{:vector}
-      `(push.instructions.dsl/consume-top-of ~rootname :as :arg2)
-      `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
-      '(push.instructions.dsl/calculate [:arg1 :arg2]
-          #(boolean (some (fn [i] (= i %2)) %1)) :as :found)
-      `(push.instructions.dsl/push-onto :boolean :found)))))
-
-
-
-(defn x-emptyitem?-instruction
-  [typename]
-  (let [instruction-name (str (name typename) "-emptyitem?")]
-    (eval (list
-      'push.instructions.core/build-instruction
-      instruction-name
-      (str "`" typename "-emptyitem?` pops the top `" typename "` item and pushes `true` to the `:boolean` stack if it's empty.")
-      :tags #{:vector}
-      `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
-      '(push.instructions.dsl/calculate [:arg1] #(boolean (empty? %1)) :as :empty)
-      '(push.instructions.dsl/push-onto :boolean :empty)))))
-
-
-(defn x-first-instruction
-  [typename rootname]
-  (let [instruction-name (str (name typename) "-first")]
-    (eval (list
-      'push.instructions.core/build-instruction
-      instruction-name
-      (str "`" typename "-first` pops the top `" typename "` item and pushes the first element to the `" rootname "` stack (or nothing, if it's empty).")
-      :tags #{:vector}
-      `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
-      '(push.instructions.dsl/calculate [:arg1] #(first %1) :as :top)
-      `(push.instructions.dsl/push-onto ~rootname :top)))))
 
 
 
@@ -173,6 +88,105 @@
 
 
 
+(defn x-concat-instruction
+  [typename]
+  (let [instruction-name (str (name typename) "-concat")]
+    (eval (list
+      'push.instructions.core/build-instruction
+      instruction-name
+      (str "`" typename "-concat` pops the top two `" typename "` items and pushes the the concatenation of the top one onto the second one.")
+      :tags #{:vector}
+      `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
+      `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
+      '(push.instructions.dsl/calculate [:arg1 :arg2]
+          #(into [] (concat %1 %2)) :as :concatted)
+      '(push.instructions.dsl/save-max-collection-size :as :limit)
+      `(push.instructions.dsl/calculate [:concatted :limit] #(if (< (count %1) %2) %1 nil) :as :result)
+      `(push.instructions.dsl/push-onto ~typename :result)))))
+
+
+
+(defn x-conj-instruction
+  [typename rootname]
+  (let [instruction-name (str (name typename) "-conj")]
+    (eval (list
+      'push.instructions.core/build-instruction
+      instruction-name
+      (str "`" typename "-conj` pops the top `" typename "` item and the top `" rootname "` item, and appends the latter to the former, pushing the result.")
+      :tags #{:vector}
+      `(push.instructions.dsl/consume-top-of ~rootname :as :arg2)
+      `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
+      '(push.instructions.dsl/calculate [:arg1 :arg2]
+          #(conj %1 %2) :as :conjed)
+      `(push.instructions.dsl/push-onto ~typename :conjed)))))
+
+
+
+(defn x-contains?-instruction
+  [typename rootname]
+  (let [instruction-name (str (name typename) "-contains?")]
+    (eval (list
+      'push.instructions.core/build-instruction
+      instruction-name
+      (str "`" typename "-contains?` pops the top `" typename "` item and the top `" rootname "` item, and pushes `true` to the `:boolean` stack if the latter is present in the former.")
+      :tags #{:vector}
+      `(push.instructions.dsl/consume-top-of ~rootname :as :arg2)
+      `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
+      '(push.instructions.dsl/calculate [:arg1 :arg2]
+          #(boolean (some (fn [i] (= i %2)) %1)) :as :found)
+      `(push.instructions.dsl/push-onto :boolean :found)))))
+
+
+
+(defn x-do*each-instruction
+  [typename]
+  (let [instruction-name (str (name typename) "-do*each")]
+    (eval (list
+      'push.instructions.core/build-instruction
+      instruction-name
+      (str "`" typename "-do*each` pops the top `" typename "` item and the top of the `:exec` stack, and pushes this continuation form to `:exec`: `([first vector] [exec item] [rest vector] " instruction-name " [exec item])`.")
+      :tags #{:vector}
+      `(push.instructions.dsl/consume-top-of ~typename :as :arg)
+      `(push.instructions.dsl/consume-top-of :exec :as :actor)
+      `(push.instructions.dsl/calculate [:arg :actor]
+          #(list (or (first %1) '())
+                 %2
+                 (into [] (rest %1))
+                 (keyword ~instruction-name)
+                 %2)
+          :as :continuation)
+      `(push.instructions.dsl/push-onto :exec :continuation)))))
+
+
+
+(defn x-emptyitem?-instruction
+  [typename]
+  (let [instruction-name (str (name typename) "-emptyitem?")]
+    (eval (list
+      'push.instructions.core/build-instruction
+      instruction-name
+      (str "`" typename "-emptyitem?` pops the top `" typename "` item and pushes `true` to the `:boolean` stack if it's empty.")
+      :tags #{:vector}
+      `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
+      '(push.instructions.dsl/calculate [:arg1] #(boolean (empty? %1)) :as :empty)
+      '(push.instructions.dsl/push-onto :boolean :empty)))))
+
+
+
+(defn x-first-instruction
+  [typename rootname]
+  (let [instruction-name (str (name typename) "-first")]
+    (eval (list
+      'push.instructions.core/build-instruction
+      instruction-name
+      (str "`" typename "-first` pops the top `" typename "` item and pushes the first element to the `" rootname "` stack (or nothing, if it's empty).")
+      :tags #{:vector}
+      `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
+      '(push.instructions.dsl/calculate [:arg1] #(first %1) :as :top)
+      `(push.instructions.dsl/push-onto ~rootname :top)))))
+
+
+
 (defn x-generalize-instruction
   [typename]
   (let [instruction-name (str (name typename) "-generalize")]
@@ -183,6 +197,7 @@
       :tags #{:vector}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg)
       `(push.instructions.dsl/push-onto :vector :arg)))))
+
 
 
 (defn x-generalizeall-instruction
@@ -200,6 +215,7 @@
       `(push.instructions.dsl/replace-stack :vector :new-vectors)))))
 
 
+
 (defn x-indexof-instruction
   [typename rootname]
   (let [instruction-name (str (name typename) "-indexof")]
@@ -215,6 +231,7 @@
       `(push.instructions.dsl/push-onto :integer :where)))))
 
 
+
 (defn x-last-instruction
   [typename rootname]
   (let [instruction-name (str (name typename) "-last")]
@@ -226,6 +243,7 @@
       `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
       '(push.instructions.dsl/calculate [:arg1] #(last %1) :as :tail)
       `(push.instructions.dsl/push-onto ~rootname :tail)))))
+
 
 
 (defn x-length-instruction
@@ -241,6 +259,7 @@
       `(push.instructions.dsl/push-onto :integer :len)))))
 
 
+
 (defn x-new-instruction
   [typename]
   (let [instruction-name (str (name typename) "-new")]
@@ -251,6 +270,7 @@
       :tags #{:vector}
       `(push.instructions.dsl/calculate [] (fn [] (vector)) :as :nuttin)
       `(push.instructions.dsl/push-onto ~typename :nuttin)))))
+
 
 
 (defn x-nth-instruction
@@ -371,6 +391,7 @@
       `(push.instructions.dsl/push-onto ~typename :end)))))
 
 
+
 (defn x-reverse-instruction
   [typename]
   (let [instruction-name (str (name typename) "-reverse")]
@@ -382,6 +403,7 @@
       `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
       '(push.instructions.dsl/calculate [:arg1] #(into [] (reverse %1)) :as :bw)
       `(push.instructions.dsl/push-onto ~typename :bw)))))
+
 
 
 (defn x-set-instruction
@@ -400,6 +422,7 @@
       `(push.instructions.dsl/calculate 
         [:arg :idx :subst] #(if (empty? %1) %1 (into [] (assoc %1 %2 %3))) :as :result)
       `(push.instructions.dsl/push-onto ~typename :result)))))
+
 
 
 (defn x-shatter-instruction  ;; was -pushall
@@ -435,13 +458,6 @@
       `(push.instructions.dsl/push-onto ~typename :result)))))
 
 
-(defn vector-of-type?
-  [item type]
-  (let [checker (:recognizer type)]
-    (and  (vector? item)
-          (boolean (seq item))
-          (every? #(checker %) item))))
-
 
 (defn build-vectorized-type
   "creates a vector [sub]type for another Push type"
@@ -461,17 +477,17 @@
           aspects/make-storable
           aspects/make-taggable
           aspects/make-visible
-          (t/attach-instruction , (x-butlast-instruction typename))
           (t/attach-instruction , (x-build-instruction typename rootname))
+          (t/attach-instruction , (x-butlast-instruction typename))
+          (t/attach-instruction , (x-byexample-instruction typename rootname))
           (t/attach-instruction , (x-concat-instruction typename))
           (t/attach-instruction , (x-conj-instruction typename rootname))
           (t/attach-instruction , (x-contains?-instruction typename rootname))
           (t/attach-instruction , (x-do*each-instruction typename))
           (t/attach-instruction , (x-emptyitem?-instruction typename))
+          (t/attach-instruction , (x-first-instruction typename rootname))
           (t/attach-instruction , (x-generalize-instruction typename))
           (t/attach-instruction , (x-generalizeall-instruction typename))
-          (t/attach-instruction , (x-first-instruction typename rootname))
-          (t/attach-instruction , (x-byexample-instruction typename rootname))
           (t/attach-instruction , (x-indexof-instruction typename rootname))
           (t/attach-instruction , (x-last-instruction typename rootname))
           (t/attach-instruction , (x-length-instruction typename))

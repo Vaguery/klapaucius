@@ -81,7 +81,7 @@
       `(push.instructions.dsl/consume-top-of ~typename :as :arg)
       `(push.instructions.dsl/save-max-collection-size :as :limit)
       `(push.instructions.dsl/calculate [:arg :limit]
-          #(push.types.extra.generator/make-generator
+          #(push.types.type.generator/make-generator
               (if (< (wrangling/count-collection-points %1) %2)
                 (dissect-collection %)
                 nil)
@@ -102,7 +102,7 @@
       :tags #{:generator :cycling}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg)
       `(push.instructions.dsl/calculate [:arg]
-          #(push.types.extra.generator/make-generator
+          #(push.types.type.generator/make-generator
               (cycle-collection %)
               (partial cycle-step)) :as :g)
       `(push.instructions.dsl/push-onto :generator :g)))))
@@ -121,7 +121,7 @@
       :tags #{:generator :random}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg)
       `(push.instructions.dsl/calculate [:arg]
-          #(push.types.extra.generator/make-generator
+          #(push.types.type.generator/make-generator
               (if (splittable? %1) (rand-nth (seq %1)) nil)
               (rand-nth-seq-function %1)
               (if (splittable? %1) (rand-nth (seq %1)) nil)) :as :g)
@@ -143,7 +143,7 @@
       :tags #{:generator :repeatable}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg)
       `(push.instructions.dsl/calculate [:arg]
-          #(push.types.extra.generator/make-generator %1 (partial (constantly %1))) :as :g)
+          #(push.types.type.generator/make-generator %1 (partial (constantly %1))) :as :g)
       `(push.instructions.dsl/push-onto :generator :g)))))
 
 
@@ -161,7 +161,7 @@
       `(push.instructions.dsl/save-stack ~typename :as :all)
       `(push.instructions.dsl/save-max-collection-size :as :limit)
       `(push.instructions.dsl/calculate [:all :limit]
-          #(push.types.extra.generator/make-generator
+          #(push.types.type.generator/make-generator
             (if (< (wrangling/count-collection-points %1) %2) %1 nil)
               (partial (constantly %1))) :as :g)
       `(push.instructions.dsl/push-onto :generator :g)))))
@@ -180,7 +180,7 @@
       :tags #{:generator :cycling}
       `(push.instructions.dsl/save-stack ~typename :as :all)
       `(push.instructions.dsl/calculate [:all]
-          #(push.types.extra.generator/make-generator
+          #(push.types.type.generator/make-generator
               (dissect-collection %)
               (partial dissect-step)) :as :g)
       `(push.instructions.dsl/push-onto :generator :g)))))

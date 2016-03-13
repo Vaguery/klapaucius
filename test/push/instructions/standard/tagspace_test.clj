@@ -3,7 +3,7 @@
             [push.types.core :as t])
   (:use midje.sweet)
   (:use [push.util.test-helpers])
-  (:use [push.types.extra.tagspace])
+  (:use [push.types.type.tagspace])
   (:use [push.instructions.aspects])
   )
 

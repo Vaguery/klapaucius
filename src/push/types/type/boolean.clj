@@ -1,5 +1,5 @@
-(ns push.types.base.boolean
-  (:use push.types.extra.generator)
+(ns push.types.type.boolean
+  (:use push.types.type.generator)
   (:use [push.util.type-checkers :only (boolean?)])
   (:require [push.instructions.aspects :as aspects]
             [push.instructions.core :as core]
@@ -13,12 +13,6 @@
 
 
 (defn xor2 [p q] (or (and p (not q)) (and q (not p))))
-
-
-
-
-
-
 
 
 ;; INSTRUCTIONS

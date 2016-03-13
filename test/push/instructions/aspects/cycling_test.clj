@@ -5,7 +5,7 @@
   (:use push.util.stack-manipulation)
   (:use push.types.core)
   (:use push.instructions.aspects)
-  (:use push.types.base.integer)
+  (:use push.types.type.integer)
   (:use push.instructions.aspects.repeatable-and-cycling)
   (:use push.types.modules.environment)
   )
@@ -47,18 +47,18 @@
                           :generator))]
       (:state new-g) => '(1 (2 3 4))
       (:origin new-g) => '(1 (2 3 4))
-      (:state (push.types.extra.generator/step-generator new-g)) => '(2 (3 4))
-      (:state (push.types.extra.generator/step-generator
-                (push.types.extra.generator/step-generator new-g))) => '(3 (4))
-      (:state (push.types.extra.generator/step-generator
-                (push.types.extra.generator/step-generator
-                  (push.types.extra.generator/step-generator new-g)))) => '(4 ())
+      (:state (push.types.type.generator/step-generator new-g)) => '(2 (3 4))
+      (:state (push.types.type.generator/step-generator
+                (push.types.type.generator/step-generator new-g))) => '(3 (4))
+      (:state (push.types.type.generator/step-generator
+                (push.types.type.generator/step-generator
+                  (push.types.type.generator/step-generator new-g)))) => '(4 ())
 
       ;; it eventually dies
-      (push.types.extra.generator/step-generator
-                (push.types.extra.generator/step-generator
-                  (push.types.extra.generator/step-generator
-                    (push.types.extra.generator/step-generator new-g)))) => nil
+      (push.types.type.generator/step-generator
+                (push.types.type.generator/step-generator
+                  (push.types.type.generator/step-generator
+                    (push.types.type.generator/step-generator new-g)))) => nil
       ))) 
 
 
@@ -91,12 +91,12 @@
                           :generator))]
       (:state new-g) => '(\a (\b \c \d \a))
       (:origin new-g) => '(\a (\b \c \d \a))
-      (:state (push.types.extra.generator/step-generator new-g)) => '(\b (\c \d \a \b))
-      (:state (push.types.extra.generator/step-generator
-                (push.types.extra.generator/step-generator new-g))) => '(\c (\d \a \b \c))
-      (:state (push.types.extra.generator/step-generator
-                (push.types.extra.generator/step-generator
-                  (push.types.extra.generator/step-generator new-g)))) => '(\d (\a \b \c \d))
+      (:state (push.types.type.generator/step-generator new-g)) => '(\b (\c \d \a \b))
+      (:state (push.types.type.generator/step-generator
+                (push.types.type.generator/step-generator new-g))) => '(\c (\d \a \b \c))
+      (:state (push.types.type.generator/step-generator
+                (push.types.type.generator/step-generator
+                  (push.types.type.generator/step-generator new-g)))) => '(\d (\a \b \c \d))
       )
 
     (let [new-g (first (get-stack
@@ -149,13 +149,13 @@
                             :generator))]
         (:state new-g) => \X
         (:origin new-g) => \Y
-        (:state (push.types.extra.generator/step-generator new-g)) => \Z
+        (:state (push.types.type.generator/step-generator new-g)) => \Z
           
-        (:state (push.types.extra.generator/step-generator
-                  (push.types.extra.generator/step-generator new-g))) => \X 
-        (:state (push.types.extra.generator/step-generator
-                  (push.types.extra.generator/step-generator
-                    (push.types.extra.generator/step-generator new-g)))) => \W
+        (:state (push.types.type.generator/step-generator
+                  (push.types.type.generator/step-generator new-g))) => \X 
+        (:state (push.types.type.generator/step-generator
+                  (push.types.type.generator/step-generator
+                    (push.types.type.generator/step-generator new-g)))) => \W
         ))
 
     (let [new-g (first (get-stack

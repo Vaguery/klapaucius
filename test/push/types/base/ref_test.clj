@@ -1,7 +1,7 @@
 (ns push.types.base.ref_test
   (:use midje.sweet)
   (:use [push.util.test-helpers])
-  (:use [push.types.base.ref])
+  (:use [push.types.type.ref])
   )
 
 

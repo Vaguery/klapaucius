@@ -2,7 +2,7 @@
   (:use midje.sweet)
   (:use [push.util.test-helpers])
   (:use [push.util.type-checkers :only (boolean?)])
-  (:use [push.types.base.boolean])
+  (:use [push.types.type.boolean])
   )
 
 

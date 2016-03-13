@@ -2,8 +2,11 @@
   (:require [push.instructions.core :as core]
             [push.types.core :as t]
             [push.instructions.dsl :as d]
-            [push.instructions.aspects :as aspects])
-  )
+            [push.instructions.aspects :as aspects]
+            ))
+
+
+;; INSTRUCTIONS
 
 
 (def print-newline
@@ -15,6 +18,7 @@
     (d/push-onto :print :newline)))
 
 
+
 (def print-space
   (core/build-instruction
     print-space
@@ -22,6 +26,7 @@
     :tags #{:print :io :base}
     (d/calculate [] (fn [] \space) :as :space)
     (d/push-onto :print :space)))
+
 
 
 (def print-module

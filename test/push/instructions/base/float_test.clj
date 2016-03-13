@@ -2,7 +2,7 @@
   (:require [push.interpreter.core :as i])
   (:use midje.sweet)
   (:use [push.util.test-helpers])
-  (:use [push.types.base.float])            ;; sets up float-type
+  (:use [push.types.type.float])            ;; sets up float-type
   )
 
 

@@ -1,4 +1,4 @@
-(ns push.types.base.integer
+(ns push.types.type.integer
   (:require [push.instructions.core :as core]
             [push.types.core :as t]
             [push.instructions.dsl :as d]

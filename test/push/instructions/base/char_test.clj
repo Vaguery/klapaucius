@@ -2,7 +2,7 @@
   (:require [push.interpreter.core :as i])
   (:use midje.sweet)
   (:use [push.util.test-helpers])
-  (:use [push.types.base.char])  ;; sets up char-type
+  (:use [push.types.type.char])  ;; sets up char-type
   )
 
 ;; quotable

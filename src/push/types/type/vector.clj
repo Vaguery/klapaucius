@@ -1,9 +1,9 @@
-(ns push.types.extra.vector
+(ns push.types.type.vector
   (:require [push.instructions.core :as core]
             [push.types.core :as t]
             [push.instructions.dsl :as d]
             [push.instructions.aspects :as aspects]
-            [push.types.extra.vectorized :as v]
+            [push.types.type.vectorized :as v]
             ))
 
 
@@ -17,6 +17,7 @@
     (d/push-onto :exec :arg)))
 
 
+
 (def vector-refilterall
   (core/build-instruction
     vector-refilterall
@@ -27,6 +28,7 @@
     (d/calculate [:stack :old-exec]
         #(into '() (reverse (concat %1 %2))) :as :new-exec)
     (d/replace-stack :exec :new-exec)))
+
 
 
 (def standard-vector-type

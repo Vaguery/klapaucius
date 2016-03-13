@@ -1,10 +1,43 @@
-(ns push.types.base.string
+(ns push.types.type.string
   (:require [push.instructions.core :as core]
             [push.types.core :as t]
             [push.instructions.dsl :as d]
             [clojure.string :as strings]
-            [push.instructions.aspects :as aspects])
-  )
+            [push.instructions.aspects :as aspects]
+            ))
+
+
+;; SUPPORT
+
+
+
+(defn explosive-replacement?
+  "takes three strings: `before`, `after` and `pattern`. Returns `true` if there are more copies of `pattern` in `after` than in `before`"
+  [before after pattern]
+  (< (count (re-seq (re-pattern pattern) before))
+     (count (re-seq (re-pattern pattern) after))))
+
+
+
+(def regex-char-esc-smap
+  "cadged from http://stackoverflow.com/questions/11671898/escaping-brackets-in-clojure"
+  (let [esc-chars (str "()*&^%$#!{}+[]|~.?\\")]
+    (zipmap esc-chars
+            (map #(str "\\" %) esc-chars))))
+
+
+(defn str-to-pattern
+  "takes a string, escapes characters that would disqualify it from being a pattern, and returns a pattern"
+  [string]
+  (->> string
+       (replace regex-char-esc-smap)
+       (strings/join)
+       re-pattern))
+
+
+
+;; EXTERNAL TYPES
+
 
 
 (defn simple-item-to-string-instruction
@@ -23,32 +56,17 @@
       '(d/push-onto :string :printed)))))
 
 
-(defn explosive-replacement?
-  "takes three strings: `before`, `after` and `pattern`. Returns `true` if there are more copies of `pattern` in `after` than in `before`"
-  [before after pattern]
-  (< (count (re-seq (re-pattern pattern) before))
-     (count (re-seq (re-pattern pattern) after))))
+
+;; INSTRUCTIONS
 
 
-;;;;;;;;;;;;
+(def boolean->string (simple-item-to-string-instruction :boolean))
+(def char->string    (simple-item-to-string-instruction :char   ))
+(def code->string    (simple-item-to-string-instruction :code   ))
+(def exec->string    (simple-item-to-string-instruction :exec   ))
+(def float->string   (simple-item-to-string-instruction :float  ))
+(def integer->string (simple-item-to-string-instruction :integer))
 
-;; utilities (cadged from 
-;;   http://stackoverflow.com/questions/11671898/escaping-brackets-in-clojure)
-
-(def regex-char-esc-smap
-  (let [esc-chars (str "()*&^%$#!{}+[]|~.?\\")]
-    (zipmap esc-chars
-            (map #(str "\\" %) esc-chars))))
-
-
-(defn str-to-pattern
-  [string]
-  (->> string
-       (replace regex-char-esc-smap)
-       (strings/join)
-       re-pattern))
-
-;;;;;;;;;;;;
 
 
 (def exec-string-iterate
@@ -71,6 +89,13 @@
     (d/push-onto :exec :continuation)))
 
 
+
+(def string-butlast (t/simple-1-in-1-out-instruction
+  "`:string-butlast` returns the top `:string` item lacking its last character"
+    :string "butlast" #(clojure.string/join (butlast %1))))
+
+
+
 (def string-concat
   (core/build-instruction
     string-concat
@@ -86,6 +111,7 @@
     (d/push-onto :string :result)))
 
 
+
 (def string-conjchar
   (core/build-instruction
     string-conjchar
@@ -96,10 +122,6 @@
     (d/calculate [:s :c] #(strings/join (list %1 (str %2))) :as :longer)
     (d/push-onto :string :longer)))
 
-
-(def string-butlast (t/simple-1-in-1-out-instruction
-  "`:string-butlast` returns the top `:string` item lacking its last character"
-    :string "butlast" #(clojure.string/join (butlast %1))))
 
 
 (def string-contains?
@@ -132,6 +154,7 @@
   :string "emptystring?" empty?))
 
 
+
 (def string-first
   (core/build-instruction
     string-first
@@ -141,13 +164,6 @@
     (d/calculate [:arg1] #(first %1) :as :c)
     (d/push-onto :char :c)))
 
-
-(def boolean->string (simple-item-to-string-instruction :boolean))
-(def char->string    (simple-item-to-string-instruction :char   ))
-(def code->string    (simple-item-to-string-instruction :code   ))
-(def exec->string    (simple-item-to-string-instruction :exec   ))
-(def float->string   (simple-item-to-string-instruction :float  ))
-(def integer->string (simple-item-to-string-instruction :integer))
 
 
 (def string-indexofchar
@@ -161,6 +177,7 @@
     (d/push-onto :integer :where)))
 
 
+
 (def string-last
   (core/build-instruction
     string-last
@@ -171,6 +188,7 @@
     (d/push-onto :char :c)))
 
 
+
 (def string-length
   (core/build-instruction
     string-length
@@ -179,6 +197,7 @@
     (d/consume-top-of :string :as :arg1)
     (d/calculate [:arg1] #(count %1) :as :len)
     (d/push-onto :integer :len)))
+
 
 
 (def string-nth
@@ -193,6 +212,7 @@
     (d/push-onto :char :result)))
 
 
+
 (def string-occurrencesofchar
   (core/build-instruction
     string-occurrencesofchar
@@ -204,6 +224,7 @@
     (d/push-onto :integer :count)))
 
 
+
 (def string-removechar
   (core/build-instruction
     string-removechar
@@ -213,6 +234,7 @@
     (d/consume-top-of :char :as :c)
     (d/calculate [:s :c] #(clojure.string/join (remove #{%2} %1)) :as :gone)
     (d/push-onto :string :gone)))
+
 
 
 (def string-replace
@@ -229,6 +251,7 @@
     (d/push-onto :string :result)))
 
 
+
 (def string-replacechar
   (core/build-instruction
     string-replacechar
@@ -239,6 +262,7 @@
     (d/consume-top-of :char :as :c2)
     (d/calculate [:s :c1 :c2] #(strings/replace %1 %2 %3) :as :different)
     (d/push-onto :string :different)))
+
 
 
 (def string-replacefirst
@@ -253,6 +277,7 @@
     (d/push-onto :string :different)))
 
 
+
 (def string-replacefirstchar
   (core/build-instruction
     string-replacefirstchar
@@ -265,14 +290,17 @@
     (d/push-onto :string :different)))
 
 
+
 (def string-rest (t/simple-1-in-1-out-instruction
   "`:string-rest` returns the top `:string` item, lacking its first character"
   :string "rest" #(clojure.string/join (rest %1))))
 
 
+
 (def string-reverse (t/simple-1-in-1-out-instruction
   "`:string-reverse` returns the top `:string` item with its characters reversed"
   :string "reverse" 'strings/reverse))
+
 
 
 (def string-setchar
@@ -301,9 +329,11 @@
     (d/replace-stack :string :new)))
 
 
+
 (def string-solid? (t/simple-1-in-predicate
     "`:string-solid? pushes `true` if the top `:string` contains no whitespace"
     :string "solid?" #(boolean (re-matches #"\S+" %1))))
+
 
 
 (def string-splitonspaces
@@ -318,9 +348,11 @@
     (d/replace-stack :string :new)))
 
 
+
 (def string-spacey? (t/simple-1-in-predicate
   "`:string-spacey? pushes `true` if the top `:string` has any whitespace"
   :string "spacey?" #(boolean (re-matches #"\s+" %1))))
+
 
 
 (def string-substring
@@ -366,7 +398,13 @@
         aspects/make-storable
         aspects/make-taggable
         aspects/make-visible 
+        (t/attach-instruction , boolean->string)
+        (t/attach-instruction , char->string)
+        (t/attach-instruction , code->string)
+        (t/attach-instruction , exec->string)
         (t/attach-instruction , exec-string-iterate)
+        (t/attach-instruction , float->string)
+        (t/attach-instruction , integer->string)
         (t/attach-instruction , string-butlast)
         (t/attach-instruction , string-concat)
         (t/attach-instruction , string-conjchar)
@@ -374,12 +412,6 @@
         (t/attach-instruction , string-containschar?)
         (t/attach-instruction , string-emptystring?)
         (t/attach-instruction , string-first)
-        (t/attach-instruction , boolean->string)
-        (t/attach-instruction , char->string)
-        (t/attach-instruction , code->string)
-        (t/attach-instruction , exec->string)
-        (t/attach-instruction , integer->string)
-        (t/attach-instruction , float->string)
         (t/attach-instruction , string-indexofchar)
         (t/attach-instruction , string-last)
         (t/attach-instruction , string-length)

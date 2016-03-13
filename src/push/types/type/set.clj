@@ -1,9 +1,10 @@
-(ns push.types.extra.set
+(ns push.types.type.set
   (:require [push.instructions.core :as core]
             [push.types.core :as t]
             [push.instructions.dsl :as d]
             [push.instructions.aspects :as aspects]
             [clojure.set :as sets])
+  (:use push.types.type.generator)
   )
 
 (def code->set

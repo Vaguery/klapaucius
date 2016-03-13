@@ -3,7 +3,7 @@
   (:use midje.sweet)
   (:use [push.util.test-helpers])
   (:use push.util.exotics)
-  (:use push.types.base.boolean)  ;; sets up boolean-type
+  (:use push.types.type.boolean)  ;; sets up boolean-type
   )
 
 

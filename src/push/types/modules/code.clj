@@ -8,10 +8,7 @@
             ))
 
 
-;; code-specific instructions
-
-; code_discrepancy
-; code_overlap
+;; INSTRUCTIONS
 
 
 (def code-append
@@ -29,10 +26,12 @@
     (d/push-onto :code :result)))
 
 
+
 (def code-atom?
   (t/simple-1-in-predicate
     "`:code-atom?` pushes `true` if the top `:code` item is not a collection"
       :code "atom?" #(not (coll? %1))))
+
 
 
 (def code-cons 
@@ -50,9 +49,11 @@
     (d/push-onto :code :result)))
 
 
+
 (def code-container (t/simple-2-in-1-out-instruction
   "`:code-container` pops the top two `:code` items. It performs a depth-first traversal of the second code item (if it is a list or not), looking for duplicates of the first item. If it finds one, then the _parent_ node of the tree is returned as a list. If the item is not found, or there is no parent (the two items are identical), there is no return value."
   :code "container" #(first (u/containers-in %1 %2))))
+
 
 
 (def code-contains?
@@ -64,6 +65,7 @@
     (d/consume-top-of :code :as :arg1)
     (d/calculate [:arg1 :arg2] #(u/contains-anywhere? %1 %2) :as :found)
     (d/push-onto :boolean :found)))
+
 
 
 (def code-do
@@ -78,6 +80,7 @@
     (d/push-onto :exec :continuation)))
 
 
+
 (def code-do*
   (core/build-instruction
     code-do*
@@ -85,6 +88,7 @@
     :tags #{:complex :base}
     (d/consume-top-of :code :as :do-this)
     (d/push-onto :exec :do-this)))
+
 
 
 (def code-do*count
@@ -106,6 +110,7 @@
         (list %2 0 :code-quote %1 :code-do*range) 
         (list %2 :code-quote %1)) :as :continuation)
     (d/push-onto :exec :continuation)))
+
 
 
 (def code-do*range
@@ -132,6 +137,7 @@
     (d/push-onto :exec :continuation)))
 
 
+
 (def code-do*times
   (core/build-instruction
     code-do*times
@@ -152,6 +158,7 @@
            %1
            (list %1 (list %3 :code-quote %1 :code-do*times))) :as :continuation)
     (d/push-onto :exec :continuation)))
+
 
 
 (def code-drop               ;; Clojush: code-nthcdr
@@ -181,9 +188,11 @@
     (d/push-onto :code :result)))
 
 
+
 (def code-first (t/simple-1-in-1-out-instruction 
   "`:code-first` examines the top `:code` item to determine if it's a code block (not a vector, map, record or other collection type!) If it is, the function returns its first item, otherwise the item itself it returned."
   :code "first" #(if (seq? %) (first %) %)))
+
 
 
 (def code-if
@@ -196,6 +205,7 @@
     (d/consume-top-of :boolean :as :which)
     (d/calculate [:which :arg1 :arg2] #(if %1 %2 %3) :as :that)
     (d/push-onto :exec :that)))
+
 
 
 (def code-insert
@@ -214,6 +224,7 @@
     (d/push-onto :code :result)))
 
 
+
 (def code-length
   (core/build-instruction
     code-length
@@ -222,6 +233,7 @@
     (d/consume-top-of :code :as :arg)
     (d/calculate [:arg] #(if (coll? %1) (count %1) 1) :as :len)
     (d/push-onto :integer :len)))
+
 
 
 (def code-list
@@ -236,6 +248,7 @@
     (d/calculate [:both :limit]
       #(if (< (u/count-code-points %1) %2) %1 nil) :as :result)
     (d/push-onto :code :result)))
+
 
 
 (def code-map
@@ -301,11 +314,13 @@
     (d/push-onto :boolean :present)))
 
 
+
 (def code-noop
   (core/build-instruction
     code-noop
     "`:code-noop` has no effect on the stacks."
     :tags #{:complex :base}))
+
 
 
 (def code-nth
@@ -321,9 +336,11 @@
     (d/push-onto :code :result)))
 
 
+
 (def code-null? (t/simple-1-in-predicate
   "`:code-null?` pushes `true` if the top `:code` item is an empty collection"
   :code "null?" #(and (coll? %) (empty? %))))
+
 
 
 (def code-points
@@ -334,6 +351,7 @@
     (d/consume-top-of :code :as :arg1)
     (d/calculate [:arg1] #(u/count-code-points %1) :as :size)
     (d/push-onto :integer :size)))
+
 
 
 (def code-position
@@ -348,6 +366,7 @@
     (d/push-onto :integer :idx)))
 
 
+
 (def code-quote
   (core/build-instruction
     code-quote
@@ -357,11 +376,13 @@
     (d/push-onto :code :arg1)))
 
 
+
 (def code-rest (t/simple-1-in-1-out-instruction
   "`:code-rest` examines the top `:code` item; if it's a Collection, it removes
   the first item and returns the reduced list; if it's not a Collection, it returns
   the original item"
   :code "rest" #(if (coll? %1) (rest %1) (list))))
+
 
 
 (def code-size
@@ -372,6 +393,7 @@
     (d/consume-top-of :code :as :arg1)
     (d/calculate [:arg1] #(u/count-collection-points %1) :as :size)
     (d/push-onto :integer :size)))
+
 
 
 (def code-subst
@@ -388,9 +410,11 @@
     (d/push-onto :code :result)))
 
 
+
 (def code-wrap (t/simple-1-in-1-out-instruction
   "`:code-wrap` puts the top item on the `:code` stack into a one-element list"
   :code "wrap" #(list %1)))
+
 
 
 (def code-return
@@ -401,8 +425,6 @@
     (d/consume-top-of :code :as :arg)
     (d/calculate [:arg] #(list :code-quote %1) :as :form)
     (d/push-onto :return :form)))
-
-
 
 
 
@@ -450,4 +472,3 @@
         (t/attach-instruction , code-subst)
         (t/attach-instruction , code-wrap)
         ))
-

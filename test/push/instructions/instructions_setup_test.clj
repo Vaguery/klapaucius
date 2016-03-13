@@ -115,7 +115,7 @@
 
 
 (fact "a generated string-fromX instruction has a reasonable docstring"
-  (:docstring (push.types.base.string/simple-item-to-string-instruction :foo)) =>
+  (:docstring (push.types.type.string/simple-item-to-string-instruction :foo)) =>
     "`:foo->string` pops the top item from the `:foo` stack and converts it to a `:string` (using Clojure's `str` function)")
 
 

@@ -1,10 +1,13 @@
-(ns push.types.extra.generator
+(ns push.types.type.generator
   (:require [push.instructions.core :as core]
             [push.types.core :as t]
             [push.instructions.dsl :as d]
             [push.instructions.aspects :as aspects]
-            [push.util.exotics :as exotics])
-  )
+            [push.util.exotics :as exotics]
+            ))
+
+
+;; SUPPORT
 
 
 (defrecord Generator [state step-function origin])
@@ -20,10 +23,12 @@
     (make-generator state step-function state)))
 
 
+
 (defn generator?
   "Returns `true` if the item is a `:generator`, and `false` otherwise."
   [item]
-  (= (type item) push.types.extra.generator.Generator))
+  (= (type item) push.types.type.generator.Generator))
+
 
 
 (defn step-generator
@@ -34,13 +39,8 @@
     (if (nil? new-value) nil (make-generator new-value gen (:origin g)))))
 
 
-;; instructions
-;; - generator-range
-;; - generator-reset
-;; - generator-totalisticnumbers
 
-
-;; instructions
+;; INSTRUCTIONS
 
 
 (def generator-again
@@ -65,18 +65,6 @@
 
 
 
-(def generator-totalisticint3
-  (core/build-instruction
-    generator-totalisticint3
-    "`:generator-totalisticint3` pops an `:integer` and uses that to create a `:generator` that will cycle through a digitwise totalistic rewrite rule of width 3."
-    :tags #{:generator}
-    (d/consume-top-of :integer :as :arg)
-    (d/calculate [:arg]
-      #(make-generator %1 (fn [x] (exotics/rewrite-digits x 3))) :as :g)
-    (d/push-onto :generator :g)))
-
-
-
 (def generator-jump
   (core/build-instruction
     generator-jump
@@ -89,7 +77,6 @@
         (drop (mod %2 100)
           (iterate (fn [g] (if (nil? g) nil (step-generator g))) %1))) :as :result)
     (d/push-onto :generator :result)))
-
 
 
 
@@ -125,6 +112,18 @@
     (d/consume-top-of :integer :as :arg1)
     (d/consume-top-of :integer :as :arg2)
     (d/calculate [:arg1 :arg2] #(make-generator %2 (partial + %1)) :as :g)
+    (d/push-onto :generator :g)))
+
+
+
+(def generator-totalisticint3
+  (core/build-instruction
+    generator-totalisticint3
+    "`:generator-totalisticint3` pops an `:integer` and uses that to create a `:generator` that will cycle through a digitwise totalistic rewrite rule of width 3."
+    :tags #{:generator}
+    (d/consume-top-of :integer :as :arg)
+    (d/calculate [:arg]
+      #(make-generator %1 (fn [x] (exotics/rewrite-digits x 3))) :as :g)
     (d/push-onto :generator :g)))
 
 

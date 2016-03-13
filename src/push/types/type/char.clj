@@ -1,4 +1,4 @@
-(ns push.types.base.char
+(ns push.types.type.char
   (:require [push.instructions.core :as core]
             [push.types.core :as t]
             [push.instructions.dsl :as d]

@@ -1,12 +1,10 @@
-(ns push.types.base.ref
+(ns push.types.type.ref
   (:require [push.instructions.core :as core]
             [push.types.core :as t]
             [push.instructions.dsl :as d]
-            [push.instructions.aspects :as aspects])
-  )
+            [push.instructions.aspects :as aspects]
+            ))
 
-; - `:x-similar` (return `:set` of :`ref` bindings that hold items of this type only)
-; - `:x-reverselookup` pops top of `:x` stack, checks the current bindings (including `inputs`) and returns the `:ref` key if a match is found
 
 
 (def quote-refs
@@ -94,7 +92,6 @@
   ( ->  (t/make-type    :ref
                         :recognizer keyword?
                         :attributes #{:base})
-
 
         (t/attach-instruction quote-refs)
         (t/attach-instruction unquote-refs)

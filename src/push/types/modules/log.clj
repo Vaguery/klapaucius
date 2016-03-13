@@ -2,8 +2,8 @@
   (:require [push.instructions.core :as core]
             [push.types.core :as t]
             [push.instructions.dsl :as d]
-            [push.instructions.aspects :as aspects])
-  )
+            [push.instructions.aspects :as aspects]
+            ))
 
 
 (def log-module

@@ -1,13 +1,13 @@
 (ns push.interpreter.templates.classic
   (:require [push.interpreter.templates.minimum :as min]
             [push.interpreter.core :as i]
-            [push.types.base.boolean]
-            [push.types.base.char]
+            [push.types.type.boolean]
+            [push.types.type.char]
             [push.types.modules.code]
             [push.types.modules.exec]
-            [push.types.base.float]
-            [push.types.base.integer]
-            [push.types.base.string]
+            [push.types.type.float]
+            [push.types.type.integer]
+            [push.types.type.string]
             [push.types.modules.environment]
             [push.types.modules.print]
             [push.types.modules.log]
@@ -68,11 +68,11 @@
           counter
           done?)
         (i/register-types , (concat
-                              [push.types.base.integer/integer-type
-                               push.types.base.boolean/boolean-type
-                               push.types.base.char/char-type
-                               push.types.base.float/float-type
-                               push.types.base.string/string-type
+                              [push.types.type.integer/integer-type
+                               push.types.type.boolean/boolean-type
+                               push.types.type.char/char-type
+                               push.types.type.float/float-type
+                               push.types.type.string/string-type
                                ]
                                types))
         (i/register-modules , [push.types.modules.exec/exec-module

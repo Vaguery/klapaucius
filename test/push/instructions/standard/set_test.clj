@@ -3,7 +3,7 @@
             [push.types.core :as t])
   (:use midje.sweet)
   (:use [push.util.test-helpers])
-  (:use [push.types.extra.set])
+  (:use [push.types.type.set])
   )
 
 

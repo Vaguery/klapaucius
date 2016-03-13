@@ -1,7 +1,7 @@
 (ns push.types.base.float_test
   (:use midje.sweet)
   (:use [push.util.test-helpers])
-  (:use [push.types.base.float])
+  (:use [push.types.type.float])
   )
 
 

@@ -5,7 +5,7 @@
   (:use push.util.stack-manipulation)
   (:use push.types.core)
   (:use push.instructions.aspects)
-  (:use push.types.base.integer)
+  (:use push.types.type.integer)
   (:use push.instructions.aspects.repeatable-and-cycling)
   (:use push.types.modules.environment)
   )
@@ -45,7 +45,7 @@
                           (i/execute-instruction
                             (i/register-instruction context foo-echo) :foo-echo)
                           :generator))]
-      (push.types.extra.generator/step-generator new-g) => new-g
+      (push.types.type.generator/step-generator new-g) => new-g
 ))) 
 
 
@@ -75,7 +75,7 @@
     (let [stepped (i/execute-instruction
                             (i/register-instruction context foo-echoall) :foo-echoall)
           new-g (first (get-stack stepped :generator))]
-      (push.types.extra.generator/step-generator new-g) => new-g
+      (push.types.type.generator/step-generator new-g) => new-g
 
       (:state new-g) => '(1234 56 (7) [8 9])
 ))) 
@@ -109,7 +109,7 @@
           new-g (first (get-stack stepped :generator))]
 
       (:state new-g) => '(1234 (56 (7) [8 9]))
-      (:state (push.types.extra.generator/step-generator new-g)) => '(56 ((7) [8 9]))
+      (:state (push.types.type.generator/step-generator new-g)) => '(56 ((7) [8 9]))
 
 ))) 
 

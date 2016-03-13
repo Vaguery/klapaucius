@@ -343,27 +343,27 @@
 
 (fact "`classic-interpreter` has `integer-type` registered"
   (:types classy) =>
-    (contains push.types.base.integer/integer-type))
+    (contains push.types.type.integer/integer-type))
 
 
 (fact "`classic-interpreter` has `boolean-type` registered"
   (:types classy) =>
-    (contains push.types.base.boolean/boolean-type))
+    (contains push.types.type.boolean/boolean-type))
 
 
 (fact "`classic-interpreter` has `string-type` registered"
   (:types classy) =>
-    (contains push.types.base.string/string-type))
+    (contains push.types.type.string/string-type))
 
 
 (fact "`classic-interpreter` has `char-type` registered"
   (:types classy) =>
-    (contains push.types.base.char/char-type))
+    (contains push.types.type.char/char-type))
 
 
 (fact "`classic-interpreter` has `float-type` registered"
   (:types classy) =>
-    (contains push.types.base.float/float-type))
+    (contains push.types.type.float/float-type))
 
 
 (fact "`classic-interpreter` has `code-module` registered"

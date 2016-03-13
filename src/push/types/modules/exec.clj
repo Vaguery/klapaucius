@@ -6,6 +6,9 @@
             ))
 
 
+;; INSTRUCTIONS
+
+
 (def exec-do*count
   (core/build-instruction
     exec-do*count
@@ -27,6 +30,7 @@
     (d/push-onto :exec :continuation)))
 
 
+
 (def exec-do*range
   (core/build-instruction
     exec-do*range
@@ -37,7 +41,6 @@
       - `start` = `end`: `'([end] [item])`
 
     This continuation is pushed to the `:exec` stack. "
-
     :tags #{:complex :base}
     (d/consume-top-of :exec :as :do-this)
     (d/consume-top-of :integer :as :end)
@@ -52,6 +55,7 @@
     (d/push-onto :exec :continuation)))
 
 
+
 (def exec-do*times
   (core/build-instruction
     exec-do*times
@@ -62,7 +66,6 @@
       - `start` = `end`: `'[item]` (not in a list)
 
     This continuation is pushed to the `:exec` stack. "
-
     :tags #{:complex :base}
     (d/consume-top-of :exec :as :do-this)
     (d/consume-top-of :integer :as :counter)
@@ -77,12 +80,6 @@
 
 
 
-(def exec-k 
-  (t/simple-2-in-1-out-instruction
-    "`:exec-k` pops the top two `:exec` items, and pushes the top one back onto `:exec` (discarding the second one, in other words)"
-    :exec "k" (fn [a b] b)))
-
-
 (def exec-if
   (core/build-instruction
     exec-if
@@ -93,6 +90,14 @@
     (d/consume-top-of :exec :as :option2)
     (d/calculate [:decider :option1 :option2] #(if %1 %2 %3) :as :result)
     (d/push-onto :exec :result)))
+
+
+
+(def exec-k 
+  (t/simple-2-in-1-out-instruction
+    "`:exec-k` pops the top two `:exec` items, and pushes the top one back onto `:exec` (discarding the second one, in other words)"
+    :exec "k" (fn [a b] b)))
+
 
 
 (def exec-noop
@@ -122,6 +127,7 @@
     (d/push-onto :exec :a)))
 
 
+
 (def exec-when
   (core/build-instruction
     exec-when
@@ -134,6 +140,7 @@
     (d/push-onto :exec :continuation)))
 
 
+
 (def exec-do*while
   (core/build-instruction
     exec-do*while
@@ -142,6 +149,7 @@
     (d/consume-top-of :exec :as :do-this)
     (d/calculate [:do-this] #(list %1 :exec-while %1) :as :continuation)
     (d/push-onto :exec :continuation)))
+
 
 
 (def exec-while
@@ -158,6 +166,7 @@
     (d/push-onto :exec :continuation)))
 
 
+
 (def exec-y
   (core/build-instruction
     exec-y
@@ -166,6 +175,7 @@
     (d/consume-top-of :exec :as :arg)
     (d/calculate [:arg] #(list %1 :exec-y %1) :as :continuation)
     (d/push-onto :exec :continuation)))
+
 
 
 (def exec-module

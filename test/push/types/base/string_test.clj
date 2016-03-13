@@ -1,7 +1,7 @@
 (ns push.types.base.string_test
   (:use midje.sweet)
   (:use [push.util.test-helpers])
-  (:use [push.types.base.string])
+  (:use [push.types.type.string])
   )
 
 

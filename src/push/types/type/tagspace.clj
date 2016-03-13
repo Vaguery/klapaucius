@@ -1,9 +1,12 @@
-(ns push.types.extra.tagspace
+(ns push.types.type.tagspace
   (:require [push.instructions.core :as core]
             [push.types.core :as t]
             [push.instructions.dsl :as d]
             [push.instructions.aspects :as aspects]
             ))
+
+
+;; SUPPORT
 
 
 (defrecord TagSpace [contents])
@@ -19,7 +22,7 @@
 (defn tagspace?
   "Returns `true` if the item is a `:tagspace`, and `false` otherwise."
   [item]
-  (= (type item) push.types.extra.tagspace.TagSpace))
+  (= (type item) push.types.type.tagspace.TagSpace))
 
 
 (defn store-in-tagspace
@@ -38,13 +41,7 @@
       (second (first keepers)))))
 
 
-;; instructions
-
-; - :set->tagspace
-; - :code->tagspace
-; - :binding->tagspace
-; - :vector->tagspace
-; - :tagspace->vectors
+;; INSTRUCTIONS
 
 
 (def tagspace-count
@@ -55,6 +52,7 @@
     (d/consume-top-of :tagspace :as :arg)
     (d/calculate [:arg] #(list (count (:contents %1)) %1) :as :countlist)
     (d/push-onto :exec :countlist)))
+
 
 
 (def tagspace-keys
@@ -92,6 +90,7 @@
       #(remove nil? (map (fn [k] (find-in-tagspace %2 k)) %1)) :as :results)
     (d/push-onto :exec :results)
     (d/push-onto :tagspace :ts)))
+
 
 
 (def tagspace-lookupfloat
@@ -274,7 +273,6 @@
 
 
 
-
 (def tagspace-splitwithint
   (core/build-instruction
     tagspace-splitwithint
@@ -342,4 +340,3 @@
       aspects/make-taggable
       aspects/make-visible 
       )))
-
