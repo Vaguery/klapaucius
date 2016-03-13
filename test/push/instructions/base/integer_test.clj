@@ -118,6 +118,59 @@
     )
 
 
+
+(tabular
+  (fact ":integer-digits pushes a vector of true/false bits"
+    (register-type-and-check-instruction
+        ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items    ?instruction       ?get-stack     ?expected
+    :integer    '(0)        :integer-bits      :exec      '((false false))
+    :integer    '(1)        :integer-bits      :exec      '((true false))
+    :integer    '(3)        :integer-bits      :exec      '((true true))
+    :integer    '(127)      :integer-bits      :exec      '((true true true true true true true))
+    :integer    '(128)      :integer-bits      :exec      '((false false false false
+                                                             false false false true))
+    :integer    '(-128)     :integer-bits      :exec      '((false false false false
+                                                             false false false true))
+    :integer    '(1771277172712712728M)
+                            :integer-bits      :exec      '((false false false true
+                                                             true  false false false
+                                                             false true false true
+                                                             false true false true
+                                                             false false true true
+                                                             false false true false
+                                                             false true true false
+                                                             true true false false
+                                                             false false true false
+                                                             true true false false
+                                                             true true true false
+                                                             true false true true
+                                                             false false true false
+                                                             true false false true
+                                                             false false false true
+                                                             true))
+    :integer    '(-1771277172712712728N)
+                            :integer-bits      :exec      '((false false false true
+                                                             true  false false false
+                                                             false true false true
+                                                             false true false true
+                                                             false false true true
+                                                             false false true false
+                                                             false true true false
+                                                             true true false false
+                                                             false false true false
+                                                             true true false false
+                                                             true true true false
+                                                             true false true true
+                                                             false false true false
+                                                             true false false true
+                                                             false false false true
+                                                             true))
+    )
+
+
+
 (fact "rewrite-digits"
   (rewrite-digits 12345 3) => 69208
   (rewrite-digits 63119988 3) => 5196527

@@ -31,3 +31,26 @@
     (if (neg? number)
       (- as-number)
       as-number)))
+
+
+;; boolean 
+
+
+(defn bit-to-int [b] (if b 1 0))
+
+
+(defn integer-to-truth-table
+  "Takes an integer value and a (positive) number of bits to use, and returns the n-bit truth table in canonical order. If the number of bits is lower than that needed, only the minimum number are returned; no fewer than two bits will ever be returned."
+  [i bits]
+  (let [len       (nth (iterate (partial * 2) 1) bits)
+        seed      (.toString (biginteger i) 2)
+        shortfall (- len (count seed))]
+  (if (and (pos? bits) ((complement neg?) i))
+    (into []
+      (reverse
+        (map 
+          {\0 false \1 true} 
+          (concat 
+            (repeat shortfall \0) 
+            (seq seed)))))
+    (throw (Exception. "integer-to-truth-table argument error")))))

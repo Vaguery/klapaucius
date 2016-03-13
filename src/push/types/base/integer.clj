@@ -32,6 +32,19 @@
 
 
 
+(def integer-bits
+  (core/build-instruction
+    integer-bits
+    "`:integer-bits` pops the top `:integer` and pushes a list of its 'bits' (as `true` and `false` in low-to-high order. Negative numbers are made positive. The minimal binary representation is used, but always at least two bits."
+    :tags #{:numeric :conversion}
+    (d/consume-top-of :integer :as :arg)
+    (d/calculate [:arg]
+      #(into '() (reverse (exotics/integer-to-truth-table (math/abs %1) 1))) :as :bits)
+    (d/push-onto :exec :bits)))
+
+
+
+
 (def integer-dec (t/simple-1-in-1-out-instruction
   "`:integer-dec` subtracts 1 from the top `:integer` item"
   :integer "dec" 'dec))
@@ -234,6 +247,7 @@
         aspects/make-visible 
         (t/attach-instruction , integer-abs)
         (t/attach-instruction , integer-add)
+        (t/attach-instruction , integer-bits)
         (t/attach-instruction , integer-dec)
         (t/attach-instruction , integer-digits)
         (t/attach-instruction , integer-divide)
