@@ -1,4 +1,4 @@
-(ns push.types.modules.code
+(ns push.types.module.code
   (:require [push.instructions.core :as core]
             [push.types.core :as t]
             [push.instructions.dsl :as d]

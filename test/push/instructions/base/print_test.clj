@@ -5,7 +5,7 @@
   (:use [push.util.test-helpers])
   (:use push.instructions.aspects)
   (:use push.instructions.aspects.printable)
-  (:use push.types.modules.print) 
+  (:use push.types.module.print) 
   )
 
 

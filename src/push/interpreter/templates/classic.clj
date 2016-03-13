@@ -3,15 +3,15 @@
             [push.interpreter.core :as i]
             [push.types.type.boolean]
             [push.types.type.char]
-            [push.types.modules.code]
-            [push.types.modules.exec]
+            [push.types.module.code]
+            [push.types.module.exec]
             [push.types.type.float]
             [push.types.type.integer]
             [push.types.type.string]
-            [push.types.modules.environment]
-            [push.types.modules.print]
-            [push.types.modules.log]
-            [push.types.modules.error])
+            [push.types.module.environment]
+            [push.types.module.print]
+            [push.types.module.log]
+            [push.types.module.error])
   )
 
 
@@ -75,12 +75,12 @@
                                push.types.type.string/string-type
                                ]
                                types))
-        (i/register-modules , [push.types.modules.exec/exec-module
-                               push.types.modules.log/log-module
-                               push.types.modules.error/error-module
-                               push.types.modules.code/code-module
-                               push.types.modules.environment/environment-module
-                               push.types.modules.print/print-module
+        (i/register-modules , [push.types.module.exec/exec-module
+                               push.types.module.log/log-module
+                               push.types.module.error/error-module
+                               push.types.module.code/code-module
+                               push.types.module.environment/environment-module
+                               push.types.module.print/print-module
                                ])
         (i/bind-inputs , bindings)
         )))

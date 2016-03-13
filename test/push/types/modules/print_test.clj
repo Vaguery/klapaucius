@@ -1,7 +1,7 @@
 (ns push.types.modules.print_test
   (:use midje.sweet)
   (:use [push.util.test-helpers])
-  (:use [push.types.modules.print])
+  (:use [push.types.module.print])
   )
 
 

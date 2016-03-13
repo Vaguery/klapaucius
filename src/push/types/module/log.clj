@@ -1,4 +1,4 @@
-(ns push.types.modules.log
+(ns push.types.module.log
   (:require [push.instructions.core :as core]
             [push.types.core :as t]
             [push.instructions.dsl :as d]

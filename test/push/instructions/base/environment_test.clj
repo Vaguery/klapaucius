@@ -4,7 +4,7 @@
             [push.interpreter.templates.classic :as c])
   (:use midje.sweet)
   (:use [push.util.test-helpers])
-  (:use [push.types.modules.environment])
+  (:use [push.types.module.environment])
   )
 
 

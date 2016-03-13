@@ -6,7 +6,7 @@
   (:use push.types.core)
   (:use push.instructions.aspects)
   (:use push.instructions.aspects.returnable)
-  (:use push.types.modules.environment)
+  (:use push.types.module.environment)
   )
 
 

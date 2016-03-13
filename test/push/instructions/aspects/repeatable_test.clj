@@ -7,7 +7,7 @@
   (:use push.instructions.aspects)
   (:use push.types.type.integer)
   (:use push.instructions.aspects.repeatable-and-cycling)
-  (:use push.types.modules.environment)
+  (:use push.types.module.environment)
   )
 
 
