@@ -1,6 +1,15 @@
 # Recent changes
 
-## work in progress (expected in 0.1.10)
+## work in progress (expected in 0.1.11)
+
+## 0.1.10
+
+- added `:tagspace` type
+- added `:generator` type
+- restructured `push.types` tree
+- various small changes to instruction sets
+- removed `plane_geometry` references from main codebase
+- cleaned up most type and module definition files
 
 - rewrite `require` blocks for ClojureScript compatibility
 
