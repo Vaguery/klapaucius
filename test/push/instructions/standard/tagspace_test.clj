@@ -547,3 +547,70 @@
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ))
 
+
+
+(let 
+  [taggy (make-tagspace {1 2 3 4 5 6})]
+(tabular
+  (fact "`:tagspace-tidywithints` pops two :integers and a :tagspace and cleans up the keys"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks tagspace-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction              ?expected
+
+    {:integer '(2 3)
+     :tagspace (list taggy)}    :tagspace-tidywithints   {:integer  '()
+                                                          :tagspace (list
+                                                          (make-tagspace {3 2, 5 4, 7 6}))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:integer '(-2 3)
+     :tagspace (list taggy)}    :tagspace-tidywithints   {:integer  '()
+                                                          :tagspace (list
+                                                          (make-tagspace {-1 6, 1 4, 3 2}))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:integer '(0 3)
+     :tagspace (list taggy)}    :tagspace-tidywithints   {:integer  '()
+                                                          :tagspace (list
+                                                          (make-tagspace {3 6}))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:integer '(-2 3)
+     :tagspace (list (make-tagspace {}))}
+                                :tagspace-tidywithints   {:integer  '()
+                                                          :tagspace (list
+                                                          (make-tagspace {}))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ))
+
+
+
+(let 
+  [taggy (make-tagspace {1 2 3 4 5 6})]
+(tabular
+  (fact "`:tagspace-tidywithfloats` pops two :floats and a :tagspace and cleans up the keys"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks tagspace-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction              ?expected
+
+    {:float '(2 3)
+     :tagspace (list taggy)}    :tagspace-tidywithfloats   {:float  '()
+                                                          :tagspace (list
+                                                          (make-tagspace {3 2, 5 4, 7 6}))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:float '(-2 3)
+     :tagspace (list taggy)}    :tagspace-tidywithfloats   {:float  '()
+                                                          :tagspace (list
+                                                          (make-tagspace {-1 6, 1 4, 3 2}))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:float '(0 3)
+     :tagspace (list taggy)}    :tagspace-tidywithfloats   {:float  '()
+                                                          :tagspace (list
+                                                          (make-tagspace {3 6}))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:float '(-2 3)
+     :tagspace (list (make-tagspace {}))}
+                                :tagspace-tidywithfloats   {:float  '()
+                                                          :tagspace (list
+                                                          (make-tagspace {}))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ))

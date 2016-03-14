@@ -8,6 +8,7 @@
   (:use push.instructions.aspects.returnable)
   (:use push.instructions.aspects.storable)
   (:use push.instructions.aspects.taggable)
+  (:use push.instructions.aspects.to-tagspace)
   (:use push.instructions.aspects.visible)
   (:require [push.types.core :as t]
             ))
@@ -92,6 +93,7 @@
       (assoc :attributes (conj (:attributes pushtype) :repeatable))))
 
 
+
 (defn make-cycling
   "takes a PushType and adds the :cycling attribute, and the
   :pushtype-cycler, :pushtype-indexedcycler, :pushtype-items instructions to its :instructions collection"
@@ -133,6 +135,17 @@
       (t/attach-instruction (tagwithfloat-instruction pushtype))
       (t/attach-instruction (tagwithint-instruction pushtype))
       (assoc :attributes (conj (:attributes pushtype) :taggable))))
+
+
+
+(defn make-into-tagspaces
+  "takes a PushType and adds the :to-tagspace attribute, and the
+  :pushtype->tagspacefloat and :pushtype-->tagspaceint instructions to its :instructions collection"
+  [pushtype]
+  (-> pushtype
+      (t/attach-instruction (to-tagspacefloat pushtype))
+      (t/attach-instruction (to-tagspaceint pushtype))
+      (assoc :attributes (conj (:attributes pushtype) :to-tagspace))))
 
 
 

@@ -294,6 +294,41 @@
 
 
 
+(def tagspace-tidywithfloats
+  (core/build-instruction
+    tagspace-tidywithfloats
+    "`:tagspace-tidywithfloats` pops the top `:tagspace` item and the top two `:float` items (call them B and A respectively), and pushes a new `:tagspace` in which the first item is at index A and each subsequent item is B farther along. If B is negative, that's the new order; if B is 0, then only the last item will remain."
+    :tags #{:tagspace :collection}
+    (d/consume-top-of :tagspace :as :ts)
+    (d/consume-top-of :float :as :interval)
+    (d/consume-top-of :float :as :start)
+    (d/calculate [:ts] #(vals (:contents %1)) :as :items)
+    (d/calculate [:items] #(count %1) :as :how-many)
+    (d/calculate [:how-many :start :interval]
+        #(take %1 (iterate (partial + %3) %2)) :as :indices)
+    (d/calculate [:indices :items] #(make-tagspace (zipmap %1 %2)) :as :result)
+    (d/push-onto :tagspace :result)))
+
+
+
+
+(def tagspace-tidywithints
+  (core/build-instruction
+    tagspace-tidywithints
+    "`:tagspace-tidywithints` pops the top `:tagspace` item and the top two `:integer` items (call them B and A respectively), and pushes a new `:tagspace` in which the first item is at index A and each subsequent item is B farther along. If B is negative, that's the new order; if B is 0, then only the last item will remain."
+    :tags #{:tagspace :collection}
+    (d/consume-top-of :tagspace :as :ts)
+    (d/consume-top-of :integer :as :interval)
+    (d/consume-top-of :integer :as :start)
+    (d/calculate [:ts] #(vals (:contents %1)) :as :items)
+    (d/calculate [:items] #(count %1) :as :how-many)
+    (d/calculate [:how-many :start :interval]
+        #(take %1 (iterate (partial + %3) %2)) :as :indices)
+    (d/calculate [:indices :items] #(make-tagspace (zipmap %1 %2)) :as :result)
+    (d/push-onto :tagspace :result)))
+
+
+
 (def tagspace-values
   (core/build-instruction
     tagspace-values
@@ -328,6 +363,8 @@
       (t/attach-instruction , tagspace-scaleint)
       (t/attach-instruction , tagspace-splitwithfloat)
       (t/attach-instruction , tagspace-splitwithint)
+      (t/attach-instruction , tagspace-tidywithfloats)
+      (t/attach-instruction , tagspace-tidywithints)
       (t/attach-instruction , tagspace-values)
       aspects/make-cycling
       aspects/make-equatable

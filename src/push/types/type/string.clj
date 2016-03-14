@@ -4,7 +4,9 @@
             [push.instructions.dsl :as d]
             [clojure.string :as strings]
             [push.instructions.aspects :as aspects]
-            ))
+            )
+  (:use push.types.type.tagspace)
+)
 
 
 ;; SUPPORT
@@ -390,6 +392,7 @@
         aspects/make-cycling
         aspects/make-equatable
         aspects/make-comparable
+        aspects/make-into-tagspaces
         aspects/make-movable
         aspects/make-printable
         aspects/make-quotable
