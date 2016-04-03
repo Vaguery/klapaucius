@@ -254,7 +254,7 @@
   (:instructions just-basic) => {})
 
 
-;; inputs
+;; bindings
 
 
 (fact "a new Interpreter passed an :bindings vector will have the bindings registered"
@@ -441,6 +441,17 @@
   (let [foo (i/make-instruction :foo)]
     (register-instruction (register-instruction just-basic foo) foo) =>
       (throws Exception "Push Instruction Redefined:':foo'")))
+
+
+;; forget-instruction
+
+(fact "forget-instruction drops the indicated instruction from the Interpreter"
+  (keys (:instructions classy)) => (contains :integer-add)
+  (keys (:instructions 
+    (forget-instruction classy :integer-add))) =not=> (contains :integer-add)
+  (keys (:instructions 
+    (forget-instruction classy :foo-bar))) => (keys (:instructions classy)))
+
 
 
 ;; contains-at-least?

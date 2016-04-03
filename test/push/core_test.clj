@@ -61,6 +61,7 @@
           :bindings {:b -99}) :integer) => '(-99 198)))
 
 
-
-
+(future-fact "I can turn off individual instructions with the :disable key in the :config hash"
+  ;; but I don't know how just yet
+  )
 

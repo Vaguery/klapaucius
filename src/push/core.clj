@@ -33,14 +33,14 @@
            config {}
            counter 0
            done? false}}]
-  (i/reset-interpreter
-    (owe/make-everything-interpreter
-      :program program
-      :stacks stacks
-      :bindings bindings
-      :config config
-      :counter counter
-      :done? done?)))
+    (i/reset-interpreter
+      (owe/make-everything-interpreter
+        :program program
+        :stacks stacks
+        :bindings bindings
+        :config config
+        :counter counter
+        :done? done?)))
 
 
 (defn known-instructions

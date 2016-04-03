@@ -3,7 +3,8 @@
             [push.types.core :as t]
             [push.instructions.dsl :as d]
             [push.instructions.aspects :as aspects]
-            ))
+            )
+  (:use push.types.type.generator))
 
 
 ;; SUPPORT

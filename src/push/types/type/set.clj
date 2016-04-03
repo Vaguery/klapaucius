@@ -5,6 +5,7 @@
             [push.instructions.aspects :as aspects]
             [clojure.set :as sets])
   (:use push.types.type.generator)
+  (:use push.types.type.tagspace)
   )
 
 (def code->set

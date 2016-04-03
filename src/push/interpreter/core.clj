@@ -123,6 +123,13 @@
       (add-instruction interpreter instruction)))
 
 
+(defn forget-instruction
+  "Takes an Interpreter and a keyword (the name of an instruction, supposedly). Un-registers ('forgets') the instruction, returning the Interpreter"
+  [interpreter kw]
+  (let [old-instructions (:instructions interpreter)]
+    (assoc interpreter :instructions (dissoc old-instructions kw))))
+
+
 ;;; reconfigure
 
 
