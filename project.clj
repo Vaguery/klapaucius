@@ -1,4 +1,4 @@
-(defproject klapaucius "0.1.14"
+(defproject klapaucius "0.1.14-SNAPSHOT"
   :description "Push language interpreter"
   :url "https://github.com/Vaguery/klapaucius"
   :dependencies [[org.clojure/clojure            "1.8.0"]
