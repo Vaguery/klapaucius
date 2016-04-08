@@ -113,6 +113,21 @@
       :foo) => '(:b :a :c)
     (get-stack
       (i/execute-instruction
+        (i/register-instruction (m/basic-interpreter :stacks {:foo '(:a :b :c) :integer '(0)}) foo-shove)
+        :foo-shove)
+      :foo) => '(:a :b :c)
+    (get-stack
+      (i/execute-instruction
+        (i/register-instruction (m/basic-interpreter :stacks {:foo '(:a :b :c) :integer '(2)}) foo-shove)
+        :foo-shove)
+      :foo) => '(:b :c :a)
+    (get-stack
+      (i/execute-instruction
+        (i/register-instruction (m/basic-interpreter :stacks {:foo '(:a :b :c) :integer '(-1)}) foo-shove)
+        :foo-shove)
+      :foo) => '(:a :b :c)
+    (get-stack
+      (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(:a :b :c) :integer '(-1182)}) foo-shove)
         :foo-shove)
       :foo) => '(:a :b :c)
@@ -157,9 +172,21 @@
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter
-          :stacks {:foo '(:a :b :c :d :e) :integer '(-2)}) foo-yank)
+          :stacks {:foo '(:a :b :c :d :e) :integer '(0)}) foo-yank)
         :foo-yank)
       :foo) => '(:a :b :c :d :e)
+    (get-stack
+      (i/execute-instruction
+        (i/register-instruction (m/basic-interpreter
+          :stacks {:foo '(:a :b :c :d :e) :integer '(-1)}) foo-yank)
+        :foo-yank)
+      :foo) => '(:a :b :c :d :e)
+    (get-stack
+      (i/execute-instruction
+        (i/register-instruction (m/basic-interpreter
+          :stacks {:foo '(:a :b :c :d :e) :integer '(4)}) foo-yank)
+        :foo-yank)
+      :foo) => '(:e :a :b :c :d)
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter
@@ -186,9 +213,21 @@
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter
-          :stacks {:foo '(:a :b :c :d :e) :integer '(-2)}) foo-yankdup)
+          :stacks {:foo '(:a :b :c :d :e) :integer '(0)}) foo-yankdup)
         :foo-yankdup)
       :foo) => '(:a :a :b :c :d :e)
+    (get-stack
+      (i/execute-instruction
+        (i/register-instruction (m/basic-interpreter
+          :stacks {:foo '(:a :b :c :d :e) :integer '(-1)}) foo-yankdup)
+        :foo-yankdup)
+      :foo) => '(:a :a :b :c :d :e)
+    (get-stack
+      (i/execute-instruction
+        (i/register-instruction (m/basic-interpreter
+          :stacks {:foo '(:a :b :c :d :e) :integer '(4)}) foo-yankdup)
+        :foo-yankdup)
+      :foo) => '(:e :a :b :c :d :e)
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter
