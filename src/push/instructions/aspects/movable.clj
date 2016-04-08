@@ -194,11 +194,18 @@
       'push.instructions.core/build-instruction
       instruction-name
       (str "`:" instruction-name "` pops the top item from the `" typename
-        "` stack and the top `:integer`. The `:integer` is brought into range as an index by applying `(mod integer (count stack))`, and then the top item is _moved_ so that it is in that position in the resulting stack.")
+        "` stack and the top `:integer`. The `:integer` is brought into range as an index by forcing it into the range `[0,stack_length-1]` (inclusive), and then the top item is _moved_ so that it is in that position in the resulting stack.")
       :tags #{:combinator}
-      '(push.instructions.dsl/consume-top-of :integer :as :index)
+      '(push.instructions.dsl/consume-top-of :integer :as :which)
       `(push.instructions.dsl/consume-top-of ~typename :as :shoved-item)
-      `(push.instructions.dsl/insert-as-nth-of ~typename :shoved-item :at :index)))))
+      `(push.instructions.dsl/count-of ~typename :as :how-many)
+      `(push.instructions.dsl/calculate [:which :how-many]
+        #(min (max %1 0) %2) :as :index)
+      `(push.instructions.dsl/consume-stack ~typename :as :oldstack)
+      `(push.instructions.dsl/calculate [:index :shoved-item :oldstack]
+        #(concat (take %1 %3) (list %2) (drop %1 %3)) :as :newstack)
+      `(push.instructions.dsl/replace-stack ~typename :newstack)
+      ))))
 
 
 
@@ -228,10 +235,12 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`:" instruction-name "` pops the top `:integer`. The `:integer` is brought into range as an index by applying `(mod integer (count stack))`, and then the item _currently_ found in the indexed position in the `" typename "` stack is _moved_ so that it is on top.")
+      (str "`:" instruction-name "` pops the top `:integer`. The `:integer` is brought into range as an index by forcing it into the range `[0,stack_length-1]` (inclusive), and then the item _currently_ found in the indexed position in the `" typename "` stack is _moved_ so that it is on top.")
       :tags #{:combinator}
-      '(push.instructions.dsl/consume-top-of :integer :as :index)
+      '(push.instructions.dsl/consume-top-of :integer :as :which)
       `(push.instructions.dsl/count-of ~typename :as :how-many)
+      `(push.instructions.dsl/calculate [:which :how-many]
+          #(min (max %1 0) (dec %2)) :as :index)
       `(push.instructions.dsl/consume-nth-of ~typename :at :index :as :yanked-item)
       `(push.instructions.dsl/push-onto ~typename :yanked-item)))))
 
@@ -245,10 +254,12 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`:" instruction-name "` pops the top `:integer`. The `:integer` is brought into range as an index by applying `(mod integer (count stack))`, and then the item _currently_ found in the indexed position in the `" typename "` stack is _copied_ so that a duplicate of it is on top.")
+      (str "`:" instruction-name "` pops the top `:integer`. The `:integer` is brought into range as an index by forcing it into the range `[0,stack_length-1]` (inclusive), and then the item _currently_ found in the indexed position in the `" typename "` stack is _copied_ so that a duplicate of it is on top.")
       :tags #{:combinator}
-      '(push.instructions.dsl/consume-top-of :integer :as :index)
+      '(push.instructions.dsl/consume-top-of :integer :as :which)
       `(push.instructions.dsl/count-of ~typename :as :how-many)
+      `(push.instructions.dsl/calculate [:which :how-many]
+        #(min (max %1 0) (dec %2)) :as :index)
       `(push.instructions.dsl/save-nth-of ~typename :at :index :as :yanked-item)
       `(push.instructions.dsl/push-onto ~typename :yanked-item)))))
 

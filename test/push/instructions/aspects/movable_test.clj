@@ -113,9 +113,15 @@
       :foo) => '(:b :a :c)
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (m/basic-interpreter :stacks {:foo '(:a :b :c) :integer '(-1)}) foo-shove)
+        (i/register-instruction (m/basic-interpreter :stacks {:foo '(:a :b :c) :integer '(-1182)}) foo-shove)
         :foo-shove)
-      :foo) => '(:b :c :a)))
+      :foo) => '(:a :b :c)
+    (get-stack
+      (i/execute-instruction
+        (i/register-instruction (m/basic-interpreter :stacks {:foo '(:a :b :c :d :e) :integer '(387)}) foo-shove)
+        :foo-shove)
+      :foo) => '(:b :c :d :e :a)
+    ))
 
 
 (fact "swap-instruction returns an Instruction with the correct stuff"
@@ -153,7 +159,15 @@
         (i/register-instruction (m/basic-interpreter
           :stacks {:foo '(:a :b :c :d :e) :integer '(-2)}) foo-yank)
         :foo-yank)
-      :foo) => '(:d :a :b :c :e)))
+      :foo) => '(:a :b :c :d :e)
+    (get-stack
+      (i/execute-instruction
+        (i/register-instruction (m/basic-interpreter
+          :stacks {:foo '(:a :b :c :d :e) :integer '(19122)}) foo-yank)
+        :foo-yank)
+      :foo) => '(:e :a :b :c :d)
+
+    ))
 
 
 
@@ -174,7 +188,15 @@
         (i/register-instruction (m/basic-interpreter
           :stacks {:foo '(:a :b :c :d :e) :integer '(-2)}) foo-yankdup)
         :foo-yankdup)
-      :foo) => '(:d :a :b :c :d :e)))
+      :foo) => '(:a :a :b :c :d :e)
+    (get-stack
+      (i/execute-instruction
+        (i/register-instruction (m/basic-interpreter
+          :stacks {:foo '(:a :b :c :d :e) :integer '(912)}) foo-yankdup)
+        :foo-yankdup)
+      :foo) => '(:e :a :b :c :d :e)
+
+    ))
 
 
 (fact "`make-movable` adds the :movable attribute to a PushType record"

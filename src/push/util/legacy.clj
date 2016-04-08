@@ -518,7 +518,7 @@
 
 
 (defn translate-input
-  "takes a sybol (which it assumes in an input!) and makes it a keyword; does no validation"
+  "takes a symbol (which it assumes in an input!) and makes it a keyword; does no validation"
   [item]
   (keyword item))
 

@@ -195,7 +195,7 @@
 
 (fact "a generated shove-instruction has a reasonable docstring"
   (:docstring (shove-instruction i-know-foo)) =>
-    "`:foo-shove` pops the top item from the `:foo` stack and the top `:integer`. The `:integer` is brought into range as an index by applying `(mod integer (count stack))`, and then the top item is _moved_ so that it is in that position in the resulting stack.")
+    #"`:foo-shove` pops the top item from the `:foo` stack")
 
 
 (fact "a generated swap-instruction has a reasonable docstring"
@@ -205,12 +205,12 @@
 
 (fact "a generated yank-instruction has a reasonable docstring"
   (:docstring (yank-instruction i-know-foo)) =>
-    "`:foo-yank` pops the top `:integer`. The `:integer` is brought into range as an index by applying `(mod integer (count stack))`, and then the item _currently_ found in the indexed position in the `:foo` stack is _moved_ so that it is on top.")
+    #"`:foo-yank` pops the top `:integer`")
 
 
 (fact "a generated yankdup-instruction has a reasonable docstring"
   (:docstring (yankdup-instruction i-know-foo)) =>
-    "`:foo-yankdup` pops the top `:integer`. The `:integer` is brought into range as an index by applying `(mod integer (count stack))`, and then the item _currently_ found in the indexed position in the `:foo` stack is _copied_ so that a duplicate of it is on top.")
+    #"`:foo-yankdup` pops the top `:integer`.")
 
 (fact "the docstring is associated with an instance"
   (:doc (meta (yankdup-instruction i-know-foo))) =>

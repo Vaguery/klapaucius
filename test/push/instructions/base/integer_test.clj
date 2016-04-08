@@ -656,9 +656,9 @@
     :integer    '(1 1 2 3)      :integer-shove      :integer       '(2 1 3)
     ;; 0 index
     :integer    '(0 1 2 3)      :integer-shove      :integer       '(1 2 3)
-    ;; range handling
-    :integer    '(-1 1 2 3)     :integer-shove      :integer       '(2 3 1)
-    :integer    '(10 1 2 3)     :integer-shove      :integer       '(2 1 3)
+    ;; range handling does NOT use modulo!
+    :integer    '(-11 1 2 3)     :integer-shove      :integer      '(1 2 3)
+    :integer    '(10 1 2 3)     :integer-shove      :integer       '(2 3 1)
     ;; missing args 
     :integer    '(2)            :integer-shove      :integer       '(2)
     :integer    '()             :integer-shove      :integer       '())
@@ -690,8 +690,8 @@
     :integer    '(1 1 2 3)      :integer-yank      :integer       '(2 1 3)
     ;; 0 index
     :integer    '(0 1 2 3)      :integer-yank      :integer       '(1 2 3)
-    ;; range handling
-    :integer    '(-2 1 2 3)     :integer-yank      :integer       '(2 1 3)
+    ;; range handling does NOT use modulo!
+    :integer    '(-2 1 2 3)     :integer-yank      :integer       '(1 2 3)
     :integer    '(11 1 2 3)     :integer-yank      :integer       '(3 1 2)
     ;; missing args 
     :integer    '(2)            :integer-yank      :integer       '(2)
@@ -710,9 +710,9 @@
     :integer    '(1 1 2 3)      :integer-yankdup      :integer       '(2 1 2 3)
     ;; 0 index
     :integer    '(0 1 2 3)      :integer-yankdup      :integer       '(1 1 2 3)
-    ;; range handling
-    :integer    '(-2 1 2 3)     :integer-yankdup      :integer       '(2 1 2 3)
-    :integer    '(11 1 2 3)     :integer-yankdup      :integer       '(3 1 2 3)
+    ;; range handling does NOT use modulo
+    :integer    '(-2 1 2 3)     :integer-yankdup      :integer       '(1 1 2 3)
+    :integer    '(12 1 2 3)     :integer-yankdup      :integer       '(3 1 2 3)
     ;; missing args 
     :integer    '(2)            :integer-yankdup      :integer       '(2)
     :integer    '()             :integer-yankdup      :integer       '())
