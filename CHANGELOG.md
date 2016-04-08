@@ -1,6 +1,14 @@
 # Recent changes
 
-## work in progress (expected in 0.1.11)
+## work in progress (expected in 0.1.14)
+
+## 0.1.13
+
+- changed behavior of `:x-yank`, `:x-yankdup` and `:x-shove` instructions to work like Clojush's; that is, rather than using modulo indices, it uses constrained ranges (negative index -> 0, overlarge index -> max item)
+
+## 0.1.11,0.1.12
+
+- various bugfixes and refactoring
 
 ## 0.1.10
 
