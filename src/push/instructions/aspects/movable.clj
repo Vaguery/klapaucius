@@ -203,7 +203,8 @@
         #(min (max %1 0) %2) :as :index)
       `(push.instructions.dsl/consume-stack ~typename :as :oldstack)
       `(push.instructions.dsl/calculate [:index :shoved-item :oldstack]
-        #(concat (take %1 %3) (list %2) (drop %1 %3)) :as :newstack)
+        #(into '() (reverse (concat (take %1 %3) (list %2) (drop %1 %3))))
+          :as :newstack)
       `(push.instructions.dsl/replace-stack ~typename :newstack)
       ))))
 
