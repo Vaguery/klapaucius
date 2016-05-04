@@ -11,8 +11,7 @@
   - `:vector`
 - `:char`
   - `:code`
-- `:code`
-  - `:code`
+- `:code` (everything is `:code`)
 - `:codeblock`
   - `:code`
   - `:collection`
