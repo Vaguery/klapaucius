@@ -75,10 +75,14 @@
   - `:vector`
   - `:structured`
 
+### Some definitions for abstract types
 
 - `:structured`
   
   a `hashmap` with specified keys; anything complex enough to be represented as a Clojure `record`
 - `:collection`
   
-  any list, collection, map, tagspace or equivalent 
+  any `list`, `codeblock` `map`, `tagspace` or equivalent 
+- `:number`
+  
+  You can probably figure this out.
