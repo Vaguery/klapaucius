@@ -1,6 +1,8 @@
 # Notes on the type system
 
 
+### Klapaucius types (as of this writing)
+
 - `:boolean`
   - `:code`
 - `:booleans`
@@ -56,6 +58,9 @@
 - `:vector`
   - `:code`
   - `:collection`
+
+
+### New types
 
 - `:matrix`
   - `:code`
