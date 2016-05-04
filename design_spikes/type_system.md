@@ -28,7 +28,7 @@
 - `:generator`
   - `:code`
   - `:collection`
-  - `:structured` (`:state`, `:step-function`, `:origin`)
+  - `:structured` (`:state` `:code`, `:step-function` ???, `:origin` `:code`)
 - `:integer`
   - `:code`
   - `:number`
@@ -95,7 +95,7 @@
   - `:number`
   - `:complex`
   - `:scalar`
-  - `:structured` (`:real` `:scalar`, `:imaginary` `:scalar`, `:closed-form` `:codeblock`)
+  - `:structured` (`:real` `:scalar`, `:imaginary` `:scalar`, `:closed-form` ???)
 - `:circle`
   - `:code`
   - `:collection`
