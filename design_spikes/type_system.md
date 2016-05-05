@@ -63,18 +63,11 @@
   - `:collection`
 
 
-### Attribute matrix
+### Aspect matrix
 
-       aspects/make-cycling
-      aspects/make-equatable
-      aspects/make-movable
-      aspects/make-printable
-      aspects/make-quotable
-      aspects/make-repeatable
-      aspects/make-returnable
-      aspects/make-storable
-      aspects/make-taggable
-      aspects/make-visible
+Recall that an `aspect` is _not_ an intrinsic "type attribute"! It's just a suite of related instructions that are responsible for a certain kind of behavior in the Push interpreter. So for example the `:char` type has no _intrinsic_ ability to be compared; it is given the `aspect` `comparable` simply as a shorthand for creating the `:char<` and `:char>` instructions.
+
+Note also that at least a few of these are `modules`, not types. 
 
 | type | comparable | cycling | equatable | into-tagspaces | movable | printable | quotable | repeatable | returnable | storable | taggable | visible |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
