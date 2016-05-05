@@ -65,24 +65,35 @@
 
 ### Attribute matrix
 
+       aspects/make-cycling
+      aspects/make-equatable
+      aspects/make-movable
+      aspects/make-printable
+      aspects/make-quotable
+      aspects/make-repeatable
+      aspects/make-returnable
+      aspects/make-storable
+      aspects/make-taggable
+      aspects/make-visible
+
 | type | comparable | cycling | equatable | into-tagspaces | movable | printable | quotable | repeatable | returnable | storable | taggable | visible |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `:boolean` |
-| `:booleans` |
-| `:char` |
-| `:code` |
-| `:float` |
-| `:floats` |
-| `:generator` |
-| `:integer` |
-| `:integers` |
-| `:instruction` |
-| `:ref` |
-| `:set` |
-| `:string` |
-| `:strings` |
-| `:tagspace` |
-| `:vector` |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| `:boolean` | | | ✅ | | | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `:booleans` | | ✅ | ✅ |  ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `:char` | ✅ | | ✅ | |  ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `:code` | | ✅ | ✅ | | ✅ | ✅ | | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `:float` | ✅ | | ✅ | | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `:floats` | | ✅ | ✅ |  ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `:generator` | | | | | ✅ | | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `:integer` | ✅ | | ✅ | | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `:integers` | | ✅ | ✅ |  ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `:instruction` | ✅ | | ✅ | | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `:ref` | | | ✅ | | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `:set` | | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `:string` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `:strings` | | ✅ | ✅ |  ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `:tagspace` | | ✅ | ✅ | | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `:vector` | | ✅ | ✅ |  ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | `:codeblock` |
 | `:collection` |
 | `:keyword` |
