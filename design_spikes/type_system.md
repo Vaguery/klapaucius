@@ -12,9 +12,6 @@
 - `:char`
   - `:code`
 - `:code` (everything is `:code`)
-- `:codeblock`
-  - `:code`
-  - `:collection`
 - `:float`
   - `:code`
   - `:number`
@@ -40,6 +37,9 @@
   - `:code`
   - `:collection`
   - `:vector`
+- `:instruction`
+  - `:code`
+  - `:keyword`
 - `:ref`
   - `:code`
   - `:keyword`
@@ -63,7 +63,52 @@
   - `:collection`
 
 
-### New types
+### Attribute matrix
+
+| type | comparable | cycling | equatable | into-tagspaces | movable | printable | quotable | repeatable | returnable | storable | taggable | visible |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `:boolean` |
+| `:booleans` |
+| `:char` |
+| `:code` |
+| `:float` |
+| `:floats` |
+| `:generator` |
+| `:integer` |
+| `:integers` |
+| `:instruction` |
+| `:ref` |
+| `:set` |
+| `:string` |
+| `:strings` |
+| `:tagspace` |
+| `:vector` |
+| `:codeblock` |
+| `:collection` |
+| `:keyword` |
+| `:number` |
+| `:scalar` |
+| `:structured` |
+
+### Abstract types (not explicit in Klapaucius yet)
+
+- `:codeblock`
+  - `:code`
+  - `:collection`
+- `:collection`
+  - `:code`
+- `:keyword`
+  - `:code`
+- `:number`
+  - `:code` 
+- `:scalar`
+  - `:code`
+  - `:number` 
+- `:structured`
+  - `:code`
+  - `:collection`
+
+### Planned types
 
 - `:matrix`
   - `:code`
@@ -83,8 +128,13 @@
   - `:vector`
   - `:scalar`
   - `:structured` (`:whole` `:integer`, `:numerator` `:integer`, `:denominator` `:integer`)
+- `:function`
+  - `:code`
+  - `:codeblock`
+  - `:structured` (`:arguments` ??? `:returns` ???)
 
-### Some example types
+### Some example domin-specific types
+
 - `:point`
   - `:code`
   - `:collection`
