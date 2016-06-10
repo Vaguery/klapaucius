@@ -1,6 +1,7 @@
 (ns push.types.extra.vectorized_test
   (:require [push.types.type.integer :as int])
   (:use midje.sweet)
+  (:require [push.types.core :as core])
   (:use [push.util.test-helpers])
   (:use [push.types.type.vectorized])
   )
@@ -13,11 +14,11 @@
 
 
 (fact "the :integers type has the correct :recognizer"
-  (recognize? vector-of-integers [1 2 3]) => true
-  (recognize? vector-of-integers 99) => false
-  (recognize? vector-of-integers [1 2.2 3]) => false
-  (recognize? vector-of-integers '(1 2 3)) => false
-  (recognize? vector-of-integers []) => false
+  (core/recognize? vector-of-integers [1 2 3]) => true
+  (core/recognize? vector-of-integers 99) => false
+  (core/recognize? vector-of-integers [1 2.2 3]) => false
+  (core/recognize? vector-of-integers '(1 2 3)) => false
+  (core/recognize? vector-of-integers []) => false
   )
 
 (fact ":integers type has the expected :attributes"

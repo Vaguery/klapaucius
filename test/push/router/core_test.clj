@@ -43,3 +43,9 @@
   (router-recognize? (make-router :foo :recognizer float?) 32) => false
   (router-recognize? (make-router :foo :recognizer integer?) 32) => true
   )
+
+
+(fact "I can apply the preprocessor with `router-preprocess`"
+  (router-preprocess (make-router :foo) 99) => 99 ;; default
+  (router-preprocess (make-router :foo :preprocessor #(* 2 %)) 99) => 198
+  )

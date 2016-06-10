@@ -9,6 +9,7 @@
   (:require [push.instructions.aspects :as aspects])
   (:require [push.interpreter.templates.one-with-everything :as owe])
   (:require [push.types.module.code :as code])
+  (:require [push.router.core :as router])
   (:use [push.interpreter.core])
   )
 
@@ -40,27 +41,44 @@
   (u/get-stack (handle-item
     (owe/make-everything-interpreter :bindings {:a 8}) :a) :exec) => '(8) ;; lookup
   (u/get-stack (handle-item
-    (owe/make-everything-interpreter :bindings {:a 8 :b nil}) :X) :ref) => '(:X)
-  (u/get-stack (handle-item
     (owe/make-everything-interpreter :bindings {:a 8 :b nil}) :b) :ref) => '()
-  )
+
+
+  (let [dumb (owe/make-everything-interpreter :bindings {:a 8 :b nil})]
+    (routers-see? dumb :X)=> true
+    (routers-see? dumb :a)=> true
+    (routers-see? dumb :b)=> true
+    (u/get-stack (handle-item dumb :a) :ref) => '()
+    (u/get-stack (handle-item dumb :b) :ref) => '()
+    (u/get-stack (handle-item dumb :X) :ref) => '(:X)
+    (u/get-stack (handle-item dumb :a) :exec) => '(8)
+    (u/get-stack (handle-item dumb :b) :exec) => '()
+    (u/get-stack (handle-item dumb :X) :exec) => '()
+    ))
 
 
 
 ;; the router order is: :bound-keyword? :instruction? [router] :unknown
 
 
-(fact "`router-sees?` checks the router predicates and returns true if one matches"
-  (let [seezit? #'push.interpreter.core/router-sees?]
-    (seezit? classy :not-likely) => nil
-    (seezit? (m/basic-interpreter 
-      :router [[(fn [item] (= item :not-likely)) :integer]]) :not-likely) => true))
-
-
 (fact "`handle-item` checks the :router list"
-  (let [he-knows-foo (m/basic-interpreter :router [[integer? :code]])]
-        ;; this will route integers to the :code stack, and not to :integer
-    (:stacks (handle-item he-knows-foo 99) :code) => (contains {:code '(99)})))
+  (let [number-code (types/make-type :foo
+                                      :router (router/make-router
+                                        :foo
+                                        :recognizer integer?
+                                        :target-stack :code))
+        weird-interpreter
+          (register-type
+            (m/basic-interpreter :config {:lenient? true})
+            number-code)]
+    (map :name (:routers weird-interpreter)) => [:foo]
+    (routers-see? weird-interpreter 99) => true
+    (routers-see? weird-interpreter 2.2) => false
+    (u/get-stack (handle-item weird-interpreter 999) :code) => '(999)
+    (u/get-stack (handle-item weird-interpreter 2.2) :code) => '()
+    (u/get-stack (handle-item weird-interpreter 2.2) :unknown) => '(2.2)
+    ))
+
 
 
 (def foo-type 
@@ -72,8 +90,7 @@
 
 
 (fact "types added to the router with `register-type` are used by `handle-item`"
-  (:router (register-type just-basic foo-type)) =>
-    [ [(:recognized-by foo-type) :foo] ]
+  (map :name (:routers (register-type just-basic foo-type))) => [:foo]
   (u/get-stack (handle-item (register-type just-basic foo-type) 99) :integer) => '()
   (u/get-stack (handle-item (register-type just-basic foo-type) 99) :foo) => '(99))
 

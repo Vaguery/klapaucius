@@ -22,7 +22,7 @@
 
 (defn vector-of-type?
   [item type]
-  (let [checker (:recognized-by type)]
+  (let [checker (:recognizer (:router type))]
     (and  (vector? item)
           (boolean (seq item))
           (every? #(checker %) item))))

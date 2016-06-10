@@ -84,11 +84,11 @@
 
 
 (fact "if unspecified, the :router table is empty"
-  (:router just-basic) => [])
+  (:routers just-basic) => [])
 
 
 (fact "a :router table can be added manually"
-  (:router (m/basic-interpreter :router [[integer? :code]])) => [[integer? :code]])
+  (:routers (m/basic-interpreter :router [[integer? :code]])) => [[integer? :code]])
 
 
 ;; register-type
@@ -110,16 +110,13 @@
                 :foo-swap :foo-max :foo-shove :foo≤? :foo-yankdup :foo-yank] :gaps-ok :in-any-order))
 
 
-(fact "`register-type` adds the :recognized-by to the Interpreter's :router collection"
-  (:router just-basic) => []
-  (:router (register-type just-basic foo-type)) =>
-    [ [(:recognized-by foo-type) :foo] ]
-
-  (:router (->  just-basic 
+(fact "`register-type` adds the type's :router to the Interpreter's :router collection"
+  (map :name (:routers just-basic)) => []
+  (map :name (:routers (register-type just-basic foo-type))) =>[:foo]
+  (map :name (:routers (->  just-basic 
                 (register-type foo-type)
-                (register-type bar-type))) =>
-    [ [(:recognized-by foo-type) :foo] 
-      [(:recognized-by bar-type) :bar] ])
+                (register-type bar-type)))) => [:foo :bar]
+  )
 
 
 (fact "`register-type` does not empty a stack if it already contains stuff"
@@ -226,7 +223,8 @@
 
 (fact "if a PushType is passed into `basic-interpreter`, its recognizer is added to the :router"
   (let [foo-recognizer [(:recognized-by foo-type) :foo] ]
-    (:router (m/basic-interpreter :types [foo-type])) => (contains [foo-recognizer])))
+    (map :name (:routers (m/basic-interpreter :types [foo-type]))) => [:foo]
+      ))
 
 
 ;; finesse (justified paranoia)
@@ -402,24 +400,13 @@
   (:counter (c/classic-interpreter :counter 7777)) => 7777)
 
 
-(fact "`classic-interpreter` knows all kinds of instructions already"
-  (let [benchmarker classy]
-    (println (str "Classic Interpreter: "
-                  (count (keys (:instructions benchmarker)))
-                  " instructions, "
-                  (count (:router benchmarker))
-                  " types."))
-    (keys (:instructions benchmarker)) =>  ;; just a sampling as a rough check
-      (contains [:integer-add :boolean-and :char≥? :string-concat] :in-any-order :gaps-ok)))
-
-
 (fact "`one-with-everything` knows all kinds of instructions already"
   (let [benchmarker (everything/make-everything-interpreter)]
     (println (str "Interpreter with Everything: "
                   (count (keys (:instructions benchmarker)))
                   " instructions, "
-                  (count (:router benchmarker))
-                  " types."))
+                  (count (:routers benchmarker))
+                  " routers."))
     (keys (:instructions benchmarker)) =>  ;; just a sampling as a rough check
       (contains [:integer-add :boolean-and :char≥? :string-concat] :in-any-order :gaps-ok)))
 

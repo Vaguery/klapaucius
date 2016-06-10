@@ -227,26 +227,27 @@
     (u/set-stack interpreter stackname new-stack)))
 
 
-(defn- instruction?
+(defn instruction?
   "takes an Interpreter and a keyword, and returns true if the keyword
   is a key of the :instructions registry in that Interpreter instance"
   [interpreter token]
   (contains? (:instructions interpreter) token))
 
 
-(defn- routers-see?
+(defn routers-see?
   "Takes an Interpreter and an item, and returns true if any of its :routers collection matches. NOTE: returns nil otherwise!"
   [interpreter item]
   (let [recognizers (:routers interpreter)]
-    (some #(router/router-recognize? % [item]) recognizers)))
+    (boolean (some #(router/router-recognize? % item) recognizers))))
 
 
-(defn- route-item
+(defn route-item
   "Takes an Interpreter and an item it recognizes (which should be established upstream) and sends the item to the designated stack determined by the first matching router predicate."
   [interpreter item]
   (let [all-routers (:routers interpreter)
-        active-router (first (filter #(router/router-recognize? item)))
-        preprocessed-item item
+        active-router (first (filter #(router/router-recognize? % item) all-routers))
+        preprocessor (:preprocessor active-router)
+        preprocessed-item (preprocessor item)
         target-stack (:target-stack active-router)]
     (push-item 
       interpreter 
@@ -274,12 +275,15 @@
   a registered instruction or some other kind of Push literal."
   [interpreter item]
   (cond
-    (bound-keyword? interpreter item)
-      (if (:quote-refs? interpreter)
-        (push-item interpreter :ref item)
-        (push-item interpreter :exec (peek-at-binding interpreter item)))
-    (instruction? interpreter item)
-      (execute-instruction interpreter item)
+    (keyword? item)
+      (cond
+        (bound-keyword? interpreter item)
+          (if (:quote-refs? interpreter)
+            (push-item interpreter :ref item)
+            (push-item interpreter :exec (peek-at-binding interpreter item)))
+        (instruction? interpreter item)
+          (execute-instruction interpreter item)
+        :else (push-item interpreter :ref item))
     (routers-see? interpreter item) (route-item interpreter item)
     (pushcode? item) (load-items interpreter :exec item)
     :else (handle-unknown-item interpreter item)))

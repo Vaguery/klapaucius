@@ -2,7 +2,8 @@
   (:require [push.interpreter.templates.one-with-everything :as owe]
             [push.interpreter.core :as core]
             [push.util.stack-manipulation :as u]
-            [clojure.math.numeric-tower :as math])
+            [clojure.math.numeric-tower :as math]
+            [push.types.core :as types])
   (:use midje.sweet)
   (:use demo.examples.plane-geometry.definitions)
   (:import  [org.apfloat Apfloat ApfloatMath]))
@@ -62,19 +63,19 @@
 ;; constructors
 
 (fact "I can make and recognize instances of :points, :lines and :circles"
-  ((:recognizer precise-point) (make-point 3 9))         => true
-  ((:recognizer precise-point) 9912)                     => false
+  (types/recognize? precise-point (make-point 3 9))         => true
+  (types/recognize? precise-point 9912)                     => false
 
-  ((:recognizer precise-line)
+  (types/recognize? precise-line
      (make-line (make-point 2 9) (make-point 2 1)))   => true
-  ((:recognizer precise-line)
+  (types/recognize? precise-line
      (make-point 2 9))                                => false
 
-  ((:recognizer precise-circle)
+  (types/recognize? precise-circle
      (make-circle (make-point 2 9) (make-point 2 1))) => true
-  ((:recognizer precise-circle)
+  (types/recognize? precise-circle
      (make-point 2 9))                                => false
-  ((:recognizer precise-circle)
+  (types/recognize? precise-circle
      (make-line (make-point 2 9) (make-point 2 1)))   => false)
 
 

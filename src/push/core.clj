@@ -64,7 +64,7 @@
 (defn routing-list
   "Given an interpreter, returns the list of items recognized by that particular instance's router"
   [interpreter]
-  (map second (:router interpreter)))
+  (map :name (:routers interpreter)))
 
 
 (defn run

@@ -19,3 +19,9 @@
   "takes a `PushRouter` and any item, and returns the result of applying the `:recognizer` to the item"
   [router item]
   ((:recognizer router) item))
+
+
+(defn router-preprocess
+  "takes a `PushRouter` and any item, and applies the defined :preprocessor in the router to the item"
+  [router item]
+  ((:preprocessor router) item))
