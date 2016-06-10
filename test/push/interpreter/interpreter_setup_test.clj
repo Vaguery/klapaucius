@@ -43,7 +43,7 @@
 
 
 (def foo-type 
-  (-> (types/make-type :foo :recognizer integer?)
+  (-> (types/make-type :foo :recognized-by integer?)
       aspects/make-visible
       aspects/make-comparable
       aspects/make-equatable
@@ -62,7 +62,7 @@
 
 
 (def bar-type 
-  (-> (types/make-type :bar :recognizer keyword?)
+  (-> (types/make-type :bar :recognized-by keyword?)
       aspects/make-visible
       aspects/make-equatable
       aspects/make-movable))
@@ -110,16 +110,16 @@
                 :foo-swap :foo-max :foo-shove :foo≤? :foo-yankdup :foo-yank] :gaps-ok :in-any-order))
 
 
-(fact "`register-type` adds the :recognizer to the Interpreter's :router collection"
+(fact "`register-type` adds the :recognized-by to the Interpreter's :router collection"
   (:router just-basic) => []
   (:router (register-type just-basic foo-type)) =>
-    [ [(:recognizer foo-type) :foo] ]
+    [ [(:recognized-by foo-type) :foo] ]
 
   (:router (->  just-basic 
                 (register-type foo-type)
                 (register-type bar-type))) =>
-    [ [(:recognizer foo-type) :foo] 
-      [(:recognizer bar-type) :bar] ])
+    [ [(:recognized-by foo-type) :foo] 
+      [(:recognized-by bar-type) :bar] ])
 
 
 (fact "`register-type` does not empty a stack if it already contains stuff"
@@ -225,7 +225,7 @@
 
 
 (fact "if a PushType is passed into `basic-interpreter`, its recognizer is added to the :router"
-  (let [foo-recognizer [(:recognizer foo-type) :foo] ]
+  (let [foo-recognizer [(:recognized-by foo-type) :foo] ]
     (:router (m/basic-interpreter :types [foo-type])) => (contains [foo-recognizer])))
 
 

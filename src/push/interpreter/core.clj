@@ -1,13 +1,14 @@
 (ns push.interpreter.core
   (:require [push.util.stack-manipulation :as u]
-            [push.util.exceptions :as oops])
+            [push.util.exceptions :as oops]
+            [push.router.core :as router])
   (:use [push.util.type-checkers])
   )
 
 
 (defrecord Interpreter [program
                         types
-                        router
+                        routers
                         stacks
                         bindings
                         instructions 
@@ -18,21 +19,22 @@
 
 (defn make-interpreter
   "simple wrapper around ->Interpreter"
-  [program types router stacks bindings instructions config counter done?]
+  [program types routers stacks bindings instructions config counter done?]
   (->Interpreter
-    program types router stacks bindings instructions config counter done?))
+    program types routers stacks bindings instructions config counter done?))
 
 
 (defn register-type
-  "Takes an Interpreter record, and a PushType record, and adds the PushType to the :types collection in the Interpeter; adds the type's :name as a new stack (if not already present); appends the type's :recognizer to the :router vector; adds the type's internally defined instructions to the Interpreter's registry automatically."
+  "Takes an Interpreter record, and a PushType record, and adds the PushType to the :types collection in the Interpeter; adds the type's :name as a new stack (if not already present); appends the type's :router to the Interpreter's :routers vector; adds the type's internally defined instructions to the Interpreter's registry automatically."
   [interpreter type]
   (let [old-types (:types interpreter)
         old-stacks (:stacks interpreter)
-        old-router (:router interpreter)
+        old-routers (:routers interpreter)
         old-instructions (:instructions interpreter)]
         (-> interpreter
             (assoc :types (conj old-types type))
-            (assoc :router (conj old-router [(:recognizer type) (:name type)]))
+            (assoc :routers
+              (conj old-routers (:router type)))
             (assoc :stacks (merge {(:name type) '()}  old-stacks))
             (assoc :instructions (merge old-instructions (:instructions type))))))
 
@@ -232,24 +234,24 @@
   (contains? (:instructions interpreter) token))
 
 
-(defn- router-sees?
-  "Takes an Interpreter and an item, and returns true if any predicate
-  defined in its :router collection matches, nil otherwise (NOTE)."
+(defn- routers-see?
+  "Takes an Interpreter and an item, and returns true if any of its :routers collection matches. NOTE: returns nil otherwise!"
   [interpreter item]
-  (let [recognizers (:router interpreter)]
-    (some #(apply (first %) [item]) recognizers)))
+  (let [recognizers (:routers interpreter)]
+    (some #(router/router-recognize? % [item]) recognizers)))
 
 
 (defn- route-item
-  "Takes an Interpreter and an item it recognizes (which should be
-  established upstream) and sends the item to the designated stack
-  determined by the first matching router predicate."
+  "Takes an Interpreter and an item it recognizes (which should be established upstream) and sends the item to the designated stack determined by the first matching router predicate."
   [interpreter item]
-  (let [recognizers (:router interpreter)]
+  (let [all-routers (:routers interpreter)
+        active-router (first (filter #(router/router-recognize? item)))
+        preprocessed-item item
+        target-stack (:target-stack active-router)]
     (push-item 
       interpreter 
-      (second (first (filter #(apply (first %) [item]) recognizers)))
-      item)))
+      target-stack
+      preprocessed-item)))
 
 
 (defn handle-unknown-item
@@ -278,7 +280,7 @@
         (push-item interpreter :exec (peek-at-binding interpreter item)))
     (instruction? interpreter item)
       (execute-instruction interpreter item)
-    (router-sees? interpreter item) (route-item interpreter item)
+    (routers-see? interpreter item) (route-item interpreter item)
     (pushcode? item) (load-items interpreter :exec item)
     :else (handle-unknown-item interpreter item)))
 

@@ -259,7 +259,7 @@
 
 (def integer-type
   ( ->  (t/make-type  :integer
-                      :recognizer integer?
+                      :recognized-by integer?
                       :attributes #{:numeric})
         aspects/make-comparable
         aspects/make-equatable

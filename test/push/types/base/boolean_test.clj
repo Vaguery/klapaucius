@@ -11,7 +11,7 @@
 
 
 (fact "boolean-type has the correct :recognizer"
-  (:recognizer boolean-type) => (exactly boolean?))
+  (:recognizer (:router boolean-type)) => (exactly boolean?))
 
 
 (fact "boolean-type has the expected :attributes"

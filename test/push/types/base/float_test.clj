@@ -10,7 +10,7 @@
 
 
 (fact "float-type has the correct :recognizer"
-  (:recognizer float-type) => (exactly float?))
+  (:recognizer (:router float-type)) => (exactly float?))
 
 
 (fact "float-type has the expected :attributes"

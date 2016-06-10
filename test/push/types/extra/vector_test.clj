@@ -1,5 +1,6 @@
 (ns push.types.extra.vector_test
   (:use midje.sweet)
+  (:require [push.types.core :as core])
   (:use [push.util.test-helpers])
   (:use [push.types.type.vector])
   )
@@ -10,14 +11,14 @@
 
 
 (fact "the :vector type has the correct :recognizer"
-  (:recognizer standard-vector-type) => (exactly vector?)
-  ((:recognizer standard-vector-type) []) => true
-  ((:recognizer standard-vector-type)  9) => false
-  ((:recognizer standard-vector-type) [9]) => true
-  ((:recognizer standard-vector-type) [9 '(2)]) => true
-  ((:recognizer standard-vector-type) '(9 '(2))) => false
-  ((:recognizer standard-vector-type) [[1] [2 3]]) => true
-  ((:recognizer standard-vector-type) ["a"]) => true
+  (:recognizer (:router standard-vector-type)) => (exactly vector?)
+  (core/recognize? standard-vector-type []) => true
+  (core/recognize? standard-vector-type  9) => false
+  (core/recognize? standard-vector-type [9]) => true
+  (core/recognize? standard-vector-type [9 '(2)]) => true
+  (core/recognize? standard-vector-type '(9 '(2))) => false
+  (core/recognize? standard-vector-type [[1] [2 3]]) => true
+  (core/recognize? standard-vector-type ["a"]) => true
   )
 
 

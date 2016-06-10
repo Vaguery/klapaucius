@@ -132,7 +132,7 @@
   "builds the `:generator` type, which can emit items when asked"
   (let [typename :generator]
   (-> (t/make-type  :generator
-                    :recognizer generator?
+                    :recognized-by generator?
                     :attributes #{:generator})
       (t/attach-instruction , generator-again)
       (t/attach-instruction , generator-counter)

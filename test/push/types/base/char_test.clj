@@ -11,7 +11,7 @@
 
 
 (fact "char-type has the correct :recognizer"
-  (:recognizer char-type) => (exactly char?))
+  (:recognizer (:router char-type)) => (exactly char?))
 
 
 (fact "char-type has the expected :attributes"

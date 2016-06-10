@@ -22,7 +22,7 @@
 
 (defn vector-of-type?
   [item type]
-  (let [checker (:recognizer type)]
+  (let [checker (:recognized-by type)]
     (and  (vector? item)
           (boolean (seq item))
           (every? #(checker %) item))))
@@ -465,7 +465,7 @@
   (let [typename (keyword (str (name (:name content-type)) "s"))
         rootname (keyword (name (:name content-type)))]
     ( ->  (t/make-type  typename
-                        :recognizer #(vector-of-type? % content-type)
+                        :recognized-by #(vector-of-type? % content-type)
                         :attributes #{:vector})
           aspects/make-cycling
           aspects/make-equatable

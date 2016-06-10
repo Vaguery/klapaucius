@@ -307,7 +307,7 @@
 
 (def float-type
   ( ->  (t/make-type  :float
-                      :recognizer float?
+                      :recognized-by float?
                       :attributes #{:numeric :base})
         aspects/make-comparable
         aspects/make-equatable

@@ -37,18 +37,18 @@ Exploring any interesting problem will entail writing new types. In this `Interp
 ~~~clojure
 (def integer-type
   (push.types.core/make-type :integer
-                             :recognizer integer?
+                             :recognized-by integer?
                              :attributes #{:numeric}))
 ~~~
 
-That is, it has a unique identifier (which is, as it happens, exactly the name of the stack to which it will be sent by the `Interpreter`), it has a `:recognizer` (which is exactly the function that will send it to that stack from `:exec`), and it has some labeling junk you need not worry about. That's actually the entirety of the type definition.
+That is, it has a unique identifier (which is, as it happens, exactly the name of the stack to which it will be sent by the `Interpreter`), it has a `:recognized-by` (which is exactly the function that will send it to that stack from `:exec`), and it has some labeling junk you need not worry about. That's actually the entirety of the type definition.
 
 That said, what I've written above is a type with no associated instructions, so it will probably (but not necessarily) be pretty boring in practice. It will be recognized if it shows up in a program, and it will be sent to the `:integer` stack. I could as easily (and usefully) define a `:robot` type with 
 
 ~~~clojure
 (def fancy-robot-type
   (push.types.core/make-type  :robot
-                              :recognizer knows-three-laws?
+                              :recognized-by knows-three-laws?
                               :attributes #{:fancy :also-a-robot}))
 ~~~
 
@@ -63,7 +63,7 @@ When you look at the [actual definition of the `:integer` type in the Klapaucius
 ~~~clojure
 (def integer-type
   ( ->  (t/make-type  :integer
-                      :recognizer integer?
+                      :recognized-by integer?
                       :attributes #{:numeric})
         make-visible 
         make-equatable
@@ -130,7 +130,7 @@ So here's a useful design pattern for you to keep in mind when you're considerin
 ~~~clojure
 (def my-complex-type
   ( ->  (t/make-type  :complex
-                      :recognizer complex-number?
+                      :recognized-by complex-number?
                       :attributes #{:numeric :complex})
         make-visible 
         make-equatable

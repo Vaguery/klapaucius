@@ -994,7 +994,7 @@
   (def precise-point
     (-> (t/make-type 
           :point 
-          :recognizer #(instance? Point %))
+          :recognized-by #(instance? Point %))
         aspects/make-visible
         aspects/make-equatable
         aspects/make-movable
@@ -1013,7 +1013,7 @@
 (def precise-line
   (-> (t/make-type 
         :line 
-        :recognizer #(instance? Line %))
+        :recognized-by #(instance? Line %))
       aspects/make-visible
       aspects/make-equatable
       aspects/make-movable
@@ -1039,7 +1039,7 @@
 (def precise-circle
   (-> (t/make-type 
         :circle 
-        :recognizer #(instance? Circle %))
+        :recognized-by #(instance? Circle %))
       aspects/make-visible
       aspects/make-equatable
       aspects/make-movable

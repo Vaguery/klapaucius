@@ -8,6 +8,7 @@
   (:require [push.interpreter.templates.classic :as c])
   (:require [push.instructions.aspects :as aspects])
   (:require [push.interpreter.templates.one-with-everything :as owe])
+  (:require [push.types.module.code :as code])
   (:use [push.interpreter.core])
   )
 
@@ -50,9 +51,9 @@
 
 
 (fact "`router-sees?` checks the router predicates and returns true if one matches"
-  (let [abbr #'push.interpreter.core/router-sees?]
-    (abbr classy :not-likely) => nil
-    (abbr (m/basic-interpreter 
+  (let [seezit? #'push.interpreter.core/router-sees?]
+    (seezit? classy :not-likely) => nil
+    (seezit? (m/basic-interpreter 
       :router [[(fn [item] (= item :not-likely)) :integer]]) :not-likely) => true))
 
 
@@ -63,7 +64,7 @@
 
 
 (def foo-type 
-  (-> (types/make-type :foo :recognizer integer?)
+  (-> (types/make-type :foo :recognized-by integer?)
       aspects/make-visible
       aspects/make-comparable
       aspects/make-equatable
@@ -72,7 +73,7 @@
 
 (fact "types added to the router with `register-type` are used by `handle-item`"
   (:router (register-type just-basic foo-type)) =>
-    [ [(:recognizer foo-type) :foo] ]
+    [ [(:recognized-by foo-type) :foo] ]
   (u/get-stack (handle-item (register-type just-basic foo-type) 99) :integer) => '()
   (u/get-stack (handle-item (register-type just-basic foo-type) 99) :foo) => '(99))
 
@@ -82,6 +83,11 @@
   (u/get-stack (handle-item classy -8) :integer) => '(-8)
   (u/get-stack (handle-item (c/classic-interpreter :stacks {:integer '(1)}) -8) :integer) =>
     '(-8 1))
+
+
+(future-fact "handle-item unquotes QuotedCode items it routes"
+  (u/get-stack (handle-item classy (code/push-quote 88)) :integer) => '()
+  )
 
 
 ; :quote-refs?

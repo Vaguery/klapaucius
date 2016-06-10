@@ -13,11 +13,11 @@
 
 
 (fact "the :integers type has the correct :recognizer"
-  ((:recognizer vector-of-integers) [1 2 3]) => true
-  ((:recognizer vector-of-integers) 99) => false
-  ((:recognizer vector-of-integers) [1 2.2 3]) => false
-  ((:recognizer vector-of-integers) '(1 2 3)) => false
-  ((:recognizer vector-of-integers) []) => false
+  (recognize? vector-of-integers [1 2 3]) => true
+  (recognize? vector-of-integers 99) => false
+  (recognize? vector-of-integers [1 2.2 3]) => false
+  (recognize? vector-of-integers '(1 2 3)) => false
+  (recognize? vector-of-integers []) => false
   )
 
 (fact ":integers type has the expected :attributes"

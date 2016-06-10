@@ -128,7 +128,7 @@
 
 (def boolean-type
   ( ->  (t/make-type  :boolean
-                      :recognizer boolean?
+                      :recognized-by boolean?
                       :attributes #{:logical})
         aspects/make-equatable
         aspects/make-movable

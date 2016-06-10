@@ -345,7 +345,7 @@
   "builds the `:tagspace` collection type, which can hold arbitrary and mixed contents and uses numeric indices"
   (let [typename :tagspace]
   (-> (t/make-type  :tagspace
-                    :recognizer tagspace?
+                    :recognized-by tagspace?
                     :attributes #{:collection :tagspace})
       (t/attach-instruction , tagspace-count)
       (t/attach-instruction , tagspace-keys)

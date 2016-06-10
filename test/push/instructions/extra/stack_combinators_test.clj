@@ -14,7 +14,7 @@
 ;; fixtures
 
 (def foo-type (-> (t/make-type  :foo
-                                :recognizer number?
+                                :recognized-by number?
                                 :attributes #{:foo})
                    make-movable))
 

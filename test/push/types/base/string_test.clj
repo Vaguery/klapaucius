@@ -10,7 +10,7 @@
 
 
 (fact "string-type has the correct :recognizer"
-  (:recognizer string-type) => (exactly string?))
+  (:recognizer (:router string-type)) => (exactly string?))
 
 
 (fact "string-type has the expected :attributes"

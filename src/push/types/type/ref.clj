@@ -90,7 +90,7 @@
 
 (def ref-type
   ( ->  (t/make-type    :ref
-                        :recognizer keyword?
+                        :recognized-by keyword?
                         :attributes #{:base})
 
         (t/attach-instruction quote-refs)

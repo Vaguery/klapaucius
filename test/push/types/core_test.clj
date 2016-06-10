@@ -2,7 +2,8 @@
   (:require [push.interpreter.core :as i]
             [push.instructions.core :as instr]
             [push.instructions.dsl :as d]
-            [push.instructions.aspects :as aspects])
+            [push.instructions.aspects :as aspects]
+            [push.router.core :as router])
   (:use midje.sweet)
   (:use [push.types.core])
   )
@@ -14,19 +15,31 @@
 ;; PushType records
 
 
-(fact "`make-type` takes a keyword and recognizer"
-  (make-type :integer :recognizer integer?) =>
-    {:name :integer, :recognizer integer?, :attributes #{}, :instructions {}})
+(fact "`make-type` takes a type name at a minimum"
+  (let [i (make-type :integer)]
+    (:name i) => :integer
+    (:attributes i) => #{}
+    (:instructions i) => {}
+    (router/router-recognize? (:router i) 99) => false  ;; NOTE! default recognizer
+    ))
 
 
-(fact "`make-type` defaults the :recognizer to #(false)"
-  ((:recognizer (make-type :foo)) 99) => false)
+(fact "`make-type` can be called with a type name and a :recognizer"
+  (let [i (make-type :integer :recognized-by integer?)]
+    (:name i) => :integer
+    (:attributes i) => #{}
+    (:instructions i) => {}
+    (router/router-recognize? (:router i) 99) => true
+    (router/router-recognize? (:router i) 9.9) => false
+    ))
+
+
 
 
 (fact "`make-type` takes an optional :attributes set"
   (:attributes (make-type 
                   :integer 
-                  :recognizer integer? 
+                  :recognized-by integer? 
                   :attributes #{:comparable :numeric})) => #{:comparable :numeric})
 
 

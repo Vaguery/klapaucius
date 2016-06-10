@@ -10,7 +10,7 @@
 
 
 (fact "integer-type has the correct :recognizer"
-  (:recognizer integer-type) => (exactly integer?))
+  (:recognizer (:router integer-type)) => (exactly integer?))
 
 
 (fact "integer-type has the expected :attributes"

@@ -119,7 +119,7 @@
     "`:foo->string` pops the top item from the `:foo` stack and converts it to a `:string` (using Clojure's `str` function)")
 
 
-(def i-know-foo (t/make-type :foo :recognizer integer?))
+(def i-know-foo (t/make-type :foo :recognized-by integer?))
 
 
 (fact "a generated stackdepth-instruction has a reasonable docstring"

@@ -102,7 +102,7 @@
 
 (def char-type
   ( ->  (t/make-type  :char
-                      :recognizer char?
+                      :recognized-by char?
                       :attributes #{:string})
         aspects/make-comparable
         aspects/make-equatable

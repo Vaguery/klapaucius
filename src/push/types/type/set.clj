@@ -75,7 +75,7 @@
   "builds the basic `:set` type, which can hold arbitrary and mixed contents"
   (let [typename :set]
   (-> (t/make-type  :set
-                    :recognizer set?
+                    :recognized-by set?
                     :attributes #{:collection :set})
       aspects/make-cycling
       aspects/make-equatable

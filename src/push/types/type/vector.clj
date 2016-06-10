@@ -36,7 +36,7 @@
   (let [typename :vector
         componentname :code]
   (-> (t/make-type  :vector
-                      :recognizer vector?
+                      :recognized-by vector?
                       :attributes #{:collection :vector})
       aspects/make-cycling
       aspects/make-equatable

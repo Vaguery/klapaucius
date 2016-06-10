@@ -387,7 +387,7 @@
 
 (def string-type
   ( ->  (t/make-type  :string
-                      :recognizer string?
+                      :recognized-by string?
                       :attributes #{:string :base})
         aspects/make-cycling
         aspects/make-equatable

@@ -1,5 +1,6 @@
 (ns push.types.core
-  (:require [push.instructions.core :as core])
+  (:require [push.instructions.core :as core]
+            [push.router.core :as router])
   )
 
 
@@ -15,16 +16,24 @@
     })
 
 
-(defrecord PushType [name recognizer attributes instructions])
+(defrecord PushType [name router attributes instructions])
 
 
 (defn make-type
-  "Create a PushType record from a name (keyword), with
-  optional :recognizer :attributes and :instructions"
+  "Create a PushType record from a name (keyword) and a router (PushRouter record), with optional :attributes and :instructions"
   [name & {
-    :keys [recognizer attributes instructions] 
-    :or {recognizer (constantly false) attributes #{} instructions {}}}]
-  (->PushType name recognizer attributes instructions))
+    :keys [recognized-by router attributes instructions] 
+    :or {recognized-by (constantly false)
+         router (router/make-router name :recognizer recognized-by)
+         attributes #{}
+         instructions {}}}]
+  (->PushType name router attributes instructions))
+
+
+(defn recognize?
+  "takes a PushType and any item, and returns true of the `:recognizer` of the type's `:router` returns true when applied to the item"
+  [type item]
+  (router/router-recognize? (:router type) item))
 
 
 (defn attach-instruction
