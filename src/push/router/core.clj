@@ -11,7 +11,7 @@
     :keys [recognizer target-stack preprocessor]
     :or {recognizer (constantly false)
          target-stack name
-         preprocessor #(identity %)}}]
+         preprocessor identity}}]
   (->PushRouter name recognizer target-stack preprocessor))
 
 

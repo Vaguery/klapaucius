@@ -15,6 +15,7 @@
   (:use push.types.module.log)
   (:use push.types.module.error)
   (:use push.types.type.generator)
+  (:use push.types.type.quoted)
   (:use push.types.type.tagspace)
   (:use push.types.type.vectorized)
   (:use push.types.type.vector)
@@ -33,6 +34,7 @@
     char-type
     float-type
     generator-type
+    quoted-type
     ref-type
     string-type
     tagspace-type
@@ -76,6 +78,7 @@
   - generator-type
   - log-module
   - print-module
+  - quoted-type
   - ref-type
   - string-type
   - booleans-type
