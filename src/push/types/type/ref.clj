@@ -58,6 +58,18 @@
 
 
 
+(def ref-known?
+  (core/build-instruction
+    ref-known?
+    "`:ref-known?` pops the top `:ref` keyword and `true` if it is one of the defined `:binding` keys"
+    :tags #{:binding}
+    (d/consume-top-of :ref :as :arg)
+    (d/save-bindings :as :known) ;; just the keys
+    (d/calculate [:known :arg] #(boolean (some #{%2} %1)) :as :result)
+    (d/push-onto :boolean :result)))
+
+
+
 (def ref-lookup
   (core/build-instruction
     ref-lookup
@@ -99,6 +111,7 @@
         (t/attach-instruction ref-dump)
         (t/attach-instruction ref-forget)
         (t/attach-instruction ref-fullquote)
+        (t/attach-instruction ref-known?)
         (t/attach-instruction ref-lookup)
         (t/attach-instruction ref-new)
 

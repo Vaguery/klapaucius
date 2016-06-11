@@ -128,3 +128,22 @@
     (push.core/get-stack
       (i/execute-instruction (i/push-item hasref :ref :f) :ref-lookup) :exec) => '()
     ))
+
+
+(fact ":ref-known? returns a boolean indicating whether the key exists in :bindings"
+  (let [hasref 
+    (assoc
+      (push.interpreter.templates.one-with-everything/make-everything-interpreter
+        :stacks {:ref '(:x :y)})
+      :bindings {:x '(8)})]
+    (push.core/get-stack hasref :ref) => '(:x :y)
+    (push.core/get-stack hasref :boolean) => '()
+    (:bindings hasref) => {:x '(8)}
+
+
+    (push.core/get-stack (i/execute-instruction hasref :ref-known?) :boolean) =>
+      '(true)
+    (push.core/get-stack
+      (i/execute-instruction (i/push-item hasref :ref :f) :ref-known?) :boolean) =>
+      '(false)
+    ))
