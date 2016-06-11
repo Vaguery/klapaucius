@@ -54,6 +54,32 @@
 
 
 
+(let 
+  [foo-type     (t/make-type :foo)
+   fixed-foo    (t/attach-instruction foo-type (to-tagspaceint foo-type))]
+(tabular
+  (fact "`:foo->tagspaceint` generates an error if that keys fall out of range"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks fixed-foo ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction              ?expected
+
+    {:foo '([1 2 3 4 5])
+     :integer (list Long/MAX_VALUE 2)
+     :tagspace '()}            :foo->tagspaceint            {:foo '()
+                                                          :integer '()
+                                                          :tagspace '()
+                                                          :error '({:item "foo->tagspaceint out of bounds", :step 0})}
+
+    {:foo '([1 2 3 4 5])
+     :integer (list Long/MIN_VALUE -2)
+     :tagspace '()}            :foo->tagspaceint            {:foo '()
+                                                          :integer '()
+                                                          :tagspace '()
+                                                          :error '({:item "foo->tagspaceint out of bounds", :step 0})}
+
+))
+
 
 (let 
   [foo-type     (t/make-type :foo)

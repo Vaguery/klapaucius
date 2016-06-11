@@ -6,6 +6,8 @@
 
 
 
+
+
 ;; INSTRUCTIONS
 
 
@@ -23,11 +25,20 @@
       `(push.instructions.dsl/consume-top-of :integer :as :interval)
       `(push.instructions.dsl/consume-top-of :integer :as :start)
       `(push.instructions.dsl/calculate [:arg] #(count %1) :as :how-many)
+      `(push.instructions.dsl/calculate [:start :interval :how-many]
+          #(+' %1 (*' %2 %3)) :as :end)
+      `(push.instructions.dsl/calculate [:end]
+          #(or (< %1 Long/MIN_VALUE) (> %1 Long/MAX_VALUE)) :as :invalid)
       `(push.instructions.dsl/calculate [:how-many :start :interval]
-        #(take %1 (iterate (partial + %3) %2)) :as :indices)
-      `(push.instructions.dsl/calculate [:indices :arg]
-        #(push.types.type.tagspace/make-tagspace (zipmap %1 %2)) :as :result)
-      `(push.instructions.dsl/push-onto :tagspace :result)))))
+          #(take %1 (iterate (partial + %3) %2)) :as :indices)
+      `(push.instructions.dsl/calculate [:invalid :indices :arg]
+          #(if %1 nil
+            (push.types.type.tagspace/make-tagspace (zipmap %2 %3))) :as :result)
+      `(push.instructions.dsl/calculate [:invalid]
+          #(if %1 (str ~instruction-name " out of bounds") nil) :as :warning)
+      `(push.instructions.dsl/push-onto :tagspace :result)
+      `(push.instructions.dsl/record-an-error :from :warning)
+      ))))
 
 
 
