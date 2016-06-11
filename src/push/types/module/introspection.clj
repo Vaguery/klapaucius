@@ -17,6 +17,17 @@
 
 
 
+(def push-bindingcount
+  (core/build-instruction
+    push-bindingcount
+    "`:push-bindingcount` pushes the number of registered bindings to `:integer`"
+    :tags #{:introspection}
+    (d/save-bindings :as :known)
+    (d/calculate [:known] #(count (keys %)) :as :count)
+    (d/push-onto :integer :count)))
+
+
+
 (def push-bindingset
   (core/build-instruction
     push-bindingset
@@ -53,6 +64,7 @@
   ( ->  (t/make-module  :introspection
                         :attributes #{:introspection})
 
+        (t/attach-instruction , push-bindingcount)
         (t/attach-instruction , push-bindings)
         (t/attach-instruction , push-bindingset)
         (t/attach-instruction , push-counter)
