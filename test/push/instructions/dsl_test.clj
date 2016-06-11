@@ -548,13 +548,13 @@
   (fact "all the bindings are saved as a set in the named scratch variable"
     (get-local-from-dslblob :inp
       (#'push.instructions.dsl/save-bindings [nada {}] :as :inp)) =>
-        #{}
+        '()
 
 
     (get-local-from-dslblob :inp
       (#'push.instructions.dsl/save-bindings
         [(m/basic-interpreter :bindings {:a 8 :b 6}) {}] :as :inp)) =>
-          #{:a :b})
+          '(:a :b))
 
 
   (fact "raises an exception when the :as arg is missing"
