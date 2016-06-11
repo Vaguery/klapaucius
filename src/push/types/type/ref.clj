@@ -37,6 +37,21 @@
 
 
 
+(def ref-exchange
+  (core/build-instruction
+    ref-exchange
+    "`:ref-exchange` pops the top two `:ref` keywords; if they are references to the same binding, there is no effect; if either or both is an undefined `:ref`, it has an empty value stack created as needed"
+    :tags #{:binding}
+    (d/consume-top-of :ref :as :arg1)
+    (d/consume-top-of :ref :as :arg2)
+    (d/save-binding-stack :arg1 :as :values1)
+    (d/save-binding-stack :arg2 :as :values2)
+    (d/replace-binding :values1 :into :arg2)
+    (d/replace-binding :values2 :into :arg1)
+    ))
+
+
+
 (def ref-forget
   (core/build-instruction
     ref-forget
@@ -109,6 +124,7 @@
         (t/attach-instruction unquote-refs)
         (t/attach-instruction ref-clear)
         (t/attach-instruction ref-dump)
+        (t/attach-instruction ref-exchange)
         (t/attach-instruction ref-forget)
         (t/attach-instruction ref-fullquote)
         (t/attach-instruction ref-known?)

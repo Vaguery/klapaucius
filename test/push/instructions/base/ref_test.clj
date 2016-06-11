@@ -147,3 +147,22 @@
       (i/execute-instruction (i/push-item hasref :ref :f) :ref-known?) :boolean) =>
       '(false)
     ))
+
+
+
+(fact ":ref-exchange swaps the stacks of two bindings"
+  (let [hasref 
+    (assoc
+      (push.interpreter.templates.one-with-everything/make-everything-interpreter
+        :stacks {:ref '(:x :y)})
+      :bindings {:x '(8) :y '(false)})]
+    (push.core/get-stack hasref :ref) => '(:x :y)
+
+
+    (:bindings (i/execute-instruction hasref :ref-exchange)) =>
+      {:x '(false) :y '(8)}
+    (:bindings (i/execute-instruction (i/push-item hasref :ref :f) :ref-exchange)) =>
+      {:f '(8), :x '(), :y '(false)}
+    (:bindings (i/execute-instruction (assoc hasref :bindings {}) :ref-exchange)) =>
+      {:x (), :y ()} ;; both are created
+    ))
