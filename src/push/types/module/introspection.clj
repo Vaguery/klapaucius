@@ -6,25 +6,26 @@
             ))
 
 
-(def push-bindings
-  (core/build-instruction
-    push-bindings
-    "`:push-bindings` pushes a list (in sorted order) containing all the registered :bindings keywords to the :code stack"
-    :tags #{:introspection}
-    (d/save-bindings :as :known)
-    (d/calculate [:known] #(into '() (reverse (sort %1))) :as :listed)
-    (d/push-onto :code :listed)))
-
-
 
 (def push-bindingcount
   (core/build-instruction
     push-bindingcount
     "`:push-bindingcount` pushes the number of registered bindings to `:integer`"
-    :tags #{:introspection}
+    :tags #{:binding :introspection}
     (d/save-bindings :as :known)
     (d/calculate [:known] #(count (keys %)) :as :count)
     (d/push-onto :integer :count)))
+
+
+
+(def push-bindings
+  (core/build-instruction
+    push-bindings
+    "`:push-bindings` pushes a list (in sorted order) containing all the registered :bindings keywords to the :code stack"
+    :tags #{:binding :introspection}
+    (d/save-bindings :as :known)
+    (d/calculate [:known] #(into '() (reverse (sort %1))) :as :listed)
+    (d/push-onto :code :listed)))
 
 
 
@@ -32,9 +33,10 @@
   (core/build-instruction
     push-bindingset
     "`:push-bindingset` pushes a set containing all the registered :bindings keywords to the :set stack"
-    :tags #{:set :introspection}
+    :tags #{:set :binding :introspection}
     (d/save-bindings :as :known)
-    (d/push-onto :set :known)))
+    (d/calculate [:known] #(into #{} %1) :as :bindingset)
+    (d/push-onto :set :bindingset)))
 
 
 
@@ -57,6 +59,19 @@
     (d/push-onto :set :dictionary)))
 
 
+
+(def push-nthref
+  (core/build-instruction
+    push-nthref
+    "`:push-nthref` takes an `:integer`, maps that value onto the number of `:bindings` it knows, and pushes the indexed key to `:ref` (after sorting the list of keywords)"
+    :tags #{:binding :introspection}
+    (d/consume-top-of :integer :as :i)
+    (d/save-bindings :as :known) ;; just the keys
+    (d/calculate [:known :i] #(u/safe-mod %2 (count %1)) :as :idx)
+    (d/calculate [:known :idx] #(if (empty? %1) nil (nth (sort %1) %2)) :as :result)
+    (d/push-onto :ref :result)
+    ))
+
 ;;;;;;;;;;;;;;;;;
 
 
@@ -69,4 +84,5 @@
         (t/attach-instruction , push-bindingset)
         (t/attach-instruction , push-counter)
         (t/attach-instruction , push-instructionset)
+        (t/attach-instruction , push-nthref)
         ))

@@ -2,7 +2,7 @@
   (:require [push.interpreter.core :as i]
             [push.types.core :as t]
             [push.util.code-wrangling :as u]
-            [push.interpreter.templates.classic :as c])
+            [push.interpreter.templates.one-with-everything :as o])
   (:use midje.sweet)
   (:use [push.util.test-helpers])
   (:use push.types.module.introspection)
@@ -13,7 +13,7 @@
 
 (def simple-case 
   (i/register-type
-    (c/classic-interpreter :bindings {:c 1 :b false} :counter 77)
+    (o/make-everything-interpreter :bindings {:c 1 :b false} :counter 77)
     standard-introspection-module))
 
 
@@ -71,3 +71,38 @@
     ?set-stack ?items ?instruction     ?get-stack   ?expected
     :integer       '()    :push-bindingcount    
                                        :integer     '(2))
+
+
+
+(tabular
+  (fact ":push-nthref pushes indexed binding key (after sorting) to :ref"
+    (register-type-and-check-instruction-in-this-interpreter
+      simple-case
+      ?set-stack ?items standard-introspection-module ?instruction ?get-stack) => ?expected)
+
+    ?set-stack ?items   ?instruction     ?get-stack   ?expected
+    :integer    '(1)    :push-nthref    
+                                         :ref         '(:c)
+    :integer    '(0)    :push-nthref    
+                                         :ref         '(:b)
+    :integer    '(11)   :push-nthref    
+                                         :ref         '(:c)
+    :integer    '(-21)  :push-nthref    
+                                         :ref         '(:c))
+
+
+(tabular
+  (fact ":push-nthref works when no :bindings are defined"
+    (register-type-and-check-instruction-in-this-interpreter
+      (assoc simple-case :bindings {})
+      ?set-stack ?items standard-introspection-module ?instruction ?get-stack) => ?expected)
+
+    ?set-stack ?items   ?instruction     ?get-stack   ?expected
+    :integer    '(1)    :push-nthref    
+                                         :ref         '()
+    :integer    '(0)    :push-nthref    
+                                         :ref         '()
+    :integer    '(11)   :push-nthref    
+                                         :ref         '()
+    :integer    '(-21)  :push-nthref    
+                                         :ref         '())
