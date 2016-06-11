@@ -51,7 +51,7 @@
     "`:tagspace-count` pops the top `:tagspace` item and pushes a list containing the number of keys and the tagspace itself onto the `:exec` stack."
     :tags #{:tagspace :collection}
     (d/consume-top-of :tagspace :as :arg)
-    (d/calculate [:arg] #(list (count (:contents %1)) %1) :as :countlist)
+    (d/calculate [:arg] #(list (long (count (:contents %1))) %1) :as :countlist)
     (d/push-onto :exec :countlist)))
 
 

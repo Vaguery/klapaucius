@@ -63,7 +63,6 @@
 
 ;; fixture
 
-(def zerochar-list (list (char 0)))
 
 (tabular
   (fact ":integer->asciichar drops the top :integer into [0..128] and pushes that ASCII character"
@@ -77,10 +76,10 @@
     :integer    '(-37)        :integer->asciichar   :char         '(\[)
     :integer    '(200)        :integer->asciichar   :char         '(\H)
     ;; edge cases
-    :integer    '(0)          :integer->asciichar   :char         zerochar-list
-    :integer    '(128)        :integer->asciichar   :char         zerochar-list
-    :integer    '(256)        :integer->asciichar   :char         zerochar-list
-    :integer    '(-128)       :integer->asciichar   :char         zerochar-list
+    :integer    '(0)          :integer->asciichar   :char         (list (char 0))
+    :integer    '(128)        :integer->asciichar   :char         (list (char 0))
+    :integer    '(256)        :integer->asciichar   :char         (list (char 0))
+    :integer    '(-128)       :integer->asciichar   :char         (list (char 0))
     ;; missing args
     :integer    '()           :integer->asciichar   :char         '())
 
@@ -98,8 +97,8 @@
     :integer    '(-17212)     :integer->char   :char         '(\볃)
     :integer    '(2764)       :integer->char   :char         '(\ૌ)
     ;; edge cases
-    :integer    '(0)          :integer->char   :char         zerochar-list
-    :integer    '(65535)      :integer->char   :char         zerochar-list
+    :integer    '(0)          :integer->char   :char         (list (char 0))
+    :integer    '(65535)      :integer->char   :char         (list (char 0))
     :integer    '(256)        :integer->char   :char         '(\Ā)
     :integer    '(-128)       :integer->char   :char         '(\ｿ)
     ;; missing args
@@ -115,21 +114,36 @@
     ;; all the letters
     :float    '(88.9)         :float->asciichar   :char         '(\X)
     :float    '(37.2)         :float->asciichar   :char         '(\%)
-    :float    '(-37.9)        :float->asciichar   :char         '(\[)
+    :float    '(-37.9)        :float->asciichar   :char         '(\Z)
     :float    '(200.2)        :float->asciichar   :char         '(\H)
     ;; edge cases
-    :float    '(0.2)          :float->asciichar   :char         zerochar-list
-    :float    '(128.2)        :float->asciichar   :char         zerochar-list
-    :float    '(256.2)        :float->asciichar   :char         zerochar-list
-    :float    '(-128.2)       :float->asciichar   :char         zerochar-list
-    ;; bounds for internal typecast (huge bigint mod 128 -> 0)
-    :float    '(1.1e88M)      :float->asciichar   :char         zerochar-list
-    :float    '(111111111111111111111111111111111111111111.0M)
-                              :float->asciichar   :char         '(\G)
+    :float    '(0.2)          :float->asciichar   :char         (list (char 0))
+    :float    '(128.2)        :float->asciichar   :char         (list (char 0))
+    :float    '(256.2)        :float->asciichar   :char         (list (char 0))
+    :float    '(-128.2)       :float->asciichar   :char         (list (char 127))
+
+
+
     ;; missing args
-    :float    '()             :float->asciichar   :char         '())
+    :float    '()             :float->asciichar   :char         '()
+    )
 
 
+
+(tabular
+  (future-fact ":float->asciichar drops the top :float down to an integer value in [0..128] and pushes that ASCII character"
+    (register-type-and-check-instruction
+        ?set-stack ?items char-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items          ?instruction  ?get-stack         ?expected
+    ;; overflows create :errors
+    :float    '(1.1e88M)      :float->asciichar   :char         '()
+    :float    '(1.1e88M)      :float->asciichar   :error        '()
+    :float    '(111111111111111111111111111111111111111111.0M)
+                              :float->asciichar   :char         '()
+    :float    '(111111111111111111111111111111111111111111.0M)
+                              :float->asciichar   :error        '()
+                              )
 
 (tabular
   (fact ":float->char drops the top :float down to an integer value in [0..65535] and pushes that ASCII character"
@@ -140,13 +154,13 @@
     ;; all the letters
     :float    '(88.9)         :float->char   :char         '(\X)
     :float    '(37.2)         :float->char   :char         '(\%)
-    :float    '(-22771.9)     :float->char   :char         '(\꜌)
+    :float    '(-22771.9)     :float->char   :char         (list (char 42763.1))
     :float    '(200.2)        :float->char   :char         '(\È)
     ;; comparison to :integer->char
-    :float    '(0.2)          :float->char   :char         zerochar-list
-    :float    '(65535.3)      :float->char   :char         zerochar-list
+    :float    '(0.2)          :float->char   :char         (list (char 0))
+    :float    '(65535.3)      :float->char   :char         (list (char 0))
     :float    '(256.9)        :float->char   :char         '(\Ā)
-    :float    '(-128.2)       :float->char   :char         '(\ｿ)
+    :float    '(-128.2)       :float->char   :char         (list (char 65406.8))
     ;; bounds for internal typecast (huge bigint mod 65535 -> 0)
     :float    '(1.1e88M)      :float->char   :char         '(\뗖)
     :float    '(111111111111111111111111111111111111111.0M)

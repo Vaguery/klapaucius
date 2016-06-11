@@ -5,25 +5,24 @@
             ))
 
 
-(defn typesafe-rand-int
+(defn valid-integer-arg?
   [arg]
-  (cond
-    (= (type arg) java.lang.Long) (long (rand arg))
-    :else (rand-int arg)))
+  (instance? java.lang.Long arg))
 
 
 
 (def integer-uniform
   (core/build-instruction
     integer-uniform
-    "`:integer-uniform` pops the top `:integer` value, and pushes a uniform random integer sampled from the range [0,:int). If the integer is negative, a negative result is returned; if the (Push) :integer value is larger than the Java `long` size limit, what is returned is the product of a random `Double` and the range argument, rounded down."
+    "`:integer-uniform` pops the top `:integer` value, and pushes a uniform random integer sampled from the range [0,:int). If the integer is negative, a negative result is returned; if the argument is out of bounds, an `:error` is pushed instead of a value."
     :tags #{:numeric :random}
     (d/consume-top-of :integer :as :arg)
-    (d/calculate [:arg] #(cond
-                          (neg? %1) (- (typesafe-rand-int %1))
-                          (zero? %1) 0 
-                          :else (typesafe-rand-int %1)) :as :result)
-    (d/push-onto :integer :result)))
+    (d/calculate [:arg] #(valid-integer-arg? %1) :as :valid)
+    (d/calculate [:valid :arg] #(if %1 (rand-int %2) nil) :as :result)
+    (d/calculate [:valid]
+      #(if %1 nil ":integer-uniform argument invalid") :as :warning)
+    (d/push-onto :integer :result)
+    (d/record-an-error :from :warning)))
 
 
 

@@ -255,7 +255,7 @@
       (str "`" typename "-length` pops the top `" typename "` item and pushes its count to the `:integer` stack.")
       :tags #{:vector}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
-      '(push.instructions.dsl/calculate [:arg1] #(count %1) :as :len)
+      '(push.instructions.dsl/calculate [:arg1] #(long (count %1)) :as :len)
       `(push.instructions.dsl/push-onto :integer :len)))))
 
 

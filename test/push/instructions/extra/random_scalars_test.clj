@@ -11,26 +11,34 @@
 
 (tabular
   (fact ":integer-uniform returns a random integer between 0 and the top :integer value"
-    (prerequisite (typesafe-rand-int anything) => ?diceroll)
+    (prerequisite (rand-int 77) => 33)
+    (prerequisite (rand-int 0)  => 0)
+    (prerequisite (rand-int -100) => -13)
     (register-type-and-check-instruction
       ?set-stack ?items random-scalars-module ?instruction ?get-stack) => ?expected)
 
-    ?set-stack   ?items    ?instruction     ?get-stack     ?expected         ?diceroll
-    :integer     '(77)     :integer-uniform     :integer       '(33)           33
-    :integer     '(0)      :integer-uniform     :integer       '(0)            812
-    :integer     '(-100)   :integer-uniform     :integer       '(-13)          13
+    ?set-stack   ?items    ?instruction       ?get-stack     ?expected  
+    :integer     '(77)     :integer-uniform   :integer       '(33)      
+    :integer     '(0)      :integer-uniform   :integer       '(0)       
+    :integer     '(-100)   :integer-uniform   :integer       '(-13)     
     )
 
 
 (tabular
-  (fact ":integer-uniform does not throw a java.lang.IllegalArgumentException error when called with a BigInt argument"
+  (fact ":integer-uniform creates an :error when called with an out-of-bounds argument"
     (register-type-and-check-instruction
-      ?set-stack ?items random-scalars-module ?instruction ?get-stack) =not=>
-          (throws))
+      ?set-stack ?items random-scalars-module ?instruction ?get-stack) => ?expected)
 
-    ?set-stack   ?items                                            ?instruction         ?get-stack
-    :integer     '(10000000000000000000000000000000000000000000N)  :integer-uniform     :integer     
-    :integer     '(115428383193968912)                             :integer-uniform     :integer     
+    ?set-stack   ?items          ?instruction         ?get-stack     ?expected
+    :integer     '(10000000000000000000000000000000000000000000N)
+                                 :integer-uniform     :integer        '()
+    :integer     '(10000000000000000000000000000000000000000000N)
+                                 :integer-uniform     :error          '({:item ":integer-uniform argument invalid", :step 0})
+
+    :integer     (list (+' Long/MIN_VALUE -1))
+                                 :integer-uniform     :integer        '()
+    :integer     (list (+' Long/MIN_VALUE -1))
+                                 :integer-uniform     :error          '({:item ":integer-uniform argument invalid", :step 0})
     )
 
 

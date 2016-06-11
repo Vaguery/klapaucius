@@ -14,7 +14,7 @@
 
 (defn sign
   "returns +1 if the number is strictly positive, -1 if it's strictly negative, 0 if 0"
-  [i] (compare i 0))
+  [i] (long (compare i 0)))
 
 
 (defn valid-int?

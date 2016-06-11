@@ -13,7 +13,7 @@
     "`:push-bindingcount` pushes the number of registered bindings to `:integer`"
     :tags #{:binding :introspection}
     (d/save-bindings :as :known)
-    (d/calculate [:known] #(count (keys %)) :as :count)
+    (d/calculate [:known] #(long (count (keys %))) :as :count)
     (d/push-onto :integer :count)))
 
 

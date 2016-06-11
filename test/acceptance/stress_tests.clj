@@ -52,7 +52,7 @@
 
 
 (defn random-char
-  [] (char (+ 14 (random-integer 200))))
+  [] (char (+ 32 (random-integer 200))))
 
 
 (defn random-chars

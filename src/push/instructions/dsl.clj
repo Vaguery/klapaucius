@@ -508,7 +508,7 @@
 (defn save-counter
   "Saves the current :counter value to the named scratch variable"
   [[interpreter scratch] & {:keys [as]}]
-  (let [c (:counter interpreter)]
+  (let [c (long (:counter interpreter))]
     (if (nil? as)
           (oops/throw-missing-key-exception :as)
        [interpreter (assoc scratch as c)])))

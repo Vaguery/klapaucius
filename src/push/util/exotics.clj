@@ -3,7 +3,7 @@
 
 (defn char-to-digits
   [c]
-  (- (int c) 48))
+  (- (long c) 48))
 
 
 
