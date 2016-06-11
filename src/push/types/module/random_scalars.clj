@@ -18,7 +18,7 @@
     :tags #{:numeric :random}
     (d/consume-top-of :integer :as :arg)
     (d/calculate [:arg] #(valid-integer-arg? %1) :as :valid)
-    (d/calculate [:valid :arg] #(if %1 (rand-int %2) nil) :as :result)
+    (d/calculate [:valid :arg] #(if %1 (long (rand %2)) nil) :as :result)
     (d/calculate [:valid]
       #(if %1 nil ":integer-uniform argument invalid") :as :warning)
     (d/push-onto :integer :result)

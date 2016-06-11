@@ -11,16 +11,16 @@
 
 (tabular
   (fact ":integer-uniform returns a random integer between 0 and the top :integer value"
-    (prerequisite (rand-int 77) => 33)
-    (prerequisite (rand-int 0)  => 0)
-    (prerequisite (rand-int -100) => -13)
+    (prerequisite (rand 77) => 33)
+    (prerequisite (rand 0)  => 0)
+    (prerequisite (rand -100) => -13)
     (register-type-and-check-instruction
       ?set-stack ?items random-scalars-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack   ?items    ?instruction       ?get-stack     ?expected  
     :integer     '(77)     :integer-uniform   :integer       '(33)      
     :integer     '(0)      :integer-uniform   :integer       '(0)       
-    :integer     '(-100)   :integer-uniform   :integer       '(-13)     
+    :integer     '(-100)   :integer-uniform   :integer       '(-13)
     )
 
 
@@ -30,6 +30,7 @@
       ?set-stack ?items random-scalars-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack   ?items          ?instruction         ?get-stack     ?expected
+
     :integer     '(10000000000000000000000000000000000000000000N)
                                  :integer-uniform     :integer        '()
     :integer     '(10000000000000000000000000000000000000000000N)

@@ -21,7 +21,7 @@
 (defn rewrite-digits
   "Applies a totalistic rewrite rule to the digits of an integer value, using a given window size and preserving its sign"
   [number window]
-  (let [digits    (seq (str (max number (- number))))
+  (let [digits    (seq (str (max number (-' number))))
         extended  (extend-short-list digits (+ (count digits) (dec window)))
         windows   (partition window 1 extended)
         sums      (map #(apply + (map char-to-digits %)) windows)

@@ -261,7 +261,8 @@
   (rewrite-digits 8 2) => 6
   (rewrite-digits 8 3) => 4
   (rewrite-digits -63119988 3) => -5196527
-  (rewrite-digits -50000 3) => -50055)
+  (rewrite-digits -50000 3) => -50055
+  (rewrite-digits Long/MIN_VALUE 3) => -3783295979768903679N) ;; not pushed!
 
 
 (tabular
@@ -274,6 +275,8 @@
     :integer    '(-39812M)  :integer-totalistic3   :integer      '(-8164)
     :integer    '(235235235)       
                             :integer-totalistic3   :integer      '(0)
+    :integer    (list Long/MIN_VALUE)       
+                            :integer-totalistic3   :integer      '(-3783295979768903679)
 
 
     :integer    '(999999999999999999999N) ;;; intentionally overflowed

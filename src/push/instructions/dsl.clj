@@ -172,7 +172,7 @@
   [[interpreter scratch] stackname & {:keys [as]}]
   (if-let [scratch-var as]
     (if-let [stack (u/get-stack interpreter stackname)]
-      [interpreter (assoc scratch scratch-var (long (count stack)))]
+      [interpreter (assoc scratch scratch-var (count stack))]
       (oops/throw-unknown-stack-exception stackname))
     (oops/throw-missing-key-exception :as)))
 
@@ -508,7 +508,7 @@
 (defn save-counter
   "Saves the current :counter value to the named scratch variable"
   [[interpreter scratch] & {:keys [as]}]
-  (let [c (long (:counter interpreter))]
+  (let [c (:counter interpreter)]
     (if (nil? as)
           (oops/throw-missing-key-exception :as)
        [interpreter (assoc scratch as c)])))

@@ -14,12 +14,14 @@
 
 (defn sign
   "returns +1 if the number is strictly positive, -1 if it's strictly negative, 0 if 0"
-  [i] (long (compare i 0)))
+  [i] (compare i 0))
 
 
-(defn valid-int?
+(defn valid-push-integer?
   "checks class is java.lang.Long; used in bounds-checking"
-  [i] (instance? java.lang.Long i))
+  [i]
+  (or (instance? java.lang.Long i)
+      (instance? java.lang.Integer i)))
 
 
 ;; INSTRUCTIONS
@@ -59,7 +61,7 @@
     (d/consume-top-of :integer :as :arg2)
     (d/consume-top-of :integer :as :arg1)
     (d/calculate [:arg1 :arg2] #(+' %1 %2) :as :raw)
-    (d/calculate [:raw] #(valid-int? %1) :as :valid)
+    (d/calculate [:raw] #(valid-push-integer? %1) :as :valid)
     (d/calculate [:valid :raw] #(if %1 %2 nil) :as :result)
     (d/push-onto :integer :result)
     (d/calculate [:valid]
@@ -88,7 +90,7 @@
     :tags #{:numeric}
     (d/consume-top-of :integer :as :arg)
     (d/calculate [:arg] #(dec' %1) :as :raw)
-    (d/calculate [:raw] #(valid-int? %1) :as :valid)
+    (d/calculate [:raw] #(valid-push-integer? %1) :as :valid)
     (d/calculate [:valid :raw] #(if %1 %2 nil) :as :result)
     (d/push-onto :integer :result)
     (d/calculate [:valid]
@@ -121,7 +123,7 @@
     (d/calculate [:denominator :numerator]
       #(if (zero? %1) %2 nil) :as :replacement)
     (d/calculate [:denominator :numerator]
-      #(if (zero? %1) %1 (long (/ %2 %1))) :as :quotient)
+      #(if (zero? %1) %1 (/ %2 %1)) :as :quotient)
     (d/push-these-onto :integer [:replacement :quotient])
     (d/calculate [:denominator]
       #(if (zero? %1) ":integer-divide 0 denominator" nil) :as :warning)
@@ -147,7 +149,7 @@
     :tags #{:numeric}
     (d/consume-top-of :integer :as :arg)
     (d/calculate [:arg] #(inc' %1) :as :raw)
-    (d/calculate [:raw] #(valid-int? %1) :as :valid)
+    (d/calculate [:raw] #(valid-push-integer? %1) :as :valid)
     (d/calculate [:valid :raw] #(if %1 %2 nil) :as :result)
     (d/push-onto :integer :result)
     (d/calculate [:valid]
@@ -204,7 +206,7 @@
     (d/consume-top-of :integer :as :arg2)
     (d/consume-top-of :integer :as :arg1)
     (d/calculate [:arg1 :arg2] #(*' %1 %2) :as :raw)
-    (d/calculate [:raw] #(valid-int? %1) :as :valid)
+    (d/calculate [:raw] #(valid-push-integer? %1) :as :valid)
     (d/calculate [:valid :raw] #(if %1 %2 nil) :as :result)
     (d/push-onto :integer :result)
     (d/calculate [:valid]
@@ -239,7 +241,7 @@
     (d/consume-top-of :integer :as :arg2)
     (d/consume-top-of :integer :as :arg1)
     (d/calculate [:arg1 :arg2] #(-' %1 %2) :as :raw)
-    (d/calculate [:raw] #(valid-int? %1) :as :valid)
+    (d/calculate [:raw] #(valid-push-integer? %1) :as :valid)
     (d/calculate [:valid :raw] #(if %1 %2 nil) :as :result)
     (d/push-onto :integer :result)
     (d/calculate [:valid]
@@ -256,7 +258,7 @@
     :tags #{:numeric :conversion}
     (d/consume-top-of :integer :as :arg)
     (d/calculate [:arg] #(exotics/rewrite-digits %1 3) :as :raw)
-    (d/calculate [:raw] #(valid-int? %1) :as :valid)
+    (d/calculate [:raw] #(valid-push-integer? %1) :as :valid)
     (d/calculate [:valid :raw] #(if %1 %2 nil) :as :result)
     (d/push-onto :integer :result)
     (d/calculate [:valid]
@@ -364,7 +366,7 @@
 
 (def integer-type
   ( ->  (t/make-type  :integer
-                      :recognized-by #(instance? java.lang.Long %)
+                      :recognized-by valid-push-integer?
                       :attributes #{:numeric})
         aspects/make-comparable
         aspects/make-equatable

@@ -109,7 +109,7 @@
     (d/calculate
       [:do-this :counter :go?] 
       #(if %3 
-        (list %2 (long 0) :code-quote %1 :code-do*range) 
+        (list %2 0 :code-quote %1 :code-do*range) 
         (list %2 :code-quote %1)) :as :continuation)
     (d/push-onto :exec :continuation)))
 
@@ -130,7 +130,7 @@
     (d/consume-top-of :integer :as :end)
     (d/consume-top-of :integer :as :start)
     (d/calculate [:start :end] #(= %1 %2) :as :done?)
-    (d/calculate [:start :end] #(+ %1 (long (compare %2 %1))) :as :next)
+    (d/calculate [:start :end] #(+ %1 (compare %2 %1)) :as :next)
     (d/calculate
       [:do-this :start :end :next :done?] 
       #(if %5

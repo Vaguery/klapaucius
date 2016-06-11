@@ -197,7 +197,7 @@
     "`:string-length` pops the top `:string` and pushes its length (counting unicode-aware characters) to the `:integer` stack"
     :tags #{:string :base}
     (d/consume-top-of :string :as :arg1)
-    (d/calculate [:arg1] #(long (count %1)) :as :len)
+    (d/calculate [:arg1] #(count %1) :as :len)
     (d/push-onto :integer :len)))
 
 
