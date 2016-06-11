@@ -72,6 +72,16 @@
     (d/push-onto :ref :result)
     ))
 
+
+
+(def push-refcycler
+  (core/build-instruction
+    push-refcycler
+    "`:push-refcycler` pushes a code block to `:exec` that contains `(:push-bindings :code-cycler)`"
+    :tags #{:binding :generator :introspection}
+    (d/calculate [] #(list :push-bindings :code-cycler) :as :result)
+    (d/push-onto :exec :result)))
+
 ;;;;;;;;;;;;;;;;;
 
 
@@ -85,4 +95,5 @@
         (t/attach-instruction , push-counter)
         (t/attach-instruction , push-instructionset)
         (t/attach-instruction , push-nthref)
+        (t/attach-instruction , push-refcycler)
         ))

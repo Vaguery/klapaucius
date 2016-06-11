@@ -106,3 +106,16 @@
                                          :ref         '()
     :integer    '(-21)  :push-nthref    
                                          :ref         '())
+
+
+(def knows-things (assoc simple-case :bindings {:m '() :x '(2) :a '(1)}))
+
+(tabular
+  (fact ":push-refcycler creates a continuation to build a cycler"
+    (register-type-and-check-instruction-in-this-interpreter
+      knows-things
+      ?set-stack ?items standard-introspection-module ?instruction ?get-stack) => ?expected)
+
+    ?set-stack ?items   ?instruction     ?get-stack   ?expected
+    :exec     '()       :push-refcycler    
+                                         :exec       '((:push-bindings :code-cycler)))
