@@ -42,6 +42,8 @@
     (owe/make-everything-interpreter :bindings {:a 8}) :a) :exec) => '(8) ;; lookup
   (u/get-stack (handle-item
     (owe/make-everything-interpreter :bindings {:a 8 :b nil}) :b) :ref) => '()
+  (u/get-stack (handle-item
+    (owe/make-everything-interpreter :bindings {:a 8 :b nil}) :b) :exec) => '()
 
 
   (let [dumb (owe/make-everything-interpreter :bindings {:a 8 :b nil})]
