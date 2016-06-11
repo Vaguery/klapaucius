@@ -17,7 +17,7 @@
     ?set-stack  ?items          ?instruction      ?get-stack     ?expected
     ;; move it!
     :integer       '(92)      :integer->code         :code        '(92)
-    :integer       '()        :integer->code         :code       '()
+    :integer       '()        :integer->code         :code        '()
     )
 
 
@@ -31,7 +31,7 @@
 
     ?set-stack  ?items    ?instruction       ?get-stack     ?expected
     :integer    '(4 20)   :integer-abs       :integer        '(4 20)
-    :integer    '(-4 20)   :integer-abs      :integer        '(4 20)
+    :integer    '(-4 20)  :integer-abs       :integer        '(4 20)
     :integer    '(0 20)   :integer-abs       :integer        '(0 20))
 
 
@@ -50,6 +50,26 @@
     ;; overflow
     :integer    '(3333333333333333333 7777777777777777777)
                           :integer-add   :integer     '(11111111111111111110N))
+
+
+(tabular
+  (fact ":integer-biggest returns Long/MAX_VALUE"
+    (register-type-and-check-instruction
+        ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items    ?instruction       ?get-stack     ?expected
+    :integer    '()       :integer-biggest   :integer       '(9223372036854775807))
+
+
+
+(tabular
+  (fact ":integer-smallest returns Long/MIN_VALUE"
+    (register-type-and-check-instruction
+        ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items    ?instruction       ?get-stack     ?expected
+    :integer    '()       :integer-smallest   :integer      '(-9223372036854775808))
+
 
 
 (tabular

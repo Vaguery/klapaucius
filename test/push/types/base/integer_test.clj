@@ -10,7 +10,16 @@
 
 
 (fact "integer-type has the correct :recognizer"
-  (:recognizer (:router integer-type)) => (exactly integer?))
+  ((:recognizer (:router integer-type)) 9) => true
+  ((:recognizer (:router integer-type)) (- Long/MAX_VALUE 1)) => true
+  ((:recognizer (:router integer-type)) Long/MAX_VALUE) => true
+  ((:recognizer (:router integer-type)) (inc' Long/MAX_VALUE)) => false
+  ((:recognizer (:router integer-type)) 9999999999999999999999999979976126726) => false
+  ((:recognizer (:router integer-type)) false) => false
+  ((:recognizer (:router integer-type)) 3.0) => false
+  ((:recognizer (:router integer-type)) 3.1) => false
+  ((:recognizer (:router integer-type)) [3]) => false
+  )
 
 
 (fact "integer-type has the expected :attributes"

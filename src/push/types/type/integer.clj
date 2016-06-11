@@ -18,9 +18,29 @@
 ;; INSTRUCTIONS
 
 
+(def integer-biggest
+  (core/build-instruction
+    integer-biggest
+    "`:integer-biggest` returns the largest java.lang.Long value."
+    :tags #{:numeric}
+    (d/calculate [] #(Long/MAX_VALUE) :as :answer)
+    (d/push-onto :integer :answer)))
+
+
+
+(def integer-smallest
+  (core/build-instruction
+    integer-smallest
+    "`:integer-smallest` returns the smallest java.lang.Long value."
+    :tags #{:numeric}
+    (d/calculate [] #(Long/MIN_VALUE) :as :answer)
+    (d/push-onto :integer :answer)))
+
+
+
 (def integer-abs (t/simple-1-in-1-out-instruction
   "`:integer-abs` pushes the absolute value of the top `:integer` item"
-  :integer "abs" 'math/abs))
+  :integer "abs" 'Math/abs))
 
 
 
@@ -259,7 +279,7 @@
 
 (def integer-type
   ( ->  (t/make-type  :integer
-                      :recognized-by integer?
+                      :recognized-by (partial instance? java.lang.Long)
                       :attributes #{:numeric})
         aspects/make-comparable
         aspects/make-equatable
@@ -277,6 +297,7 @@
         (t/attach-instruction , float->integer)
         (t/attach-instruction , integer-abs)
         (t/attach-instruction , integer-add)
+        (t/attach-instruction , integer-biggest)
         (t/attach-instruction , integer-bits)
         (t/attach-instruction , integer-dec)
         (t/attach-instruction , integer-digits)
@@ -288,6 +309,7 @@
         (t/attach-instruction , integer-mod)
         (t/attach-instruction , integer-multiply)
         (t/attach-instruction , integer-sign)
+        (t/attach-instruction , integer-smallest)
         (t/attach-instruction , integer-some)
         (t/attach-instruction , integer-subtract)
         (t/attach-instruction , integer-totalistic3)
