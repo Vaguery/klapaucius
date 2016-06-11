@@ -8,7 +8,6 @@
 (defn typesafe-rand-int
   [arg]
   (cond
-    (= (type arg) clojure.lang.BigInt) (bigint (rand arg))
     (= (type arg) java.lang.Long) (long (rand arg))
     :else (rand-int arg)))
 

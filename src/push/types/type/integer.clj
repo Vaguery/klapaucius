@@ -12,7 +12,14 @@
 ;; SUPPORT
 
 
-(defn sign [i] (compare i 0))
+(defn sign
+  "returns +1 if the number is strictly positive, -1 if it's strictly negative, 0 if 0"
+  [i] (compare i 0))
+
+
+(defn valid-int?
+  "checks class is java.lang.Long; used in bounds-checking"
+  [i] (instance? java.lang.Long i))
 
 
 ;; INSTRUCTIONS
@@ -44,9 +51,21 @@
 
 
 
-(def integer-add (t/simple-2-in-1-out-instruction
-  "`:integer-add` pops the top two `:integer` items, and pushes their sum"
-  :integer "add" '+'))
+(def integer-add
+  (core/build-instruction
+    integer-add
+    "`:integer-add` pops the top two `:integer` items, and pushes their sum; if the result is out of bounds, then the arguments are consumed but an `:error` is created instead of the sum"
+    :tags #{:numeric}
+    (d/consume-top-of :integer :as :arg2)
+    (d/consume-top-of :integer :as :arg1)
+    (d/calculate [:arg1 :arg2] #(+' %1 %2) :as :raw)
+    (d/calculate [:raw] #(valid-int? %1) :as :valid)
+    (d/calculate [:valid :raw] #(if %1 %2 nil) :as :result)
+    (d/push-onto :integer :result)
+    (d/calculate [:valid]
+      #(if %1 nil ":integer-add out of bounds") :as :warning)
+    (d/record-an-error :from :warning)
+    ))
 
 
 
@@ -62,16 +81,27 @@
 
 
 
-(def integer-dec (t/simple-1-in-1-out-instruction
-  "`:integer-dec` subtracts 1 from the top `:integer` item"
-  :integer "dec" 'dec))
+(def integer-dec
+  (core/build-instruction
+    integer-dec
+    "`:integer-dec` pops the top `:integer` item, and pushes the next-lower `:integer`; if the result is out of bounds, then the argument is consumed but an `:error` is created instead of the new value"
+    :tags #{:numeric}
+    (d/consume-top-of :integer :as :arg)
+    (d/calculate [:arg] #(dec' %1) :as :raw)
+    (d/calculate [:raw] #(valid-int? %1) :as :valid)
+    (d/calculate [:valid :raw] #(if %1 %2 nil) :as :result)
+    (d/push-onto :integer :result)
+    (d/calculate [:valid]
+      #(if %1 nil ":integer-dec out of bounds") :as :warning)
+    (d/record-an-error :from :warning)
+    ))
 
 
 
 (def integer-digits
   (core/build-instruction
     integer-digits
-    "`:integer-digits` pops the top `:integer` and pushes a list of its digits (not including negative sign or bigint decorations) to `:exec` (so they end up back on `:integer` quickly."
+    "`:integer-digits` pops the top `:integer` and pushes a list of its digits (not including negative sign) to `:exec` (so they end up back on `:integer` quickly."
     :tags #{:numeric :conversion}
     (d/consume-top-of :integer :as :arg)
     (d/calculate [:arg]
@@ -91,7 +121,7 @@
     (d/calculate [:denominator :numerator]
       #(if (zero? %1) %2 nil) :as :replacement)
     (d/calculate [:denominator :numerator]
-      #(if (zero? %1) %1 (bigint (/ %2 %1))) :as :quotient)
+      #(if (zero? %1) %1 (long (/ %2 %1))) :as :quotient)
     (d/push-these-onto :integer [:replacement :quotient])
     (d/calculate [:denominator]
       #(if (zero? %1) ":integer-divide 0 denominator" nil) :as :warning)
@@ -110,9 +140,20 @@
 
 
 
-(def integer-inc (t/simple-1-in-1-out-instruction
-  "`:integer-inc` adds 1 to the top `:integer` item"
-  :integer "inc" 'inc))
+(def integer-inc
+  (core/build-instruction
+    integer-inc
+    "`:integer-inc` pops the top `:integer` item, and pushes the next-higher `:integer`; if the result is out of bounds, then the argument is consumed but an `:error` is created instead of the new value"
+    :tags #{:numeric}
+    (d/consume-top-of :integer :as :arg)
+    (d/calculate [:arg] #(inc' %1) :as :raw)
+    (d/calculate [:raw] #(valid-int? %1) :as :valid)
+    (d/calculate [:valid :raw] #(if %1 %2 nil) :as :result)
+    (d/push-onto :integer :result)
+    (d/calculate [:valid]
+      #(if %1 nil ":integer-inc out of bounds") :as :warning)
+    (d/record-an-error :from :warning)
+    ))
 
 
 
@@ -155,9 +196,21 @@
 
 
 
-(def integer-multiply (t/simple-2-in-1-out-instruction
-  "`:integer-multiply` pops the top two `:integer` items, and pushes their product"
-  :integer  "multiply" '*'))
+(def integer-multiply
+  (core/build-instruction
+    integer-multiply
+    "`:integer-multiply` pops the top two `:integer` items, and pushes their product; if the result is out of bounds, then the arguments are consumed but an `:error` is created instead of the sum"
+    :tags #{:numeric}
+    (d/consume-top-of :integer :as :arg2)
+    (d/consume-top-of :integer :as :arg1)
+    (d/calculate [:arg1 :arg2] #(*' %1 %2) :as :raw)
+    (d/calculate [:raw] #(valid-int? %1) :as :valid)
+    (d/calculate [:valid :raw] #(if %1 %2 nil) :as :result)
+    (d/push-onto :integer :result)
+    (d/calculate [:valid]
+      #(if %1 nil ":integer-multiply out of bounds") :as :warning)
+    (d/record-an-error :from :warning)
+    ))
 
 
 
@@ -178,19 +231,37 @@
 
 
 
-(def integer-subtract (t/simple-2-in-1-out-instruction
-  "`:integer-subtract` pops the top two `:integer` items, and pushes their difference, subtracting the top from the second" :integer "subtract" '-'))
+(def integer-subtract
+  (core/build-instruction
+    integer-subtract
+    "`:integer-subtract` pops the top two `:integer` items, and pushes their difference, subtracting the top from the second; if there is an overflow (too large or small) then the arguments are consumed but an `:error` is created instead of the difference"
+    :tags #{:numeric}
+    (d/consume-top-of :integer :as :arg2)
+    (d/consume-top-of :integer :as :arg1)
+    (d/calculate [:arg1 :arg2] #(-' %1 %2) :as :raw)
+    (d/calculate [:raw] #(valid-int? %1) :as :valid)
+    (d/calculate [:valid :raw] #(if %1 %2 nil) :as :result)
+    (d/push-onto :integer :result)
+    (d/calculate [:valid]
+      #(if %1 nil ":integer-subtract out of bounds") :as :warning)
+    (d/record-an-error :from :warning)
+    ))
 
 
 
 (def integer-totalistic3
   (core/build-instruction
     integer-totalistic3
-    "`:integer-totalistic3` pops the top `:integer`. Each digit is replaced by the sum of its current value and the two neighbors to the right, modulo 10, wrapping cyclically around the number. If it is negative, the result returned is still negative."
+    "`:integer-totalistic3` pops the top `:integer`. Each digit is replaced by the sum of its current value and the two neighbors to the right, modulo 10, wrapping cyclically around the number. If it is negative, the result returned is still negative. If the result is out of bounds, an `:error` is returned instead of a result."
     :tags #{:numeric :conversion}
     (d/consume-top-of :integer :as :arg)
-    (d/calculate [:arg] #(exotics/rewrite-digits %1 3) :as :result)
-    (d/push-onto :integer :result)))
+    (d/calculate [:arg] #(exotics/rewrite-digits %1 3) :as :raw)
+    (d/calculate [:raw] #(valid-int? %1) :as :valid)
+    (d/calculate [:valid :raw] #(if %1 %2 nil) :as :result)
+    (d/push-onto :integer :result)
+    (d/calculate [:valid]
+      #(if %1 nil ":integer-totalistic3 out of bounds") :as :warning)
+    (d/record-an-error :from :warning)))
 
 
 
@@ -233,11 +304,19 @@
 (def float->integer
   (core/build-instruction
     float->integer
-    "`:float->integer` pops the top `:float` item, and converts it to an `:integer` value (using CLojure's `bigint` function)"
+    "`:float->integer` pops the top `:float` item, and converts it to an `:integer` value; if the resulting number would be out of bounds (too large or small), an `:error` is produced instead"
     :tags #{:numeric :base :conversion}
-    (d/consume-top-of :float :as :arg1)
-    (d/calculate [:arg1] #(bigint %1) :as :int)
-    (d/push-onto :integer :int)))
+    (d/consume-top-of :float :as :arg)
+    (d/calculate [:arg] #(try
+                          (long %1)
+                          (catch IllegalArgumentException e :OUT_OF_BOUNDS)) :as :raw)
+    (d/calculate [:raw] #(= :OUT_OF_BOUNDS %1) :as :invalid)
+    (d/calculate [:invalid :raw] #(if %1 nil %2) :as :result)
+    (d/push-onto :integer :result)
+    (d/calculate [:invalid]
+      #(if %1 ":float->integer out of bounds" nil) :as :warning)
+    (d/record-an-error :from :warning)
+    ))
 
 
 
@@ -272,14 +351,20 @@
     :tags #{:conversion :base :numeric}
     (d/consume-top-of :string :as :arg)
     (d/calculate [:arg] 
-      #(try (Long/parseLong %1) (catch NumberFormatException _ nil))
-        :as :result)
-    (d/push-onto :integer :result)))
+      #(try (Long/parseLong %1) (catch NumberFormatException _ :BAD_BAD_STRING))
+        :as :raw)
+    (d/calculate [:raw] #(= :BAD_BAD_STRING %1) :as :invalid)
+    (d/calculate [:invalid :raw] #(if %1 nil %2) :as :result)
+    (d/push-onto :integer :result)
+    (d/calculate [:invalid]
+      #(if %1 ":string->integer failed" nil) :as :warning)
+    (d/record-an-error :from :warning)
+    ))
 
 
 (def integer-type
   ( ->  (t/make-type  :integer
-                      :recognized-by (partial instance? java.lang.Long)
+                      :recognized-by #(instance? java.lang.Long %)
                       :attributes #{:numeric})
         aspects/make-comparable
         aspects/make-equatable

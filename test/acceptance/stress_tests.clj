@@ -20,8 +20,8 @@
 
 
 (defn random-integer
-  ([] (rand-int 1000000000))
-  ([range] (rand-int range)))
+  ([] (long (rand-int 1000000000)))
+  ([range] (long (rand-int range))))
 
 
 (defn random-integers

@@ -48,8 +48,15 @@
     :integer    '(11)     :integer-add   :integer     '(11)
     :integer    '()       :integer-add   :integer     '()
     ;; overflow
-    :integer    '(3333333333333333333 7777777777777777777)
-                          :integer-add   :integer     '(11111111111111111110N))
+    :integer    (list Long/MAX_VALUE 2)
+                          :integer-add   :integer     '()
+    :integer    (list Long/MAX_VALUE 2)
+                          :integer-add   :error       '({:item ":integer-add out of bounds", :step 0})
+    :integer    (list (- Long/MAX_VALUE) -2)
+                          :integer-add   :integer     '()
+    :integer    (list (- Long/MAX_VALUE) -2)
+                          :integer-add   :error       '({:item ":integer-add out of bounds", :step 0})
+                          )
 
 
 (tabular
@@ -85,8 +92,14 @@
     :integer    '(11)     :integer-subtract   :integer      '(11)
     :integer    '()       :integer-subtract   :integer      '()
     ;; overflow
-    :integer    '(33333333333333333333 77777777777777777777)
-                          :integer-subtract   :integer      '(44444444444444444444N))
+    :integer    (list Long/MIN_VALUE 1)
+                          :integer-subtract   :integer      '()
+    :integer    (list Long/MIN_VALUE 1)
+                          :integer-subtract   :error        '({:item ":integer-subtract out of bounds", :step 0})
+    :integer    (list Long/MIN_VALUE -1)
+                          :integer-subtract   :integer      '()
+    :integer    (list Long/MIN_VALUE -1)
+                          :integer-subtract   :error        '({:item ":integer-subtract out of bounds", :step 0}))
 
 
 (tabular
@@ -102,8 +115,14 @@
     :integer    '(11)     :integer-multiply   :integer       '(11)
     :integer    '()       :integer-multiply   :integer       '()
     ;; overflow
-    :integer    '(333333333333 777777777777)
-                          :integer-multiply   :integer       '(259259259258740740740741N))
+    :integer    (list Long/MAX_VALUE 3)
+                          :integer-multiply   :integer       '()
+    :integer    (list Long/MAX_VALUE -3)
+                          :integer-multiply   :integer       '()
+    :integer    (list Long/MAX_VALUE 3)
+                          :integer-multiply   :error         '({:item ":integer-multiply out of bounds", :step 0})
+    :integer    (list Long/MAX_VALUE -3)
+                          :integer-multiply   :error         '({:item ":integer-multiply out of bounds", :step 0}))
 
 
 
@@ -133,8 +152,8 @@
 
     ?set-stack  ?items    ?instruction       ?get-stack     ?expected
     :integer    '(1182)     :integer-digits   :exec      '((1 1 8 2))
-    :integer    '(-39812M)  :integer-digits   :exec      '((3 9 8 1 2))
-    :integer    '(1191N)    :integer-digits   :exec      '((1 1 9 1))
+    :integer    '(-39812)   :integer-digits   :exec      '((3 9 8 1 2))
+    :integer    '()         :integer-digits   :exec      '()
     )
 
 
@@ -255,8 +274,12 @@
     :integer    '(-39812M)  :integer-totalistic3   :integer      '(-8164)
     :integer    '(235235235)       
                             :integer-totalistic3   :integer      '(0)
-    :integer    '(16112002112012012191N)
-                            :integer-totalistic3   :integer      '(88432234433333342118N)
+
+
+    :integer    '(999999999999999999999N) ;;; intentionally overflowed
+                            :integer-totalistic3   :integer      '()
+    :integer    '(999999999999999999999N) ;;; intentionally overflowed
+                            :integer-totalistic3   :error        '({:item ":integer-totalistic3 out of bounds", :step 0})
     )
 
 
@@ -294,10 +317,10 @@
     :integer    '(99)          :integer-inc      :integer         '(100)
     :integer    '(-99)         :integer-inc      :integer         '(-98)
     ;; overflow 
-    :integer    '(22222222222222222222222222222222222N)
-                               :integer-inc      :integer       '(22222222222222222222222222222222223N)
-    :integer    '(-22222222222222222222222222222222222N)
-                               :integer-inc      :integer       '(-22222222222222222222222222222222221N)
+    :integer    (list Long/MAX_VALUE)
+                               :integer-inc      :integer       '()
+    :integer    (list Long/MAX_VALUE)
+                               :integer-inc      :error         '({:item ":integer-inc out of bounds", :step 0})
     ;; missing args 
     :integer    '()            :integer-inc      :integer       '())
 
@@ -313,10 +336,11 @@
     :integer    '(99)          :integer-dec      :integer         '(98)
     :integer    '(-99)         :integer-dec      :integer         '(-100)
     ;; overflow 
-    :integer    '(22222222222222222222222222222222222N)
-                               :integer-dec      :integer       '(22222222222222222222222222222222221N)
-    :integer    '(-22222222222222222222222222222222222N)
-                               :integer-dec      :integer       '(-22222222222222222222222222222222223N)
+    :integer    (list Long/MIN_VALUE)
+                               :integer-dec      :integer       '()
+
+    :integer    (list Long/MIN_VALUE)
+                               :integer-dec      :error         '({:item ":integer-dec out of bounds", :step 0})
     ;; missing args 
     :integer    '()            :integer-dec      :integer       '())
 
@@ -372,8 +396,14 @@
     :float    '(-0.1)         :float->integer      :integer       '(0)
     :float    '(-22.22)       :float->integer      :integer       '(-22)
     ;; range
-    :float    '(-22222222222222222222222222222.3333333333M)
-                              :float->integer      :integer       '(-22222222222222222222222222222N)
+    :float    '(8e88)
+                              :float->integer      :integer       '()
+    :float    '(8e88)
+                              :float->integer      :error         '({:item ":float->integer out of bounds", :step 0})
+    :float    '(-8e88)
+                              :float->integer      :integer       '()
+    :float    '(-8e88)
+                              :float->integer      :error         '({:item ":float->integer out of bounds", :step 0})
     ;; missing args 
     :float    '()             :float->integer      :integer       '()
     :float    '()             :float->integer      :float         '())
@@ -389,12 +419,14 @@
     :string     '("123")       :string->integer        :integer       '(123)
     :string     '("-123")      :string->integer        :integer       '(-123)
     :string     '("  52")      :string->integer        :integer       '()
+    :string     '("  52")      :string->integer        :error         '({:item ":string->integer failed", :step 0})
     :string     '("52  ")      :string->integer        :integer       '()
     :string     '("\t\n52")    :string->integer        :integer       '()
     :string     '("-52e3")     :string->integer        :integer       '()
     :string     '("2.3e-4")    :string->integer        :integer       '()
 
     :string     '("foo")       :string->integer        :integer       '()
+    :string     '("foo")       :string->integer        :error         '({:item ":string->integer failed", :step 0})
     :string     '("1.2.3")     :string->integer        :integer       '()
     :string     '("1.2 8")     :string->integer        :integer       '()
     :string     '("1/17")      :string->integer        :integer       '()
