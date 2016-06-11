@@ -135,6 +135,7 @@
     ;; just the math
     :integer    '(4 20)   :integer-divide      :integer       '(5)
     :integer    '(-3 -15) :integer-divide      :integer       '(5)
+    :integer    '(-15 -3) :integer-divide      :integer       '(0)
     ;; missing args
     :integer    '(11)     :integer-divide      :integer       '(11)
     :integer    '()       :integer-divide      :integer       '()

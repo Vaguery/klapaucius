@@ -76,9 +76,7 @@
      :tagspace '()}            :foo->tagspaceint            {:foo '()
                                                           :integer '()
                                                           :tagspace '()
-                                                          :error '({:item "foo->tagspaceint out of bounds", :step 0})}
-
-))
+                                                          :error '({:item "foo->tagspaceint out of bounds", :step 0})}))
 
 
 (let 

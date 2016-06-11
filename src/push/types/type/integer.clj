@@ -123,7 +123,7 @@
     (d/calculate [:denominator :numerator]
       #(if (zero? %1) %2 nil) :as :replacement)
     (d/calculate [:denominator :numerator]
-      #(if (zero? %1) %1 (/ %2 %1)) :as :quotient)
+      #(if (zero? %1) %1 (long (/ %2 %1))) :as :quotient)
     (d/push-these-onto :integer [:replacement :quotient])
     (d/calculate [:denominator]
       #(if (zero? %1) ":integer-divide 0 denominator" nil) :as :warning)
