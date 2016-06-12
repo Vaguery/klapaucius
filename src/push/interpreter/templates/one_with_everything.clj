@@ -8,6 +8,7 @@
   (:use push.types.module.exec)
   (:use push.types.type.float)
   (:use push.types.type.integer)
+  (:use push.types.type.scalar)
   (:use push.types.type.string)
   (:use push.types.type.ref)
   (:use push.types.module.environment)
@@ -36,6 +37,7 @@
     generator-type
     quoted-type
     ref-type
+    scalar-type
     string-type
     tagspace-type
 
