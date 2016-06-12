@@ -51,7 +51,7 @@
       `(push.instructions.dsl/consume-top-of :float :as :start)
       `(push.instructions.dsl/calculate [:arg] #(count %1) :as :howmany)
       `(push.instructions.dsl/calculate [:start :end :howmany]
-        #(if (zero? %3) 0 (/ (- %2 %1) (dec %3))) :as :delta)
+        #(if (zero? %3) 0 (/ (-' %2 %1) (dec %3))) :as :delta)
       `(push.instructions.dsl/calculate [:howmany :start :delta]
           #(take %1 (iterate (partial +' %3) %2)) :as :indices)
       `(push.instructions.dsl/calculate [:indices :arg]

@@ -558,17 +558,17 @@
 
     ?new-stacks                ?instruction              ?expected
 
-    {:integer '(2 3)
+    {:integer '(3 2)
      :tagspace (list taggy)}    :tagspace-tidywithints   {:integer  '()
                                                           :tagspace (list
-                                                          (make-tagspace {3 2, 5 4, 7 6}))}
+                                                          (make-tagspace {2 2, 5/2 4, 3 6}))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:integer '(-2 3)
      :tagspace (list taggy)}    :tagspace-tidywithints   {:integer  '()
                                                           :tagspace (list
-                                                          (make-tagspace {-1 6, 1 4, 3 2}))}
+                                                          (make-tagspace {3 2, 1/2 4, -2 6}))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:integer '(0 3)
+    {:integer '(3 3)
      :tagspace (list taggy)}    :tagspace-tidywithints   {:integer  '()
                                                           :tagspace (list
                                                           (make-tagspace {3 6}))}
@@ -592,22 +592,22 @@
 
     ?new-stacks                ?instruction              ?expected
 
-    {:float '(2 3)
+    {:float '(2.0 3.0)
      :tagspace (list taggy)}    :tagspace-tidywithfloats   {:float  '()
                                                           :tagspace (list
-                                                          (make-tagspace {3 2, 5 4, 7 6}))}
+                                                          (make-tagspace {2.0 6, 2.5 4, 3.0 2}))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:float '(-2 3)
+    {:float '(4.0 3.0)
      :tagspace (list taggy)}    :tagspace-tidywithfloats   {:float  '()
                                                           :tagspace (list
-                                                          (make-tagspace {-1 6, 1 4, 3 2}))}
+                                                          (make-tagspace {3.0 2, 3.5 4, 4.0 6}))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:float '(0 3)
+    {:float '(3.0 3.0)
      :tagspace (list taggy)}    :tagspace-tidywithfloats   {:float  '()
                                                           :tagspace (list
-                                                          (make-tagspace {3 6}))}
+                                                          (make-tagspace {3.0 6}))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:float '(-2 3)
+    {:float '(-2.0 3.0)
      :tagspace (list (make-tagspace {}))}
                                 :tagspace-tidywithfloats   {:float  '()
                                                           :tagspace (list
