@@ -118,7 +118,7 @@
   [i len]
   (let [some-junk (into [] (remove nil? (bunch-a-junk (make-everything-interpreter) i)))
         interpreter (overloaded-interpreter 
-                      :config {:step-limit 50000}
+                      :config {:step-limit 50000 :lenient? true}
                       :bindings some-junk)]
     (assoc interpreter :program (into [] (bunch-a-junk interpreter len)))))
 
