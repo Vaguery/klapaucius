@@ -37,11 +37,11 @@
     float-type
     generator-type
     quoted-type
-    rational-type
     ref-type
-    scalar-type
     string-type
     tagspace-type
+    rational-type
+    scalar-type
 
     (build-vectorized-type boolean-type)
     (build-vectorized-type char-type)
@@ -49,6 +49,8 @@
     (build-vectorized-type integer-type)
     (build-vectorized-type ref-type)
     (build-vectorized-type string-type)
+    (build-vectorized-type rational-type)
+    (build-vectorized-type scalar-type)
 
     standard-vector-type
     standard-set-type
@@ -85,11 +87,15 @@
   - quoted-type
   - ref-type
   - string-type
+  - rational-type
+  - scalar-type
   - booleans-type
   - chars-type
   - integers-type
   - floats-type
   - strings-type
+  - rationals-type
+  - scalars-type
   - standard-set-type
   - tagspace-type
   - standard-vector-type (loaded last as a default)

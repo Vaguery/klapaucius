@@ -10,7 +10,17 @@
 
 
 (fact "rational-type has the correct :recognizer"
-  (:recognizer (:router rational-type)) => (exactly rational?))
+  (:recognizer (:router rational-type)) => (exactly rational?)
+  ((:recognizer (:router rational-type)) 88/97) => true
+  ((:recognizer (:router rational-type)) -88/97) => true
+  ((:recognizer (:router rational-type)) 88) => true
+  ((:recognizer (:router rational-type)) -88.2) => false
+  ((:recognizer (:router rational-type)) 0) => true
+  ((:recognizer (:router rational-type)) 0M) => true
+  ((:recognizer (:router rational-type)) 3.9812) => false
+  ((:recognizer (:router rational-type)) "3.9812") => false
+  ((:recognizer (:router rational-type)) (count [])) => true
+  )
 
 
 (fact "rational-type has at least some of the expected :attributes"
