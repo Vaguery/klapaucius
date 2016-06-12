@@ -19,6 +19,3 @@
     :scalar       '()         :scalar->code         :code        '()
     )
 
-
-;; scalar-specific instructions
-
