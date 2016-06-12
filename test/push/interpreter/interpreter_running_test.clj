@@ -28,7 +28,9 @@
 
 
 (fact "`handle-item` throws an exception on unrecognized items when :config :lenient? is not true (or unset)"
-  (handle-item classy just-basic) =>  (throws #"Push Parsing Error: "))
+  (handle-item 
+    (c/classic-interpreter :config {:lenient? false})
+    (c/classic-interpreter)) =>  (throws #"Push Parsing Error: "))
 
 
 (fact "handle-item pushes unknown keywords to the :ref stack, regardless of :lenient? setting"
@@ -193,10 +195,10 @@
     ;; an intentionally surprising result
 
 
-(fact "handle-item will not execute an unregistered instruction"
+(fact "handle-item will not execute an unregistered instruction if :lenient is false"
  (let [foo (instr/make-instruction :foo :transaction (fn [a] 761))
        registry {:foo foo}
-       he-knows-foo (m/basic-interpreter :instructions registry)]
+       he-knows-foo (m/basic-interpreter :instructions registry :config {:lenient? false})]
    (handle-item he-knows-foo {:thing 9}) => (throws #"Push Parsing Error:")))
 
 
@@ -644,12 +646,12 @@
 (fact "reset-interpreter will invoke push-program-to-code if :config contains {:preload-code? true}"
   (u/get-stack (reset-interpreter knows-some-things) :code) => '()
 
-  (:config knows-some-things) => {:lenient? false, :max-collection-size 131072, :step-limit 23}
+  (:config knows-some-things) => {:lenient? true, :max-collection-size 131072, :step-limit 23}
   
   (:config
     (reset-interpreter
       (reconfigure knows-some-things {:preload-code? true}))) =>
-    {:lenient? false, :preload-code? true, :max-collection-size 131072, :step-limit 23}
+    {:lenient? true, :preload-code? true, :max-collection-size 131072, :step-limit 23}
 
 
   (u/get-stack

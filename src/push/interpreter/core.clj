@@ -21,7 +21,15 @@
   "simple wrapper around ->Interpreter"
   [program types routers stacks bindings instructions config counter done?]
   (->Interpreter
-    program types routers stacks bindings instructions config counter done?))
+    program
+    types
+    routers
+    stacks
+    bindings
+    instructions
+    (merge {:lenient? true} config)
+    counter
+    done?))
 
 
 (defn register-type

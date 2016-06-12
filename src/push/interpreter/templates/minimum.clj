@@ -22,7 +22,7 @@
 
 
 (def interpreter-default-config
-  { :lenient? false
+  { :lenient? true
     :max-collection-size 131072
     :step-limit 0      })
 
@@ -55,7 +55,7 @@
            stacks {}
            bindings {}
            instructions {}
-           config {}
+           config {:lenient? true}
            counter 0
            done? false}}]
   (let [all-stacks (merge minimal-stacks stacks)]

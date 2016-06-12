@@ -26,7 +26,7 @@
       `(push.instructions.dsl/consume-top-of :integer :as :start)
       `(push.instructions.dsl/calculate [:arg] #(count %1) :as :howmany)
       `(push.instructions.dsl/calculate [:start :end :howmany]
-        #(if (< %3 2) 0 (/ (- %2 %1) (dec %3))) :as :delta)
+        #(if (< %3 2) 0 (/ (-' %2 %1) (dec %3))) :as :delta)
       `(push.instructions.dsl/calculate [:howmany :start :delta]
           #(map long (take %1 (iterate (partial +' %3) %2))) :as :indices)
       `(push.instructions.dsl/calculate [:indices :arg]

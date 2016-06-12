@@ -105,7 +105,7 @@
            stacks {}
            bindings {}
            instructions {}
-           config {}
+           config {:lenient? true}
            counter 0
            done? false}}]
   (let [all-stacks (merge m/minimal-stacks stacks)]

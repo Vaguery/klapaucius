@@ -195,7 +195,7 @@
     (d/calculate [:arg1 :offset]
       #(make-tagspace
         (reduce-kv
-          (fn [r k v] (assoc r (+ k %2) v))
+          (fn [r k v] (assoc r (+' k %2) v))
           (sorted-map)
           (:contents %1))) :as :result)
     (d/push-onto :tagspace :result)))
@@ -212,7 +212,7 @@
     (d/calculate [:arg1 :offset]
       #(make-tagspace
         (reduce-kv
-          (fn [r k v] (assoc r (+ k %2) v))
+          (fn [r k v] (assoc r (+' k %2) v))
           (sorted-map)
           (:contents %1))) :as :result)
     (d/push-onto :tagspace :result)))
@@ -229,7 +229,7 @@
     (d/calculate [:arg1 :scale]
       #(make-tagspace
         (reduce-kv
-          (fn [r k v] (assoc r (* k %2) v))
+          (fn [r k v] (assoc r (*' k %2) v))
           (sorted-map)
           (:contents %1))) :as :result)
     (d/push-onto :tagspace :result)))
@@ -246,7 +246,7 @@
     (d/calculate [:arg1 :scale]
       #(make-tagspace
         (reduce-kv
-          (fn [r k v] (assoc r (* k %2) v))
+          (fn [r k v] (assoc r (*' k %2) v))
           (sorted-map)
           (:contents %1))) :as :result)
     (d/push-onto :tagspace :result)))
