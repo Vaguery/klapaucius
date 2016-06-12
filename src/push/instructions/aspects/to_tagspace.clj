@@ -19,16 +19,16 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`:" instruction-name "` pops the top `" typename "` item and two `:integer` items (call them `end` and `start`, respectively). The contents of the collection are stored in a new `:tagspace` with the first item at index `start`, the last at index `end`, and the rest as evenly distributed as possible between the two. Recall that tagspace keys are permitted to be any scalar numbers, so calculated values are used for intermediate indices. If `end` is smaller than `start`, then that's the way things will work.")
+      (str "`:" instruction-name "` pops the top `" typename "` item and two `:integer` items (call them `end` and `start`, respectively). The contents of the collection are stored in a new `:tagspace` with the first item at index `start`, the last at index `end`, and the rest as evenly distributed as possible between the two. The indices are all coerced to be `:integer` values, so some may overlap. If `end` is smaller than `start`, then that's the way things will work.")
       :tags #{:tagspace :collection}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg)
       `(push.instructions.dsl/consume-top-of :integer :as :end)
       `(push.instructions.dsl/consume-top-of :integer :as :start)
       `(push.instructions.dsl/calculate [:arg] #(count %1) :as :howmany)
       `(push.instructions.dsl/calculate [:start :end :howmany]
-        #(if (zero? %3) 0 (/ (- %2 %1) (dec %3))) :as :delta)
+        #(if (< %3 2) 0 (/ (- %2 %1) (dec %3))) :as :delta)
       `(push.instructions.dsl/calculate [:howmany :start :delta]
-          #(take %1 (iterate (partial +' %3) %2)) :as :indices)
+          #(map long (take %1 (iterate (partial +' %3) %2))) :as :indices)
       `(push.instructions.dsl/calculate [:indices :arg]
           #(push.types.type.tagspace/make-tagspace (zipmap %1 %2)) :as :result)
       `(push.instructions.dsl/push-onto :tagspace :result)
@@ -44,16 +44,16 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`:" instruction-name "` pops the top `" typename "` item and two `:float` items (call them `end` and `start`, respectively). The contents of the collection are stored in a new `:tagspace` with the first item at index `start`, the last at index `end`, and the rest as evenly distributed as possible between the two. Recall that tagspace keys are permitted to be any scalar numbers, so calculated values are used for intermediate indices. If `end` is smaller than `start`, then that's the way things will work.")
+      (str "`:" instruction-name "` pops the top `" typename "` item and two `:float` items (call them `end` and `start`, respectively). The contents of the collection are stored in a new `:tagspace` with the first item at index `start`, the last at index `end`, and the rest as evenly distributed as possible between the two. The indices are all coerced to be valid `:float` values. If `end` is smaller than `start`, then that's the way things will work.")
       :tags #{:tagspace :collection}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg)
       `(push.instructions.dsl/consume-top-of :float :as :end)
       `(push.instructions.dsl/consume-top-of :float :as :start)
       `(push.instructions.dsl/calculate [:arg] #(count %1) :as :howmany)
       `(push.instructions.dsl/calculate [:start :end :howmany]
-        #(if (zero? %3) 0 (/ (-' %2 %1) (dec %3))) :as :delta)
+        #(if (< %3 2) 0 (/ (-' %2 %1) (dec %3))) :as :delta)
       `(push.instructions.dsl/calculate [:howmany :start :delta]
-          #(take %1 (iterate (partial +' %3) %2)) :as :indices)
+          #(map double (take %1 (iterate (partial +' %3) %2))) :as :indices)
       `(push.instructions.dsl/calculate [:indices :arg]
           #(push.types.type.tagspace/make-tagspace (zipmap %1 %2)) :as :result)
       `(push.instructions.dsl/push-onto :tagspace :result)

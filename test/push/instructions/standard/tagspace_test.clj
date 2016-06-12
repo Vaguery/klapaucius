@@ -558,15 +558,15 @@
 
     ?new-stacks                ?instruction              ?expected
 
-    {:integer '(3 2)
+    {:integer '(321 2)
      :tagspace (list taggy)}    :tagspace-tidywithints   {:integer  '()
                                                           :tagspace (list
-                                                          (make-tagspace {2 2, 5/2 4, 3 6}))}
+                                                          (make-tagspace {2 2, 161 4, 321 6}))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:integer '(-2 3)
      :tagspace (list taggy)}    :tagspace-tidywithints   {:integer  '()
                                                           :tagspace (list
-                                                          (make-tagspace {3 2, 1/2 4, -2 6}))}
+                                                          (make-tagspace {-2 6, 0 4, 3 2}))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:integer '(3 3)
      :tagspace (list taggy)}    :tagspace-tidywithints   {:integer  '()

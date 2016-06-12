@@ -298,7 +298,7 @@
 (def tagspace-tidywithfloats
   (core/build-instruction
     tagspace-tidywithfloats
-    "`:tagspace-tidywithfloats` pops the top `:tagspace` item and the top two `:float` items (call them END and START respectively), and pushes a new `:tagspace` in which the first item is at index START, the last is at END, all the rest are evenly distributed between. If the two are identical, then only the last item of the collection will be retained as it will overwrite the others."
+    "`:tagspace-tidywithfloats` pops the top `:tagspace` item and the top two `:float` items (call them END and START respectively), and pushes a new `:tagspace` in which the first item is at index START, the last is at END, all the rest are evenly distributed between. The indices are all coerced to be `:float` values. If the two are identical, then only the last item of the collection will be retained as it will overwrite the others."
     :tags #{:tagspace :collection}
     (d/consume-top-of :tagspace :as :ts)
     (d/consume-top-of :float :as :end)
@@ -306,9 +306,9 @@
     (d/calculate [:ts] #(vals (:contents %1)) :as :items)
     (d/calculate [:items] #(count %1) :as :how-many)
     (d/calculate [:start :end :how-many]
-      #(if (zero? %3) 0 (/ (-' %2 %1) (dec %3))) :as :delta)
+      #(if (< %3 2) 0 (/ (-' %2 %1) (dec %3))) :as :delta)
     (d/calculate [:how-many :start :delta]
-        #(take %1 (iterate (partial + %3) %2)) :as :indices)
+        #(map double (take %1 (iterate (partial + %3) %2))) :as :indices)
     (d/calculate [:indices :items] #(make-tagspace (zipmap %1 %2)) :as :result)
     (d/push-onto :tagspace :result)))
 
@@ -318,7 +318,7 @@
 (def tagspace-tidywithints
   (core/build-instruction
     tagspace-tidywithints
-    "`:tagspace-tidywithints` pops the top `:tagspace` item and the top two `:integer` items (call them END and START respectively), and pushes a new `:tagspace` in which the first item is at index START, the last is at END, all the rest are evenly distributed between. If the two are identical, then only the last item of the collection will be retained as it will overwrite the others."
+    "`:tagspace-tidywithints` pops the top `:tagspace` item and the top two `:integer` items (call them END and START respectively), and pushes a new `:tagspace` in which the first item is at index START, the last is at END, all the rest are evenly distributed between. The indices are all coerced to be `:integer` values. If the two are identical, then only the last item of the collection will be retained as it will overwrite the others."
     :tags #{:tagspace :collection}
     (d/consume-top-of :tagspace :as :ts)
     (d/consume-top-of :integer :as :end)
@@ -326,9 +326,9 @@
     (d/calculate [:ts] #(vals (:contents %1)) :as :items)
     (d/calculate [:items] #(count %1) :as :how-many)
     (d/calculate [:start :end :how-many]
-      #(if (zero? %3) 0 (/ (-' %2 %1) (dec %3))) :as :delta)
+      #(if (< %3 2) 0 (/ (-' %2 %1) (dec %3))) :as :delta)
     (d/calculate [:how-many :start :delta]
-        #(take %1 (iterate (partial + %3) %2)) :as :indices)
+        #(map long (take %1 (iterate (partial + %3) %2))) :as :indices)
     (d/calculate [:indices :items] #(make-tagspace (zipmap %1 %2)) :as :result)
     (d/push-onto :tagspace :result)))
 
