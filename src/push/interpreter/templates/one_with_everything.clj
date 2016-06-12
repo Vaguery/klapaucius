@@ -8,6 +8,7 @@
   (:use push.types.module.exec)
   (:use push.types.type.float)
   (:use push.types.type.integer)
+  (:use push.types.type.rational)
   (:use push.types.type.scalar)
   (:use push.types.type.string)
   (:use push.types.type.ref)
@@ -36,6 +37,7 @@
     float-type
     generator-type
     quoted-type
+    rational-type
     ref-type
     scalar-type
     string-type
