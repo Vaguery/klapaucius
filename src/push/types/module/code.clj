@@ -130,7 +130,7 @@
     (d/consume-top-of :integer :as :end)
     (d/consume-top-of :integer :as :start)
     (d/calculate [:start :end] #(= %1 %2) :as :done?)
-    (d/calculate [:start :end] #(+ %1 (compare %2 %1)) :as :next)
+    (d/calculate [:start :end] #(+' %1 (compare %2 %1)) :as :next)
     (d/calculate
       [:do-this :start :end :next :done?] 
       #(if %5
@@ -153,7 +153,7 @@
     (d/consume-top-of :code :as :do-this)
     (d/consume-top-of :integer :as :count)
     (d/calculate [:count] #((complement pos?) %1) :as :done?)
-    (d/calculate [:count] #(dec %1) :as :next)
+    (d/calculate [:count] #(dec' %1) :as :next)
     (d/calculate
       [:do-this :count :next :done?] 
       #(if %4
