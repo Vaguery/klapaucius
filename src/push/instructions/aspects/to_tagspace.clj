@@ -19,25 +19,19 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`:" instruction-name "` pops the top `" typename "` item and two `:integer` items (call them B and A, respectively). The contents of the collection are stored in a new `:tagspace` with the first item at index A and the remainder separated by gaps of B from one another. If B is negative, that's the way things will work. If B is 0, then each item will overwrite the previous ones.")
+      (str "`:" instruction-name "` pops the top `" typename "` item and two `:integer` items (call them `end` and `start`, respectively). The contents of the collection are stored in a new `:tagspace` with the first item at index `start`, the last at index `end`, and the rest as evenly distributed as possible between the two. Recall that tagspace keys are permitted to be any scalar numbers, so calculated values are used for intermediate indices. If `end` is smaller than `start`, then that's the way things will work.")
       :tags #{:tagspace :collection}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg)
-      `(push.instructions.dsl/consume-top-of :integer :as :interval)
+      `(push.instructions.dsl/consume-top-of :integer :as :end)
       `(push.instructions.dsl/consume-top-of :integer :as :start)
-      `(push.instructions.dsl/calculate [:arg] #(count %1) :as :how-many)
-      `(push.instructions.dsl/calculate [:start :interval :how-many]
-          #(+' %1 (*' %2 %3)) :as :end)
-      `(push.instructions.dsl/calculate [:end]
-          #(or (< %1 Long/MIN_VALUE) (> %1 Long/MAX_VALUE)) :as :invalid)
-      `(push.instructions.dsl/calculate [:how-many :start :interval]
-          #(take %1 (iterate (partial + %3) %2)) :as :indices)
-      `(push.instructions.dsl/calculate [:invalid :indices :arg]
-          #(if %1 nil
-            (push.types.type.tagspace/make-tagspace (zipmap %2 %3))) :as :result)
-      `(push.instructions.dsl/calculate [:invalid]
-          #(if %1 (str ~instruction-name " out of bounds") nil) :as :warning)
+      `(push.instructions.dsl/calculate [:arg] #(count %1) :as :howmany)
+      `(push.instructions.dsl/calculate [:start :end :howmany]
+        #(if (zero? %3) 0 (/ (- %2 %1) (dec %3))) :as :delta)
+      `(push.instructions.dsl/calculate [:howmany :start :delta]
+          #(take %1 (iterate (partial +' %3) %2)) :as :indices)
+      `(push.instructions.dsl/calculate [:indices :arg]
+          #(push.types.type.tagspace/make-tagspace (zipmap %1 %2)) :as :result)
       `(push.instructions.dsl/push-onto :tagspace :result)
-      `(push.instructions.dsl/record-an-error :from :warning)
       ))))
 
 
@@ -50,14 +44,17 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`:" instruction-name "` pops the top `" typename "` item and two `:float` items (call them B and A, respectively). The contents of the collection are stored in a new `:tagspace` with the first item at index A and the remainder separated by gaps of B from one another. If B is negative, that's the way things will work. If B is 0, then each item will overwrite the previous ones.")
+      (str "`:" instruction-name "` pops the top `" typename "` item and two `:float` items (call them `end` and `start`, respectively). The contents of the collection are stored in a new `:tagspace` with the first item at index `start`, the last at index `end`, and the rest as evenly distributed as possible between the two. Recall that tagspace keys are permitted to be any scalar numbers, so calculated values are used for intermediate indices. If `end` is smaller than `start`, then that's the way things will work.")
       :tags #{:tagspace :collection}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg)
-      `(push.instructions.dsl/consume-top-of :float :as :interval)
+      `(push.instructions.dsl/consume-top-of :float :as :end)
       `(push.instructions.dsl/consume-top-of :float :as :start)
-      `(push.instructions.dsl/calculate [:arg] #(count %1) :as :how-many)
-      `(push.instructions.dsl/calculate [:how-many :start :interval]
-        #(take %1 (iterate (partial + %3) %2)) :as :indices)
+      `(push.instructions.dsl/calculate [:arg] #(count %1) :as :howmany)
+      `(push.instructions.dsl/calculate [:start :end :howmany]
+        #(if (zero? %3) 0 (/ (- %2 %1) (dec %3))) :as :delta)
+      `(push.instructions.dsl/calculate [:howmany :start :delta]
+          #(take %1 (iterate (partial +' %3) %2)) :as :indices)
       `(push.instructions.dsl/calculate [:indices :arg]
-        #(push.types.type.tagspace/make-tagspace (zipmap %1 %2)) :as :result)
-      `(push.instructions.dsl/push-onto :tagspace :result)))))
+          #(push.types.type.tagspace/make-tagspace (zipmap %1 %2)) :as :result)
+      `(push.instructions.dsl/push-onto :tagspace :result)
+      ))))
