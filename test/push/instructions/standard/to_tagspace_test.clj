@@ -11,51 +11,6 @@
 
 (let 
   [foo-type     (t/make-type :foo)
-   fixed-foo    (t/attach-instruction foo-type (to-tagspaceint foo-type))]
-(tabular
-  (fact "`:foo->tagspaceint` pops a :foo and two :integer values, and makes a new :tagspace"
-    (check-instruction-with-all-kinds-of-stack-stuff
-        ?new-stacks fixed-foo ?instruction) => (contains ?expected))
-
-    ?new-stacks                ?instruction              ?expected
-
-    {:foo '([1 2 3 4 5])
-     :integer '(7 2)
-     :tagspace '()}            :foo->tagspaceint            {:foo '()
-                                                          :integer '()
-                                                          :tagspace (list
-                                                            (make-tagspace 
-                                                              {2 1, 3 2, 4 3, 5 4, 7 5}))}
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:foo '([1 2 3 4 5])
-     :integer '(2 7)
-     :tagspace '()}            :foo->tagspaceint            {:foo '()
-                                                          :integer '()
-                                                          :tagspace (list
-                                                            (make-tagspace 
-                                                              {2 5, 3 4, 4 3, 5 2, 7 1}))}
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:foo '([1 2 3 4 5])
-     :integer '(7 8)
-     :tagspace '()}            :foo->tagspaceint            {:foo '()
-                                                          :integer '()
-                                                          :tagspace (list
-                                                            (make-tagspace 
-                                                              {7 5, 8 1}))}
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:foo '([1 2 3 4 5])
-     :integer '(8 8)
-     :tagspace '()}            :foo->tagspaceint            {:foo '()
-                                                          :integer '()
-                                                          :tagspace (list
-                                                            (make-tagspace {8 5}))}
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-))
-
-
-
-(let 
-  [foo-type     (t/make-type :foo)
    fixed-foo    (t/attach-instruction foo-type (to-tagspace foo-type))]
 (tabular
   (fact "`:foo->tagspace` pops a :foo and two :scalar values, and makes a new :tagspace"
@@ -63,6 +18,45 @@
         ?new-stacks fixed-foo ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction              ?expected
+
+    {:foo '([1 2 3 4 5])
+     :scalar '(7 2)
+     :tagspace '()}            :foo->tagspace            {:foo '()
+                                                          :scalar '()
+                                                          :tagspace (list
+                                                            (make-tagspace 
+                                                              {2 1, 13/4 2, 9/2 3, 23/4 4, 7 5}))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foo '([1 2 3 4 5])
+     :scalar '(2 7)
+     :tagspace '()}            :foo->tagspace            {:foo '()
+                                                          :scalar '()
+                                                          :tagspace (list
+                                                            (make-tagspace 
+                                                              {7 1, 13/4 4, 9/2 3, 23/4 2, 2 5}))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foo '([1 2 3 4 5])
+     :scalar '(7 8)
+     :tagspace '()}            :foo->tagspace            {:foo '()
+                                                          :scalar '()
+                                                          :tagspace (list
+                                                            (make-tagspace 
+                                                              {8 1, 29/4 4, 15/2 3, 31/4 2, 7 5}))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foo '([1 2 3 4 5])
+     :scalar '(8 8)
+     :tagspace '()}            :foo->tagspace            {:foo '()
+                                                          :scalar '()
+                                                          :tagspace (list
+                                                            (make-tagspace {8 5}))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foo '([1 2 3 4 5])
+     :scalar '(10.5 5/2)
+     :tagspace '()}            :foo->tagspace            {:foo '()
+                                                          :scalar '()
+                                                          :tagspace (list
+                                                            (make-tagspace {5/2 1, 4.5 2, 6.5 3, 8.5 4, 10.5 5}))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
     {:foo '("hello")
      :scalar '(1.25 2.5)

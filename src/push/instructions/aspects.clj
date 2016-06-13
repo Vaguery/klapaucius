@@ -139,7 +139,7 @@
 
 (defn make-into-tagspaces
   "takes a PushType and adds the :to-tagspace attribute, and the
-  :pushtype->tagspacefloat and :pushtype->tagspaceint instructions to its :instructions collection"
+  :pushtype->tagspacefloat and :pushtype->tagspace instructions to its :instructions collection"
   [pushtype]
   (-> pushtype
       (t/attach-instruction (to-tagspace pushtype))

@@ -28,7 +28,7 @@
       `(push.instructions.dsl/calculate [:start :end :howmany]
         #(if (< %3 2) 0 (/ (-' %2 %1) (dec %3))) :as :delta)
       `(push.instructions.dsl/calculate [:howmany :start :delta]
-          #(map long (take %1 (iterate (partial +' %3) %2))) :as :indices)
+          #(take %1 (iterate (partial +' %3) %2)) :as :indices)
       `(push.instructions.dsl/calculate [:indices :arg]
           #(push.types.type.tagspace/make-tagspace (zipmap %1 %2)) :as :result)
       `(push.instructions.dsl/push-onto :tagspace :result)
