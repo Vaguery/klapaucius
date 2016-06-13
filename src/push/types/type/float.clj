@@ -76,16 +76,6 @@
 
 
 
-(def integer->float
-  (core/build-instruction
-    integer->float
-    "`:integer->float` pops the top `:integer`, and typecasts it to a (double) `:float` value"
-    :tags #{:conversion :base :numeric}
-    (d/consume-top-of :integer :as :arg)
-    (d/calculate [:arg] #(double %1) :as :result)
-    (d/push-onto :float :result)))
-
-
 
 (def string->float
   (core/build-instruction
@@ -245,7 +235,6 @@
         (t/attach-instruction , float-power)
         (t/attach-instruction , float-sqrt)
         (t/attach-instruction , float-tangent)
-        (t/attach-instruction , integer->float)
         (t/attach-instruction , string->float)
         ))
 

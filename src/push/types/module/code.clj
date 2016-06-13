@@ -230,11 +230,11 @@
 (def code-length
   (core/build-instruction
     code-length
-    "`:code-length` pops the top `:code` item, and if it is a Collection it counts the number of items in its root and pushes that value to the `:integer` stack. 1 is pushed to `:integer` for items that are not Collections."
+    "`:code-length` pops the top `:code` item, and if it is a Collection it counts the number of items in its root and pushes that value to the `:scalar` stack. 1 is pushed to `:scalar` for items that are not Collections."
     :tags #{:complex :base}
     (d/consume-top-of :code :as :arg)
     (d/calculate [:arg] #(if (coll? %1) (count %1) 1) :as :len)
-    (d/push-onto :integer :len)))
+    (d/push-onto :scalar :len)))
 
 
 
@@ -348,11 +348,11 @@
 (def code-points
   (core/build-instruction
     code-points
-    "`:code-points` pops the top item from the `:code` stack, and treats it as a tree of seqs and non-seq items. If it is an empty list, or any literal (including a vector, map, set or other collection type), the result is 1; if it is a list containing items, they are also counted, including any contents of sub-lists, and so on. _Note_ the difference from `:code-size`, which counts contents of all Collections, not just (code) lists. The result is pushed to the `:integer` stack."
+    "`:code-points` pops the top item from the `:code` stack, and treats it as a tree of seqs and non-seq items. If it is an empty list, or any literal (including a vector, map, set or other collection type), the result is 1; if it is a list containing items, they are also counted, including any contents of sub-lists, and so on. _Note_ the difference from `:code-size`, which counts contents of all Collections, not just (code) lists. The result is pushed to the `:scalar` stack."
     :tags #{:complex :base}
     (d/consume-top-of :code :as :arg1)
     (d/calculate [:arg1] #(u/count-code-points %1) :as :size)
-    (d/push-onto :integer :size)))
+    (d/push-onto :scalar :size)))
 
 
 
@@ -365,7 +365,7 @@
     (d/consume-top-of :code :as :arg1)
     (d/calculate [:arg1] #(if (seq? %1) %1 (list %1)) :as :listed)
     (d/calculate [:listed :arg2] #(.indexOf %1 %2) :as :idx)
-    (d/push-onto :integer :idx)))
+    (d/push-onto :scalar :idx)))
 
 
 
@@ -394,7 +394,7 @@
     :tags #{:complex :base}
     (d/consume-top-of :code :as :arg1)
     (d/calculate [:arg1] #(u/count-collection-points %1) :as :size)
-    (d/push-onto :integer :size)))
+    (d/push-onto :scalar :size)))
 
 
 

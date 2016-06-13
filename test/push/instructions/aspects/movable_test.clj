@@ -9,6 +9,23 @@
   )
 
 
+;; support functions
+
+(fact "scalar-to-index returns a valid index"
+  (scalar-to-index 10 7) => 3
+  (scalar-to-index -10 7) => 4
+  (scalar-to-index -10.5 7) => 4
+  (scalar-to-index 87/7 6) => 1
+  (scalar-to-index 94/7 6) => 2
+  (scalar-to-index 87/7 1) => 0
+  (scalar-to-index 77777777777777777777777777777777777777777M 8) => 1
+  (scalar-to-index 77777777777777777777777777777777777777777N 8) => 1
+  (scalar-to-index 76652.3333e871M 17) => 9
+  (scalar-to-index -76652.3333e871M 17) => 8
+  )
+
+
+
 ;; movable instructions
 
 

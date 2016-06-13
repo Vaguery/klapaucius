@@ -80,7 +80,7 @@
       #'retrieve-all-stacks {}
       #'save-binding-stack {}
       #'save-bindings {}
-      #'save-counter {:integer 1}
+      #'save-counter {:scalar 1}
       #'save-instructions {}
       #'save-max-collection-size {}
       #'save-nth-of {}

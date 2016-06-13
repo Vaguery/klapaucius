@@ -47,11 +47,6 @@
   (contains [:integer-shove :integer-pop :integer-dup :integer-rotate :integer-yank :integer-yankdup :integer-flush :integer-swap] :in-any-order :gaps-ok))
 
 
-(fact "integer-type knows arithmetic"
-  (keys (:instructions integer-type)) =>
-  (contains [:integer-add :integer-subtract :integer-multiply :integer-divide] :in-any-order :gaps-ok))
-
-
 (fact "integer-type knows the :printable instructions"
   (keys (:instructions integer-type)) => (contains [:integer-print]))
 

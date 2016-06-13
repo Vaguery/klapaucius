@@ -64,7 +64,7 @@ These are calls to the `build-instruction` macro, which creates a new `Instructi
     :tags #{:base :conversion}
     (d/consume-top-of :boolean :as :arg1)
     (d/calculate [:arg1] #(if %1 1 0) :as :logic)
-    (d/push-onto :integer :logic)))
+    (d/push-onto :scalar :logic)))
 ~~~
 
 `:code-do*range`:
@@ -182,7 +182,7 @@ All scratch variables are referred to by Clojure keywords (not symbols). These a
 
 - [X] `push-onto [stackname local]`
 
-  Example: `push-onto :integer :sum`
+  Example: `push-onto :scalar :sum`
 
   Push the scratch value `local` onto the top of the indicated stack. If the `local` is `nil`, that's OK; nothing bad will happen.
 
@@ -259,7 +259,7 @@ For example, the `:needs` of the two instructions shown above are:
 - `:boolean->integer`
   - `(d/consume-top-of :boolean :as :arg1)` needs `{:boolean 1}`
   - `(d/calculate [:arg1] #(if %1 1 0) :as :logic)` needs `{}`
-  - `(d/push-onto :integer :logic)` needs `{:integer 0}`
+  - `(d/push-onto :scalar :logic)` needs `{:integer 0}`
   - total needs: `{:boolean 1 :integer 0}`
 - `:code-do*range`
   - `(d/consume-top-of :code :as :do-this)` needs `{:code 1}`

@@ -98,35 +98,47 @@
 
 
 (tabular
-  (fact "`foo-cutflip` takes an :integer, divides the stack into two parts at that index (measured from the top), and puts the top segment at the bottom"
+  (fact "`foo-cutflip` takes an :scalar, divides the stack into two parts at that index (measured from the top), and puts the top segment at the bottom"
     (check-instruction-with-all-kinds-of-stack-stuff
         ?new-stacks foo-type ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction         ?expected
 
     {:foo      '(9 8 7 6 5 4)
-     :integer  '(3)}          :foo-cutflip          {:foo      '(7 8 9 6 5 4)
-                                                     :integer  '()}
+     :scalar  '(3)}            :foo-cutflip          {:foo      '(7 8 9 6 5 4)
+                                                     :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foo      '(9 8 7 6 5 4)
-     :integer  '(-2)}         :foo-cutflip          {:foo      '(6 7 8 9 5 4)
-                                                     :integer  '()}
+     :scalar  '(-2)}           :foo-cutflip          {:foo      '(6 7 8 9 5 4)
+                                                     :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foo      '(9 8 7 6 5 4)
-     :integer  '(0)}          :foo-cutflip          {:foo      '(9 8 7 6 5 4)
-                                                     :integer  '()}
+     :scalar  '(0)}            :foo-cutflip          {:foo      '(9 8 7 6 5 4)
+                                                     :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foo      '(9 8 7 6 5 4)
-     :integer  '(11)}         :foo-cutflip          {:foo      '(5 6 7 8 9 4)
-                                                     :integer  '()}
+     :scalar  '(9/2)}         :foo-cutflip          {:foo      '(5 6 7 8 9 4)
+                                                     :scalar  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foo      '(9 8 7 6 5 4)
+     :scalar  '(111.2)}        :foo-cutflip          {:foo      '(6 7 8 9 5 4)
+                                                     :scalar  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foo      '(9 8 7 6 5 4)
+     :scalar  '(11)}           :foo-cutflip          {:foo      '(5 6 7 8 9 4)
+                                                     :scalar  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foo      '(9 8 7 6 5 4)
+     :scalar  '(-1.0e191M)}    :foo-cutflip          {:foo      '(8 9 7 6 5 4)
+                                                     :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foo      '()
-     :integer  '(11)}         :foo-cutflip          {:foo      '()
-                                                     :integer  '()}
+     :scalar  '(11)}           :foo-cutflip          {:foo      '()
+                                                     :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foo      '(2 3 4)
-     :integer  '()}           :foo-cutflip          {:foo      '(2 3 4)
-                                                     :integer  '()}
+     :scalar  '()}             :foo-cutflip          {:foo      '(2 3 4)
+                                                     :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
 

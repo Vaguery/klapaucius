@@ -21,7 +21,7 @@
     (d/calculate [:valid :arg] #(if %1 (long (rand %2)) nil) :as :result)
     (d/calculate [:valid]
       #(if %1 nil ":integer-uniform argument invalid") :as :warning)
-    (d/push-onto :integer :result)
+    (d/push-onto :scalar :result)
     (d/record-an-error :from :warning)))
 
 

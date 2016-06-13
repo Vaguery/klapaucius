@@ -176,7 +176,7 @@
     (d/consume-top-of :string :as :s)
     (d/consume-top-of :char :as :c)
     (d/calculate [:s :c] #(.indexOf %1 (long %2)) :as :where)
-    (d/push-onto :integer :where)))
+    (d/push-onto :scalar :where)))
 
 
 
@@ -198,7 +198,7 @@
     :tags #{:string :base}
     (d/consume-top-of :string :as :arg1)
     (d/calculate [:arg1] #(count %1) :as :len)
-    (d/push-onto :integer :len)))
+    (d/push-onto :scalar :len)))
 
 
 
@@ -223,7 +223,7 @@
     (d/consume-top-of :string :as :s)
     (d/consume-top-of :char :as :c)
     (d/calculate [:s :c] #(get (frequencies %1) %2 0) :as :count)
-    (d/push-onto :integer :count)))
+    (d/push-onto :scalar :count)))
 
 
 

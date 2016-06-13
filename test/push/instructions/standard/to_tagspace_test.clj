@@ -56,50 +56,50 @@
 
 (let 
   [foo-type     (t/make-type :foo)
-   fixed-foo    (t/attach-instruction foo-type (to-tagspacefloat foo-type))]
+   fixed-foo    (t/attach-instruction foo-type (to-tagspace foo-type))]
 (tabular
-  (fact "`:foo->tagspacefloat` pops a :foo and two :integer values, and makes a new :tagspace"
+  (fact "`:foo->tagspace` pops a :foo and two :scalar values, and makes a new :tagspace"
     (check-instruction-with-all-kinds-of-stack-stuff
         ?new-stacks fixed-foo ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction              ?expected
 
     {:foo '("hello")
-     :float '(1.25 2.5)
-     :tagspace '()}            :foo->tagspacefloat       {:foo '()
-                                                          :float '()
+     :scalar '(1.25 2.5)
+     :tagspace '()}            :foo->tagspace            {:foo '()
+                                                          :scalar '()
                                                           :tagspace (list
                                                             (make-tagspace 
                                                               {1.25 \o, 1.5625 \l, 1.875 \l, 2.1875 \e, 2.5 \h}))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foo '("")
-     :float '(2.0 8.0)
-     :tagspace '()}            :foo->tagspacefloat            {:foo '()
-                                                          :float '()
+     :scalar '(2.0 8.0)
+     :tagspace '()}            :foo->tagspace                 {:foo '()
+                                                          :scalar '()
                                                           :tagspace (list
                                                             (make-tagspace 
                                                               {}))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foo '("live")
-     :float '(-1.5 9.0)
-     :tagspace '()}            :foo->tagspacefloat            {:foo '()
-                                                          :float '()
+     :scalar '(-1.5 9.0)
+     :tagspace '()}            :foo->tagspace                 {:foo '()
+                                                          :scalar '()
                                                           :tagspace (list
                                                             (make-tagspace 
                                                               {-1.5 \e, 2.0 \v, 5.5 \i, 9.0 \l}))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foo '("fire")
-     :float '(10.25 7.25)
-     :tagspace '()}            :foo->tagspacefloat            {:foo '()
-                                                          :float '()
+     :scalar '(10.25 7.25)
+     :tagspace '()}            :foo->tagspace            {:foo '()
+                                                          :scalar '()
                                                           :tagspace (list
                                                             (make-tagspace
                                                               {7.25 \f, 8.25 \i, 9.25 \r, 10.25 \e}))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foo '("fire")
-     :float '(10.25 10.25)
-     :tagspace '()}            :foo->tagspacefloat            {:foo '()
-                                                          :float '()
+     :scalar '(10.25 10.25)
+     :tagspace '()}            :foo->tagspace            {:foo '()
+                                                          :scalar '()
                                                           :tagspace (list
                                                             (make-tagspace
                                                               {10.25 \e}))}

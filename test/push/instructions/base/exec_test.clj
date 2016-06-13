@@ -256,15 +256,15 @@
 
 
 (tabular
-  (fact ":exec-stackdepth returns the number of items on the :exec stack (to :integer)"
+  (fact ":exec-stackdepth returns the number of items on the :exec stack (to :scalar)"
     (register-type-and-check-instruction
         ?set-stack ?items exec-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; how many?
-    :exec    '(1.1 2.2 3.3)      :exec-stackdepth   :integer      '(3)
-    :exec    '(1.0)              :exec-stackdepth   :integer      '(1)
-    :exec    '()                 :exec-stackdepth   :integer      '(0))
+    :exec    '(1.1 2.2 3.3)      :exec-stackdepth   :scalar      '(3)
+    :exec    '(1.0)              :exec-stackdepth   :scalar      '(1)
+    :exec    '()                 :exec-stackdepth   :scalar      '(0))
    
 
 (tabular

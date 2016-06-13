@@ -240,32 +240,6 @@
 
 
 (let 
-  [foo-type     (make-taggable (t/make-type :foo))
-   taggy        (make-tagspace)]
-
-(tabular
-  (fact "`:foo-tagwithinteger` pops an :integer and a :foo and stores the latter in a :tagspace"
-    (check-instruction-with-all-kinds-of-stack-stuff
-        ?new-stacks foo-type ?instruction) => (contains ?expected))
-
-    ?new-stacks                ?instruction              ?expected
-
-    {:foo '("bar")
-     :integer '(71)
-     :tagspace (list taggy)}    :foo-tagwithinteger      {:foo      '()
-                                                          :integer  '()
-                                                          :tagspace (list (assoc-in taggy [:contents 71] "bar"))}
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:foo '()
-     :integer '(71)
-     :tagspace (list taggy)}    :foo-tagwithinteger      {:foo      '()
-                                                          :integer  '(71)
-                                                          :tagspace (list taggy)}
-    ))
-
-
-
-(let 
   [taggy1  (make-tagspace {1 2 3 4 5 6})
    taggy2  (make-tagspace {1 -2 3 -4 5.5 6.6})]
 
@@ -293,22 +267,22 @@
    taggy        (make-tagspace)]
 
 (tabular
-  (fact "`:foo-tagwithfloat` pops an :integfloater and a :foo and stores the latter in a :tagspace"
+  (fact "`:foo-tag` pops an :scalar and a :foo and stores the latter in a :tagspace"
     (check-instruction-with-all-kinds-of-stack-stuff
         ?new-stacks foo-type ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction              ?expected
 
     {:foo '("bar")
-     :float '(71.71)
-     :tagspace (list taggy)}    :foo-tagwithfloat      {:foo      '()
-                                                          :float  '()
+     :scalar '(71.71)
+     :tagspace (list taggy)}    :foo-tag      {:foo      '()
+                                                          :scalar  '()
                                                           :tagspace (list (assoc-in taggy [:contents 71.71] "bar"))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foo '()
-     :float '(71.71)
-     :tagspace (list taggy)}    :foo-tagwithfloat      {:foo      '()
-                                                          :float  '(71.71)
+     :scalar '(71.71)
+     :tagspace (list taggy)}    :foo-tag      {:foo      '()
+                                                          :scalar  '(71.71)
                                                           :tagspace (list taggy)}
     ))
 

@@ -10,11 +10,11 @@
 (def push-bindingcount
   (core/build-instruction
     push-bindingcount
-    "`:push-bindingcount` pushes the number of registered bindings to `:integer`"
+    "`:push-bindingcount` pushes the number of registered bindings to `:scalar`"
     :tags #{:binding :introspection}
     (d/save-bindings :as :known)
     (d/calculate [:known] #(count (keys %)) :as :count)
-    (d/push-onto :integer :count)))
+    (d/push-onto :scalar :count)))
 
 
 
@@ -43,10 +43,10 @@
 (def push-counter
   (core/build-instruction
     push-counter
-    "`:push-counter` pushes the current interpreter counter value to the `:integer` stack"
+    "`:push-counter` pushes the current interpreter counter value to the `:scalar` stack"
     :tags #{:introspection}
     (d/save-counter :as :count)
-    (d/push-onto :integer :count)))
+    (d/push-onto :scalar :count)))
 
 
 

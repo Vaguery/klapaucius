@@ -327,14 +327,14 @@
 
 
 (tabular
-  (fact ":boolean-stackdepth saves (count :boolean) onto :boolean"
+  (fact ":boolean-stackdepth saves (count :boolean) onto :scalar"
     (register-type-and-check-instruction
         ?set-stack ?items boolean-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items               ?instruction            ?get-stack     ?expected
     ;; just shifting things
-    :boolean    '(false false false) :boolean-stackdepth      :integer       '(3)
-    :boolean    '()                  :boolean-stackdepth      :integer       '(0))
+    :boolean    '(false false false) :boolean-stackdepth      :scalar       '(3)
+    :boolean    '()                  :boolean-stackdepth      :scalar       '(0))
 
 
 (tabular

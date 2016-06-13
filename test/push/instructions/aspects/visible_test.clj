@@ -13,24 +13,24 @@
 
 
 (fact "`make-visible` takes adds the :visible attribute to a PushType record"
-  (:attributes (make-visible (make-type :integer))) => #{:visible})
+  (:attributes (make-visible (make-type :scalar))) => #{:visible})
 
 
 (fact "stackdepth-instruction returns an Instruction with the correct stuff"
   (let [foo-depth (stackdepth-instruction (make-type :foo))]
     (class foo-depth) => push.instructions.core.Instruction
-    (:needs foo-depth) => {:foo 0, :integer 0}
+    (:needs foo-depth) => {:foo 0, :scalar 0}
     (:token foo-depth) => :foo-stackdepth
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(1 2)}) foo-depth)
         :foo-stackdepth)
-      :integer) => '(2)
+      :scalar) => '(2)
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(false [2] 3)}) foo-depth)
         :foo-stackdepth)
-      :integer) => '(3)))
+      :scalar) => '(3)))
 
 
 (fact "empty?-instruction returns an Instruction with the correct stuff"

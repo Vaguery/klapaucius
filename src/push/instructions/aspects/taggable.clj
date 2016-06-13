@@ -17,38 +17,21 @@
 ;; INSTRUCTIONS
 
 
-(defn tagwithint-instruction
-  "returns a new x-tagwithinteger instruction for the given type or module."
+(defn tag-instruction
+  "returns a new x-tag instruction for the given type or module."
   [pushtype]
   (let [typename (:name pushtype)
-        instruction-name (str (name typename) "-tagwithinteger")]
+        instruction-name (str (name typename) "-tag")]
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`:" instruction-name "` pops the top `:integer`, the top `:tagspace` and the top `" typename "` items. The item is stored in the `:tagspace` under the index specified by the `:integer`.")
+      (str "`:" instruction-name "` pops the top `:scalar`, the top `:tagspace` and the top `" typename "` items. The item is stored in the `:tagspace` under the index specified by the `:scalar`.")
       :tags #{:tagspace :collection}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg)
       `(push.instructions.dsl/consume-top-of :tagspace :as :ts)
-      `(push.instructions.dsl/consume-top-of :integer :as :index)
+      `(push.instructions.dsl/consume-top-of :scalar :as :index)
       `(push.instructions.dsl/calculate [:ts :arg :index]
         #(store-in-tagspace  %1 %2 %3) :as :stored)
       `(push.instructions.dsl/push-onto :tagspace :stored)))))
 
 
-
-(defn tagwithfloat-instruction
-  "returns a new x-tagwithinteger instruction for the given type or module."
-  [pushtype]
-  (let [typename (:name pushtype)
-        instruction-name (str (name typename) "-tagwithfloat")]
-    (eval (list
-      'push.instructions.core/build-instruction
-      instruction-name
-      (str "`:" instruction-name "` pops the top `:float`, the top `:tagspace` and the top `" typename "` items. The item is stored in the `:tagspace` under the index specified by the `:float`.")
-      :tags #{:tagspace :collection}
-      `(push.instructions.dsl/consume-top-of ~typename :as :arg)
-      `(push.instructions.dsl/consume-top-of :tagspace :as :ts)
-      `(push.instructions.dsl/consume-top-of :float :as :index)
-      `(push.instructions.dsl/calculate [:ts :arg :index]
-        #(store-in-tagspace  %1 %2 %3) :as :stored)
-      `(push.instructions.dsl/push-onto :tagspace :stored)))))

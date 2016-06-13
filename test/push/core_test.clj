@@ -19,7 +19,7 @@
 
 (fact "I can produce a list of instructions from an interpreter"
   (p/known-instructions (p/interpreter)) =>
-    (contains [:integer-add :boolean-or :code-dup :exec-y]
+    (contains [:scalar-add :boolean-or :code-dup :exec-y]
               :in-any-order :gaps-ok))
 
 
@@ -28,16 +28,21 @@
 
 
 (fact "I can produce a list of types and modules loaded into the interpreter"
-  (p/types-and-modules (p/interpreter)) => (contains [:introspection :print :environment :code :error :log :exec :set :vector :rational :rationals :strings :integers :floats :chars :booleans :string :float :char :boolean :integer :scalar :scalars] :in-any-order :gaps-ok))
+  (p/types-and-modules (p/interpreter)) => (contains [:introspection :print :environment :code :error :log :exec :set :vector :rational :rationals :strings :chars :booleans :string :char :boolean :scalar :scalars] :in-any-order :gaps-ok))
 
 
 (fact "I can produce the router list for an interpreter"
   (p/routing-list (p/interpreter)) =>
-    (contains [:ref :refs :integer :boolean :char :float :generator :quoted :string :booleans :chars :floats :integers :strings :tagspace :rational :rationals :scalars :vector :set :scalar] :in-any-order))
+    (contains [:ref :refs :boolean :char :generator :quoted :string :booleans :chars :strings :tagspace :rational :rationals :scalars :vector :set :scalar] :in-any-order))
+
+
+
 
 
 (fact "I can run a Push program and get a named stack"
-  (p/get-stack (p/run (p/interpreter) [1 2 :integer-add] 100) :integer) => '(3))
+  (p/get-stack (p/run (p/interpreter) [88 99 :scalar-add] 100) :scalar) => '(187))
+
+
 
 
 (fact "I can re-run an interpreter with bound inputs, replacing the input values"
@@ -45,20 +50,20 @@
     (p/get-stack
         (p/run
           a-99
-          [:a 99 :integer-add]
-          100) :integer) => '(198)
+          [:a 99 :scalar-add]
+          100) :scalar) => '(198)
     (p/get-stack
         (p/run
           a-99
-          [:a 99 :integer-add]
+          [:a 99 :scalar-add]
           100
-          :bindings {:a -99}) :integer) => '(0)
+          :bindings {:a -99}) :scalar) => '(0)
     (p/get-stack
         (p/run
           a-99
-          [:a 99 :integer-add :b]
+          [:a 99 :scalar-add :b]
           100
-          :bindings {:b -99}) :integer) => '(-99 198)))
+          :bindings {:b -99}) :scalar) => '(-99 198)))
 
 
 (future-fact "I can turn off individual instructions with the :disable key in the :config hash"

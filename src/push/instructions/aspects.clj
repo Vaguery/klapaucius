@@ -132,8 +132,7 @@
   "takes a PushType and adds the :taggable attribute and the associated instructions"
   [pushtype]
   (-> pushtype
-      (t/attach-instruction (tagwithfloat-instruction pushtype))
-      (t/attach-instruction (tagwithint-instruction pushtype))
+      (t/attach-instruction (tag-instruction pushtype))
       (assoc :attributes (conj (:attributes pushtype) :taggable))))
 
 
@@ -143,8 +142,7 @@
   :pushtype->tagspacefloat and :pushtype->tagspaceint instructions to its :instructions collection"
   [pushtype]
   (-> pushtype
-      (t/attach-instruction (to-tagspacefloat pushtype))
-      (t/attach-instruction (to-tagspaceint pushtype))
+      (t/attach-instruction (to-tagspace pushtype))
       (assoc :attributes (conj (:attributes pushtype) :to-tagspace))))
 
 

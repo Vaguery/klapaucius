@@ -6,8 +6,6 @@
   (:use push.types.type.char)
   (:use push.types.module.code)
   (:use push.types.module.exec)
-  (:use push.types.type.float)
-  (:use push.types.type.integer)
   (:use push.types.type.rational)
   (:use push.types.type.scalar)
   (:use push.types.type.string)
@@ -31,26 +29,23 @@
 
 
 (def all-kinds-of-types
-  [ integer-type
+  [ 
     boolean-type
     char-type
-    float-type
     generator-type
     quoted-type
     ref-type
     string-type
     tagspace-type
-    rational-type
     scalar-type
+    rational-type
 
     (build-vectorized-type boolean-type)
     (build-vectorized-type char-type)
-    (build-vectorized-type float-type)
-    (build-vectorized-type integer-type)
     (build-vectorized-type ref-type)
     (build-vectorized-type string-type)
-    (build-vectorized-type rational-type)
     (build-vectorized-type scalar-type)
+    (build-vectorized-type rational-type)
 
     standard-vector-type
     standard-set-type
@@ -79,8 +74,6 @@
   - code-module
   - environment-module
   - exec-module
-  - integer-type
-  - float-type
   - generator-type
   - log-module
   - print-module
@@ -91,8 +84,6 @@
   - scalar-type
   - booleans-type
   - chars-type
-  - integers-type
-  - floats-type
   - strings-type
   - rationals-type
   - scalars-type

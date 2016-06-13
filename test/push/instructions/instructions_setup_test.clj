@@ -124,7 +124,7 @@
 
 (fact "a generated stackdepth-instruction has a reasonable docstring"
   (:docstring (stackdepth-instruction i-know-foo)) =>
-    "`:foo-stackdepth` pushes an `:integer` which is the number of items in the `:foo` stack.")
+    "`:foo-stackdepth` pushes a `:scalar` which is the number of items in the `:foo` stack.")
 
 
 (fact "a generated empty?-instruction has a reasonable docstring"

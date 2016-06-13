@@ -736,15 +736,15 @@
 
 
 (tabular
-  (fact ":code-stackdepth returns the number of items on the :code stack (to :integer)"
+  (fact ":code-stackdepth returns the number of items on the :code stack (to :scalar)"
     (register-type-and-check-instruction
         ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; how many?
-    :code    '(1.1 2.2 3.3)      :code-stackdepth   :integer      '(3)
-    :code    '(1.0)              :code-stackdepth   :integer      '(1)
-    :code    '()                 :code-stackdepth   :integer      '(0))
+    :code    '(1.1 2.2 3.3)      :code-stackdepth   :scalar      '(3)
+    :code    '(1.0)              :code-stackdepth   :scalar      '(1)
+    :code    '()                 :code-stackdepth   :scalar      '(0))
    
 
 (tabular

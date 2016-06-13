@@ -271,15 +271,15 @@
 
 
 (tabular
-  (fact ":float-stackdepth returns the number of items on the :float stack (to :integer)"
+  (fact ":float-stackdepth returns the number of items on the :float stack (to :scalar)"
     (register-type-and-check-instruction
         ?set-stack ?items float-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; how many?
-    :float    '(1.1 2.2 3.3)   :float-stackdepth   :integer      '(3)
-    :float    '(1.0)           :float-stackdepth   :integer      '(1)
-    :float    '()              :float-stackdepth   :integer      '(0))
+    :float    '(1.1 2.2 3.3)   :float-stackdepth   :scalar      '(3)
+    :float    '(1.0)           :float-stackdepth   :scalar      '(1)
+    :float    '()              :float-stackdepth   :scalar      '(0))
 
 
 (tabular

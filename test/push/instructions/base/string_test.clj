@@ -816,15 +816,15 @@
 
 
 (tabular
-  (fact ":string-stackdepth returns the number of items on the :string stack (to :integer)"
+  (fact ":string-stackdepth returns the number of items on the :string stack (to :scalar)"
     (register-type-and-check-instruction
         ?set-stack ?items string-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; how many?
-    :string    '("a" "" "b")   :string-stackdepth   :integer      '(3)
-    :string    '("nn\tmm")     :string-stackdepth   :integer      '(1)
-    :string    '()             :string-stackdepth   :integer      '(0))
+    :string    '("a" "" "b")   :string-stackdepth   :scalar      '(3)
+    :string    '("nn\tmm")     :string-stackdepth   :scalar      '(1)
+    :string    '()             :string-stackdepth   :scalar      '(0))
 
 
 (tabular

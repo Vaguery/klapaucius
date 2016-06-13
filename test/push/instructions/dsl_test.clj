@@ -20,7 +20,7 @@
 
 
 (def nada (m/basic-interpreter))
-(def afew (m/basic-interpreter :stacks {:integer '(1 2 3)}))
+(def afew (m/basic-interpreter :stacks {:scalar '(1 2 3)}))
 (def lots (m/basic-interpreter :stacks {:code (range 1 20)}))
 
 
@@ -36,9 +36,9 @@
 (facts "about `count-of`"
   (fact "`count-of` saves the number of items on the named stack in the specified local"
     (get-local-from-dslblob :foo
-      (count-of [nada {}] :integer :as :foo)) => 0
+      (count-of [nada {}] :scalar :as :foo)) => 0
     (get-local-from-dslblob :foo
-      (count-of [afew {}] :integer :as :foo)) => 3
+      (count-of [afew {}] :scalar :as :foo)) => 3
     (get-local-from-dslblob :foo
       (count-of [lots {}] :code :as :foo)) => 19)
 
@@ -49,7 +49,7 @@
 
 
   (fact "`count-of` throws an Exception when no local is specified"
-    (count-of [afew {}] :integer) => (throws #"missing key: :as")))
+    (count-of [afew {}] :scalar) => (throws #"missing key: :as")))
 
 
 ;; `delete-top-of [stackname]`
@@ -63,8 +63,8 @@
 (facts "about `delete-top-of`"
 
   (fact "`delete-top-of` deletes the top item of a stack"
-    (get-stack-from-dslblob :integer
-      (delete-top-of [afew {}] :integer)) => '(2 3))
+    (get-stack-from-dslblob :scalar
+      (delete-top-of [afew {}] :scalar)) => '(2 3))
 
 
   (fact "`delete-top-of` raises an Exception if the stack doesn't exist"
@@ -72,8 +72,8 @@
 
 
   (fact "`delete-top-of` raises an Exception if the stack is empty"
-    (delete-top-of [nada {}] :integer) => 
-      (throws #"stack :integer is empty"))
+    (delete-top-of [nada {}] :scalar) => 
+      (throws #"stack :scalar is empty"))
 
 
   (fact "`delete-top-of` works on :boolean stacks containing false values"
@@ -89,19 +89,19 @@
 (facts "about `consume-top-of`"
 
   (fact "`consume-top-of` saves the top item of a stack in the indicated scratch variable"
-    (get-stack-from-dslblob :integer
-      (consume-top-of [afew {}] :integer :as :foo)) => '(2 3)
+    (get-stack-from-dslblob :scalar
+      (consume-top-of [afew {}] :scalar :as :foo)) => '(2 3)
     (get-local-from-dslblob :foo
-      (consume-top-of [afew {}] :integer :as :foo)) => 1 )
+      (consume-top-of [afew {}] :scalar :as :foo)) => 1 )
 
 
   (fact "`consume-top-of` overwrites locals that already exist"
     (get-local-from-dslblob :foo
-      (consume-top-of [afew {:foo \f}] :integer :as :foo)) => 1)
+      (consume-top-of [afew {:foo \f}] :scalar :as :foo)) => 1)
 
 
   (fact "`consume-top-of` throws an exception when no local is given"
-    (consume-top-of [afew {:foo \f}] :integer) => (throws #"missing key: :as"))
+    (consume-top-of [afew {:foo \f}] :scalar) => (throws #"missing key: :as"))
 
 
 
@@ -158,10 +158,10 @@
 (facts "about `consume-stack`"
 
   (fact "`consume-stack` saves the entire stack into the named scratch variable"
-    (get-stack-from-dslblob :integer
-      (consume-stack [afew {}] :integer :as :foo)) => '()
+    (get-stack-from-dslblob :scalar
+      (consume-stack [afew {}] :scalar :as :foo)) => '()
     (get-local-from-dslblob :foo
-      (consume-stack [afew {}] :integer :as :foo)) => '(1 2 3) )
+      (consume-stack [afew {}] :scalar :as :foo)) => '(1 2 3) )
 
 
   (fact "`consume-stack` works when the stack is empty"
@@ -175,7 +175,7 @@
 
 
   (fact "`consume-stack` throws an Exception when no local is specified"
-    (consume-stack [afew {}] :integer) =>
+    (consume-stack [afew {}] :scalar) =>
       (throws #"missing key: :as")))
 
 
@@ -185,9 +185,9 @@
 (facts "about `delete-stack`"
 
   (fact "`delete-stack` discards the named stack"
-    (get-stack-from-dslblob :integer
-      (delete-stack [afew {}] :integer)) => '()
-    (second (delete-stack [afew {}] :integer)) => {})
+    (get-stack-from-dslblob :scalar
+      (delete-stack [afew {}] :scalar)) => '()
+    (second (delete-stack [afew {}] :scalar)) => {})
 
 
   (fact "`delete-stack` raises an exception if the stack doesn't exist"
@@ -200,18 +200,18 @@
 
 (facts "about `index-from-scratch-ref`"
 
-  (fact "index-from-scratch-ref returns an integer if one is stored"
+  (fact "index-from-scratch-ref returns an scalar if one is stored"
     (#'push.instructions.dsl/index-from-scratch-ref :foo {:foo 8}) => 8)
 
 
-  (fact "index-from-scratch-ref throws up if the stored value isn't an integer"
+  (fact "index-from-scratch-ref throws up if the stored value isn't an scalar"
     (#'push.instructions.dsl/index-from-scratch-ref :foo {:foo false}) => 
-      (throws #":foo is not an integer"))
+      (throws #":foo is not an scalar"))
 
 
   (fact "index-from-scratch-ref throws up if the key is not present"
     (#'push.instructions.dsl/index-from-scratch-ref :bar {:foo 2}) => 
-      (throws #":bar is not an integer")))
+      (throws #":bar is not an scalar")))
 
 
 ;; `save-max-collection-size [as kwd]`
@@ -232,36 +232,36 @@
 
 (facts "about `delete-nth-of`"
 
-  (fact "`delete-nth-of` discards the indicated item given an integer location"
-    (get-stack-from-dslblob :integer
-      (delete-nth-of [afew {}] :integer :at 1)) => '(1 3))
+  (fact "`delete-nth-of` discards the indicated item given an scalar location"
+    (get-stack-from-dslblob :scalar
+      (delete-nth-of [afew {}] :scalar :at 1)) => '(1 3))
 
 
   (fact "`delete-nth-of` picks the index as `(mod where stacklength)`"
-    (get-stack-from-dslblob :integer
-      (delete-nth-of [afew {}] :integer :at -2)) => '(1 3)
-    (get-stack-from-dslblob :integer
-      (delete-nth-of [afew {}] :integer :at -3)) => '(2 3))
+    (get-stack-from-dslblob :scalar
+      (delete-nth-of [afew {}] :scalar :at -2)) => '(1 3)
+    (get-stack-from-dslblob :scalar
+      (delete-nth-of [afew {}] :scalar :at -3)) => '(2 3))
 
 
-  (fact "`delete-nth-of` discards the indicated item given scratch ref to integer"
-    (get-stack-from-dslblob :integer
-      (delete-nth-of [afew {:foo 1}] :integer :at :foo)) => '(1 3)
-    (get-stack-from-dslblob :integer
-      (delete-nth-of [afew {:foo -1}] :integer :at :foo)) => '(1 2)
-    (get-stack-from-dslblob :integer
-      (delete-nth-of [afew {:foo 3}] :integer :at :foo)) => '(2 3))
+  (fact "`delete-nth-of` discards the indicated item given scratch ref to scalar"
+    (get-stack-from-dslblob :scalar
+      (delete-nth-of [afew {:foo 1}] :scalar :at :foo)) => '(1 3)
+    (get-stack-from-dslblob :scalar
+      (delete-nth-of [afew {:foo -1}] :scalar :at :foo)) => '(1 2)
+    (get-stack-from-dslblob :scalar
+      (delete-nth-of [afew {:foo 3}] :scalar :at :foo)) => '(2 3))
 
 
-  (fact "`delete-nth-of` throws up given a scratch ref to non-integer"
-    (delete-nth-of [afew {:foo false}] :integer :at :foo) => 
-      (throws #":foo is not an integer")
-    (delete-nth-of [afew {:foo 1}] :integer :at :bar) => 
-      (throws #":bar is not an integer"))
+  (fact "`delete-nth-of` throws up given a scratch ref to non-scalar"
+    (delete-nth-of [afew {:foo false}] :scalar :at :foo) => 
+      (throws #":foo is not an scalar")
+    (delete-nth-of [afew {:foo 1}] :scalar :at :bar) => 
+      (throws #":bar is not an scalar"))
 
 
   (fact "`delete-nth-of` throws up if no index is given"
-    (delete-nth-of [afew {:foo false}] :integer) => 
+    (delete-nth-of [afew {:foo false}] :scalar) => 
       (throws #"missing key: :at"))
 
 
@@ -276,19 +276,19 @@
 (facts "about `replace-stack`"
 
   (fact "`replace-stack` sets the named stack to the value of the local if it is a list"
-    (get-stack-from-dslblob :integer
-      (replace-stack [afew {:foo '(4 5 6)}] :integer :foo)) => '(4 5 6)
+    (get-stack-from-dslblob :scalar
+      (replace-stack [afew {:foo '(4 5 6)}] :scalar :foo)) => '(4 5 6)
     )
 
 
   (fact "`replace-stack` empties a stack if the local is not defined"
-    (get-stack-from-dslblob :integer
-      (replace-stack [afew {}] :integer :foo)) => '())
+    (get-stack-from-dslblob :scalar
+      (replace-stack [afew {}] :scalar :foo)) => '())
 
 
   (fact "`replace-stack` replaces the stack with just the item in a list otherwise"
-    (get-stack-from-dslblob :integer
-      (replace-stack [afew {:foo false}] :integer :foo)) => '(false))
+    (get-stack-from-dslblob :scalar
+      (replace-stack [afew {:foo false}] :scalar :foo)) => '(false))
 
 
   (fact "`replace-stack` throws an Exception when the named stack doesn't exist"
@@ -301,8 +301,8 @@
 (facts "about `push-onto`"
 
   (fact "`push-onto` places the indicated scratch item onto the named stack"
-    (get-stack-from-dslblob :integer
-      (push-onto [afew {:foo 99}] :integer :foo)) => '(99 1 2 3))
+    (get-stack-from-dslblob :scalar
+      (push-onto [afew {:foo 99}] :scalar :foo)) => '(99 1 2 3))
 
 
   (fact "`push-onto` throws up if the stack doesn't exist"
@@ -311,13 +311,13 @@
 
 
   (fact "`push-onto` doesn't raise a fuss if the scratch variable isn't set"
-    (get-stack-from-dslblob :integer
-      (push-onto [afew {}] :integer :foo)) => '(1 2 3))
+    (get-stack-from-dslblob :scalar
+      (push-onto [afew {}] :scalar :foo)) => '(1 2 3))
 
 
   (fact "`push-onto` doesn't raise a fuss if the scratch variable is a list"
-    (get-stack-from-dslblob :integer
-      (push-onto [afew {:foo '(4 5 6)}] :integer :foo)) => '((4 5 6) 1 2 3)))
+    (get-stack-from-dslblob :scalar
+      (push-onto [afew {:foo '(4 5 6)}] :scalar :foo)) => '((4 5 6) 1 2 3)))
 
 
 ;; `save-stack [stackname :as local]`
@@ -326,15 +326,15 @@
 (facts "about `save-stack`"
 
   (fact "`save-stack` puts the entire named stack into a scratch variable (without deleting it)"
-    (get-stack-from-dslblob :integer
-      (save-stack [afew {}] :integer :as :bar)) => '(1 2 3)
+    (get-stack-from-dslblob :scalar
+      (save-stack [afew {}] :scalar :as :bar)) => '(1 2 3)
     (get-local-from-dslblob :bar
-      (save-stack [afew {}] :integer :as :bar)) => '(1 2 3))
+      (save-stack [afew {}] :scalar :as :bar)) => '(1 2 3))
 
 
   (fact "`save-stack` overwrites the scratch variable if asked to"
     (get-local-from-dslblob :foo
-      (save-stack [afew {:foo false}] :integer :as :foo)) => '(1 2 3))
+      (save-stack [afew {:foo false}] :scalar :as :foo)) => '(1 2 3))
 
 
   (fact "`save-stack` throws up if you ask for an undefined stack"
@@ -343,7 +343,7 @@
 
 
   (fact "`save-stack` throws up if you leave out the :as argument"
-    (save-stack [afew {}] :integer ) =>
+    (save-stack [afew {}] :scalar ) =>
       (throws #"missing key: :as")))
 
 
@@ -353,15 +353,15 @@
 (facts "about `save-top-of`"
 
   (fact "`save-top-of` puts the top item on the named stack into a scratch variable (without deleting it)"
-    (get-stack-from-dslblob :integer
-      (save-top-of [afew {}] :integer :as :bar)) => '(1 2 3)
+    (get-stack-from-dslblob :scalar
+      (save-top-of [afew {}] :scalar :as :bar)) => '(1 2 3)
     (get-local-from-dslblob :bar
-      (save-top-of [afew {}] :integer :as :bar)) => 1)
+      (save-top-of [afew {}] :scalar :as :bar)) => 1)
 
 
   (fact "`save-top-of` overwrites the scratch variable if asked to"
     (get-local-from-dslblob :foo
-      (save-top-of [afew {:foo false}] :integer :as :foo)) => 1)
+      (save-top-of [afew {:foo false}] :scalar :as :foo)) => 1)
 
 
   (fact "`save-top-of` throws up if you ask for an undefined stack"
@@ -375,7 +375,7 @@
 
 
   (fact "`save-top-of` throws up if you forget the :as argument"
-    (save-top-of [afew {}] :integer) => (throws #"missing key: :as"))
+    (save-top-of [afew {}] :scalar) => (throws #"missing key: :as"))
 
 
   (fact "`save-top-of` works on :boolean stacks containing false"
@@ -388,30 +388,30 @@
 
 (facts "about `save-nth-of"
 
-  (fact "given an integer index, `save-nth-of` puts the indicated item from the named stack into a scratch variable (without deleting it)"
-    (get-stack-from-dslblob :integer
-      (save-nth-of [afew {}] :integer :at 1 :as :bar)) => '(1 2 3)
+  (fact "given an scalar index, `save-nth-of` puts the indicated item from the named stack into a scratch variable (without deleting it)"
+    (get-stack-from-dslblob :scalar
+      (save-nth-of [afew {}] :scalar :at 1 :as :bar)) => '(1 2 3)
     (get-local-from-dslblob :bar
-      (save-nth-of [afew {}] :integer :at 1 :as :bar)) => 2)
+      (save-nth-of [afew {}] :scalar :at 1 :as :bar)) => 2)
 
 
   (fact "given an keyword index, `save-nth-of` puts the indicated item from the named stack into a scratch variable (without deleting it)"
-    (get-stack-from-dslblob :integer
-      (save-nth-of [afew {:foo 2}] :integer :at :foo :as :bar)) => '(1 2 3)
+    (get-stack-from-dslblob :scalar
+      (save-nth-of [afew {:foo 2}] :scalar :at :foo :as :bar)) => '(1 2 3)
     (get-local-from-dslblob :bar
-      (save-nth-of [afew {:foo 2}] :integer :at :foo :as :bar)) => 3)
+      (save-nth-of [afew {:foo 2}] :scalar :at :foo :as :bar)) => 3)
 
 
   (fact "`save-nth-of` works with an out-of-bounds index"
     (get-local-from-dslblob :foo
-      (save-nth-of [afew {:foo false}] :integer :at 11 :as :foo)) => 3
+      (save-nth-of [afew {:foo false}] :scalar :at 11 :as :foo)) => 3
     (get-local-from-dslblob :foo
-      (save-nth-of [afew {:foo false}] :integer :at -1 :as :foo)) => 3)
+      (save-nth-of [afew {:foo false}] :scalar :at -1 :as :foo)) => 3)
 
 
   (fact "`save-nth-of` overwrites the scratch variable if asked to"
     (get-local-from-dslblob :foo
-      (save-nth-of [afew {:foo false}] :integer :at 1 :as :foo)) => 2)
+      (save-nth-of [afew {:foo false}] :scalar :at 1 :as :foo)) => 2)
 
 
   (fact "`save-nth-of` throws up if you ask for an undefined stack"
@@ -419,9 +419,9 @@
       (throws #"no :grault stack"))
 
 
-  (fact "`save-nth-of` throws up if the keyword index doesn't point to an integer"
-    (save-nth-of [afew {:foo false}] :integer :at :foo :as :bar) =>
-      (throws #":foo is not an integer"))
+  (fact "`save-nth-of` throws up if the keyword index doesn't point to an scalar"
+    (save-nth-of [afew {:foo false}] :scalar :at :foo :as :bar) =>
+      (throws #":foo is not an scalar"))
 
 
   (fact "`save-nth-of` throws up if you try to pop an empty stack"
@@ -430,12 +430,12 @@
 
 
   (fact "`save-nth-of` throws up if you forget the :as argument"
-    (save-nth-of [afew {}] :integer :at 8) =>
+    (save-nth-of [afew {}] :scalar :at 8) =>
       (throws #"missing key: :as"))
 
 
   (fact "`save-nth-of` throws up if you forget the :at argument"
-    (save-nth-of [afew {}] :integer :as :foo) =>
+    (save-nth-of [afew {}] :scalar :as :foo) =>
       (throws #"missing key: :at")))
 
 
@@ -444,23 +444,23 @@
 
 (facts "about `consume-nth-of`"
 
-  (fact "given an integer index, `consume-nth-of` puts the indicated item from the named stack into a scratch variable, deleting it"
-    (get-stack-from-dslblob :integer
-      (consume-nth-of [afew {}] :integer :at 1 :as :bar)) => '(1 3)
+  (fact "given an scalar index, `consume-nth-of` puts the indicated item from the named stack into a scratch variable, deleting it"
+    (get-stack-from-dslblob :scalar
+      (consume-nth-of [afew {}] :scalar :at 1 :as :bar)) => '(1 3)
     (get-local-from-dslblob :bar
-      (consume-nth-of [afew {}] :integer :at 1 :as :bar)) => 2)
+      (consume-nth-of [afew {}] :scalar :at 1 :as :bar)) => 2)
 
 
   (fact "`consume-nth-of` works with an out-of-bounds index"
     (get-local-from-dslblob :foo
-      (consume-nth-of [afew {:foo false}] :integer :at 11 :as :foo)) => 3
+      (consume-nth-of [afew {:foo false}] :scalar :at 11 :as :foo)) => 3
     (get-local-from-dslblob :foo
-      (consume-nth-of [afew {:foo false}] :integer :at -1 :as :foo)) => 3)
+      (consume-nth-of [afew {:foo false}] :scalar :at -1 :as :foo)) => 3)
 
 
   (fact "`consume-nth-of` overwrites the scratch variable if asked to"
     (get-local-from-dslblob :foo
-      (consume-nth-of [afew {:foo false}] :integer :at 1 :as :foo)) => 2)
+      (consume-nth-of [afew {:foo false}] :scalar :at 1 :as :foo)) => 2)
 
 
   (fact "`consume-nth-of` throws up if you ask for an undefined stack"
@@ -468,9 +468,9 @@
       (throws #"no :grault stack"))
 
 
-  (fact "`consume-nth-of` throws up if the keyword index doesn't point to an integer"
-    (consume-nth-of [afew {:foo false}] :integer :at :foo :as :bar) =>
-      (throws #":foo is not an integer"))
+  (fact "`consume-nth-of` throws up if the keyword index doesn't point to an scalar"
+    (consume-nth-of [afew {:foo false}] :scalar :at :foo :as :bar) =>
+      (throws #":foo is not an scalar"))
 
 
   (fact "`consume-nth-of` throws up if you try to pop an empty stack"
@@ -479,12 +479,12 @@
 
 
   (fact "`consume-nth-of` throws up if you forget the :as argument"
-    (consume-nth-of [afew {}] :integer :at 8) =>
+    (consume-nth-of [afew {}] :scalar :at 8) =>
       (throws #"missing key: :as"))
 
 
   (fact "`consume-nth-of` throws up if you forget the :at argument"
-    (consume-nth-of [afew {}] :integer :as :foo) =>
+    (consume-nth-of [afew {}] :scalar :as :foo) =>
       (throws #"missing key: :at")))
 
 
@@ -493,27 +493,27 @@
 
 (facts "about `get-nth-of`"
 
-  (fact "given an integer index, `get-nth-of` returns the index and the item in the named stack"
-    (#'push.instructions.dsl/get-nth-of [afew {}] :integer :at 1) =>
+  (fact "given an scalar index, `get-nth-of` returns the index and the item in the named stack"
+    (#'push.instructions.dsl/get-nth-of [afew {}] :scalar :at 1) =>
       [1 '(1 2 3)])
 
 
   (fact "`get-nth-of works for out of bounds numeric indices"
-    (#'push.instructions.dsl/get-nth-of [afew {}] :integer :at -1) =>
+    (#'push.instructions.dsl/get-nth-of [afew {}] :scalar :at -1) =>
       [2 '(1 2 3)]
-    (#'push.instructions.dsl/get-nth-of [afew {}] :integer :at 10) =>
+    (#'push.instructions.dsl/get-nth-of [afew {}] :scalar :at 10) =>
       [1 '(1 2 3)])
 
 
   (fact "given a keyword index, `get-nth-of` returns the index and the item in the named stack"
-    (#'push.instructions.dsl/get-nth-of [afew {:foo 1}] :integer :at :foo) =>
+    (#'push.instructions.dsl/get-nth-of [afew {:foo 1}] :scalar :at :foo) =>
       [1 '(1 2 3)])
 
 
   (fact "`get-nth-of works for out of bounds keyword indices"
-    (#'push.instructions.dsl/get-nth-of [afew {:foo -1}] :integer :at :foo) =>
+    (#'push.instructions.dsl/get-nth-of [afew {:foo -1}] :scalar :at :foo) =>
       [2 '(1 2 3)]
-    (#'push.instructions.dsl/get-nth-of [afew {:foo 10}] :integer :at :foo) =>
+    (#'push.instructions.dsl/get-nth-of [afew {:foo 10}] :scalar :at :foo) =>
       [1 '(1 2 3)])
 
 
@@ -522,11 +522,11 @@
       (throws #"no :grault stack"))
 
 
-  (fact "`get-nth-of` throws up if the keyword index doesn't point to an integer"
-    (#'push.instructions.dsl/get-nth-of [afew {:foo false}] :integer :at :foo) =>
-      (throws #":foo is not an integer")
-    (#'push.instructions.dsl/get-nth-of [afew {}] :integer :at :foo) =>
-      (throws #":foo is not an integer"))
+  (fact "`get-nth-of` throws up if the keyword index doesn't point to an scalar"
+    (#'push.instructions.dsl/get-nth-of [afew {:foo false}] :scalar :at :foo) =>
+      (throws #":foo is not an scalar")
+    (#'push.instructions.dsl/get-nth-of [afew {}] :scalar :at :foo) =>
+      (throws #":foo is not an scalar"))
 
 
   (fact "`get-nth-of` throws up if you refer to an empty stack"
@@ -578,7 +578,7 @@
     (get-local-from-dslblob :inst
       (#'push.instructions.dsl/save-instructions
         [(c/classic-interpreter) {}] :as :inst)) =>
-          (contains [:integer-pop :boolean-print :string-swap]))
+          (contains [:scalar-pop :boolean-print :string-swap]))
 
 
   (fact "raises an exception when the :as arg is missing"
@@ -657,29 +657,29 @@
   (inst/needs-of-dsl-step 
     '(calculate [:a :b] #(+ %1 %2) :as :sum)) => {}
   (inst/needs-of-dsl-step 
-    '(consume-nth-of :integer :at 1 :as :bar)) => {:integer 1}
+    '(consume-nth-of :scalar :at 1 :as :bar)) => {:scalar 1}
   (inst/needs-of-dsl-step
-    '(save-nth-of :integer :at 11 :as :foo))  => {:integer 1}
+    '(save-nth-of :scalar :at 11 :as :foo))  => {:scalar 1}
   (inst/needs-of-dsl-step
-    '(save-top-of :integer :as :bar))  => {:integer 1}
+    '(save-top-of :scalar :as :bar))  => {:scalar 1}
   (inst/needs-of-dsl-step
-    '(save-stack :integer :as :bar))  => {:integer 0}
+    '(save-stack :scalar :as :bar))  => {:scalar 0}
   (inst/needs-of-dsl-step
-    '(push-onto :integer :foo))  => {:integer 0}
+    '(push-onto :scalar :foo))  => {:scalar 0}
   (inst/needs-of-dsl-step
-    '(replace-stack :integer :foo))  => {:integer 0}
+    '(replace-stack :scalar :foo))  => {:scalar 0}
   (inst/needs-of-dsl-step
-    '(delete-nth-of :integer :at 1))  => {:integer 1}
+    '(delete-nth-of :scalar :at 1))  => {:scalar 1}
   (inst/needs-of-dsl-step
-    '(delete-stack :integer))  => {:integer 0}
+    '(delete-stack :scalar))  => {:scalar 0}
   (inst/needs-of-dsl-step
-    '(consume-stack :integer :as :foo))  => {:integer 0}
+    '(consume-stack :scalar :as :foo))  => {:scalar 0}
   (inst/needs-of-dsl-step
-    '(consume-top-of :integer :as :foo)) => {:integer 1}
+    '(consume-top-of :scalar :as :foo)) => {:scalar 1}
   (inst/needs-of-dsl-step
-    '(delete-top-of :integer)) => {:integer 1}
+    '(delete-top-of :scalar)) => {:scalar 1}
   (inst/needs-of-dsl-step
-    '(count-of :integer :as :foo)) => {:integer 0})
+    '(count-of :scalar :as :foo)) => {:scalar 0})
 
 
 (fact "`inst/needs-of-dsl-step` throws an exception for unknown DSL instructions"
@@ -692,36 +692,36 @@
 
 (fact "`inst/total-needs` takes a whole transaction and sums up all the needs of each item"
   (inst/total-needs 
-    ['(consume-nth-of :integer :at 1 :as :bar)]) => {:integer 1}
+    ['(consume-nth-of :scalar :at 1 :as :bar)]) => {:scalar 1}
 
   (inst/total-needs 
-    ['(consume-top-of :integer :as :bar)
-     '(consume-nth-of :integer :at 1 :as :bar)]) => {:integer 2}
+    ['(consume-top-of :scalar :as :bar)
+     '(consume-nth-of :scalar :at 1 :as :bar)]) => {:scalar 2}
 
   (inst/total-needs 
-    ['(delete-nth-of :integer :at 1)
-     '(consume-top-of :integer :as :arg1)
-     '(consume-top-of :integer :as :arg2)
+    ['(delete-nth-of :scalar :at 1)
+     '(consume-top-of :scalar :as :arg1)
+     '(consume-top-of :scalar :as :arg2)
      '(consume-top-of :boolean :as :b1)
-     '(consume-top-of :foo :as :foo1)]) => {:boolean 1, :foo 1, :integer 3}
+     '(consume-top-of :foo :as :foo1)]) => {:boolean 1, :foo 1, :scalar 3}
 
   (inst/total-needs 
     ['(calculate [] #(33) :as :tt)]) => {}
 
 
   (inst/total-needs 
-    ['(consume-top-of :integer :as :arg1)
-     '(consume-top-of :integer :as :arg2)
+    ['(consume-top-of :scalar :as :arg1)
+     '(consume-top-of :scalar :as :arg2)
      '(calculate [:arg1 :arg2] #(mod %1 %2) :as :m)
-     '(push-onto :integer :m)]) => {:integer 2} )
+     '(push-onto :scalar :m)]) => {:scalar 2} )
 
 
 (fact "`inst/total-needs` throws up when it sees bad DSL code"
   (inst/total-needs 
-    ['(consume-top-of :integer :as :arg1)
-     '(consume-top-of :integer :as :arg2)
+    ['(consume-top-of :scalar :as :arg1)
+     '(consume-top-of :scalar :as :arg2)
      '(calculate [:arg1 :arg2] #(mod %1 %2) :as :m)
-     '(push :integer :m)]) =>
+     '(push :scalar :m)]) =>
     (throws "Push DSL parse error: 'push' is not a known instruction."))
 
 
@@ -730,15 +730,15 @@
 
 (fact "`products-of-dsl-step` returns a hashmap containing the products for every DSL instruction"
   (inst/products-of-dsl-step
-    '(push-onto :integer :foo))  => {:integer 1}
+    '(push-onto :scalar :foo))  => {:scalar 1}
   (inst/products-of-dsl-step
-    '(push-these-onto :integer [:foo :bar :baz]))  => {:integer 3}
+    '(push-these-onto :scalar [:foo :bar :baz]))  => {:scalar 3}
   (inst/products-of-dsl-step
-    '(replace-stack :integer :foo))  => {:integer 0}
+    '(replace-stack :scalar :foo))  => {:scalar 0}
   (inst/products-of-dsl-step
-    '(insert-as-nth-of :integer :foo :at 0))  => {:integer 1}
+    '(insert-as-nth-of :scalar :foo :at 0))  => {:scalar 1}
   (inst/products-of-dsl-step
-    '(count-of :integer :as :foo)) => {})
+    '(count-of :scalar :as :foo)) => {})
 
 
 (fact "`inst/products-of-dsl-step` throws an exception for unknown DSL instructions"
@@ -751,29 +751,29 @@
 
 (fact "`inst/total-products` takes a whole transaction and sums up all the products of each item"
   (inst/total-products 
-    ['(push-onto :integer :bar)]) => {:integer 1}
+    ['(push-onto :scalar :bar)]) => {:scalar 1}
 
 
   (inst/total-products 
-    ['(push-onto :integer :foo)
-     '(replace-stack :integer :foo)
-     '(insert-as-nth-of :integer :foo :at 0)]) => {:integer 2}
+    ['(push-onto :scalar :foo)
+     '(replace-stack :scalar :foo)
+     '(insert-as-nth-of :scalar :foo :at 0)]) => {:scalar 2}
 
 
   (inst/total-products 
-    ['(push-onto :integer :foo)
-     '(push-onto :integer :foo2)
+    ['(push-onto :scalar :foo)
+     '(push-onto :scalar :foo2)
      '(push-these-onto :float [:foo :bar :baz :qux])
      '(insert-as-nth-of :boolean :foo :at :place)
-     '(count-of :exec :as :foo)]) => {:boolean 1, :float 4, :integer 2})
+     '(count-of :exec :as :foo)]) => {:boolean 1, :float 4, :scalar 2})
 
 
 (fact "`inst/total-products` throws up when it sees bad DSL code"
   (inst/total-products 
-    ['(consume-top-of :integer :as :arg1)
-     '(consume-top-of :integer :as :arg2)
+    ['(consume-top-of :scalar :as :arg1)
+     '(consume-top-of :scalar :as :arg2)
      '(calculate [:arg1 :arg2] #(mod %1 %2) :as :m)
-     '(push :integer :m)]) =>
+     '(push :scalar :m)]) =>
     (throws "Push DSL parse error: 'push' is not a known instruction."))
 
 
@@ -782,29 +782,29 @@
 
 (fact "`inst/def-function-from-dsl` produces a function from zero or more DSL commands"
   (fn? (macroexpand-1 (inst/def-function-from-dsl 
-    (consume-top-of :integer :as :bar) ))) => true
+    (consume-top-of :scalar :as :bar) ))) => true
   (fn? (macroexpand-1 (inst/def-function-from-dsl ))) => true
   (fn? (macroexpand-1 (inst/def-function-from-dsl 
-    (consume-top-of :integer :as :bar)
-    (consume-top-of :integer :as :bar) ))) => true)
+    (consume-top-of :scalar :as :bar)
+    (consume-top-of :scalar :as :bar) ))) => true)
 
 
 (fact "applying that function to an Interpreter produces an Interpreter result"
   (let [int-add (inst/def-function-from-dsl 
-                  (consume-top-of :integer :as :arg1)
-                  (consume-top-of :integer :as :arg2)
+                  (consume-top-of :scalar :as :arg1)
+                  (consume-top-of :scalar :as :arg2)
                   (calculate [:arg1 :arg2] #(+ %1 %2) :as :sum)
-                  (push-onto :integer :sum))]
+                  (push-onto :scalar :sum))]
   (class (int-add afew)) => push.interpreter.core.Interpreter))
 
 
 (fact "applying the function does the things it's supposed to"
   (let [int-add (inst/def-function-from-dsl 
-                  (consume-top-of :integer :as :arg1)
-                  (consume-top-of :integer :as :arg2)
+                  (consume-top-of :scalar :as :arg1)
+                  (consume-top-of :scalar :as :arg2)
                   (calculate [:arg1 :arg2] #(+ %1 %2) :as :sum)
-                  (push-onto :integer :sum))]
-  (u/get-stack (int-add afew) :integer) => '(3 3)))
+                  (push-onto :scalar :sum))]
+  (u/get-stack (int-add afew) :scalar) => '(3 3)))
 
 
 ;; `push-these-onto [stackname [locals]]`
@@ -813,10 +813,10 @@
 (facts "about `push-these-onto`"
 
   (fact "`push-these-onto` places all indicated scratch items onto the named stack"
-    (get-stack-from-dslblob :integer
+    (get-stack-from-dslblob :scalar
       (push-these-onto
         [afew {:foo 99 :bar 111}]
-        :integer
+        :scalar
         [:foo :bar])) => '(111 99 1 2 3))
 
 
@@ -826,21 +826,21 @@
 
 
   (fact "`push-these-onto` doesn't raise a fuss if a scratch variable isn't set"
-    (get-stack-from-dslblob :integer
-      (push-these-onto [afew {}] :integer [:foo])) => '(1 2 3)
-        (get-stack-from-dslblob :integer
-      (push-these-onto [afew {:foo 99 :bar 111}] :integer [:foo :qux])) => 
+    (get-stack-from-dslblob :scalar
+      (push-these-onto [afew {}] :scalar [:foo])) => '(1 2 3)
+        (get-stack-from-dslblob :scalar
+      (push-these-onto [afew {:foo 99 :bar 111}] :scalar [:foo :qux])) => 
         '(99 1 2 3))
 
 
   (fact "`push-these-onto` doesn't raise a fuss if the vector's empty"
-    (get-stack-from-dslblob :integer
-      (push-these-onto [afew {:foo 99 :bar 111}] :integer [])) => '(1 2 3))
+    (get-stack-from-dslblob :scalar
+      (push-these-onto [afew {:foo 99 :bar 111}] :scalar [])) => '(1 2 3))
 
 
   (fact "`push-onto` doesn't care if a scratch variable is a list"
-    (get-stack-from-dslblob :integer
-      (push-these-onto [afew {:foo '(4 5 6)}] :integer [:foo])) =>
+    (get-stack-from-dslblob :scalar
+      (push-these-onto [afew {:foo '(4 5 6)}] :scalar [:foo])) =>
         '((4 5 6) 1 2 3)))
 
 
@@ -851,48 +851,48 @@
 (facts "about `insert-as-nth-of`"
 
   (fact "`insert-as-nth-of` puts the named scratch item in position n of the named stack"
-    (get-stack-from-dslblob :integer
-      (insert-as-nth-of [afew {:foo 99}] :integer :foo :at 0)) => '(99 1 2 3)
-    (get-stack-from-dslblob :integer
-      (insert-as-nth-of [afew {:foo 99}] :integer :foo :at 1)) => '(1 99 2 3)
-    (get-stack-from-dslblob :integer
-      (insert-as-nth-of [afew {:foo 99}] :integer :foo :at 2)) => '(1 2 99 3)
-    (get-stack-from-dslblob :integer
-      (insert-as-nth-of [afew {:foo 99}] :integer :foo :at 3)) => '(1 2 3 99))
+    (get-stack-from-dslblob :scalar
+      (insert-as-nth-of [afew {:foo 99}] :scalar :foo :at 0)) => '(99 1 2 3)
+    (get-stack-from-dslblob :scalar
+      (insert-as-nth-of [afew {:foo 99}] :scalar :foo :at 1)) => '(1 99 2 3)
+    (get-stack-from-dslblob :scalar
+      (insert-as-nth-of [afew {:foo 99}] :scalar :foo :at 2)) => '(1 2 99 3)
+    (get-stack-from-dslblob :scalar
+      (insert-as-nth-of [afew {:foo 99}] :scalar :foo :at 3)) => '(1 2 3 99))
 
 
   (fact "`insert-as-nth-of` picks the index as `(mod where stacklength)`"
-    (get-stack-from-dslblob :integer
-      (insert-as-nth-of [afew {:foo 99}] :integer :foo :at -1)) => '(1 2 3 99)
-    (get-stack-from-dslblob :integer
-      (insert-as-nth-of [afew {:foo 99}] :integer :foo :at 4)) => '(99 1 2 3)
-    (get-stack-from-dslblob :integer
-      (insert-as-nth-of [afew {:foo 99}] :integer :foo :at 6)) => '(1 2 99 3)
-    (get-stack-from-dslblob :integer
-      (insert-as-nth-of [afew {:foo 99}] :integer :foo :at -5)) => '(1 2 3 99))
+    (get-stack-from-dslblob :scalar
+      (insert-as-nth-of [afew {:foo 99}] :scalar :foo :at -1)) => '(1 2 3 99)
+    (get-stack-from-dslblob :scalar
+      (insert-as-nth-of [afew {:foo 99}] :scalar :foo :at 4)) => '(99 1 2 3)
+    (get-stack-from-dslblob :scalar
+      (insert-as-nth-of [afew {:foo 99}] :scalar :foo :at 6)) => '(1 2 99 3)
+    (get-stack-from-dslblob :scalar
+      (insert-as-nth-of [afew {:foo 99}] :scalar :foo :at -5)) => '(1 2 3 99))
 
 
-  (fact "`insert-as-nth-of` will use a scratch variable as index if it's an integer"
-    (get-stack-from-dslblob :integer
-      (insert-as-nth-of [afew {:foo 99 :bar 1}] :integer :foo :at :bar)) =>
+  (fact "`insert-as-nth-of` will use a scratch variable as index if it's an scalar"
+    (get-stack-from-dslblob :scalar
+      (insert-as-nth-of [afew {:foo 99 :bar 1}] :scalar :foo :at :bar)) =>
         '(1 99 2 3)
-    (get-stack-from-dslblob :integer
-      (insert-as-nth-of [afew {:foo 99 :bar -1}] :integer :foo :at :bar)) =>
+    (get-stack-from-dslblob :scalar
+      (insert-as-nth-of [afew {:foo 99 :bar -1}] :scalar :foo :at :bar)) =>
         '(1 2 3 99))
 
 
-  (fact "`insert-as-nth-of` throws up if the scratch variable isn't an integer"
-    (get-stack-from-dslblob :integer
-      (insert-as-nth-of [afew {:foo 99 :bar false}] :integer :foo :at :bar)) =>
-        (throws #"Push DSL argument error: :bar is not an integer")
-    (get-stack-from-dslblob :integer
-      (insert-as-nth-of [afew {:foo 99}] :integer :foo :at :bar)) =>
-        (throws #"Push DSL argument error: :bar is not an integer"))
+  (fact "`insert-as-nth-of` throws up if the scratch variable isn't an scalar"
+    (get-stack-from-dslblob :scalar
+      (insert-as-nth-of [afew {:foo 99 :bar false}] :scalar :foo :at :bar)) =>
+        (throws #"Push DSL argument error: :bar is not an scalar")
+    (get-stack-from-dslblob :scalar
+      (insert-as-nth-of [afew {:foo 99}] :scalar :foo :at :bar)) =>
+        (throws #"Push DSL argument error: :bar is not an scalar"))
 
 
   (fact "`insert-as-nth-of` throws up if no index is given"
-    (get-stack-from-dslblob :integer
-      (insert-as-nth-of [afew {:foo 99}] :integer :foo)) =>
+    (get-stack-from-dslblob :scalar
+      (insert-as-nth-of [afew {:foo 99}] :scalar :foo)) =>
         (throws #"Push DSL argument error: missing key: :at"))
 
   (fact "`insert-as-nth-of` is OK if the stack is empty"
@@ -928,10 +928,10 @@
     (contains '{:error (), :log (), :print (), :unknown ()})
 
   (:stacks (first (retrieve-all-stacks
-                    [afew {:foo {:integer '(9 99 999)}}]
+                    [afew {:foo {:scalar '(9 99 999)}}]
                     :using :foo))) =>
     (contains
-      '{:integer (9 99 999), :error (), 
+      '{:scalar (9 99 999), :error (), 
         :log (), :print (), :unknown ()})
 
   (:stacks 
@@ -939,13 +939,13 @@
       (retrieve-all-stacks
         [(m/basic-interpreter :stacks {:print '(33) 
                                        :error '(:oops)
-                                       :integer '(0 00)
+                                       :scalar '(0 00)
                                        :unknown '(88)})
 
-          {:foo {:integer '(9 99 999)}}]
+          {:foo {:scalar '(9 99 999)}}]
         :using :foo))) =>
     (contains
-      '{:error (:oops), :integer (9 99 999), 
+      '{:error (:oops), :scalar (9 99 999), 
         :log (), :print (33), :unknown (88)}))
 
 

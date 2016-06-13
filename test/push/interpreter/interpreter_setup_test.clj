@@ -307,8 +307,7 @@
                                     :environment
                                     :error
                                     :exec 
-                                    :float 
-                                    :integer
+                                    :scalar
                                     :log
                                     :print
                                     :return
@@ -326,7 +325,7 @@
 
 (fact "basic-interpreter can be passed a hashmap of populated stacks to merge into the core"
   (u/get-stack just-basic :integer ) => '()
-  (u/get-stack (m/basic-interpreter :stacks {:integer '(7 6 5)}) :integer ) => '(7 6 5)
+  (u/get-stack (m/basic-interpreter :stacks {:scalar '(7 6 5)}) :scalar ) => '(7 6 5)
   (u/get-stack (m/basic-interpreter :stacks {:foo '(7 6 5)}) :foo ) => '(7 6 5)
   (u/get-stack (m/basic-interpreter :stacks {:foo '(7 6 5)}) :integer ) => '()
   (u/get-stack just-basic :foo ) => nil)
@@ -337,11 +336,6 @@
 
 ;; this function creates a Push interpreter that pre-loads all the core types
 ;; and their instructions on creation
-
-
-(fact "`classic-interpreter` has `integer-type` registered"
-  (:types classy) =>
-    (contains push.types.type.integer/integer-type))
 
 
 (fact "`classic-interpreter` has `boolean-type` registered"
@@ -357,11 +351,6 @@
 (fact "`classic-interpreter` has `char-type` registered"
   (:types classy) =>
     (contains push.types.type.char/char-type))
-
-
-(fact "`classic-interpreter` has `float-type` registered"
-  (:types classy) =>
-    (contains push.types.type.float/float-type))
 
 
 (fact "`classic-interpreter` has `code-module` registered"
@@ -408,7 +397,7 @@
                   (count (:routers benchmarker))
                   " routers."))
     (keys (:instructions benchmarker)) =>  ;; just a sampling as a rough check
-      (contains [:integer-add :boolean-and :char≥? :string-concat] :in-any-order :gaps-ok)))
+      (contains [:scalar-add :boolean-and :char≥? :string-concat] :in-any-order :gaps-ok)))
 
 
 ;;;; manipulating existing interpreters
@@ -433,9 +422,9 @@
 ;; forget-instruction
 
 (fact "forget-instruction drops the indicated instruction from the Interpreter"
-  (keys (:instructions classy)) => (contains :integer-add)
+  (keys (:instructions classy)) => (contains :scalar-add)
   (keys (:instructions 
-    (forget-instruction classy :integer-add))) =not=> (contains :integer-add)
+    (forget-instruction classy :scalar-add))) =not=> (contains :scalar-add)
   (keys (:instructions 
     (forget-instruction classy :foo-bar))) => (keys (:instructions classy)))
 
@@ -446,10 +435,9 @@
 
 (fact "contains-at-least? returns true if the count of the specified stack is >= the number"
   (let [abbr #'push.interpreter.core/contains-at-least?]
-  (abbr just-basic :integer 0) => true
-  (abbr just-basic :integer 3) => false
-  (abbr (m/basic-interpreter :stacks {:integer '(1 2 3)}) :integer 3) => true
-  (abbr (m/basic-interpreter :stacks {:integer '(1 2 3)}) :integer 2) => true))
+  (abbr (m/basic-interpreter :stacks {:scalar '(1 2 3)}) :scalar 3) => true
+  (abbr (m/basic-interpreter :stacks {:scalar '(0)}) :scalar 3) => false
+  (abbr (m/basic-interpreter :stacks {:scalar '(1 2 3)}) :scalar 2) => true))
 
 
 (fact "contains-at-least? returns false if the named stack isn't present"

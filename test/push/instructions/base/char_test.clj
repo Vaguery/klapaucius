@@ -288,14 +288,14 @@
 ;; visible
 
 (tabular
-  (fact ":char-stackdepth returns the number of items on the :char stack (to :integer)"
+  (fact ":char-stackdepth returns the number of items on the :char stack (to :scalar)"
     (register-type-and-check-instruction
         ?set-stack ?items char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items        ?instruction  ?get-stack     ?expected
-    :char    '(\r \e \l \p)  :char-stackdepth   :integer     '(4)
-    :char    '(\R)           :char-stackdepth   :integer     '(1)
-    :char    '()             :char-stackdepth   :integer     '(0))
+    :char    '(\r \e \l \p)  :char-stackdepth   :scalar     '(4)
+    :char    '(\R)           :char-stackdepth   :scalar     '(1)
+    :char    '()             :char-stackdepth   :scalar     '(0))
 
 
 (tabular

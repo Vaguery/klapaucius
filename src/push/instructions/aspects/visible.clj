@@ -29,7 +29,7 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`:" instruction-name "` pushes an `:integer` which is the number of items in the `" typename "` stack.")
+      (str "`:" instruction-name "` pushes a `:scalar` which is the number of items in the `" typename "` stack.")
       :tags #{:visible}
       `(push.instructions.dsl/count-of ~typename :as :depth)
-      '(push.instructions.dsl/push-onto :integer :depth)))))
+      '(push.instructions.dsl/push-onto :scalar :depth)))))

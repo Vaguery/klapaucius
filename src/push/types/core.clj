@@ -9,9 +9,8 @@
     {:boolean '()
     :char '()
     :code '()
-    :integer '() 
+    :scalar '() 
     :exec '()
-    :float '()
     :string '()
     })
 

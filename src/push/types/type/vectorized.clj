@@ -228,7 +228,7 @@
       `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
       '(push.instructions.dsl/calculate [:arg1 :arg2]
           #(.indexOf %1 %2) :as :where)
-      `(push.instructions.dsl/push-onto :integer :where)))))
+      `(push.instructions.dsl/push-onto :scalar :where)))))
 
 
 
@@ -256,7 +256,7 @@
       :tags #{:vector}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
       '(push.instructions.dsl/calculate [:arg1] #(count %1) :as :len)
-      `(push.instructions.dsl/push-onto :integer :len)))))
+      `(push.instructions.dsl/push-onto :scalar :len)))))
 
 
 
@@ -303,7 +303,7 @@
       `(push.instructions.dsl/consume-top-of ~rootname :as :item)
       `(push.instructions.dsl/calculate 
         [:vec :item] #(get (frequencies %1) %2 0) :as :result)
-      `(push.instructions.dsl/push-onto :integer :result)))))
+      `(push.instructions.dsl/push-onto :scalar :result)))))
 
 
 
