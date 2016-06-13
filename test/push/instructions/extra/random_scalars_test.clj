@@ -10,17 +10,17 @@
 
 
 (tabular
-  (fact ":integer-uniform returns a random integer between 0 and the top :integer value"
-    (prerequisite (rand 77) => 33)
+  (fact ":integer-uniform returns a random integer between 0 and the top :scalar value"
+    (prerequisite (rand 77/8) => 4.3)
     (prerequisite (rand 0)  => 0)
-    (prerequisite (rand -100) => -13)
+    (prerequisite (rand -10000.2) => -13.13)
     (register-type-and-check-instruction
       ?set-stack ?items random-scalars-module ?instruction ?get-stack) => ?expected)
 
-    ?set-stack   ?items    ?instruction       ?get-stack     ?expected  
-    :integer     '(77)     :integer-uniform   :integer       '(33)      
-    :integer     '(0)      :integer-uniform   :integer       '(0)       
-    :integer     '(-100)   :integer-uniform   :integer       '(-13)
+    ?set-stack   ?items        ?instruction       ?get-stack     ?expected  
+    :scalar      '(77/8)       :integer-uniform   :scalar        '(4)      
+    :scalar      '(0)          :integer-uniform   :scalar        '(0)       
+    :scalar      '(-10000.2)   :integer-uniform   :scalar        '(-13)
     )
 
 
@@ -31,31 +31,51 @@
 
     ?set-stack   ?items          ?instruction         ?get-stack     ?expected
 
-    :integer     '(10000000000000000000000000000000000000000000N)
-                                 :integer-uniform     :integer        '()
-    :integer     '(10000000000000000000000000000000000000000000N)
-                                 :integer-uniform     :error          '({:item ":integer-uniform argument invalid", :step 0})
+    :scalar    '(10000000000000000000000000000000000000000000N)
+                                 :integer-uniform     :scalar       '()
+    :scalar    '(10000000000000000000000000000000000000000000N)
+                                 :integer-uniform     :error          '({:item ":integer-uniform argument out of range", :step 0})
 
-    :integer     (list (+' Long/MIN_VALUE -1))
-                                 :integer-uniform     :integer        '()
-    :integer     (list (+' Long/MIN_VALUE -1))
-                                 :integer-uniform     :error          '({:item ":integer-uniform argument invalid", :step 0})
+    :scalar    (list (+' Long/MIN_VALUE -1))
+                                 :integer-uniform     :scalar       '()
+    :scalar    (list (+' Long/MIN_VALUE -1))
+                                 :integer-uniform     :error          '({:item ":integer-uniform argument out of range", :step 0})
     )
 
 
 
 
 (tabular
-  (fact ":float-uniform returns a random float between 0 and the top :float value"
-    (prerequisite (rand) => ?diceroll)
+  (fact ":float-uniform returns a random float between 0 and the top :scalar value"
+    (prerequisite (rand anything) => ?diceroll)
     (register-type-and-check-instruction
       ?set-stack ?items random-scalars-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack   ?items    ?instruction     ?get-stack     ?expected     ?diceroll
-    :float      '(50.0)    :float-uniform      :float         '(25.0)      0.5  
-    :float      '(8.0)     :float-uniform      :float         '(2.0)       0.25
-    :float      '(0.0)     :float-uniform      :float         '(0.0)       0.5
-    :float      '(-100.0)  :float-uniform      :float         '(-26.0)     0.26)
+    :scalar     '(50.0)    :float-uniform      :scalar      '(25.0)      25.0  
+    :scalar     '(8.0)     :float-uniform      :scalar      '(2.0)       2.0
+    :scalar     '(0.0)     :float-uniform      :scalar      '(0.0)       0.0
+    :scalar     '(-100.0)  :float-uniform      :scalar      '(-26.0)     -26.0)
+
+
+
+(tabular
+  (fact ":float-uniform creates an :error when called with an out-of-bounds argument"
+    (register-type-and-check-instruction
+      ?set-stack ?items random-scalars-module ?instruction ?get-stack) => ?expected)
+
+    ?set-stack   ?items          ?instruction         ?get-stack     ?expected
+
+    :scalar    '(1.0e861M)
+                                 :float-uniform     :scalar       '()
+    :scalar    '(1.0e861M)
+                                 :float-uniform     :error          '({:item ":float-uniform argument out of range", :step 0})
+
+    :scalar    (list Double/MAX_VALUE)
+                                 :float-uniform     :scalar       '()
+    :scalar    (list Double/MAX_VALUE)
+                                 :float-uniform     :error          '({:item ":float-uniform argument out of range", :step 0})
+    )
 
 
 

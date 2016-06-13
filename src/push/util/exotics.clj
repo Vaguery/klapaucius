@@ -54,3 +54,5 @@
             (repeat shortfall \0) 
             (seq seed)))))
     (throw (Exception. "integer-to-truth-table argument error")))))
+
+

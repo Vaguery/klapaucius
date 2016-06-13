@@ -2,6 +2,7 @@
   (:require [push.instructions.core :as core]
             [push.types.core :as t]
             [push.instructions.dsl :as d]
+            [push.util.numerics :as num]
             [push.util.code-wrangling :as u]
             ))
 
@@ -63,11 +64,12 @@
 (def push-nthref
   (core/build-instruction
     push-nthref
-    "`:push-nthref` takes an `:integer`, maps that value onto the number of `:bindings` it knows, and pushes the indexed key to `:ref` (after sorting the list of keywords)"
+    "`:push-nthref` takes an `:scalar`, maps that value onto the number of `:bindings` it knows, and pushes the indexed key to `:ref` (after sorting the list of keywords)"
     :tags #{:binding :introspection}
-    (d/consume-top-of :integer :as :i)
+    (d/consume-top-of :scalar :as :i)
     (d/save-bindings :as :known) ;; just the keys
-    (d/calculate [:known :i] #(u/safe-mod %2 (count %1)) :as :idx)
+    (d/calculate [:known :i]
+        #(if (empty? %1) 0 (num/scalar-to-index %2 (count %1))) :as :idx)
     (d/calculate [:known :idx] #(if (empty? %1) nil (nth (sort %1) %2)) :as :result)
     (d/push-onto :ref :result)
     ))

@@ -19,13 +19,13 @@
 
 
 (tabular
-  (fact ":push-counter pushes the current counter value to the :integer stack"
+  (fact ":push-counter pushes the current counter value to the :scalar stack"
     (register-type-and-check-instruction-in-this-interpreter
       simple-case
       ?set-stack ?items standard-introspection-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack   ?items    ?instruction     ?get-stack     ?expected
-    :integer     '()       :push-counter    :integer       '(77))
+    :scalar     '()       :push-counter    :scalar       '(77))
 
 
 (tabular
@@ -63,14 +63,14 @@
 
 
 (tabular
-  (fact ":push-bindingcount pushes the number of binding keys to :integer"
+  (fact ":push-bindingcount pushes the number of binding keys to :scalar"
     (register-type-and-check-instruction-in-this-interpreter
       simple-case
       ?set-stack ?items standard-introspection-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack ?items ?instruction     ?get-stack   ?expected
-    :integer       '()    :push-bindingcount    
-                                       :integer     '(2))
+    :scalar       '()    :push-bindingcount    
+                                       :scalar     '(2))
 
 
 
@@ -81,13 +81,13 @@
       ?set-stack ?items standard-introspection-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack ?items   ?instruction     ?get-stack   ?expected
-    :integer    '(1)    :push-nthref    
+    :scalar     '(1)    :push-nthref    
                                          :ref         '(:c)
-    :integer    '(0)    :push-nthref    
+    :scalar     '(0)    :push-nthref    
                                          :ref         '(:b)
-    :integer    '(11)   :push-nthref    
+    :scalar     '(11)   :push-nthref    
                                          :ref         '(:c)
-    :integer    '(-21)  :push-nthref    
+    :scalar     '(-21)  :push-nthref    
                                          :ref         '(:c))
 
 
@@ -98,13 +98,13 @@
       ?set-stack ?items standard-introspection-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack ?items   ?instruction     ?get-stack   ?expected
-    :integer    '(1)    :push-nthref    
+    :scalar     '(1)    :push-nthref    
                                          :ref         '()
-    :integer    '(0)    :push-nthref    
+    :scalar     '(0)    :push-nthref    
                                          :ref         '()
-    :integer    '(11)   :push-nthref    
+    :scalar     '(11)   :push-nthref    
                                          :ref         '()
-    :integer    '(-21)  :push-nthref    
+    :scalar     '(-21)  :push-nthref    
                                          :ref         '())
 
 

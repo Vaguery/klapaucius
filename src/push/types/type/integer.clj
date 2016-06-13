@@ -96,19 +96,6 @@
 
 
 
-(def integer-totalistic3
-  (core/build-instruction
-    integer-totalistic3
-    "`:integer-totalistic3` pops the top `:integer`. Each digit is replaced by the sum of its current value and the two neighbors to the right, modulo 10, wrapping cyclically around the number. If it is negative, the result returned is still negative. If the result is out of bounds, an `:error` is returned instead of a result."
-    :tags #{:numeric :conversion}
-    (d/consume-top-of :integer :as :arg)
-    (d/calculate [:arg] #(exotics/rewrite-digits %1 3) :as :raw)
-    (d/calculate [:raw] #(valid-push-integer? %1) :as :valid)
-    (d/calculate [:valid :raw] #(if %1 %2 nil) :as :result)
-    (d/push-onto :scalar :result)
-    (d/calculate [:valid]
-      #(if %1 nil ":integer-totalistic3 out of bounds") :as :warning)
-    (d/record-an-error :from :warning)))
 
 
 
