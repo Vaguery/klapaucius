@@ -121,36 +121,56 @@
   (let [foo-shove (shove-instruction (make-type :foo))]
     (class foo-shove) => push.instructions.core.Instruction
     (:tags foo-shove) => #{:combinator}
-    (:needs foo-shove) => {:foo 1, :integer 1}
+    (:needs foo-shove) => {:foo 1, :scalar 1}
     (:token foo-shove) => :foo-shove
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (m/basic-interpreter :stacks {:foo '(:a :b :c) :integer '(1)}) foo-shove)
+        (i/register-instruction (m/basic-interpreter :stacks {:foo '(:a :b :c) :scalar '(1)}) foo-shove)
         :foo-shove)
       :foo) => '(:b :a :c)
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (m/basic-interpreter :stacks {:foo '(:a :b :c) :integer '(0)}) foo-shove)
+        (i/register-instruction (m/basic-interpreter :stacks {:foo '(:a :b :c) :scalar '(0)}) foo-shove)
         :foo-shove)
       :foo) => '(:a :b :c)
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (m/basic-interpreter :stacks {:foo '(:a :b :c) :integer '(2)}) foo-shove)
+        (i/register-instruction (m/basic-interpreter :stacks {:foo '(:a :b :c) :scalar '(2)}) foo-shove)
         :foo-shove)
       :foo) => '(:b :c :a)
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (m/basic-interpreter :stacks {:foo '(:a :b :c) :integer '(-1)}) foo-shove)
+        (i/register-instruction (m/basic-interpreter :stacks {:foo '(:a :b :c) :scalar '(-1)}) foo-shove)
         :foo-shove)
       :foo) => '(:a :b :c)
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (m/basic-interpreter :stacks {:foo '(:a :b :c) :integer '(-1182)}) foo-shove)
+        (i/register-instruction (m/basic-interpreter :stacks {:foo '(:a :b :c) :scalar '(-1182)}) foo-shove)
         :foo-shove)
       :foo) => '(:a :b :c)
     (get-stack
       (i/execute-instruction
-        (i/register-instruction (m/basic-interpreter :stacks {:foo '(:a :b :c :d :e) :integer '(387)}) foo-shove)
+        (i/register-instruction (m/basic-interpreter :stacks {:foo '(:a :b :c :d :e) :scalar '(387)}) foo-shove)
+        :foo-shove)
+      :foo) => '(:b :c :d :e :a)
+    (get-stack
+      (i/execute-instruction
+        (i/register-instruction (m/basic-interpreter :stacks {:foo '(:a :b :c :d :e) :scalar '(38702777777777777744444444444444444444444N)}) foo-shove)
+        :foo-shove)
+      :foo) => '(:b :c :d :e :a)
+    (get-stack
+      (i/execute-instruction
+        (i/register-instruction (m/basic-interpreter :stacks {:foo '(:a :b :c :d :e) :scalar '(-38702777777777777744444444444444444444444N)}) foo-shove)
+        :foo-shove)
+      :foo) => '(:a :b :c :d :e)
+    (get-stack
+      (i/execute-instruction
+        (i/register-instruction (m/basic-interpreter :stacks {:foo '(:a :b :c :d :e) :scalar '(387/13)}) foo-shove)
+        :foo-shove)
+      :foo) => '(:b :c :d :e :a)    
+    (get-stack
+      (i/execute-instruction
+        (i/register-instruction (m/basic-interpreter :stacks {:foo '(:a :b :c :d :e) :scalar '(7.71753612845e612M)}) foo-shove)
         :foo-shove)
       :foo) => '(:b :c :d :e :a)
     ))

@@ -210,13 +210,13 @@
       'push.instructions.core/build-instruction
       instruction-name
       (str "`:" instruction-name "` pops the top item from the `" typename
-        "` stack and the top `:integer`. The `:integer` is brought into range as an index by forcing it into the range `[0,stack_length-1]` (inclusive), and then the top item is _moved_ so that it is in that position in the resulting stack.")
+        "` stack and the top `:scalar`. The `:scalar` is used to select a valid index; unlike most other indexed arguments, it is thresholded. The top item on the stack is _moved_ so that it is in the indexed position in the resulting stack.")
       :tags #{:combinator}
-      '(push.instructions.dsl/consume-top-of :integer :as :which)
+      '(push.instructions.dsl/consume-top-of :scalar :as :which)
       `(push.instructions.dsl/consume-top-of ~typename :as :shoved-item)
       `(push.instructions.dsl/count-of ~typename :as :how-many)
       `(push.instructions.dsl/calculate [:which :how-many]
-        #(min (max %1 0) %2) :as :index)
+        #(if (zero? %2) 0 (max 0 (min (Math/ceil %1) %2))) :as :index)
       `(push.instructions.dsl/consume-stack ~typename :as :oldstack)
       `(push.instructions.dsl/calculate [:index :shoved-item :oldstack]
         #(into '() (reverse (concat (take %1 %3) (list %2) (drop %1 %3))))
