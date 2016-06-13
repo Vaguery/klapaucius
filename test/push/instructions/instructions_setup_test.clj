@@ -28,7 +28,7 @@
 
 
 (fact "make-instruction accepts a :needs argument"
-  (:needs (make-instruction :foo :needs {:integer 2})) => {:integer 2})
+  (:needs (make-instruction :foo :needs {:scalar 2})) => {:scalar 2})
 
 
 (fact "make-instruction accepts a :transaction argument"
@@ -205,12 +205,12 @@
 
 (fact "a generated yank-instruction has a reasonable docstring"
   (:docstring (yank-instruction i-know-foo)) =>
-    #"`:foo-yank` pops the top `:integer`")
+    #"`:foo-yank` pops the top `:scalar`")
 
 
 (fact "a generated yankdup-instruction has a reasonable docstring"
   (:docstring (yankdup-instruction i-know-foo)) =>
-    #"`:foo-yankdup` pops the top `:integer`.")
+    #"`:foo-yankdup` pops the top `:scalar`.")
 
 (fact "the docstring is associated with an instance"
   (:doc (meta (yankdup-instruction i-know-foo))) =>
@@ -224,6 +224,6 @@
   (:needs (swap-instruction i-know-foo)) => {:foo 2}
   (:products (swap-instruction i-know-foo)) => {:foo 2}
 
-  (:needs (yankdup-instruction i-know-foo)) => {:foo 1, :integer 1}
+  (:needs (yankdup-instruction i-know-foo)) => {:foo 1, :scalar 1}
   (:products (yankdup-instruction i-know-foo)) => {:foo 1}
   )

@@ -5,6 +5,8 @@
             [push.util.stack-manipulation :as stacks]
             [push.util.code-wrangling :as u]
             [push.instructions.aspects :as aspects]
+            [clojure.math.numeric-tower :as math]
+            [push.util.numerics :as num]
             ))
 
 
@@ -96,15 +98,15 @@
 (def code-do*count
   (core/build-instruction
     code-do*count
-    "`:code-do*count` pops the top item of `:code` and the top `:integer`. It constructs a continuation depending on whether the `:integer` is positive:
+    "`:code-do*count` pops the top item of `:code` and the top `:scalar`. It constructs a continuation depending on whether the `:scalar` is positive:
 
-      - `[int]` positive?: `'([int] 0 :code-quote [code] :code-do*range)`
-      - `[int]` zero or negative?: `'([int] :code-quote [code])`
+      - `[s]` positive?: `'([s] 0 :code-quote [code] :code-do*range)`
+      - `[s]` zero or negative?: `'([s] :code-quote [code])`
 
     This continuation is pushed to the `:exec` stack."
     :tags #{:complex :base}
     (d/consume-top-of :code :as :do-this)
-    (d/consume-top-of :integer :as :counter)
+    (d/consume-top-of :scalar :as :counter)
     (d/calculate [:counter] #(pos? %1) :as :go?)
     (d/calculate
       [:do-this :counter :go?] 
@@ -118,23 +120,23 @@
 (def code-do*range
   (core/build-instruction
     code-do*range
-    "`:code-do*range` pops the top item of `:code` and the top two `:integer` values (call them `end` and `start`, respectively, with `end` being the top `:integer` item). It constructs a continuation depending on the relation between the `end` and `start` values:
+    "`:code-do*range` pops the top item of `:code` and the top two `:scalar` values (call them `end` and `start`, respectively, with `end` being the top `:scalar` item). It constructs a continuation depending on the relation between the `end` and `start` values:
 
-      - `end` > `start`: `'([start] [code] ([start+1] [end] :code-quote [code] :code-do*Range))`
-      - `end` < `start`: `'([start] [code] ([start-1] [end] :code-quote [code] :code-do*Range))`
-      - `end` = `start`: `'(end [code])`
+      - `end` > `(inc start)`: `'([start] [code] ((inc [start]) [end] :code-quote [code] :code-do*Range))`
+      - `end` < `(dec start)`: `'([start] [code] ((dec [start]) [end] :code-quote [code] :code-do*Range))`
+      - (`end` - `start`) ≤ 1: `'((dec [start]) [code])`
 
     This continuation is pushed to the `:exec` stack."
     :tags #{:complex :base}
     (d/consume-top-of :code :as :do-this)
-    (d/consume-top-of :integer :as :end)
-    (d/consume-top-of :integer :as :start)
-    (d/calculate [:start :end] #(= %1 %2) :as :done?)
+    (d/consume-top-of :scalar :as :end)
+    (d/consume-top-of :scalar :as :start)
+    (d/calculate [:start :end] #(num/within-1? %1 %2) :as :done?)
     (d/calculate [:start :end] #(+' %1 (compare %2 %1)) :as :next)
     (d/calculate
       [:do-this :start :end :next :done?] 
       #(if %5
-           (list %3 %1)
+           (list %4 %1)
            (list %2 %1 (list %4 %3 :code-quote %1 :code-do*range))) :as :continuation)
     (d/push-onto :exec :continuation)))
 
@@ -143,15 +145,15 @@
 (def code-do*times
   (core/build-instruction
     code-do*times
-    "`:code-do*times` pops the top item of `:code` and the top `:integer` value (call it `counter`). It constructs a continuation depending on whether `counter` is positive, zero or negative:
+    "`:code-do*times` pops the top item of `:code` and the top `:scalar` value (call it `counter`). It constructs a continuation depending on whether `counter` is positive, zero or negative:
 
       - `counter` ≤ 0: `[code]` (the popped `:code` item)
-      - `counter` > 0: `'([code] ([counter-1] :code-quote [code] :code-do*times))`
+      - `counter` > 0: `'([code] ((dec [counter]) :code-quote [code] :code-do*times))`
 
     This continuation is pushed to the `:exec` stack."
     :tags #{:complex :base}
     (d/consume-top-of :code :as :do-this)
-    (d/consume-top-of :integer :as :count)
+    (d/consume-top-of :scalar :as :count)
     (d/calculate [:count] #((complement pos?) %1) :as :done?)
     (d/calculate [:count] #(dec' %1) :as :next)
     (d/calculate
@@ -163,15 +165,16 @@
 
 
 
-(def code-drop               ;; Clojush: code-nthcdr
+(def code-drop      
   (core/build-instruction
     code-drop
-    "`:code-drop` pops the top `:code` and `:integer` items. It wraps the `:code` item in a list if it isn't one, and forces the integer into an index range by taking `(mod integer (count code)`. It then pushes the result of `(drop index code)`."
+    "`:code-drop` pops the top `:code` and `:scalar` items. It wraps the `:code` item in a list if it isn't one, and forces the scalar into an index range. It then pushes the result of `(drop index code)`."
     :tags #{:complex :base}
     (d/consume-top-of :code :as :c)
-    (d/consume-top-of :integer :as :i)
+    (d/consume-top-of :scalar :as :i)
     (d/calculate [:c] #(if (seq? %1) %1 (list %1)) :as :list)
-    (d/calculate [:list :i] #(if (empty? %1) 0 (u/safe-mod %2 (count %1))) :as :idx)
+    (d/calculate [:list :i]
+      #(if (empty? %1) 0 (num/scalar-to-index %2 (count %1))) :as :idx)
     (d/calculate [:list :idx] #(drop %2 %1) :as :result)
     (d/push-onto :code :result)))
 
@@ -180,12 +183,12 @@
 (def code-extract
   (core/build-instruction
     code-extract
-    "`:code-extract` pops the top `:code` and `:integer` stacks. It counts the number of code points (that is, lists and items in lists, not other collections) in the `:code` item, then forces the `:integer` to a suitable index range using `(mod integer (points code))`. It then returns the indexed component of the `:code`, using a depth-first traversal."
+    "`:code-extract` pops the top `:code` and `:scalar` stacks. It counts the number of code points (that is, lists and items in lists, not other collections) in the `:code` item, then forces the `:scalar` to a suitable index range. It then returns the indexed component of the `:code`, using a depth-first traversal."
     :tags #{:complex :base}
     (d/consume-top-of :code :as :c)
-    (d/consume-top-of :integer :as :i)
+    (d/consume-top-of :scalar :as :i)
     (d/calculate [:c] #(u/count-code-points %1) :as :size)
-    (d/calculate [:size :i] #(u/safe-mod %2 %1) :as :idx)
+    (d/calculate [:size :i] #(num/scalar-to-index %2 %1) :as :idx)
     (d/calculate [:c :idx] #(u/nth-code-point %1 %2) :as :result)
     (d/push-onto :code :result)))
 
@@ -213,13 +216,13 @@
 (def code-insert
   (core/build-instruction
     code-insert
-    "`:code-insert` pops the top two `:code` items (call them `A` and `B` respectively), and the top `:integer`. It counts the number of code points in `B` (that is, lists and items in lists, not other collections), then forces the `:integer` to a suitable index range using `(mod integer (points B))`. It then pushes the result when the indexed node of `B` is replaced with `A`. If the result would be larger than :max-collection-size, it is discarded."
+    "`:code-insert` pops the top two `:code` items (call them `A` and `B` respectively), and the top `:scalar`. It counts the number of code points in `B` (that is, lists and items in lists, not other collections), then forces the `:scalar` to a suitable index range. It then pushes the result when the indexed node of `B` is replaced with `A`. If the result would be larger than :max-collection-size, it is discarded."
     :tags #{:complex :base}
     (d/consume-top-of :code :as :a)
     (d/consume-top-of :code :as :b)
-    (d/consume-top-of :integer :as :i)
+    (d/consume-top-of :scalar :as :i)
     (d/calculate [:b] #(u/count-code-points %1) :as :size)
-    (d/calculate [:i :size] #(u/safe-mod %1 %2) :as :idx)
+    (d/calculate [:i :size] #(num/scalar-to-index %1 %2) :as :idx)
     (d/calculate [:a :b :idx] #(u/replace-nth-in-code %2 %1 %3) :as :replaced)
     (d/save-max-collection-size :as :limit)
     (d/calculate [:replaced :limit] #(if (< (u/count-code-points %1) %2) %1 nil) :as :result)
@@ -328,12 +331,13 @@
 (def code-nth
   (core/build-instruction
     code-nth
-    "`:code-nth` pops the top `:code` and `:integer` items. It wraps the `:code` item in a list if it isn't one, and forces the integer into an index range by taking `(mod integer (count code)`. It then pushes the indexed item of the (listified) `:code` item onto the `:code` stack."
+    "`:code-nth` pops the top `:code` and `:scalar` items. It wraps the `:code` item in a list if it isn't one, and forces the scalar into an index range by taking `(mod scalar (count code)`. It then pushes the indexed item of the (listified) `:code` item onto the `:code` stack."
     :tags #{:complex :base}
     (d/consume-top-of :code :as :c)
-    (d/consume-top-of :integer :as :i)
+    (d/consume-top-of :scalar :as :i)
     (d/calculate [:c] #(if (seq? %1) %1 (list %1)) :as :list)
-    (d/calculate [:list :i] #(u/safe-mod %2 (count %1)) :as :idx)
+    (d/calculate [:list :i]
+      #(if (empty? %1) 0 (num/scalar-to-index %2 (count %1))) :as :idx)
     (d/calculate [:list :idx] #(if (empty? %1) nil (nth %1 %2)) :as :result)
     (d/push-onto :code :result)))
 
@@ -390,7 +394,7 @@
 (def code-size
   (core/build-instruction
     code-size
-    "`:code-size` pops the top item from the `:code` stack, and totals the number of items it contains anywhere, in any nested Collection of any type. The root of the item counts as 1, and every element (including sub-Collections) nested inside that add 1 more. Items in lists, vectors, sets, and maps are counted. Maps are counted as a collection of key-value pairs, each key and value are an item in a pair, and if they themselves are nested items those are traversed as well. (_Note_ that this differs from `:code-points` by counting the contents of Collections, as opposed to lists only.) The result is pushed to the `:integer` stack."
+    "`:code-size` pops the top item from the `:code` stack, and totals the number of items it contains anywhere, in any nested Collection of any type. The root of the item counts as 1, and every element (including sub-Collections) nested inside that add 1 more. Items in lists, vectors, sets, and maps are counted. Maps are counted as a collection of key-value pairs, each key and value are an item in a pair, and if they themselves are nested items those are traversed as well. (_Note_ that this differs from `:code-points` by counting the contents of Collections, as opposed to lists only.) The result is pushed to the `:scalar` stack."
     :tags #{:complex :base}
     (d/consume-top-of :code :as :arg1)
     (d/calculate [:arg1] #(u/count-collection-points %1) :as :size)

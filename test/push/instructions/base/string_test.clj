@@ -13,7 +13,7 @@
 ;; all the conversions
 
 (tabular
-  (fact ":integer->string, :boolean->string, :code->string, :exec->string, :float->string"
+  (fact " :boolean->string, :code->string, :exec->string"
     (register-type-and-check-instruction
         ?set-stack ?items string-type ?instruction ?get-stack) => ?expected)
 
@@ -21,14 +21,6 @@
     :boolean    '(false)       :boolean->string      :string       '("false")
     :boolean    '(true)        :boolean->string      :string       '("true")
     :boolean    '()            :boolean->string      :string       '()
-
-    :integer    '(11)          :integer->string      :string       '("11")
-    :integer    '(-11)         :integer->string      :string       '("-11")
-    :integer    '()            :integer->string      :string       '()
-
-    :float      '(117.0)       :float->string        :string       '("117.0")
-    :float      '(-0.3)        :float->string        :string       '("-0.3")
-    :float      '()            :float->string        :string       '()
 
     :char       '(\Y)          :char->string         :string       '("Y")
     :char       '(\u262F)      :char->string         :string       '("☯")
@@ -74,51 +66,51 @@
     ?new-stacks                ?instruction       ?expected
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:exec   '(:integer-add)
+    {:exec   '(:scalar-add)
      :string '("ere he was able")}           
                             :exec-string-iterate       
                                                   {:char   '()
                                                    :string '()
-                                                   :exec   '((\e :integer-add 
+                                                   :exec   '((\e :scalar-add 
                                                               "re he was able" 
                                                               :exec-string-iterate 
-                                                              :integer-add))}
+                                                              :scalar-add))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:exec   '(:integer-add :foo)
+    {:exec   '(:scalar-add :foo)
      :string '("ere he was able")}           
                             :exec-string-iterate       
                                                   {:char   '()
                                                    :string '()
-                                                   :exec   '((\e :integer-add 
+                                                   :exec   '((\e :scalar-add 
                                                               "re he was able" 
                                                               :exec-string-iterate
-                                                              :integer-add) :foo)} 
+                                                              :scalar-add) :foo)} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:exec   '((2 :integer-add (7)))
+    {:exec   '((2 :scalar-add (7)))
      :string '("ere he was able")}           
                             :exec-string-iterate       
                                                   {:char   '()
                                                    :string '()
-                                                   :exec   '((\e (2 :integer-add (7))
+                                                   :exec   '((\e (2 :scalar-add (7))
                                                               "re he was able" 
                                                               :exec-string-iterate
-                                                              (2 :integer-add (7))))} 
+                                                              (2 :scalar-add (7))))} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:exec   '(:integer-add)
+    {:exec   '(:scalar-add)
      :string '("e")}           
                             :exec-string-iterate       
                                                   {:char   '()
                                                    :string '()
-                                                   :exec   '((\e :integer-add))}
+                                                   :exec   '((\e :scalar-add))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:exec   '(:integer-add)
+    {:exec   '(:scalar-add)
      :string '("")}           
                             :exec-string-iterate       
                                                   {:char   '()
                                                    :string '()
                                                    :exec   '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:exec   '(:integer-add :foo)
+    {:exec   '(:scalar-add :foo)
      :string '("")}           
                             :exec-string-iterate       
                                                   {:char   '()
@@ -259,21 +251,21 @@
                                 :string-indexofchar       
                                                   {:char '()
                                                    :string '()
-                                                   :integer '(0)} 
+                                                   :scalar '(0)} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:char   '(\a)
      :string '("ere he was able")}           
                                 :string-indexofchar       
                                                   {:char '()
                                                    :string '()
-                                                   :integer '(8)} 
+                                                   :scalar '(8)} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:char   '(\z)
      :string '("ere he was able")}           
                                 :string-indexofchar       
                                                   {:char '()
                                                    :string '()
-                                                   :integer '(-1)} 
+                                                   :scalar '(-1)} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;; missing arguments
     {:char   '()
@@ -281,14 +273,14 @@
                                 :string-indexofchar       
                                                   {:char '()
                                                    :string '("ere he was able")
-                                                   :integer '()} 
+                                                   :scalar '()} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:char   '(\e)
      :string '()}           
                                 :string-indexofchar       
                                                   {:char '(\e)
                                                    :string '()
-                                                   :integer '()})
+                                                   :scalar '()})
 
 
 (tabular
@@ -316,14 +308,14 @@
 
     ?set-stack  ?items         ?instruction  ?get-stack   ?expected
     ;; length
-    :string    '("foo")         :string-length  :integer     '(3)
-    :string    '(" foo ")       :string-length  :integer     '(5)
-    :string    '("foo\n\t\t\n") :string-length  :integer     '(7)
-    :string    '("\u2665")      :string-length  :integer     '(1)
+    :string    '("foo")         :string-length  :scalar     '(3)
+    :string    '(" foo ")       :string-length  :scalar     '(5)
+    :string    '("foo\n\t\t\n") :string-length  :scalar     '(7)
+    :string    '("\u2665")      :string-length  :scalar     '(1)
     ;; because Java is weird enough to let you inline backspace characters
-    :string    '("\b8" )        :string-length  :integer     '(2)
+    :string    '("\b8" )        :string-length  :scalar     '(2)
     ;; missing args
-    :string    '()              :string-length  :integer     '())
+    :string    '()              :string-length  :scalar     '())
 
 
 
@@ -335,48 +327,48 @@
     ?new-stacks                ?instruction       ?expected
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:integer '(0)
+    {:scalar '(0)
      :string  '("ere he was able")}           
                                 :string-nth       
                                                   {:char '(\e)
                                                    :string '()
-                                                   :integer '()} 
+                                                   :scalar '()} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:integer '(-2)
+    {:scalar '(-2)
      :string '("ere he was able")}           
                                 :string-nth       
                                                   {:char '(\l)
                                                    :string '()
-                                                   :integer '()} 
+                                                   :scalar '()} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:integer '(16)
+    {:scalar '(16)
      :string '("ere he was able")}           
                                 :string-nth       
                                                   {:char '(\r)
                                                    :string '()
-                                                   :integer '()} 
+                                                   :scalar '()} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:integer '(16)
+    {:scalar '(16)
      :string '("")}           
                                 :string-nth       
                                                   {:char '()
                                                    :string '()
-                                                   :integer '()} 
+                                                   :scalar '()} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;; missing arguments
-    {:integer '()
+    {:scalar '()
      :string '("ere he was able")}           
                                 :string-nth       
                                                   {:char '()
                                                    :string '("ere he was able")
-                                                   :integer '()} 
+                                                   :scalar '()} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:integer '(0)
+    {:scalar '(0)
      :string '()}           
                                 :string-nth       
                                                   {:char '()
                                                    :string '()
-                                                   :integer '(0)})
+                                                   :scalar '(0)})
 
 
 (tabular
@@ -392,14 +384,14 @@
                                 :string-occurrencesofchar       
                                                   {:char '()
                                                    :string '()
-                                                   :integer '(4)} 
+                                                   :scalar '(4)} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:char   '(\z)
      :string '("ere he was able")}           
                                 :string-occurrencesofchar       
                                                   {:char '()
                                                    :string '()
-                                                   :integer '(0)} 
+                                                   :scalar '(0)} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;; missing arguments
     {:char   '()
@@ -407,14 +399,14 @@
                                 :string-occurrencesofchar       
                                                   {:char '()
                                                    :string '("ere he was able")
-                                                   :integer '()} 
+                                                   :scalar '()} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:char   '(\e)
      :string '()}           
                                 :string-occurrencesofchar       
                                                   {:char '(\e)
                                                    :string '()
-                                                   :integer '()})
+                                                   :scalar '()})
 
 
 (tabular
@@ -646,22 +638,22 @@
     ?new-stacks                ?instruction             ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:string  '("foo")
-     :integer '(1)
+     :scalar  '(1)
      :char    '(\O)}          :string-setchar        {:string '("fOo")
                                                      :char '()}         
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:string  '("foo")
-     :integer '(6)
+     :scalar  '(6)
      :char    '(\O)}          :string-setchar        {:string '("Ooo")
                                                      :char '()}         
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:string  '("foo")
-     :integer '(-2)
+     :scalar  '(-2)
      :char    '(\O)}          :string-setchar        {:string '("fOo")
                                                      :char '()}         
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:string  '("")
-     :integer '(11)
+     :scalar  '(11)
      :char    '(\O)}          :string-setchar        {:string '("O")
                                                      :char '()})
 
@@ -746,22 +738,22 @@
     ?new-stacks                ?instruction       ?expected
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:integer  '(2 12)
+    {:scalar  '(2 12)
      :string   '("ere he was able")}           
                                 :string-substring       
                                                   {:string '("e he was a")} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:integer  '(12 2)
+    {:scalar  '(12 2)
      :string   '("ere he was able")}           
                                 :string-substring       
                                                   {:string '("e he was a")} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:integer  '(33 -712)                    ;; these get cropped to 0, count s
+    {:scalar  '(33 -712)                    ;; these get cropped to 0, count s
      :string   '("ere he was able")}           
                                 :string-substring       
                                                   {:string '("ere he was able")} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:integer  '(4 4)                    
+    {:scalar  '(4 4)                    
      :string   '("ere he was able")}           
                                 :string-substring       
                                                   {:string '("")})
@@ -775,41 +767,41 @@
     ?new-stacks                ?instruction       ?expected
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:integer   '(8)
+    {:scalar    '(8)
      :string '("ere he was able")}           
                                 :string-take       
                                                   {:string '("ere he w")
-                                                   :integer '()} 
+                                                   :scalar  '()} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:integer   '(-3)
+    {:scalar    '(-3)
      :string '("ere he was able")}           
                                 :string-take       
                                                   {:string '("ere he was a")
-                                                   :integer '()} 
+                                                   :scalar  '()} 
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:integer   '(99)
+    {:scalar    '(99)
      :string '("ere he was able")}           
                                 :string-take       
                                                   {:string '("ere he wa")
-                                                   :integer '()} 
+                                                   :scalar  '()} 
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:integer   '(99)
+    {:scalar    '(99)
      :string '("")}           
                                 :string-take       
                                                   {:string '("")
-                                                   :integer '()} 
+                                                   :scalar  '()} 
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:integer   '()
+    {:scalar    '()
      :string '("ere he was able")}           
                                 :string-take       
                                                   {:string '("ere he was able")
-                                                   :integer '()} 
+                                                   :scalar  '()} 
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:integer   '(99)
+    {:scalar    '(99)
      :string '()}           
                                 :string-take       
                                                   {:string '()
-                                                   :integer '(99)})
+                                                   :scalar  '(99)})
 
 
 ; ;; visible

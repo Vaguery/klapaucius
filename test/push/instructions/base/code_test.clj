@@ -11,8 +11,6 @@
 (def huge-list (repeat 131070 1))
 
 
-
-
 (tabular
   (fact ":code-append concats two :code items, wrapping them in lists first if they aren't already"
     (register-type-and-check-instruction
@@ -143,31 +141,42 @@
     ?new-stacks                ?instruction             ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo :bar)
-     :integer  '(2 9)}         :code-do*count     {:exec '(
+     :scalar  '(2 9)}         :code-do*count     {:exec '(
                                                       (2 0 :code-quote :foo :code-do*range))
-                                                   :integer '(9)
+                                                   :scalar '(9)
                                                    :code '(:bar)} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo :bar)
-     :integer  '(-2 -9)}         :code-do*count     {:exec '((-2 :code-quote :foo))
-                                                   :integer '(-9)
+     :scalar  '(-2 -9)}         :code-do*count     {:exec '((-2 :code-quote :foo))
+                                                   :scalar '(-9)
                                                    :code '(:bar)} 
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo :bar)
-     :integer  '(0 -9)}         :code-do*count     {:exec '((0 :code-quote :foo))
-                                                   :integer '(-9)
+     :scalar  '(0 -9)}          :code-do*count     {:exec '((0 :code-quote :foo))
+                                                   :scalar '(-9)
+                                                   :code '(:bar)} 
+    ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code     '(:foo :bar)
+     :scalar  '(0.3 11/4)}      :code-do*count     {:exec '((0.3 0 :code-quote :foo :code-do*range))
+                                                   :scalar '(11/4)
+                                                   :code '(:bar)} 
+    ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code     '(:foo :bar)
+     :scalar  '(-11/4)}      :code-do*count     {:exec '((-11/4 :code-quote :foo))
+                                                   :scalar '()
                                                    :code '(:bar)} 
     ; ; ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ; ; ;; missing arguments
     {:code     '()
-     :integer  '(0 -9)}         :code-do*count     {:exec '()
-                                                   :integer '(0 -9)
+     :scalar  '(0 -9)}         :code-do*count     {:exec '()
+                                                   :scalar '(0 -9)
                                                    :code '()} 
     ; ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo)
-     :integer  '()}             :code-do*count     {:exec '()
-                                                   :integer '()
-                                                   :code '(:foo)})
+     :scalar  '()}             :code-do*count     {:exec '()
+                                                   :scalar '()
+                                                   :code '(:foo)}
+                                                   )
 
 
 (tabular
@@ -178,31 +187,48 @@
     ?new-stacks                ?instruction             ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo :bar)
-     :integer  '(2 9)}         :code-do*range     {:exec '((9 :foo 
+     :scalar  '(2 9)}         :code-do*range     {:exec '((9 :foo 
                                                     (8 2 :code-quote :foo :code-do*range)))
-                                                   :integer '()
+                                                   :scalar '()
                                                    :code '(:bar)} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo :bar)
-     :integer  '(-2 -9)}         :code-do*range     {:exec '((-9 :foo 
+     :scalar  '(-2 -9)}         :code-do*range     {:exec '((-9 :foo 
                                                     (-8 -2 :code-quote :foo :code-do*range)))
-                                                   :integer '()
+                                                   :scalar '()
                                                    :code '(:bar)} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo :bar)
-     :integer  '(2 2)}         :code-do*range     {:exec '((2 :foo))
-                                                   :integer '()
+     :scalar  '(-2917.5M -9.3e32M)}  :code-do*range     {:exec '((-9.3E+32M :foo (-929999999999999999999999999999999M -2917.5M :code-quote :foo :code-do*range)))
+                                                   :scalar '()
+                                                   :code '(:bar)} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;; these are finished up
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code     '(:foo :bar)
+     :scalar  '(2 2)}         :code-do*range     {:exec '((2 :foo))
+                                                   :scalar '()
+                                                   :code '(:bar)} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code     '(:foo :bar)
+     :scalar  '(0 1)}         :code-do*range     {:exec '((0 :foo))
+                                                   :scalar '()
+                                                   :code '(:bar)} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code     '(:foo :bar)
+     :scalar  '(5/2 2.1)}     :code-do*range     {:exec '((3.1 :foo))
+                                                   :scalar '()
                                                    :code '(:bar)} 
     ; ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ; ;; missing arguments
     {:code     '()
-     :integer  '(-2 -9)}         :code-do*range     {:exec '()
-                                                     :integer '(-2 -9)
+     :scalar  '(-2 -9)}         :code-do*range     {:exec '()
+                                                     :scalar '(-2 -9)
                                                      :code '()} 
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo)
-     :integer  '(-2)}         :code-do*range     {:exec '()
-                                                     :integer '(-2)
+     :scalar  '(-2)}         :code-do*range     {:exec '()
+                                                     :scalar '(-2)
                                                      :code '(:foo)})
 
 
@@ -215,30 +241,53 @@
     ?new-stacks                ?instruction             ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo :bar)
-     :integer  '(2 9)}         :code-do*times     {:exec '((:foo 
-                                                     (1 :code-quote :foo :code-do*times)))
-                                                   :integer '(9)
+     :scalar   '(2 9)}         :code-do*times     {:exec '((:foo (1 :code-quote :foo :code-do*times)))
+                                                   :scalar  '(9)
                                                    :code '(:bar)} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo :bar)
-     :integer  '(-2 -9)}       :code-do*times     {:exec '(:foo)
-                                                   :integer '(-9)
+     :scalar   '(-2 -9)}       :code-do*times     {:exec '(:foo)
+                                                   :scalar  '(-9)
                                                    :code '(:bar)} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo :bar)
-     :integer  '(0 2)}          :code-do*times     {:exec '(:foo)
-                                                   :integer '(2)
+     :scalar   '(1 -9)}        :code-do*times     {:exec '((:foo (0 :code-quote :foo :code-do*times)))
+                                                   :scalar  '(-9)
+                                                   :code '(:bar)} 
+
+
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code     '(:foo :bar)
+     :scalar   '(7.8 -9)}       :code-do*times     {:exec '((:foo (6.8 :code-quote :foo :code-do*times)))
+                                                   :scalar  '(-9)
+                                                   :code '(:bar)} 
+
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code     '(:foo :bar)
+     :scalar   '(77631M -9)}       :code-do*times     {:exec '((:foo (77630M :code-quote :foo :code-do*times)))
+                                                   :scalar  '(-9)
+                                                   :code '(:bar)} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code     '(:foo :bar)
+     :scalar   '(0.125 -9)}       :code-do*times     {:exec '((:foo (-0.875 :code-quote :foo :code-do*times)))
+                                                   :scalar  '(-9)
+                                                   :code '(:bar)} 
+
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code     '(:foo :bar)
+     :scalar   '(0 2)}          :code-do*times     {:exec '(:foo)
+                                                   :scalar  '(2)
                                                    :code '(:bar)} 
     ; ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ; ;; missing arguments
     {:code     '()
-     :integer  '(-2 -9)}        :code-do*times      {:exec '()
-                                                     :integer '(-2 -9)
+     :scalar   '(-2 -9)}        :code-do*times      {:exec '()
+                                                     :scalar  '(-2 -9)
                                                      :code '()} 
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo)
-     :integer  '()}           :code-do*times        {:exec '()
-                                                     :integer '()
+     :scalar   '()}           :code-do*times        {:exec '()
+                                                     :scalar  '()
                                                      :code '(:foo)})
 
 
@@ -250,28 +299,32 @@
     ?new-stacks                ?instruction             ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code    '((1 2 3) :bar)
-     :integer '(1)}            :code-drop     {:code '((2 3) :bar)
-                                              :integer '()}
+     :scalar  '(1)}            :code-drop     {:code '((2 3) :bar)
+                                              :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code    '((1 2 3) :bar)
-     :integer '(5)}            :code-drop     {:code '((3) :bar)
-                                              :integer '()}
+     :scalar  '(5)}            :code-drop     {:code '((3) :bar)
+                                              :scalar  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code    '((1 2 3) :bar)
+     :scalar  '(1/3)}            :code-drop   {:code '((2 3) :bar)
+                                              :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code    '((1 2 3) :bar)
-     :integer '(-3)}            :code-drop     {:code '((1 2 3) :bar)
-                                              :integer '()}
+     :scalar  '(-3)}            :code-drop     {:code '((1 2 3) :bar)
+                                              :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code    '(() :bar)
-     :integer '(-3)}            :code-drop     {:code '(() :bar)
-                                              :integer '()}
+     :scalar  '(-3)}            :code-drop     {:code '(() :bar)
+                                              :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code    '(77)
-     :integer '(1)}            :code-drop     {:code '((77))     ;; wrapped in list
-                                              :integer '()}
+     :scalar  '(1)}            :code-drop     {:code '((77))     ;; wrapped in list
+                                              :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code    '()
-     :integer '(1)}            :code-drop     {:code '()
-                                              :integer '(1)})
+     :scalar  '(1)}            :code-drop     {:code '()
+                                              :scalar  '(1)})
 
 
 (tabular
@@ -282,40 +335,46 @@
     ?new-stacks                ?instruction             ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '((9 8 7 6))
-     :integer  '(2)}           :code-extract             {:code '(8)} 
+     :scalar   '(2)}            :code-extract             {:code '(8)} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '((9 8 7 6))
-     :integer  '(0)}           :code-extract             {:code '((9 8 7 6))} 
+     :scalar   '(0)}            :code-extract             {:code '((9 8 7 6))} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '((9 8 7 6))
-     :integer  '(-2)}           :code-extract            {:code '(7)} 
+     :scalar   '(1/3)}          :code-extract             {:code '(9)} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '((9 8 7 6))
-     :integer  '(221)}           :code-extract           {:code '(9)} 
+     :scalar   '(-4/3)}         :code-extract             {:code '(6)} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code     '((9 8 7 6))
+     :scalar   '(-2)}           :code-extract             {:code '(7)} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code     '((9 8 7 6))
+     :scalar   '(221)}          :code-extract             {:code '(9)} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;; nesting
     {:code     '(((9) (8 (7 6))))
-     :integer  '(1)}           :code-extract           {:code '((9))} 
+     :scalar   '(1)}           :code-extract           {:code '((9))} 
     {:code     '(((9) (8 (7 6))))
-     :integer  '(2)}           :code-extract           {:code '(9)} 
+     :scalar   '(2)}           :code-extract           {:code '(9)} 
     {:code     '(((9) (8 (7 6))))
-     :integer  '(3)}           :code-extract           {:code '((8 (7 6)))} 
+     :scalar   '(3)}           :code-extract           {:code '((8 (7 6)))} 
     {:code     '(((9) (8 (7 6))))
-     :integer  '(4)}           :code-extract           {:code '(8)} 
+     :scalar   '(4)}           :code-extract           {:code '(8)} 
     {:code     '(((9) (8 (7 6))))
-     :integer  '(6)}           :code-extract           {:code '(7)} 
+     :scalar   '(6)}           :code-extract           {:code '(7)} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;; does not traverse vectors
     {:code     '(([9] (8 [7 6])))
-     :integer  '(1)}           :code-extract           {:code '([9])} 
+     :scalar   '(1)}           :code-extract           {:code '([9])} 
     {:code     '(([9] (8 [7 6])))
-     :integer  '(2)}           :code-extract           {:code '((8 [7 6]))} 
+     :scalar   '(2)}           :code-extract           {:code '((8 [7 6]))} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;; does not traverse sets
     {:code     '((#{9} (8 [7 6])))
-     :integer  '(1)}           :code-extract           {:code '(#{9})} 
+     :scalar   '(1)}           :code-extract           {:code '(#{9})} 
     {:code     '((#{9} (8 [7 6])))
-     :integer  '(2)}           :code-extract           {:code '((8 [7 6]))})
+     :scalar   '(2)}           :code-extract           {:code '((8 [7 6]))})
 
 
 (tabular
@@ -374,67 +433,76 @@
 
 
 (tabular
-  (fact ":code-insert pops an :integer and two :code items, and replaces the node at the indicated position in the second code with the first"
+  (fact ":code-insert pops an :scalar and two :code items, and replaces the node at the indicated position in the second code with the first"
     (check-instruction-with-all-kinds-of-stack-stuff
         ?new-stacks code-module ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction             ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(99 (1 2 3))
-     :integer  '(1)}            :code-insert                 {:code '((99 2 3))} 
+     :scalar   '(1)}            :code-insert                 {:code '((99 2 3))} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(99 (1 2 3))
-     :integer  '(0)}            :code-insert                 {:code '(99)} 
+     :scalar   '(1/3)}          :code-insert                 {:code '((99 2 3))} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(99 (1 2 3))
-     :integer  '(3)}            :code-insert                 {:code '((1 2 99))} 
+     :scalar   '(-4/3)}         :code-insert                 {:code '((1 2 99))} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code     '(99 (1 2 3))
+     :scalar   '(0)}            :code-insert                 {:code '(99)} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code     '(99 (1 2 3))
+     :scalar   '(3)}            :code-insert                 {:code '((1 2 99))} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ; wrapping index
     {:code     '(99 (1 2 3))
-     :integer  '(11)}            :code-insert                 {:code '((1 2 99))} 
+     :scalar   '(11)}            :code-insert                 {:code '((1 2 99))} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(99 (1 2 3))
-     :integer  '(12)}            :code-insert                 {:code '(99)} 
+     :scalar   '(12)}            :code-insert                 {:code '(99)} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(99 (1 2 3))
-     :integer  '(-1)}            :code-insert                 {:code '((1 2 99))} 
+     :scalar   '(-1)}            :code-insert                 {:code '((1 2 99))} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ; traverses trees
     {:code     '(99 ((1 (2)) ( ()) (3 4)))
-     :integer  '(1)}            :code-insert                 {:code '((99 (()) (3 4)))} 
+     :scalar   '(1)}            :code-insert                 {:code '((99 (()) (3 4)))} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(99 ((1 (2)) ( ()) (3 4)))
-     :integer  '(2)}            :code-insert                 {:code '(((99 (2)) (()) (3 4)))} 
+     :scalar   '(2)}            :code-insert                 {:code '(((99 (2)) (()) (3 4)))} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(99 ((1 (2)) ( ()) (3 4)))
-     :integer  '(3)}            :code-insert                 {:code '(((1 99) (()) (3 4)))} 
+     :scalar   '(3)}            :code-insert                 {:code '(((1 99) (()) (3 4)))} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(99 ((1 (2)) ( ()) (3 4)))
-     :integer  '(4)}            :code-insert                 {:code '(((1 (99)) (()) (3 4)))} 
+     :scalar   '(4)}            :code-insert                 {:code '(((1 (99)) (()) (3 4)))} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(99 ((1 (2)) ( ()) (3 4)))
-     :integer  '(5)}            :code-insert                 {:code '(((1 (2)) 99 (3 4)))} 
+     :scalar   '(5)}            :code-insert                 {:code '(((1 (2)) 99 (3 4)))} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code     '(99 ((1 (2)) ( ()) (3 4)))
+     :scalar   '(52/7)}         :code-insert                 {:code '(((1 (2)) (()) 99))} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;; size limit
     {:code     (list huge-list huge-list)
-     :integer  '(88)}           :code-insert                 {:code '()} 
+     :scalar   '(88)}           :code-insert                 {:code '()} 
      )
 
 
 
 (tabular
-  (fact ":code-length pushes the count of the top :code item (1 if a literal) onto :integer"
+  (fact ":code-length pushes the count of the top :code item (1 if a literal) onto :scalar"
     (register-type-and-check-instruction
         ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; pick a number
-    :code    '((1 2 3) (8 9))     :code-length        :integer        '(3)
-    :code    '((2))               :code-length        :integer        '(1)
-    :code    '(() 3)              :code-length        :integer        '(0)
-    :code    '(2)                 :code-length        :integer        '(1)
-    :code    '((2 (3)))           :code-length        :integer        '(2)
-    :code    '()                  :code-length        :integer        '())
+    :code    '((1 2 3) (8 9))     :code-length        :scalar        '(3)
+    :code    '((2))               :code-length        :scalar        '(1)
+    :code    '(() 3)              :code-length        :scalar        '(0)
+    :code    '(2)                 :code-length        :scalar        '(1)
+    :code    '((2 (3)))           :code-length        :scalar        '(2)
+    :code    '()                  :code-length        :scalar        '())
 
 
 (tabular
@@ -555,24 +623,36 @@
     ?new-stacks                ?instruction             ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code    '((1 2 3) :bar)
-     :integer '(1)}            :code-nth     {:code '(2 :bar)
-                                              :integer '()}
+     :scalar  '(1)}            :code-nth     {:code '(2 :bar)
+                                              :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code    '((1 2 3) :bar)
-     :integer '(10)}            :code-nth     {:code '(2 :bar)
-                                              :integer '()}
+     :scalar  '(4/3)}          :code-nth     {:code '(3 :bar)
+                                              :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code    '((1 2 3) :bar)
-     :integer '(-4)}            :code-nth     {:code '(3 :bar)
-                                              :integer '()}
+     :scalar  '(-1/3)}         :code-nth     {:code '(1 :bar)
+                                              :scalar  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code    '((1 2 3) :bar)
+     :scalar  '(10)}           :code-nth     {:code '(2 :bar)
+                                              :scalar  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code    '((1 2 3) :bar)
+     :scalar  '(-4)}            :code-nth     {:code '(3 :bar)
+                                              :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code    '(77)
-     :integer '(1)}            :code-nth     {:code '(77)
-                                              :integer '()}
+     :scalar  '(1)}            :code-nth     {:code '(77)
+                                              :scalar  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code    '(77)
+     :scalar  '(1183/5)}       :code-nth     {:code '(77)
+                                              :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code    '()
-     :integer '(1)}            :code-nth     {:code '()
-                                              :integer '(1)})
+     :scalar  '(1)}            :code-nth     {:code '()
+                                              :scalar  '(1)})
 
 
 (tabular
@@ -598,14 +678,14 @@
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; say where
-    :code    '(3 (1 2 3 4))      :code-position        :integer        '(2)
-    :code    '(6 (1 2 3 4))      :code-position        :integer        '(-1)
+    :code    '(3 (1 2 3 4))      :code-position        :scalar         '(2)
+    :code    '(6 (1 2 3 4))      :code-position        :scalar         '(-1)
     :code    '(3 (1 2 3 1 2 3 4)) 
-                                 :code-position        :integer        '(2)
+                                 :code-position        :scalar         '(2)
     :code    '((2) ((1) (2) (3) (4)))      
-                                 :code-position        :integer        '(1)
-    :code    '(2 2)              :code-position        :integer        '(0)
-    :code    '(2)                :code-position        :integer        '()
+                                 :code-position        :scalar         '(1)
+    :code    '(2 2)              :code-position        :scalar         '(0)
+    :code    '(2)                :code-position        :scalar         '()
     :code    '(2)                :code-position        :code           '(2))
 
 
@@ -652,15 +732,15 @@
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; how many?
-    :code    '((1 2 3) (8 9))     :code-points        :integer        '(4)
-    :code    '((2))               :code-points        :integer        '(2)
-    :code    '(() 3)              :code-points        :integer        '(1)
-    :code    '(2)                 :code-points        :integer        '(1)
-    :code    '((1 (2 (3))))       :code-points        :integer        '(6)
-    :code    '([1 2 3])           :code-points        :integer        '(1)
-    :code    '(#{1 2 3})          :code-points        :integer        '(1)
-    :code    '((1 2 {1 2 3 4}))   :code-points        :integer        '(4)
-    :code    '()                  :code-points        :integer        '())
+    :code    '((1 2 3) (8 9))     :code-points        :scalar         '(4)
+    :code    '((2))               :code-points        :scalar         '(2)
+    :code    '(() 3)              :code-points        :scalar         '(1)
+    :code    '(2)                 :code-points        :scalar         '(1)
+    :code    '((1 (2 (3))))       :code-points        :scalar         '(6)
+    :code    '([1 2 3])           :code-points        :scalar         '(1)
+    :code    '(#{1 2 3})          :code-points        :scalar         '(1)
+    :code    '((1 2 {1 2 3 4}))   :code-points        :scalar         '(4)
+    :code    '()                  :code-points        :scalar         '())
 
 
 
@@ -671,15 +751,15 @@
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; how many?
-    :code    '((1 2 3) (8 9))     :code-size        :integer        '(4)
-    :code    '((2))               :code-size        :integer        '(2)
-    :code    '(() 3)              :code-size        :integer        '(1)
-    :code    '(2)                 :code-size        :integer        '(1)
-    :code    '((1 (2 (3))))       :code-size        :integer        '(6)
-    :code    '([1 2 3])           :code-size        :integer        '(4)
-    :code    '(#{1 2 3})          :code-size        :integer        '(4)
-    :code    '({1 2 3 4})         :code-size        :integer        '(7)
-    :code    '()                  :code-size        :integer        '())
+    :code    '((1 2 3) (8 9))     :code-size        :scalar         '(4)
+    :code    '((2))               :code-size        :scalar         '(2)
+    :code    '(() 3)              :code-size        :scalar         '(1)
+    :code    '(2)                 :code-size        :scalar         '(1)
+    :code    '((1 (2 (3))))       :code-size        :scalar         '(6)
+    :code    '([1 2 3])           :code-size        :scalar         '(4)
+    :code    '(#{1 2 3})          :code-size        :scalar         '(4)
+    :code    '({1 2 3 4})         :code-size        :scalar         '(7)
+    :code    '()                  :code-size        :scalar         '())
 
 
 
@@ -771,6 +851,10 @@
     :code    '((1 2) (3 4))     :code-equal?      :boolean        '(false)
     :code    '((3 4) (1 2))     :code-equal?      :boolean        '(false)
     :code    '((1 2) (1 2))     :code-equal?      :boolean        '(true)
+
+    ;; note this depends on Clojure's 'eq function
+    :code    '((1 2) (11/11 2.0))     
+                                :code-equal?      :boolean        '(false)
     ;; missing args     
     :code    '((3 4))           :code-equal?      :boolean        '()
     :code    '((3 4))           :code-equal?      :code           '((3 4))

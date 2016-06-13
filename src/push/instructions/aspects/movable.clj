@@ -3,14 +3,9 @@
             [push.instructions.dsl :as dsl]
             [push.types.core :as t]
             [push.util.code-wrangling :as util]
+            [push.util.numerics :as num]
             ))
 
-
-(defn scalar-to-index
-  "Takes an arbitrary :scalar value and the size of a collection, and returns an index falling in the range of the collection's size; assumes the count is 1 or larger"
-  [value howmany]
-  (let [idx (long (Math/ceil (mod value howmany)))]
-    (if (= idx howmany) 0 idx)))
 
 
 
@@ -46,7 +41,7 @@
       `(push.instructions.dsl/consume-top-of :scalar :as :where)
       `(push.instructions.dsl/consume-stack ~typename :as :old-stack)
       `(push.instructions.dsl/calculate [:where :old-stack]
-        #(if (empty? %2) 0 (scalar-to-index %1 (count %2))) :as :idx)
+        #(if (empty? %2) 0 (num/scalar-to-index %1 (count %2))) :as :idx)
       `(push.instructions.dsl/calculate [:old-stack :idx]
         #(into '() (reverse (concat (reverse (take %2 %1)) (drop %2 %1)))) :as :new)
       `(push.instructions.dsl/replace-stack ~typename :new)
@@ -67,7 +62,7 @@
       `(push.instructions.dsl/consume-top-of :scalar :as :where)
       `(push.instructions.dsl/consume-stack ~typename :as :old-stack)
       `(push.instructions.dsl/calculate [:where :old-stack]
-        #(if (empty? %2) 0 (scalar-to-index %1 (count %2))) :as :idx)
+        #(if (empty? %2) 0 (num/scalar-to-index %1 (count %2))) :as :idx)
       `(push.instructions.dsl/calculate [:old-stack :idx]
         #(into '() (reverse (concat (drop %2 %1) (take %2 %1)))) :as :new)
       `(push.instructions.dsl/replace-stack ~typename :new)))))
@@ -151,7 +146,7 @@
       `(push.instructions.dsl/consume-top-of :scalar :as :where)
       `(push.instructions.dsl/consume-stack ~typename :as :old-stack)
       `(push.instructions.dsl/calculate [:old-stack :where]
-        #(if (empty? %1) 0 (scalar-to-index %2 (count %1))) :as :idx)
+        #(if (empty? %1) 0 (num/scalar-to-index %2 (count %1))) :as :idx)
       `(push.instructions.dsl/calculate [:old-stack :idx]
         #(into '() (reverse (concat (drop %2 %1) %1))) :as :new)
       '(push.instructions.dsl/save-max-collection-size :as :limit)

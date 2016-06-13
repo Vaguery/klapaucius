@@ -3,6 +3,7 @@
             [push.types.core :as t]
             [push.instructions.dsl :as d]
             [push.instructions.aspects :as aspects]
+            [push.util.numerics :as num]
             ))
 
 
@@ -12,20 +13,20 @@
 (def exec-do*count
   (core/build-instruction
     exec-do*count
-    "`:exec-do*count` pops the top item of `:exec` and the top `:integer`. It constructs a continuation depending on whether the `:integer` is positive:
+    "`:exec-do*count` pops the top item of `:exec` and the top `:scalar`. It constructs a continuation depending on whether the `:scalar` is non-negative:
 
-      - `[int]` positive?: `'([int] 0 :code-quote [code] :code-do*range)`
-      - `[int]` zero or negative?: `'([int] :code-quote [code])`
+      - `[s]` positive?: `(0 [s] :exec-do*range [item])`
+      - `[s]` zero or negative?: `([s] [item])`
 
     This continuation is pushed to the `:exec` stack."
     :tags #{:complex :base}
     (d/consume-top-of :exec :as :do-this)
-    (d/consume-top-of :integer :as :counter)
+    (d/consume-top-of :scalar :as :counter)
     (d/calculate [:counter] #((complement pos?) %1) :as :done?)
     (d/calculate
       [:do-this :counter :done?] 
       #(if %3
-        (list %2 %1)
+        (list (dec %2) %1)
         (list 0 %2 :exec-do*range %1)) :as :continuation)
     (d/push-onto :exec :continuation)))
 
@@ -34,23 +35,28 @@
 (def exec-do*range
   (core/build-instruction
     exec-do*range
-      "`:exec-do*count` pops the top item of `:exec` and the top two `:integer` values (call them `end` and `start`, respectively). It constructs a continuation depending on whether the relation between `start` and `end`, which will (when interpreted) send the current `start` value to the `:integer` stack, execute the `:exec` item, send updated indices to the `:integer` stack, and then repeat the loop:
-
-      - `start` < `end`: `'([start] [item] ([start+1] [end] :exec-do*range [item]))`
-      - `start` > `end`: `'([start] [item] ([start-1] [end] :exec-do*range [item]))`
-      - `start` = `end`: `'([end] [item])`
+      "`:exec-do*count` pops the top item of `:exec` and the top two `:scalar` values (call them `end` and `start`, respectively). It constructs a continuation depending on whether the relation between `start` and `end`, which will (when interpreted) send the current `start` value to the `:scalar` stack, execute the `:exec` item, send updated indices to the `:scalar` stack, and then repeat the loop:
+    
+      - `start` < `end` and more than 1 different:
+        `'([start] [item] ([start+1] [end] :exec-do*range [item]))`
+      - `start` > `end` and more than 1 different:
+        `'([start] [item] ([start-1] [end] :exec-do*range [item]))`
+      - `start` within 1 of `end`:
+        `'([end] [item])`
 
     This continuation is pushed to the `:exec` stack. "
     :tags #{:complex :base}
     (d/consume-top-of :exec :as :do-this)
-    (d/consume-top-of :integer :as :end)
-    (d/consume-top-of :integer :as :start)
-    (d/calculate [:start :end] #(= %1 %2) :as :done?)
-    (d/calculate [:start :end] #(+ %1 (compare %2 %1)) :as :next)
+    (d/consume-top-of :scalar :as :end)
+    (d/consume-top-of :scalar :as :start)
+    (d/calculate [:start :end]
+      #(num/within-1? %1 %2) :as :done?)
+    (d/calculate [:start :end] 
+      #(+' %1 (compare %2 %1)) :as :next)
     (d/calculate
       [:do-this :start :end :next :done?] 
       #(if %5
-           (list %3 %1)
+           (list %4 %1)
            (list %2 %1 (list %4 %3 :exec-do*range %1))) :as :continuation)
     (d/push-onto :exec :continuation)))
 
@@ -59,17 +65,17 @@
 (def exec-do*times
   (core/build-instruction
     exec-do*times
-      "`:exec-do*times` pops the top item of `:exec` and the top two `:integer` values (call them `end` and `start`, respectively). It constructs a continuation depending on whether the relation between `start` and `end`, which will (when interpreted) execute the `:exec` item, send updated indices to the `:integer` stack, and then repeat the loop:
+      "`:exec-do*times` pops the top item of `:exec` and the top `:scalar` value (call it `counter`. It constructs a continuation depending on whether the `counter` is positive, negative or zero, which is pushed to `:exec`:
 
-      - `start` < `end`: `'([item] ([start+1] [end] :exec-do*range [item]))`
-      - `start` > `end`: `'([item] ([start-1] [end] :exec-do*range [item]))`
-      - `start` = `end`: `'[item]` (not in a list)
+        - negative: `item` (not in a codeblock)
+        - zero:     `item` (not in a codeblock)
+        - positive: `(item ([counter-1] :exec-do*times item))` 
+        "
 
-    This continuation is pushed to the `:exec` stack. "
     :tags #{:complex :base}
     (d/consume-top-of :exec :as :do-this)
-    (d/consume-top-of :integer :as :counter)
-    (d/calculate [:counter] #(zero? %1) :as :done?)
+    (d/consume-top-of :scalar :as :counter)
+    (d/calculate [:counter] #((complement pos?) %1) :as :done?)
     (d/calculate [:counter] #(+ %1 (compare 0 %1)) :as :next)
     (d/calculate
       [:do-this :counter :next :done?] 

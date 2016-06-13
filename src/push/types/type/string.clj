@@ -4,6 +4,7 @@
             [push.instructions.dsl :as d]
             [clojure.string :as strings]
             [push.instructions.aspects :as aspects]
+            [push.util.numerics :as num]
             )
   (:use push.types.type.tagspace)
 )
@@ -66,8 +67,7 @@
 (def char->string    (simple-item-to-string-instruction :char   ))
 (def code->string    (simple-item-to-string-instruction :code   ))
 (def exec->string    (simple-item-to-string-instruction :exec   ))
-(def float->string   (simple-item-to-string-instruction :float  ))
-(def integer->string (simple-item-to-string-instruction :integer))
+(def scalar->string  (simple-item-to-string-instruction :scalar ))
 
 
 
@@ -171,7 +171,7 @@
 (def string-indexofchar
   (core/build-instruction
     string-indexofchar
-    "`:string-indexofchar` pops the top `:string` and the top `:char`, and pushes an `:integer` which is the index of the first occurrence of `:char` in `:string`, or -1 if it's not found"
+    "`:string-indexofchar` pops the top `:string` and the top `:char`, and pushes a `:scalar` which is the index of the first occurrence of `:char` in `:string`, or -1 if it's not found"
     :tags #{:string :base}
     (d/consume-top-of :string :as :s)
     (d/consume-top-of :char :as :c)
@@ -194,7 +194,7 @@
 (def string-length
   (core/build-instruction
     string-length
-    "`:string-length` pops the top `:string` and pushes its length (counting unicode-aware characters) to the `:integer` stack"
+    "`:string-length` pops the top `:string` and pushes its length (counting unicode-aware characters) to the `:scalar` stack"
     :tags #{:string :base}
     (d/consume-top-of :string :as :arg1)
     (d/calculate [:arg1] #(count %1) :as :len)
@@ -205,11 +205,12 @@
 (def string-nth
   (core/build-instruction
     string-nth
-    "`:string-last` pops the top `:string` item and an index value from the `:integer` stack, and pushes the indexed `:char` (if it has one); if the index is out of range, it is reduced to a number in range via `(mod index (count string))`"
+    "`:string-last` pops the top `:string` item and an index value from the `:scalar` stack, and pushes the indexed `:char` (if it has one); if the index is out of range, it is reduced to an integer value in range via `(mod (ceil index) (count string))`"
     :tags #{:string :base}
     (d/consume-top-of :string :as :s)
-    (d/consume-top-of :integer :as :where)
-    (d/calculate [:s :where] #(if (empty? %1) 0 (mod %2 (count %1))) :as :idx)
+    (d/consume-top-of :scalar :as :where)
+    (d/calculate [:s :where]
+      #(if (empty? %1) 0 (num/scalar-to-index %2 (count %1))) :as :idx)
     (d/calculate [:s :idx] #(if (empty? %1) nil (nth %1 %2)) :as :result)
     (d/push-onto :char :result)))
 
@@ -308,12 +309,13 @@
 (def string-setchar
   (core/build-instruction
     string-setchar
-    "`:string-setchar` pops the top `:string`, `:char` and `:integer` values. It replaces the character at the indexed position in the `:string` with the popped `:char`, reducing it to be in range by `(mod index (count string))` if necessary."
+    "`:string-setchar` pops the top `:string`, `:char` and `:scalar` values. It replaces the character at the indexed position in the `:string` with the popped `:char`, reducing it to be in range by `(mod index (count string))` if necessary."
     :tags #{:string :base}
     (d/consume-top-of :string :as :s)
     (d/consume-top-of :char :as :c)
-    (d/consume-top-of :integer :as :where)
-    (d/calculate [:s :where] #(if (empty? %1) 0 (mod %2 (count %1))) :as :idx)
+    (d/consume-top-of :scalar :as :where)
+    (d/calculate [:s :where]
+      #(if (empty? %1) 0 (num/scalar-to-index %2 (count %1))) :as :idx)
     (d/calculate [:s :idx :c] #(strings/join (assoc (vec %1) %2 %3)) :as :result)
     (d/push-onto :string :result)))
 
@@ -360,13 +362,15 @@
 (def string-substring
   (core/build-instruction
     string-substring
-    "`:string-substring` pops the top `:string` item, and two `:integer` values (call them `A` and `B`). The values of `A` and `B` are _cropped_ into a suitable range for the string (truncated to lying within `[0,(count string)-1]`; _note_ not modulo the length!), and then a substring is extracted and pushed which falls between the lower and the higher of the two values."
+    "`:string-substring` pops the top `:string` item, and two `:scalar` values (call them `A` and `B`). The values of `A` and `B` are _cropped_ into a suitable range for the string (truncated to lying within `[0,(count string)-1]`; _note_ not modulo the length!), and then a substring is extracted and pushed which falls between the lower and the higher of the two values."
     :tags #{:string :base}
     (d/consume-top-of :string :as :s)
-    (d/consume-top-of :integer :as :a)
-    (d/consume-top-of :integer :as :b)
-    (d/calculate [:s :a] #(min (count %1) (max 0 %2)) :as :cropped-a)
-    (d/calculate [:s :b] #(min (count %1) (max 0 %2)) :as :cropped-b)
+    (d/consume-top-of :scalar :as :a)
+    (d/consume-top-of :scalar :as :b)
+    (d/calculate [:s :a]
+      #(min (count %1) (max 0 (Math/ceil %2))) :as :cropped-a)
+    (d/calculate [:s :b]
+      #(min (count %1) (max 0 (Math/ceil %2))) :as :cropped-b)
     (d/calculate [:s :cropped-a :cropped-b]
         #(subs %1 (min %2 %3) (max %2 %3)) :as :result)
     (d/push-onto :string :result)))
@@ -376,11 +380,12 @@
 (def string-take
   (core/build-instruction
     string-take
-    "`:string-take` pops the top `:string` and `:integer` items, and pushes the string resulting when the string is truncated to the length indicated; if the `:integer` is outside the range permitted, it is brought into range using `(mod index (count string))`"
+    "`:string-take` pops the top `:string` and `:scalar` items, and pushes the string resulting when the string is truncated to the length indicated; if the `:scalar` is outside the range permitted, it is brought into range using `(mod index (count string))`"
     :tags #{:string :base}
     (d/consume-top-of :string :as :s1)
-    (d/consume-top-of :integer :as :where)
-    (d/calculate [:s1 :where] #(if (empty? %1) 0 (mod %2 (count %1))) :as :idx)
+    (d/consume-top-of :scalar :as :where)
+    (d/calculate [:s1 :where]
+      #(if (empty? %1) 0 (num/scalar-to-index %2 (count %1))) :as :idx)
     (d/calculate [:s1 :idx] #(strings/join (take %2 %1)) :as :leftovers)
     (d/push-onto :string :leftovers)))
 
@@ -405,9 +410,8 @@
         (t/attach-instruction , char->string)
         (t/attach-instruction , code->string)
         (t/attach-instruction , exec->string)
+        (t/attach-instruction , scalar->string)
         (t/attach-instruction , exec-string-iterate)
-        (t/attach-instruction , float->string)
-        (t/attach-instruction , integer->string)
         (t/attach-instruction , string-butlast)
         (t/attach-instruction , string-concat)
         (t/attach-instruction , string-conjchar)

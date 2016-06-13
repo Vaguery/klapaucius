@@ -15,25 +15,29 @@
     ?new-stacks                ?instruction             ?expected
 
     {:exec     '(:foo :bar)
-     :integer  '(0)}         :exec-do*count    {:exec '((0 :foo) :bar)
-                                                :integer '()} 
+     :scalar  '(0)}         :exec-do*count    {:exec ' ((-1 :foo) :bar)
+                                                :scalar '()} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec     '(:foo :bar)
-     :integer  '(2)}        :exec-do*count     {:exec '((0 2 :exec-do*range :foo) :bar)
-                                                :integer '()} 
+     :scalar  '(1/3)}       :exec-do*count    {:exec '((0 1/3 :exec-do*range :foo) :bar)
+                                                :scalar '()} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec     '(:foo :bar)
-     :integer  '(-10)}        :exec-do*count    {:exec '((-10 :foo) :bar)
-                                                :integer '()} 
+     :scalar  '(2)}        :exec-do*count     {:exec '((0 2 :exec-do*range :foo) :bar)
+                                                :scalar '()} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec     '(:foo :bar)
+     :scalar  '(-10)}        :exec-do*count    {:exec '((-11 :foo) :bar)
+                                                :scalar '()} 
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ; ; ;; missing arguments
     {:exec     '()
-     :integer  '(-2 -10)}      :exec-do*count     {:exec '()
-                                                   :integer '(-2 -10)} 
+     :scalar  '(-2 -10)}      :exec-do*count     {:exec '()
+                                                   :scalar '(-2 -10)} 
     ; ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec     '(:foo)
-     :integer  '()}      :exec-do*count     {:exec '(:foo)
-                                                   :integer '()} )
+     :scalar  '()}      :exec-do*count     {:exec '(:foo)
+                                                   :scalar '()} )
 
 
 
@@ -45,25 +49,25 @@
     ?new-stacks                ?instruction             ?expected
 
     {:exec     '(:foo :bar)
-     :integer  '(0)}         :exec-do*times    {:exec '(:foo :bar)
-                                                :integer '()} 
+     :scalar   '(0)}         :exec-do*times    {:exec '(:foo :bar)
+                                                :scalar  '()} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec     '(:foo :bar)
-     :integer  '(2)}        :exec-do*times     {:exec '((:foo (1 :exec-do*times :foo)) :bar)
-                                                :integer '()} 
+     :scalar   '(2)}        :exec-do*times     {:exec '((:foo (1 :exec-do*times :foo)) :bar)
+                                                :scalar  '()} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec     '(:foo :bar)
-     :integer  '(-10)}        :exec-do*times    {:exec '((:foo (-9 :exec-do*times :foo)) :bar)
-                                                :integer '()} 
+     :scalar   '(-10)}        :exec-do*times    {:exec '(:foo :bar)
+                                                :scalar  '()} 
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ; ; ;; missing arguments
     {:exec     '()
-     :integer  '(-2 -10)}      :exec-do*times     {:exec '()
-                                                   :integer '(-2 -10)} 
+     :scalar   '(-2 -10)}      :exec-do*times     {:exec '()
+                                                   :scalar  '(-2 -10)} 
     ; ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec     '(:foo)
-     :integer  '()}      :exec-do*times     {:exec '(:foo)
-                                                   :integer '()} )
+     :scalar   '()}      :exec-do*times     {:exec '(:foo)
+                                                   :scalar  '()} )
 
 (tabular
   (fact ":exec-do*range does complicated things involving continuations (see tests)"
@@ -73,36 +77,43 @@
     ?new-stacks                ?instruction             ?expected
 
     {:exec     '(:foo :bar)
-     :integer  '(3 2)}        :exec-do*range     {:exec '((2 :foo
-                                                      (3 3 :exec-do*range :foo)) :bar)
-                                                   :integer '()} 
+     :scalar   '(4 2)}        :exec-do*range     {:exec '((2 :foo (3 4 :exec-do*range :foo)) :bar)
+                                                   :scalar  '()} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec     '(:foo :bar)
-     :integer  '(3 3)}         :exec-do*range     {:exec '((3 :foo) :bar)
-                                                     :integer '()} 
+     :scalar   '(4.9 5/2)}    :exec-do*range     {:exec '((5/2 :foo (7/2 4.9 :exec-do*range :foo)) :bar)
+                                                   :scalar  '()} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec     '(:foo :bar)
-     :integer  '(2 10)}        :exec-do*range     {:exec '((10 :foo
+     :scalar   '(3 3)}         :exec-do*range     {:exec '((3 :foo) :bar)
+                                                     :scalar  '()} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec     '(:foo :bar)
+     :scalar   '(3.5 11/3)}    :exec-do*range     {:exec '((8/3 :foo) :bar)
+                                                     :scalar  '()} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec     '(:foo :bar)
+     :scalar   '(2 10)}        :exec-do*range     {:exec '((10 :foo
                                                       (9 2 :exec-do*range :foo)) :bar)
-                                                   :integer '()} 
+                                                   :scalar  '()} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec     '(:foo :bar)
-     :integer  '(10 10)}        :exec-do*range     {:exec '((10 :foo) :bar)
-                                                     :integer '()} 
+     :scalar   '(10 10)}        :exec-do*range     {:exec '((10 :foo) :bar)
+                                                     :scalar  '()} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec     '(:foo :bar)
-     :integer  '(-2 -10)}      :exec-do*range     {:exec '((-10 :foo 
+     :scalar   '(-2 -10)}      :exec-do*range     {:exec '((-10 :foo 
                                                       (-9 -2 :exec-do*range :foo)) :bar)
-                                                   :integer '()} 
+                                                   :scalar  '()} 
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ; ;; missing arguments
     {:exec     '()
-     :integer  '(-2 -10)}      :exec-do*range     {:exec '()
-                                                   :integer '(-2 -10)} 
+     :scalar   '(-2 -10)}      :exec-do*range     {:exec '()
+                                                   :scalar  '(-2 -10)} 
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec     '(:foo)
-     :integer  '(-2)}      :exec-do*range     {:exec '(:foo)
-                                                   :integer '(-2)} )
+     :scalar   '(-2)}      :exec-do*range     {:exec '(:foo)
+                                                   :scalar  '(-2)} )
 
 
 
