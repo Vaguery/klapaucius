@@ -62,13 +62,13 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`:" instruction-name "` takes an `:integer` argument, makes that into an index modulo the `" typename "` stack size, takes the first [idx] items and moves that to the bottom of the stack.")
+      (str "`:" instruction-name "` takes an `:scalar` argument, makes that into an index modulo the `" typename "` stack size, takes the first [idx] items and moves that to the bottom of the stack.")
       :tags #{:combinator}
-      `(push.instructions.dsl/consume-top-of :integer :as :where)
-      `(push.instructions.dsl/consume-stack ~typename :as :old)
-      `(push.instructions.dsl/calculate [:old :where]
-        #(if (empty? %1) 0 (util/safe-mod %2 (count %1))) :as :idx)
-      `(push.instructions.dsl/calculate [:old :idx]
+      `(push.instructions.dsl/consume-top-of :scalar :as :where)
+      `(push.instructions.dsl/consume-stack ~typename :as :old-stack)
+      `(push.instructions.dsl/calculate [:where :old-stack]
+        #(if (empty? %2) 0 (scalar-to-index %1 (count %2))) :as :idx)
+      `(push.instructions.dsl/calculate [:old-stack :idx]
         #(into '() (reverse (concat (drop %2 %1) (take %2 %1)))) :as :new)
       `(push.instructions.dsl/replace-stack ~typename :new)))))
 

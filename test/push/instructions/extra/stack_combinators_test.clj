@@ -64,35 +64,35 @@
 
 
 (tabular
-  (fact "`foo-cutstack` takes an :integer, divides the stack into two parts at that index (measured from the top), and puts the top segment at the bottom"
+  (fact "`foo-cutstack` takes an :scalar, divides the stack into two parts at that index (measured from the top), and puts the top segment at the bottom"
     (check-instruction-with-all-kinds-of-stack-stuff
         ?new-stacks foo-type ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction         ?expected
 
     {:foo      '(9 8 7 6 5 4)
-     :integer  '(2)}             :foo-cutstack      {:foo      '(7 6 5 4 9 8)
-                                                     :integer  '()}
+     :scalar  '(2)}             :foo-cutstack      {:foo      '(7 6 5 4 9 8)
+                                                     :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foo      '(9 8 7 6 5 4)
-     :integer  '(-2)}            :foo-cutstack      {:foo      '(5 4 9 8 7 6)
-                                                     :integer  '()}
+     :scalar  '(-2)}            :foo-cutstack      {:foo      '(5 4 9 8 7 6)
+                                                     :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foo      '(9 8 7 6 5 4)
-     :integer  '(0)}             :foo-cutstack      {:foo      '(9 8 7 6 5 4)
-                                                     :integer  '()}
+     :scalar  '(0)}             :foo-cutstack      {:foo      '(9 8 7 6 5 4)
+                                                     :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foo      '(9 8 7 6 5 4)
-     :integer  '(11)}            :foo-cutstack      {:foo      '(4 9 8 7 6 5)
-                                                     :integer  '()}
+     :scalar  '(11)}            :foo-cutstack      {:foo      '(4 9 8 7 6 5)
+                                                     :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foo      '()
-     :integer  '(11)}            :foo-cutstack      {:foo      '()
-                                                     :integer  '()}
+     :scalar  '(11)}            :foo-cutstack      {:foo      '()
+                                                     :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foo      '(2 3 4)
-     :integer  '()}              :foo-cutstack      {:foo      '(2 3 4)
-                                                     :integer  '()}
+     :scalar  '()}              :foo-cutstack      {:foo      '(2 3 4)
+                                                     :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
 
