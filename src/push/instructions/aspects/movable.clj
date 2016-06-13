@@ -252,12 +252,14 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`:" instruction-name "` pops the top `:integer`. The `:integer` is brought into range as an index by forcing it into the range `[0,stack_length-1]` (inclusive), and then the item _currently_ found in the indexed position in the `" typename "` stack is _moved_ so that it is on top.")
+      (str "`:" instruction-name "` pops the top `:scalar`. The `:scalar` is brought into range as an index by forcing it into the range `[0,stack_length-1]` (inclusive), and then the item _currently_ found in the indexed position in the `" typename "` stack is _moved_ so that it is on top.")
       :tags #{:combinator}
-      '(push.instructions.dsl/consume-top-of :integer :as :which)
+      '(push.instructions.dsl/consume-top-of :scalar :as :which)
       `(push.instructions.dsl/count-of ~typename :as :how-many)
       `(push.instructions.dsl/calculate [:which :how-many]
-          #(min (max %1 0) (dec %2)) :as :index)
+          #(if (zero? %2)
+            0
+            (max 0 (min (long (Math/ceil %1)) (dec %2)))) :as :index)
       `(push.instructions.dsl/consume-nth-of ~typename :at :index :as :yanked-item)
       `(push.instructions.dsl/push-onto ~typename :yanked-item)))))
 

@@ -198,38 +198,62 @@
   (let [foo-yank (yank-instruction (make-type :foo))]
     (class foo-yank) => push.instructions.core.Instruction
     (:tags foo-yank) => #{:combinator}
-    (:needs foo-yank) => {:foo 1, :integer 1}
+    (:needs foo-yank) => {:foo 1, :scalar 1}
     (:token foo-yank) => :foo-yank
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter
-          :stacks {:foo '(:a :b :c :d :e) :integer '(2)}) foo-yank)
+          :stacks {:foo '(:a :b :c :d :e) :scalar '(2)}) foo-yank)
         :foo-yank)
       :foo) => '(:c :a :b :d :e)
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter
-          :stacks {:foo '(:a :b :c :d :e) :integer '(0)}) foo-yank)
+          :stacks {:foo '(:a :b :c :d :e) :scalar '(0)}) foo-yank)
         :foo-yank)
       :foo) => '(:a :b :c :d :e)
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter
-          :stacks {:foo '(:a :b :c :d :e) :integer '(-1)}) foo-yank)
+          :stacks {:foo '(:a :b :c :d :e) :scalar '(-1)}) foo-yank)
         :foo-yank)
       :foo) => '(:a :b :c :d :e)
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter
-          :stacks {:foo '(:a :b :c :d :e) :integer '(4)}) foo-yank)
+          :stacks {:foo '(:a :b :c :d :e) :scalar '(4)}) foo-yank)
         :foo-yank)
       :foo) => '(:e :a :b :c :d)
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter
-          :stacks {:foo '(:a :b :c :d :e) :integer '(19122)}) foo-yank)
+          :stacks {:foo '(:a :b :c :d :e) :scalar '(19122)}) foo-yank)
         :foo-yank)
       :foo) => '(:e :a :b :c :d)
+    (get-stack
+      (i/execute-instruction
+        (i/register-instruction (m/basic-interpreter
+          :stacks {:foo '(:a :b :c :d :e) :scalar '(-8.555)}) foo-yank)
+        :foo-yank)
+      :foo) => '(:a :b :c :d :e )
+    (get-stack
+      (i/execute-instruction
+        (i/register-instruction (m/basic-interpreter
+          :stacks {:foo '(:a :b :c :d :e) :scalar '(19122/17)}) foo-yank)
+        :foo-yank)
+      :foo) => '(:e :a :b :c :d)
+    (get-stack
+      (i/execute-instruction
+        (i/register-instruction (m/basic-interpreter
+          :stacks {:foo '(:a :b :c :d :e) :scalar '(5/2)}) foo-yank)
+        :foo-yank)
+      :foo) => '(:d :a :b :c :e)
+    (get-stack
+      (i/execute-instruction
+        (i/register-instruction (m/basic-interpreter
+          :stacks {:foo '(:a :b :c :d :e) :scalar '(-666666666666.55555M)}) foo-yank)
+        :foo-yank)
+      :foo) => '(:a :b :c :d :e)
 
     ))
 
