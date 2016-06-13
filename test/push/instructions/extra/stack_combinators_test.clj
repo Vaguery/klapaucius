@@ -75,7 +75,7 @@
                                                      :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foo      '(9 8 7 6 5 4)
-     :scalar  '(-2)}            :foo-cutstack      {:foo      '(5 4 9 8 7 6)
+     :scalar  '(-2.77)}         :foo-cutstack      {:foo      '(5 4 9 8 7 6)
                                                      :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foo      '(9 8 7 6 5 4)
@@ -84,6 +84,10 @@
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foo      '(9 8 7 6 5 4)
      :scalar  '(11)}            :foo-cutstack      {:foo      '(4 9 8 7 6 5)
+                                                     :scalar  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foo      '(9 8 7 6 5 4)
+     :scalar  '(-97/9)}         :foo-cutstack      {:foo      '(7 6 5 4 9 8)
                                                      :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foo      '()
@@ -148,43 +152,48 @@
 
 
 (tabular
-  (future-fact "`foo-liftstack` takes an :integer, divides the stack into two parts at that index (measured from the top), and puts the top segment at the bottom"
+  (fact "`foo-liftstack` takes a :scalar, divides the stack into two parts at that index (measured from the top), and puts the top segment at the bottom"
     (check-instruction-with-all-kinds-of-stack-stuff
         ?new-stacks foo-type ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction         ?expected
 
     {:foo      '(9 8 7 6 5 4)
-     :integer  '(2)}             :foo-liftstack      {:foo    '(7 6 5 4 9 8 7 6 5 4)
-                                                     :integer '()}
+     :scalar  '(3)}             :foo-liftstack      {:foo    '(6 5 4 9 8 7 6 5 4)
+                                                     :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foo      '(9 8 7 6 5 4)
-     :integer  '(-2)}            :foo-liftstack      {:foo    '(5 4 9 8 7 6 5 4)
-                                                     :integer '()}
+     :scalar  '(-2)}            :foo-liftstack      {:foo    '(5 4 9 8 7 6 5 4)
+                                                     :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foo      '(9 8 7 6 5 4)
-     :integer  '(0)}             :foo-liftstack      {:foo  '(9 8 7 6 5 4 9 8 7 6 5 4)
-                                                     :integer '()}
+     :scalar  '(0)}             :foo-liftstack      {:foo  '(9 8 7 6 5 4 9 8 7 6 5 4)
+                                                     :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foo      '(9 8 7 6 5 4)
-     :integer  '(5)}             :foo-liftstack      {:foo    '(4 9 8 7 6 5 4)
-                                                     :integer '()}
+     :scalar  '(5)}             :foo-liftstack      {:foo    '(4 9 8 7 6 5 4)
+                                                     :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foo      '(9 8 7 6 5 4)
-     :integer  '(11)}            :foo-liftstack      {:foo    '(4 9 8 7 6 5 4)
-                                                     :integer '()}
+     :scalar  '(11)}            :foo-liftstack      {:foo    '(4 9 8 7 6 5 4)
+                                                     :scalar '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foo      '(9 8 7 6 5 4)
+     :scalar  '(1e181)}            :foo-liftstack      {:foo    '(9 8 7 6 5 4 9 8 7 6 5 4)
+                                                     :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foo      '()
-     :integer  '(11)}            :foo-liftstack      {:foo    '()
-                                                     :integer '()}
+     :scalar  '(11)}            :foo-liftstack      {:foo    '()
+                                                     :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foo      '(2 3 4)
-     :integer  '()}              :foo-liftstack      {:foo    '(2 3 4)
-                                                     :integer '()}
+     :scalar  '()}              :foo-liftstack      {:foo    '(2 3 4)
+                                                     :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ;; oversized does nothing
+    ;; oversized produces an :error
     {:foo      huge-list
-     :integer  '(12000)}         :foo-liftstack      {:foo    huge-list
-                                                     :integer '()}
+     :scalar  '(12000)}         :foo-liftstack      {:foo    huge-list
+                                                     :scalar '()
+                                                     :error '({:item "foo-liftstack produced stack overflow", :step 0})}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )

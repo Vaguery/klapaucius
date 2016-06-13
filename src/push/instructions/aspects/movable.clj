@@ -146,18 +146,25 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`:" instruction-name "` takes an `:integer` argument, makes that into an index modulo the `" typename "` stack size, 'cuts' the stack after the first [idx] items and copies everything below that point onto the top as a block. If the result would have more points (at any level) than `max-collection-size`, the change is undone.")
+      (str "`:" instruction-name "` takes an `:scalar` argument, makes that into an index modulo the `" typename "` stack size, 'cuts' the stack after the first [idx] items and _copies_ everything below that point onto the top of the stack. If the result would have more points (at any level) than `max-collection-size`, the change is undone and an :error is pushed.")
       :tags #{:combinator}
-      `(push.instructions.dsl/consume-top-of :integer :as :where)
-      `(push.instructions.dsl/consume-stack ~typename :as :old)
-      `(push.instructions.dsl/calculate [:old :where]
-        #(if (empty? %1) 0 (util/safe-mod %2 (count %1))) :as :idx)
-      `(push.instructions.dsl/calculate [:old :idx]
+      `(push.instructions.dsl/consume-top-of :scalar :as :where)
+      `(push.instructions.dsl/consume-stack ~typename :as :old-stack)
+      `(push.instructions.dsl/calculate [:old-stack :where]
+        #(if (empty? %1) 0 (scalar-to-index %2 (count %1))) :as :idx)
+      `(push.instructions.dsl/calculate [:old-stack :idx]
         #(into '() (reverse (concat (drop %2 %1) %1))) :as :new)
       '(push.instructions.dsl/save-max-collection-size :as :limit)
-      `(push.instructions.dsl/calculate [:new :limit :old]
-        #(if (> (util/count-collection-points %1) %2) %3 %1) :as :new)
-      `(push.instructions.dsl/replace-stack ~typename :new)))))
+      `(push.instructions.dsl/calculate [:new :limit]
+        #(if (> (util/count-collection-points %1) %2) false true) :as :valid)
+      `(push.instructions.dsl/calculate [:valid :new :old-stack]
+        #(if %1 %2 %3) :as :new)
+      `(push.instructions.dsl/calculate [:valid]
+        #(if %1 nil (str ~instruction-name " produced stack overflow"))
+        :as :warning)
+      `(push.instructions.dsl/record-an-error :from :warning)
+      `(push.instructions.dsl/replace-stack ~typename :new)
+      ))))
 
 
 
