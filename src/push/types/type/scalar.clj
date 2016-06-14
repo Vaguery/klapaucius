@@ -12,6 +12,8 @@
 
 ;; INSTRUCTIONS
 
+
+
 (def scalar-abs (t/simple-1-in-1-out-instruction
   "`:scalar-abs` pushes the abs of the top `:scalar` item"
   :scalar "abs" 'math/abs))
@@ -134,6 +136,10 @@
 
 
 
+;; EXOTICS
+
+
+
 (def integer-totalistic3
   (core/build-instruction
     integer-totalistic3
@@ -142,6 +148,21 @@
     (d/consume-top-of :scalar :as :arg)
     (d/calculate [:arg] #(x/rewrite-digits (bigint %1) 3) :as :result)
     (d/push-onto :scalar :result)))
+
+
+
+;; SCALING
+
+
+
+(def scalar-lots
+  (core/build-instruction
+    scalar-lots
+    "`:scalar-lots` pops the top `:scalar` value, and pushes `(mod 10000 x)`."
+    :tags #{:numeric}
+    (d/consume-top-of :scalar :as :arg)
+    (d/calculate [:arg] #(mod %1 10000) :as :scaled)
+    (d/push-onto :scalar :scaled)))
 
 
 
@@ -218,6 +239,7 @@
         (t/attach-instruction , scalar-E)
         (t/attach-instruction , scalar-floor)
         (t/attach-instruction , scalar-inc)
+        (t/attach-instruction , scalar-lots)
         (t/attach-instruction , scalar-modulo)
         (t/attach-instruction , scalar-multiply)
         (t/attach-instruction , scalar-π)

@@ -62,14 +62,6 @@
 
 
 
-(def integer-lots
-  (core/build-instruction
-    integer-lots
-    "`:integer-lots` pops the top `:integer` value, and calculates `(mod 10000 x)`."
-    :tags #{:numeric}
-    (d/consume-top-of :integer :as :arg)
-    (d/calculate [:arg] #(mod %1 10000) :as :scaled)
-    (d/push-onto :scalar :scaled)))
 
 
 
@@ -195,10 +187,6 @@
         (t/attach-instruction , float->integer)
         (t/attach-instruction , integer-bits)
         (t/attach-instruction , integer-digits)
-        (t/attach-instruction , integer-few)
-        (t/attach-instruction , integer-lots)
-        (t/attach-instruction , integer-many)
-        (t/attach-instruction , integer-some)
         (t/attach-instruction , integer->bits)
         (t/attach-instruction , integer->numerals)
         (t/attach-instruction , string->integer)
