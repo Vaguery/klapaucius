@@ -120,6 +120,51 @@
 
 
 
+(def boolean->float
+  (core/build-instruction
+    boolean->float
+    "`:boolean->float` pops the top `:boolean` value; if it is `true`, it pushes 1.0, and if `false` it pushes `0.0`"
+    :tags #{:conversion :base :numeric}
+    (d/consume-top-of :boolean :as :arg)
+    (d/calculate [:arg] #(if %1 1.0 0.0) :as :result)
+    (d/push-onto :scalar :result)))
+
+
+
+(def boolean->signedfloat
+  (core/build-instruction
+    boolean->signedfloat
+    "`:boolean->signedfloat` pops the top `:boolean` value; if it is `true`, it pushes 1.0, and if `false` it pushes `-1.0`"
+    :tags #{:conversion :base :numeric}
+    (d/consume-top-of :boolean :as :arg)
+    (d/calculate [:arg] #(if %1 1.0 -1.0) :as :result)
+    (d/push-onto :scalar :result)))
+
+
+
+(def boolean->integer
+  (core/build-instruction
+    boolean->integer
+    "`:boolean->integer` pops the top `:boolean`. If it's `true`, it pushes 1; if `false`, it pushes 0."
+    :tags #{:base :conversion}
+    (d/consume-top-of :boolean :as :arg1)
+    (d/calculate [:arg1] #(if %1 1 0) :as :logic)
+    (d/push-onto :scalar :logic)))
+
+
+
+(def boolean->signedint
+  (core/build-instruction
+    boolean->signedint
+    "`:boolean->signedint` pops the top `:boolean`. If it's `true`, it pushes 1; if `false`, it pushes -1."
+    :tags #{:base :conversion}
+    (d/consume-top-of :boolean :as :arg1)
+    (d/calculate [:arg1] #(if %1 1 -1) :as :logic)
+    (d/push-onto :scalar :logic)))
+
+
+
+
 (def scalar-type
   ( ->  (t/make-type  :scalar
                       :recognized-by number?
@@ -146,5 +191,9 @@
         (t/attach-instruction , scalar-π)
         (t/attach-instruction , scalar-sign)
         (t/attach-instruction , scalar-subtract)
+        (t/attach-instruction , boolean->float)
+        (t/attach-instruction , boolean->signedfloat)
+        (t/attach-instruction , boolean->integer)
+        (t/attach-instruction , boolean->signedint)
         ))
 

@@ -102,25 +102,6 @@
 ;; CONVERSIONS
 
 
-(def boolean->integer
-  (core/build-instruction
-    boolean->integer
-    "`:boolean->integer` pops the top `:boolean`. If it's `true`, it pushes 1; if `false`, it pushes 0."
-    :tags #{:base :conversion}
-    (d/consume-top-of :boolean :as :arg1)
-    (d/calculate [:arg1] #(if %1 1 0) :as :logic)
-    (d/push-onto :scalar :logic)))
-
-
-
-(def boolean->signedint
-  (core/build-instruction
-    boolean->signedint
-    "`:boolean->signedint` pops the top `:boolean`. If it's `true`, it pushes 1; if `false`, it pushes -1."
-    :tags #{:base :conversion}
-    (d/consume-top-of :boolean :as :arg1)
-    (d/calculate [:arg1] #(if %1 1 -1) :as :logic)
-    (d/push-onto :scalar :logic)))
 
 
 

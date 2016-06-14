@@ -54,14 +54,6 @@
 
 
 
-(def boolean->float
-  (core/build-instruction
-    boolean->float
-    "`:boolean->float` pops the top `:boolean` value; if it is `true`, it pushes 1.0, and if `false` it pushes `0.0`"
-    :tags #{:conversion :base :numeric}
-    (d/consume-top-of :boolean :as :arg)
-    (d/calculate [:arg] #(if %1 1.0 0.0) :as :result)
-    (d/push-onto :float :result)))
 
 
 
@@ -90,14 +82,7 @@
 
 
 
-(def boolean->signedfloat
-  (core/build-instruction
-    boolean->signedfloat
-    "`:boolean->signedfloat` pops the top `:boolean` value; if it is `true`, it pushes 1.0, and if `false` it pushes `-1.0`"
-    :tags #{:conversion :base :numeric}
-    (d/consume-top-of :boolean :as :arg)
-    (d/calculate [:arg] #(if %1 1.0 -1.0) :as :result)
-    (d/push-onto :float :result)))
+
 
 
 
@@ -221,8 +206,6 @@
         aspects/make-storable
         aspects/make-taggable
         aspects/make-visible 
-        (t/attach-instruction , boolean->float)
-        (t/attach-instruction , boolean->signedfloat)
         (t/attach-instruction , char->float)
         (t/attach-instruction , float-arccosine)
         (t/attach-instruction , float-arcsine)
