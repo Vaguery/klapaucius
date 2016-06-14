@@ -51,6 +51,28 @@
 
 
 
+
+(tabular
+  (fact ":scalar-cosine produces the cosine of the top :scalar, read as radians"
+    (register-type-and-check-instruction
+        ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items    ?instruction      ?get-stack  ?expected
+    :scalar     '(0)      :scalar-cosine     :scalar    '(1.0)
+    :scalar     '(-1.0)   :scalar-cosine     :scalar    '(0.5403023058681398)
+    :scalar     '(-1.0M)  :scalar-cosine     :scalar    '(0.5403023058681398)
+    :scalar     '(300.1M) :scalar-cosine     :scalar    '(0.07782281308912051)
+    :scalar     '(300M)   :scalar-cosine     :scalar    '(-0.022096619278683942)
+    :scalar     '(300N)   :scalar-cosine     :scalar    '(-0.022096619278683942)
+    :scalar     '(1.7e83) :scalar-cosine     :scalar    '(-0.020932220708646424)
+    :scalar     '(7/3)    :scalar-cosine     :scalar    '(-0.6907581397498761)
+    :scalar     (list Math/PI)
+                          :scalar-cosine     :scalar    '(-1.0)
+    :scalar     '()       :scalar-cosine     :scalar    '()
+    )
+
+
+
 (tabular
   (fact ":scalar-dec decrements the top :scalar by 1"
     (register-type-and-check-instruction
@@ -249,6 +271,28 @@
     :scalar     '(9/2)      :scalar-sign           :scalar        '(1)
     :scalar     '(-9/2)     :scalar-sign           :scalar        '(-1)
     :scalar     '()         :scalar-sign           :scalar        '()
+    )
+
+
+
+
+(tabular
+  (fact ":scalar-sine produces the sine of the top :scalar, read as radians"
+    (register-type-and-check-instruction
+        ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items    ?instruction      ?get-stack  ?expected
+    :scalar     '(0)      :scalar-sine       :scalar    (list (Math/sin 0))
+    :scalar     '(-1.0)   :scalar-sine       :scalar    (list (Math/sin -1.0))
+    :scalar     '(-1.0M)  :scalar-sine       :scalar    (list (Math/sin -1.0M))
+    :scalar     '(300.1M) :scalar-sine       :scalar    (list (Math/sin 300.1M))
+    :scalar     '(300M)   :scalar-sine       :scalar    (list (Math/sin 300M))
+    :scalar     '(300N)   :scalar-sine       :scalar    (list (Math/sin 300N))
+    :scalar     '(1.7e83) :scalar-sine       :scalar    (list (Math/sin 1.7e83))
+    :scalar     '(7/3)    :scalar-sine       :scalar    (list (Math/sin 7/3))
+    :scalar     (list Math/PI)
+                          :scalar-sine       :scalar    (list (Math/sin Math/PI))
+    :scalar     '()       :scalar-sine       :scalar    '()
     )
 
 

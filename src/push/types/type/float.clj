@@ -8,9 +8,7 @@
 
 
 
-(def float-cosine (t/simple-1-in-1-out-instruction
-  "`:float-cosine` pushes the cosine of the top `:float` item, read as radians"
-  :float "cosine" #(Math/cos %1)))
+
 
 
 
@@ -170,9 +168,7 @@
 
 
 
-(def float-sine (t/simple-1-in-1-out-instruction
-  "`:float-sine` pushes the sine of the top `:float` item, read as an angle in radians"
-  :float "sine" #(Math/sin %1)))
+
 
 
 
@@ -214,7 +210,6 @@
         (t/attach-instruction , float-ln)
         (t/attach-instruction , float-ln1p)
         (t/attach-instruction , float-log10)
-        (t/attach-instruction , float-sine)
         (t/attach-instruction , float-power)
         (t/attach-instruction , float-sqrt)
         (t/attach-instruction , float-tangent)

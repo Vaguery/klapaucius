@@ -24,6 +24,12 @@
 
 
 
+(def scalar-cosine (t/simple-1-in-1-out-instruction
+  "`:scalar-cosine` pushes the cosine of the top `:scalar` item, read as radians"
+  :scalar "cosine" #(Math/cos %1)))
+
+
+
 (def scalar-dec (t/simple-1-in-1-out-instruction
   ":`scalar-dec` reduces the top `:scalar` value by 1"
   :scalar "dec" 'dec'))
@@ -96,6 +102,12 @@
 (def scalar-sign (t/simple-1-in-1-out-instruction
   "`:scalar-sign` pops the top `:scalar` item and pushes -1 if it's negative, 0 if it's zero, and 1 if it's positive"
   :scalar "sign" #(compare %1 0)))
+
+
+
+(def scalar-sine (t/simple-1-in-1-out-instruction
+  "`:scalar-sine` pushes the sine of the top `:scalar` item, read as an angle in radians"
+  :scalar "sine" #(Math/sin %1)))
 
 
 
@@ -182,6 +194,7 @@
         (t/attach-instruction , integer-totalistic3)
         (t/attach-instruction , scalar-abs)
         (t/attach-instruction , scalar-add)
+        (t/attach-instruction , scalar-cosine)
         (t/attach-instruction , scalar-dec)
         (t/attach-instruction , scalar-divide)
         (t/attach-instruction , scalar-E)
@@ -190,6 +203,7 @@
         (t/attach-instruction , scalar-multiply)
         (t/attach-instruction , scalar-π)
         (t/attach-instruction , scalar-sign)
+        (t/attach-instruction , scalar-sine)
         (t/attach-instruction , scalar-subtract)
         (t/attach-instruction , boolean->float)
         (t/attach-instruction , boolean->signedfloat)
