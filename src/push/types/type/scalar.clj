@@ -74,7 +74,6 @@
 
 
 
-
 (def scalar-inc (t/simple-1-in-1-out-instruction
   "`:scalar-inc` adds 1 to the top `:scalar` item"
   :scalar "inc" 'inc'))
@@ -110,6 +109,11 @@
     (d/calculate [] #(Math/PI) :as :pi)
     (d/push-onto :scalar :pi)))
 
+
+
+(def scalar-round (t/simple-1-in-1-out-instruction
+  "`:scalar-round` pops the top `:scalar` value, and pushes the closest integer value"
+  :scalar "round" 'math/round))
 
 
 (def scalar-sign (t/simple-1-in-1-out-instruction
@@ -217,6 +221,7 @@
         (t/attach-instruction , scalar-modulo)
         (t/attach-instruction , scalar-multiply)
         (t/attach-instruction , scalar-π)
+        (t/attach-instruction , scalar-round)
         (t/attach-instruction , scalar-sign)
         (t/attach-instruction , scalar-sine)
         (t/attach-instruction , scalar-subtract)

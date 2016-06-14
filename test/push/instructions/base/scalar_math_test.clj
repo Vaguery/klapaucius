@@ -365,6 +365,44 @@
 
 
 
+
+
+(tabular
+  (fact ":scalar-round applies clojure.math.numeric-tower/round to the top :scalar to produce a `long` result"
+    (register-type-and-check-instruction
+        ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items     ?instruction      ?get-stack  ?expected
+    :scalar     '(0)       :scalar-round     :scalar    '(0)
+    :scalar     '(0.4)     :scalar-round     :scalar    '(0)
+    :scalar     '(0.6)     :scalar-round     :scalar    '(1)
+    :scalar     '(0.5)     :scalar-round     :scalar    '(1)
+    :scalar     '(1.5)     :scalar-round     :scalar    '(2)
+    :scalar     '(-1.1)    :scalar-round     :scalar    '(-1)
+    :scalar     '(-1.5)    :scalar-round     :scalar    '(-1)
+    :scalar     '(-1.0M)   :scalar-round     :scalar    '(-1N)
+    :scalar     '(300.1M)  :scalar-round     :scalar    '(300N)
+    :scalar     '(-300.1M) :scalar-round     :scalar    '(-300N)
+    :scalar     '(300M)    :scalar-round     :scalar    '(300N)
+    :scalar     '(1.7e83)  :scalar-round     :scalar    '(9223372036854775807)
+    :scalar     '(1.7e83M) :scalar-round     :scalar    (list (bigint 1.7e83M))
+    :scalar     '(7/3)     :scalar-round     :scalar    '(2N)
+    
+    :scalar     (list (+ 0.1M (bigint 1.7e837M)))
+                           :scalar-round     :scalar    (list (bigint 1.7e837M))
+    :scalar     (list (+ 0.1 (bigint 1.7e837M)))
+                           :scalar-round     :scalar    '(9223372036854775807)
+    :scalar     (list cljInf)
+                           :scalar-round     :scalar    '(9223372036854775807)
+    :scalar     (list cljNinf)
+                           :scalar-round     :scalar    '(-9223372036854775808)
+    :scalar     '()        :scalar-round     :scalar    '()
+    )
+
+
+
+
+
 (tabular
   (fact ":scalar-sign returns -1 if :scalar is negative, 0 if zero, 1 if positive"
     (register-type-and-check-instruction
