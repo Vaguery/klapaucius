@@ -80,12 +80,6 @@
 
 
 
-
-
-
-
-
-
 (def float-ln
   (core/build-instruction
     float-ln
@@ -206,7 +200,6 @@
         (t/attach-instruction , float-arccosine)
         (t/attach-instruction , float-arcsine)
         (t/attach-instruction , float-arctangent)
-        (t/attach-instruction , float-cosine)
         (t/attach-instruction , float-ln)
         (t/attach-instruction , float-ln1p)
         (t/attach-instruction , float-log10)

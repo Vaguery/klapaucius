@@ -191,8 +191,6 @@
         aspects/make-storable
         aspects/make-taggable
         aspects/make-visible 
-        (t/attach-instruction , boolean->integer)
-        (t/attach-instruction , boolean->signedint)
         (t/attach-instruction , char->integer)
         (t/attach-instruction , float->integer)
         (t/attach-instruction , integer-bits)

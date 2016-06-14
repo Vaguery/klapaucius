@@ -140,66 +140,6 @@
 ;; conversions
 
 
-(tabular
-  (fact ":boolean->integer takes a :boolean value, and returns 1 if true, 0 if false"
-    (register-type-and-check-instruction
-        ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
-
-    ?set-stack  ?items          ?instruction      ?get-stack     ?expected
-    ;; simple     
-    :boolean    '(false true)    :boolean->integer      :integer       '(0)
-    :boolean    '(false true)    :boolean->integer      :boolean       '(true)
-    :boolean    '(true false)    :boolean->integer      :integer       '(1)
-    :boolean    '(true false)    :boolean->integer      :boolean       '(false)
-    ;; missing args 
-    :boolean    '()              :boolean->integer      :integer       '()
-    :boolean    '()              :boolean->integer      :boolean       '())
-
-
-
-(tabular
-  (fact ":boolean->signedint takes a :boolean value, and returns 1 if true, -1 if false"
-    (register-type-and-check-instruction
-        ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
-
-    ?set-stack  ?items          ?instruction      ?get-stack     ?expected
-    :boolean    '(false true)    :boolean->signedint      :integer       '(-1)
-    :boolean    '(true false)    :boolean->signedint      :integer       '(1)
-    ;; missing args 
-    :boolean    '()              :boolean->signedint      :integer       '()
-    :boolean    '()              :boolean->signedint      :boolean       '())
-
-
-(tabular
-  (fact ":float->integer takes a :float value, and truncates it to an :integer"
-    (register-type-and-check-instruction
-        ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
-
-    ?set-stack  ?items          ?instruction      ?get-stack     ?expected
-    ;; simple     
-    :float    '(0.0)          :float->integer      :integer       '(0)
-    :float    '(0.1)          :float->integer      :integer       '(0)
-    :float    '(0.9)          :float->integer      :integer       '(0)
-    :float    '(22.22)        :float->integer      :integer       '(22)
-    ;; consumes arg
-    :float    '(22.22)        :float->integer      :float         '()
-    ;; edge cases 
-    :float    '(-0.0)         :float->integer      :integer       '(0)
-    :float    '(-0.1)         :float->integer      :integer       '(0)
-    :float    '(-22.22)       :float->integer      :integer       '(-22)
-    ;; range
-    :float    '(8e88)
-                              :float->integer      :integer       '()
-    :float    '(8e88)
-                              :float->integer      :error         '({:item ":float->integer out of bounds", :step 0})
-    :float    '(-8e88)
-                              :float->integer      :integer       '()
-    :float    '(-8e88)
-                              :float->integer      :error         '({:item ":float->integer out of bounds", :step 0})
-    ;; missing args 
-    :float    '()             :float->integer      :integer       '()
-    :float    '()             :float->integer      :float         '())
-
 
 (tabular
   (fact ":string->integer"

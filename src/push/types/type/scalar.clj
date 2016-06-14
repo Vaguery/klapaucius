@@ -24,9 +24,15 @@
 
 
 
+(def scalar-ceiling (t/simple-1-in-1-out-instruction
+  "`:scalar-ceiling` pops the top `:scalar` value, and pushes the next-largest integer value"
+  :scalar "ceiling" 'math/ceil))
+
+
+
 (def scalar-cosine (t/simple-1-in-1-out-instruction
   "`:scalar-cosine` pushes the cosine of the top `:scalar` item, read as radians"
-  :scalar "cosine" #(Math/cos %1)))
+  :scalar "cosine" #(Math/cos %)))
 
 
 
@@ -194,6 +200,7 @@
         (t/attach-instruction , integer-totalistic3)
         (t/attach-instruction , scalar-abs)
         (t/attach-instruction , scalar-add)
+        (t/attach-instruction , scalar-ceiling)
         (t/attach-instruction , scalar-cosine)
         (t/attach-instruction , scalar-dec)
         (t/attach-instruction , scalar-divide)

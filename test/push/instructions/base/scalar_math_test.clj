@@ -6,26 +6,38 @@
   )
 
 
+;; fixtures
+
+(def cljInf  Double/POSITIVE_INFINITY)
+(def cljNinf Double/NEGATIVE_INFINITY)
+(def cljNaN  (Math/sin Double/POSITIVE_INFINITY))
+
+
 
 (tabular
   (fact ":scalar-abs returns the absolute value"
     (register-type-and-check-instruction
         ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
 
-    ?set-stack  ?items          ?instruction      ?get-stack     ?expected
-    :scalar     '(92M)      :scalar-abs           :scalar        '(92M)
-    :scalar     '(-92M)     :scalar-abs           :scalar        '(92M)
-    :scalar     '(0)        :scalar-abs           :scalar        '(0)
-    :scalar     '(-0)       :scalar-abs           :scalar        '(0)
-    :scalar     '(92)       :scalar-abs           :scalar        '(92)
-    :scalar     '(-92)      :scalar-abs           :scalar        '(92)
-    :scalar     '(9.2)      :scalar-abs           :scalar        '(9.2)
-    :scalar     '(-9.2)     :scalar-abs           :scalar        '(9.2)
-    :scalar     '(92N)      :scalar-abs           :scalar        '(92N)
-    :scalar     '(-92N)     :scalar-abs           :scalar        '(92N)
-    :scalar     '(9/2)      :scalar-abs           :scalar        '(9/2)
-    :scalar     '(-9/2)     :scalar-abs           :scalar        '(9/2)
-    :scalar     '()         :scalar-abs           :scalar        '()
+    ?set-stack  ?items          ?instruction        ?get-stack     ?expected
+    :scalar     '(92M)          :scalar-abs           :scalar        '(92M)
+    :scalar     '(-92M)         :scalar-abs           :scalar        '(92M)
+    :scalar     '(0)            :scalar-abs           :scalar        '(0)
+    :scalar     '(-0)           :scalar-abs           :scalar        '(0)
+    :scalar     '(92)           :scalar-abs           :scalar        '(92)
+    :scalar     '(-92)          :scalar-abs           :scalar        '(92)
+    :scalar     '(9.2)          :scalar-abs           :scalar        '(9.2)
+    :scalar     '(-9.2)         :scalar-abs           :scalar        '(9.2)
+    :scalar     '(92N)          :scalar-abs           :scalar        '(92N)
+    :scalar     '(-92N)         :scalar-abs           :scalar        '(92N)
+    :scalar     '(9/2)          :scalar-abs           :scalar        '(9/2)
+    :scalar     '(-9/2)         :scalar-abs           :scalar        '(9/2)
+
+    :scalar     (list cljInf)
+                                :scalar-abs           :scalar        (list cljInf)
+    :scalar     (list cljNinf)
+                                :scalar-abs           :scalar        (list cljInf)
+    :scalar     '()             :scalar-abs           :scalar        '()
     )
 
 
@@ -46,9 +58,45 @@
     :scalar     '(-92M 8.7)     :scalar-add        :scalar      '(-83.3)
     :scalar     '(9/2 1.1)      :scalar-add        :scalar      '(5.6)
     :scalar     '(-2/9 2.0)     :scalar-add        :scalar      '(1.7777777777777777)
+
+
+    :scalar     (list cljInf 1)
+                                :scalar-add        :scalar      (list cljInf)
+    :scalar     (list cljNinf 1)
+                                :scalar-add        :scalar      (list cljNinf)
+    :scalar     '(1e9999M 1e99)
+                                :scalar-add        :scalar      (list cljInf)
     :scalar     '()             :scalar-add        :scalar      '()
     )
 
+
+;    :scalar     (list cljInf cljNinf)
+                                ; :scalar-add        :scalar      Double/isNaN
+
+
+(tabular
+  (fact ":scalar-ceiling applies clojure.math.numeric-tower/ceil to the top :scalar"
+    (register-type-and-check-instruction
+        ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items     ?instruction      ?get-stack  ?expected
+    :scalar     '(0)       :scalar-ceiling     :scalar    '(0)
+    :scalar     '(-1.0)    :scalar-ceiling     :scalar    '(-1.0)
+    :scalar     '(-1.0M)   :scalar-ceiling     :scalar    '(-1N)
+    :scalar     '(300.1M)  :scalar-ceiling     :scalar    '(301N)
+    :scalar     '(-300.1M) :scalar-ceiling     :scalar    '(-300N)
+    :scalar     '(300N)    :scalar-ceiling     :scalar    '(300N)
+    :scalar     '(1.7e83)  :scalar-ceiling     :scalar    '(1.7E83)
+    :scalar     '(7/3)     :scalar-ceiling     :scalar    '(3N)
+    
+    :scalar     '(1.7e837M)
+                           :scalar-ceiling     :scalar    (list (bigint 1.7e837M))
+    :scalar     (list cljInf)
+                           :scalar-ceiling     :scalar    (list cljInf)
+    :scalar     (list cljNinf)
+                           :scalar-ceiling     :scalar    (list cljNinf)
+    :scalar     '()        :scalar-ceiling     :scalar    '()
+    )
 
 
 
@@ -91,6 +139,12 @@
     :scalar     '(-92N)     :scalar-dec           :scalar        '(-93N)
     :scalar     '(9/2)      :scalar-dec           :scalar        '(7/2)
     :scalar     '(-9/2)     :scalar-dec           :scalar        '(-11/2)
+
+
+    :scalar     (list cljInf)
+                            :scalar-dec           :scalar        (list cljInf)
+    :scalar     (list cljNinf)
+                            :scalar-dec           :scalar        (list cljNinf)
     :scalar     '()         :scalar-dec           :scalar        '()
     )
 
@@ -135,12 +189,28 @@
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(2M 3M)}       :scalar-divide     {:scalar '(1.5M)
                                                    :error '()} 
+
+
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:scalar   (list cljInf 3M)}
+                               :scalar-divide     {:scalar '(0.0)
+                                                   :error '()} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:scalar   (list 3M cljInf)}
+                               :scalar-divide     {:scalar (list cljInf)
+                                                   :error '()}
 )
 
 
 ;; out of bounds/edge cases
     ; {:scalar   '(92M 8)}       :scalar-divide     {:scalar '()
     ;                                                :error '()} 
+
+    ;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ; {:scalar   (list cljInf cljInf)}
+    ;                            :scalar-divide     {:scalar '(0.0)
+    ;                                                :error '()} 
+
 
 
 
@@ -173,6 +243,11 @@
     :scalar     '(-92N)     :scalar-inc           :scalar        '(-91N)
     :scalar     '(9/2)      :scalar-inc           :scalar        '(11/2)
     :scalar     '(-9/2)     :scalar-inc           :scalar        '(-7/2)
+
+
+
+    :scalar     (list cljInf)         
+                            :scalar-inc           :scalar        (list cljInf)
     :scalar     '()         :scalar-inc           :scalar        '()
     )
 
@@ -218,9 +293,19 @@
     {:scalar   '(0M 0N)}       :scalar-modulo     {:scalar '()
                                                    :error '({:item ":scalar-modulo 0 denominator", :step 0})} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:scalar   '(1.2M 32M)}       :scalar-modulo  {:scalar '(0.8M)
+    {:scalar   '(1.2M 32M)}    :scalar-modulo  {:scalar '(0.8M)
                                                    :error '()} 
-)
+                                                   )
+
+
+; ;;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;     {:scalar   (list cljInf 32M)}       :scalar-modulo  {:scalar '(0.8M)
+;                                                    :error '()} 
+
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ; {:scalar   (list 1.2 cljInf)}
+    ;                            :scalar-modulo  {:scalar '(0.8M)
+    ;                                                :error '()} 
 
 
 
