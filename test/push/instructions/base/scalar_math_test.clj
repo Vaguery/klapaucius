@@ -226,6 +226,34 @@
 
 
 (tabular
+  (fact ":scalar-floor applies clojure.math.numeric-tower/floor to the top :scalar"
+    (register-type-and-check-instruction
+        ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items     ?instruction      ?get-stack  ?expected
+    :scalar     '(0)       :scalar-floor     :scalar    '(0)
+    :scalar     '(-1.0)    :scalar-floor     :scalar    '(-1.0)
+    :scalar     '(-1.0M)   :scalar-floor     :scalar    '(-1N)
+    :scalar     '(300.1M)  :scalar-floor     :scalar    '(300N)
+    :scalar     '(-300.1M) :scalar-floor     :scalar    '(-301N)
+    :scalar     '(300N)    :scalar-floor     :scalar    '(300N)
+    :scalar     '(1.7e83)  :scalar-floor     :scalar    '(1.7E83)
+    :scalar     '(7/3)     :scalar-floor     :scalar    '(2N)
+    
+    :scalar     (list (+ 0.1M (bigint 1.7e837M)))
+                           :scalar-floor     :scalar    (list (bigint 1.7e837M))
+    :scalar     (list (+ 0.1 (bigint 1.7e837M)))
+                           :scalar-floor     :scalar    (list cljInf)
+    :scalar     (list cljInf)
+                           :scalar-floor     :scalar    (list cljInf)
+    :scalar     (list cljNinf)
+                           :scalar-floor     :scalar    (list cljNinf)
+    :scalar     '()        :scalar-floor     :scalar    '()
+    )
+
+
+
+(tabular
   (fact ":scalar-inc increments the top :scalar by 1"
     (register-type-and-check-instruction
         ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)

@@ -68,6 +68,13 @@
 
 
 
+(def scalar-floor (t/simple-1-in-1-out-instruction
+  "`:scalar-floor` pops the top `:scalar` value, and pushes the next-smaller integer value"
+  :scalar "floor" 'math/floor))
+
+
+
+
 (def scalar-inc (t/simple-1-in-1-out-instruction
   "`:scalar-inc` adds 1 to the top `:scalar` item"
   :scalar "inc" 'inc'))
@@ -205,6 +212,7 @@
         (t/attach-instruction , scalar-dec)
         (t/attach-instruction , scalar-divide)
         (t/attach-instruction , scalar-E)
+        (t/attach-instruction , scalar-floor)
         (t/attach-instruction , scalar-inc)
         (t/attach-instruction , scalar-modulo)
         (t/attach-instruction , scalar-multiply)
