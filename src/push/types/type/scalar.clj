@@ -5,6 +5,7 @@
             [push.util.code-wrangling :as fix]
             [push.instructions.aspects :as aspects]
             [clojure.math.numeric-tower :as math]
+            [push.util.exotics :as x]
             ))
 
 
@@ -104,6 +105,15 @@
 
 
 
+(def integer-totalistic3
+  (core/build-instruction
+    integer-totalistic3
+    "`:integer-totalistic3` pops the top `:scalar`. It is turned into an integer using `(bigint x)`. Then each digit is replaced by the sum of its current value and the two neighbors to the right, modulo 10, wrapping cyclically around the number."
+    :tags #{:numeric :exotic}
+    (d/consume-top-of :scalar :as :arg)
+    (d/calculate [:arg] #(x/rewrite-digits (bigint %1) 3) :as :result)
+    (d/push-onto :scalar :result)))
+
 
 
 ; ;; CONVERSIONS
@@ -124,6 +134,7 @@
         aspects/make-storable
         aspects/make-taggable
         aspects/make-visible 
+        (t/attach-instruction , integer-totalistic3)
         (t/attach-instruction , scalar-abs)
         (t/attach-instruction , scalar-add)
         (t/attach-instruction , scalar-dec)

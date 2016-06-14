@@ -220,7 +220,6 @@
         (t/attach-instruction , integer-lots)
         (t/attach-instruction , integer-many)
         (t/attach-instruction , integer-some)
-        (t/attach-instruction , integer-totalistic3)
         (t/attach-instruction , integer->bits)
         (t/attach-instruction , integer->numerals)
         (t/attach-instruction , string->integer)

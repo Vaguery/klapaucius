@@ -200,18 +200,18 @@
 
 (facts "about `index-from-scratch-ref`"
 
-  (fact "index-from-scratch-ref returns an scalar if one is stored"
+  (fact "index-from-scratch-ref returns a number if one is stored"
     (#'push.instructions.dsl/index-from-scratch-ref :foo {:foo 8}) => 8)
 
 
-  (fact "index-from-scratch-ref throws up if the stored value isn't an scalar"
+  (fact "index-from-scratch-ref throws up if the stored value isn't an integer"
     (#'push.instructions.dsl/index-from-scratch-ref :foo {:foo false}) => 
-      (throws #":foo is not an scalar"))
+      (throws #":foo is not an integer"))
 
 
   (fact "index-from-scratch-ref throws up if the key is not present"
     (#'push.instructions.dsl/index-from-scratch-ref :bar {:foo 2}) => 
-      (throws #":bar is not an scalar")))
+      (throws #":bar is not an integer")))
 
 
 ;; `save-max-collection-size [as kwd]`
@@ -232,7 +232,7 @@
 
 (facts "about `delete-nth-of`"
 
-  (fact "`delete-nth-of` discards the indicated item given an scalar location"
+  (fact "`delete-nth-of` discards the indicated item given an integer location"
     (get-stack-from-dslblob :scalar
       (delete-nth-of [afew {}] :scalar :at 1)) => '(1 3))
 
@@ -244,7 +244,7 @@
       (delete-nth-of [afew {}] :scalar :at -3)) => '(2 3))
 
 
-  (fact "`delete-nth-of` discards the indicated item given scratch ref to scalar"
+  (fact "`delete-nth-of` discards the indicated item given scratch ref to integer"
     (get-stack-from-dslblob :scalar
       (delete-nth-of [afew {:foo 1}] :scalar :at :foo)) => '(1 3)
     (get-stack-from-dslblob :scalar
@@ -253,11 +253,11 @@
       (delete-nth-of [afew {:foo 3}] :scalar :at :foo)) => '(2 3))
 
 
-  (fact "`delete-nth-of` throws up given a scratch ref to non-scalar"
+  (fact "`delete-nth-of` throws up given a scratch ref to non-integer"
     (delete-nth-of [afew {:foo false}] :scalar :at :foo) => 
-      (throws #":foo is not an scalar")
+      (throws #":foo is not an integer")
     (delete-nth-of [afew {:foo 1}] :scalar :at :bar) => 
-      (throws #":bar is not an scalar"))
+      (throws #":bar is not an integer"))
 
 
   (fact "`delete-nth-of` throws up if no index is given"
@@ -419,9 +419,9 @@
       (throws #"no :grault stack"))
 
 
-  (fact "`save-nth-of` throws up if the keyword index doesn't point to an scalar"
+  (fact "`save-nth-of` throws up if the keyword index doesn't point to an integer"
     (save-nth-of [afew {:foo false}] :scalar :at :foo :as :bar) =>
-      (throws #":foo is not an scalar"))
+      (throws #":foo is not an integer"))
 
 
   (fact "`save-nth-of` throws up if you try to pop an empty stack"
@@ -468,9 +468,9 @@
       (throws #"no :grault stack"))
 
 
-  (fact "`consume-nth-of` throws up if the keyword index doesn't point to an scalar"
+  (fact "`consume-nth-of` throws up if the keyword index doesn't point to an integer"
     (consume-nth-of [afew {:foo false}] :scalar :at :foo :as :bar) =>
-      (throws #":foo is not an scalar"))
+      (throws #":foo is not an integer"))
 
 
   (fact "`consume-nth-of` throws up if you try to pop an empty stack"
@@ -522,11 +522,11 @@
       (throws #"no :grault stack"))
 
 
-  (fact "`get-nth-of` throws up if the keyword index doesn't point to an scalar"
+  (fact "`get-nth-of` throws up if the keyword index doesn't point to an integer"
     (#'push.instructions.dsl/get-nth-of [afew {:foo false}] :scalar :at :foo) =>
-      (throws #":foo is not an scalar")
+      (throws #":foo is not an integer")
     (#'push.instructions.dsl/get-nth-of [afew {}] :scalar :at :foo) =>
-      (throws #":foo is not an scalar"))
+      (throws #":foo is not an integer"))
 
 
   (fact "`get-nth-of` throws up if you refer to an empty stack"
@@ -578,7 +578,7 @@
     (get-local-from-dslblob :inst
       (#'push.instructions.dsl/save-instructions
         [(c/classic-interpreter) {}] :as :inst)) =>
-          (contains [:scalar-pop :boolean-print :string-swap]))
+          (contains [:code-pop :boolean-print :string-swap]))
 
 
   (fact "raises an exception when the :as arg is missing"
@@ -881,13 +881,13 @@
         '(1 2 3 99))
 
 
-  (fact "`insert-as-nth-of` throws up if the scratch variable isn't an scalar"
+  (fact "`insert-as-nth-of` throws up if the scratch variable isn't an integer"
     (get-stack-from-dslblob :scalar
       (insert-as-nth-of [afew {:foo 99 :bar false}] :scalar :foo :at :bar)) =>
-        (throws #"Push DSL argument error: :bar is not an scalar")
+        (throws #"Push DSL argument error: :bar is not an integer")
     (get-stack-from-dslblob :scalar
       (insert-as-nth-of [afew {:foo 99}] :scalar :foo :at :bar)) =>
-        (throws #"Push DSL argument error: :bar is not an scalar"))
+        (throws #"Push DSL argument error: :bar is not an integer"))
 
 
   (fact "`insert-as-nth-of` throws up if no index is given"
