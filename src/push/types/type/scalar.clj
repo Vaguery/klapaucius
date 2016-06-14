@@ -155,6 +155,17 @@
 
 
 
+(def scalar-few
+  (core/build-instruction
+    scalar-few
+    "`:scalar-few` pops the top `:scalar` value, and calculates `(mod 10 x)`."
+    :tags #{:numeric}
+    (d/consume-top-of :scalar :as :arg)
+    (d/calculate [:arg] #(mod %1 10) :as :scaled)
+    (d/push-onto :scalar :scaled)))
+
+
+
 (def scalar-lots
   (core/build-instruction
     scalar-lots
@@ -163,6 +174,29 @@
     (d/consume-top-of :scalar :as :arg)
     (d/calculate [:arg] #(mod %1 10000) :as :scaled)
     (d/push-onto :scalar :scaled)))
+
+
+
+(def scalar-many
+  (core/build-instruction
+    scalar-many
+    "`:scalar-many` pops the top `:scalar` value, and calculates `(mod 1000 x)`."
+    :tags #{:numeric}
+    (d/consume-top-of :scalar :as :arg)
+    (d/calculate [:arg] #(mod %1 1000) :as :scaled)
+    (d/push-onto :scalar :scaled)))
+
+
+
+(def scalar-some
+  (core/build-instruction
+    scalar-some
+    "`:scalar-some` pops the top `:scalar` value, and calculates `(mod 100 x)`."
+    :tags #{:numeric}
+    (d/consume-top-of :scalar :as :arg)
+    (d/calculate [:arg] #(mod %1 100) :as :scaled)
+    (d/push-onto :scalar :scaled)))
+
 
 
 
@@ -237,15 +271,18 @@
         (t/attach-instruction , scalar-dec)
         (t/attach-instruction , scalar-divide)
         (t/attach-instruction , scalar-E)
+        (t/attach-instruction , scalar-few)
         (t/attach-instruction , scalar-floor)
         (t/attach-instruction , scalar-inc)
         (t/attach-instruction , scalar-lots)
+        (t/attach-instruction , scalar-many)
         (t/attach-instruction , scalar-modulo)
         (t/attach-instruction , scalar-multiply)
         (t/attach-instruction , scalar-π)
         (t/attach-instruction , scalar-round)
         (t/attach-instruction , scalar-sign)
         (t/attach-instruction , scalar-sine)
+        (t/attach-instruction , scalar-some)
         (t/attach-instruction , scalar-subtract)
         (t/attach-instruction , boolean->float)
         (t/attach-instruction , boolean->signedfloat)

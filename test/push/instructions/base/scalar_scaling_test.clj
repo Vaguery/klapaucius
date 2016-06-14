@@ -14,6 +14,46 @@
 
 
 (tabular
+  (fact ":scalar-few  reduces the top :scalar mod 10000"
+    (register-type-and-check-instruction
+      ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack   ?items      ?instruction    ?get-stack   ?expected
+    :scalar     '(32677)     :scalar-few     :scalar       '(7)
+    :scalar     '(-22212)    :scalar-few     :scalar       '(8)
+    :scalar     '(79)        :scalar-few     :scalar       '(9)
+    :scalar     '(0)         :scalar-few     :scalar       '(0)
+
+    :scalar     '(32677.5)   :scalar-few     :scalar       '(7.5)
+    :scalar     '(-22212.5)  :scalar-few     :scalar       '(7.5)
+    :scalar     '(79.5)      :scalar-few     :scalar       '(9.5)
+    :scalar     '(0.5)       :scalar-few     :scalar       '(0.5)
+
+    :scalar     '(32677/2)   :scalar-few     :scalar       '(17/2)
+    :scalar     '(-22213/2)  :scalar-few     :scalar       '(7/2)
+    :scalar     '(79/2)      :scalar-few     :scalar       '(19/2)
+    :scalar     '(0/2)       :scalar-few     :scalar       '(0)
+
+    :scalar     '(377777777772M)
+                             :scalar-few     :scalar       '(2M)
+    :scalar     '(3777777.77772M)
+                             :scalar-few     :scalar       '(7.77772M)
+    :scalar     (list (bigint Double/MAX_VALUE))
+                             :scalar-few     :scalar       '(0N)
+    :scalar     (list Double/MAX_VALUE)
+                             :scalar-few     :scalar       '(0.0)
+    :scalar     (list Long/MAX_VALUE)
+                             :scalar-few     :scalar       '(7)
+    :scalar     (list (bigint Double/MIN_VALUE))
+                             :scalar-few     :scalar       '(0N)
+
+    :scalar     (list (inc (bigint 1e872M)))
+                             :scalar-few     :scalar       '(1N)
+    )
+
+
+
+(tabular
   (fact ":scalar-lots reduces the top :scalar mod 10000"
     (register-type-and-check-instruction
       ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
@@ -60,37 +100,82 @@
 
 
 
-; (tabular
-;   (fact ":integer-few reduces the top :integer mod 10"
-;     (register-type-and-check-instruction
-;       ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
 
-;     ?set-stack   ?items    ?instruction     ?get-stack     ?expected
-;     :integer     '(77)     :integer-few     :integer       '(7)
-;     :integer     '(-2)     :integer-few     :integer       '(8)
-;     :integer     '(8)      :integer-few     :integer       '(8)
-;     :integer     '(0)      :integer-few     :integer       '(0))
+(tabular
+  (fact ":scalar-many reduces the top :scalar mod 10000"
+    (register-type-and-check-instruction
+      ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack   ?items      ?instruction    ?get-stack   ?expected
+    :scalar     '(32677)     :scalar-many    :scalar       '(677)
+    :scalar     '(-22212)    :scalar-many    :scalar       '(788)
+    :scalar     '(79)        :scalar-many    :scalar       '(79)
+    :scalar     '(0)         :scalar-many    :scalar       '(0)
+
+    :scalar     '(32677.5)   :scalar-many    :scalar       '(677.5)
+    :scalar     '(-22212.5)  :scalar-many    :scalar       '(787.5)
+    :scalar     '(79.5)      :scalar-many    :scalar       '(79.5)
+    :scalar     '(0.5)       :scalar-many    :scalar       '(0.5)
+
+    :scalar     '(32677/2)   :scalar-many    :scalar       '(677/2)
+    :scalar     '(-22213/2)  :scalar-many    :scalar       '(1787/2)
+    :scalar     '(79/2)      :scalar-many    :scalar       '(79/2)
+    :scalar     '(0/2)       :scalar-many    :scalar       '(0)
+
+    :scalar     '(377777777772M)
+                             :scalar-many    :scalar       '(772M)
+    :scalar     '(3777777.77772M)
+                             :scalar-many    :scalar       '(777.77772M)
+    :scalar     (list (bigint Double/MAX_VALUE))
+                             :scalar-many    :scalar       '(0N)
+    :scalar     (list Long/MAX_VALUE)
+                             :scalar-many    :scalar       '(807)
+    :scalar     (list (bigint Double/MIN_VALUE))
+                             :scalar-many    :scalar       '(0N)
+
+    :scalar     (list (inc (bigint 1e872M)))
+                             :scalar-many    :scalar       '(1N)
+    )
+
+;;     :scalar     (list Double/MAX_VALUE)
+                             ; :scalar-many    :scalar       '(0.0)
 
 
-; (tabular
-;   (fact ":integer-some reduces the top :integer mod 100"
-;     (register-type-and-check-instruction
-;       ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
 
-;     ?set-stack   ?items    ?instruction     ?get-stack     ?expected
-;     :integer     '(677)    :integer-some    :integer       '(77)
-;     :integer     '(-2912)  :integer-some    :integer       '(88)
-;     :integer     '(79)     :integer-some    :integer       '(79)
-;     :integer     '(0)      :integer-some    :integer       '(0))
+(tabular
+  (fact ":scalar-some reduces the top :scalar mod 10000"
+    (register-type-and-check-instruction
+      ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
 
+    ?set-stack   ?items      ?instruction    ?get-stack   ?expected
+    :scalar     '(32677)     :scalar-some    :scalar       '(77)
+    :scalar     '(-22212)    :scalar-some    :scalar       '(88)
+    :scalar     '(79)        :scalar-some    :scalar       '(79)
+    :scalar     '(0)         :scalar-some    :scalar       '(0)
 
-; (tabular
-;   (fact ":integer-many reduces the top :integer mod 1000"
-;     (register-type-and-check-instruction
-;       ?set-stack ?items integer-type ?instruction ?get-stack) => ?expected)
+    :scalar     '(32677.5)   :scalar-some    :scalar       '(77.5)
+    :scalar     '(-22212.5)  :scalar-some    :scalar       '(87.5)
+    :scalar     '(79.5)      :scalar-some    :scalar       '(79.5)
+    :scalar     '(0.5)       :scalar-some    :scalar       '(0.5)
 
-;     ?set-stack   ?items    ?instruction     ?get-stack     ?expected
-;     :integer     '(2677)    :integer-many    :integer       '(677)
-;     :integer     '(-22212)  :integer-many    :integer       '(788)
-;     :integer     '(79)      :integer-many    :integer       '(79)
-;     :integer     '(0)       :integer-many    :integer       '(0))
+    :scalar     '(32677/2)   :scalar-some    :scalar       '(77/2)
+    :scalar     '(-22213/2)  :scalar-some    :scalar       '(187/2)
+    :scalar     '(79/2)      :scalar-some    :scalar       '(79/2)
+    :scalar     '(0/2)       :scalar-some    :scalar       '(0)
+
+    :scalar     '(377777777772M)
+                             :scalar-some    :scalar       '(72M)
+    :scalar     '(3777777.77772M)
+                             :scalar-some    :scalar       '(77.77772M)
+    :scalar     (list (bigint Double/MAX_VALUE))
+                             :scalar-some    :scalar       '(0N)
+    :scalar     (list Double/MAX_VALUE)
+                             :scalar-some    :scalar       '(0.0)
+    :scalar     (list Long/MAX_VALUE)
+                             :scalar-some    :scalar       '(7)
+    :scalar     (list (bigint Double/MIN_VALUE))
+                             :scalar-some    :scalar       '(0N)
+
+    :scalar     (list (inc (bigint 1e872M)))
+                             :scalar-some    :scalar       '(1N)
+    )

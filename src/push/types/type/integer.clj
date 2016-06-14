@@ -51,39 +51,11 @@
 
 
 
-(def integer-few
-  (core/build-instruction
-    integer-few
-    "`:integer-few` pops the top `:integer` value, and calculates `(mod 10 x)`."
-    :tags #{:numeric}
-    (d/consume-top-of :integer :as :arg)
-    (d/calculate [:arg] #(mod %1 10) :as :scaled)
-    (d/push-onto :scalar :scaled)))
 
 
 
 
 
-
-(def integer-many
-  (core/build-instruction
-    integer-many
-    "`:integer-many` pops the top `:integer` value, and calculates `(mod 1000 x)`."
-    :tags #{:numeric}
-    (d/consume-top-of :integer :as :arg)
-    (d/calculate [:arg] #(mod %1 1000) :as :scaled)
-    (d/push-onto :scalar :scaled)))
-
-
-
-(def integer-some
-  (core/build-instruction
-    integer-some
-    "`:integer-some` pops the top `:integer` value, and calculates `(mod 100 x)`."
-    :tags #{:numeric}
-    (d/consume-top-of :integer :as :arg)
-    (d/calculate [:arg] #(mod %1 100) :as :scaled)
-    (d/push-onto :scalar :scaled)))
 
 
 
