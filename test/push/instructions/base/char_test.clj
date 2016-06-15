@@ -65,108 +65,79 @@
 
 
 (tabular
-  (fact ":integer->asciichar drops the top :integer into [0..128] and pushes that ASCII character"
+  (fact ":scalar->asciichar drops the top :scalar into [0..128] and pushes that ASCII character"
     (register-type-and-check-instruction
         ?set-stack ?items char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction  ?get-stack         ?expected
     ;; all the letters
-    :integer    '(88)         :integer->asciichar   :char         '(\X)
-    :integer    '(37)         :integer->asciichar   :char         '(\%)
-    :integer    '(-37)        :integer->asciichar   :char         '(\[)
-    :integer    '(200)        :integer->asciichar   :char         '(\H)
+    :scalar    '(88)         :scalar->asciichar   :char         '(\X)
+    :scalar    '(37)         :scalar->asciichar   :char         '(\%)
+    :scalar    '(-37)        :scalar->asciichar   :char         '(\[)
+    :scalar    '(200)        :scalar->asciichar   :char         '(\H)
     ;; edge cases
-    :integer    '(0)          :integer->asciichar   :char         (list (char 0))
-    :integer    '(128)        :integer->asciichar   :char         (list (char 0))
-    :integer    '(256)        :integer->asciichar   :char         (list (char 0))
-    :integer    '(-128)       :integer->asciichar   :char         (list (char 0))
+    :scalar    '(0)          :scalar->asciichar   :char         (list (char 0))
+    :scalar    '(128)        :scalar->asciichar   :char         (list (char 0))
+    :scalar    '(256)        :scalar->asciichar   :char         (list (char 0))
+    :scalar    '(-128)       :scalar->asciichar   :char         (list (char 0))
+
+    :scalar    '(88.9)       :scalar->asciichar   :char         '(\Y)
+    :scalar    '(37.2)       :scalar->asciichar   :char         '(\&)
+    :scalar    '(-37.9)      :scalar->asciichar   :char         '(\[)
+    :scalar    '(200.2)      :scalar->asciichar   :char         '(\I)
+
+    :scalar    '(828/5)       :scalar->asciichar   :char         '(\&)
+    :scalar    '(373/2)       :scalar->asciichar   :char         '(\;)
+    :scalar    '(-37/2)       :scalar->asciichar   :char         '(\n)
+    :scalar    '(200/6)       :scalar->asciichar   :char         '(\")
+    ;; edge cases
+    :scalar    '(0.2)        :scalar->asciichar   :char         (list (char 1))
+    :scalar    '(128.2)      :scalar->asciichar   :char         (list (char 1))
+    :scalar    '(256.2)      :scalar->asciichar   :char         (list (char 1))
+    :scalar    '(-128.2)     :scalar->asciichar   :char         (list (char 0))
+
     ;; missing args
-    :integer    '()           :integer->asciichar   :char         '())
+    :scalar    '()           :scalar->asciichar   :char         '())
 
 
 (tabular
-  (fact ":integer->char drops the top :integer into [0..65535] and pushes that unicode character"
+  (fact ":scalar->char drops the top :scalar into [0..65535] and pushes that unicode character"
     (register-type-and-check-instruction
         ?set-stack ?items char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction  ?get-stack         ?expected
-    ;; all the letters
-    :integer    '(88)         :integer->char   :char         '(\X)
-    :integer    '(37)         :integer->char   :char         '(\%)
-    :integer    '(382)        :integer->char   :char         '(\ž)
-    :integer    '(-17212)     :integer->char   :char         '(\볃)
-    :integer    '(2764)       :integer->char   :char         '(\ૌ)
+
+    :scalar    '(88)         :scalar->char   :char         '(\X)
+    :scalar    '(37)         :scalar->char   :char         '(\%)
+    :scalar    '(382)        :scalar->char   :char         '(\ž)
+    :scalar    '(-17212)     :scalar->char   :char         '(\볃)
+    :scalar    '(2764)       :scalar->char   :char         '(\ૌ)
     ;; edge cases
-    :integer    '(0)          :integer->char   :char         (list (char 0))
-    :integer    '(65535)      :integer->char   :char         (list (char 0))
-    :integer    '(256)        :integer->char   :char         '(\Ā)
-    :integer    '(-128)       :integer->char   :char         '(\ｿ)
+    :scalar    '(0)          :scalar->char   :char         (list (char 0))
+    :scalar    '(65535)      :scalar->char   :char         (list (char 0))
+    :scalar    '(256)        :scalar->char   :char         '(\Ā)
+    :scalar    '(-128)       :scalar->char   :char         '(\ｿ)
     ;; missing args
-    :integer    '()           :integer->char   :char         '())
+    :scalar    '()           :scalar->char   :char         '()
 
+    :scalar    '(88.9)         :scalar->char   :char         '(\Y)
+    :scalar    '(37.2)         :scalar->char   :char         '(\&)
+    :scalar    '(-22771.9)     :scalar->char   :char         '(\꜌)
+    :scalar    '(200.2)        :scalar->char   :char         '(\É)
 
-(tabular
-  (fact ":float->asciichar drops the top :float down to an integer value in [0..128] and pushes that ASCII character"
-    (register-type-and-check-instruction
-        ?set-stack ?items char-type ?instruction ?get-stack) => ?expected)
-
-    ?set-stack  ?items          ?instruction  ?get-stack         ?expected
-    ;; all the letters
-    :float    '(88.9)         :float->asciichar   :char         '(\X)
-    :float    '(37.2)         :float->asciichar   :char         '(\%)
-    :float    '(-37.9)        :float->asciichar   :char         '(\Z)
-    :float    '(200.2)        :float->asciichar   :char         '(\H)
-    ;; edge cases
-    :float    '(0.2)          :float->asciichar   :char         (list (char 0))
-    :float    '(128.2)        :float->asciichar   :char         (list (char 0))
-    :float    '(256.2)        :float->asciichar   :char         (list (char 0))
-    :float    '(-128.2)       :float->asciichar   :char         (list (char 127))
-
-
-
+    :scalar    '(0.2)          :scalar->char   :char         (list (char 1))
+    :scalar    '(65535.3)      :scalar->char   :char         (list (char 1))
+    :scalar    '(256.9)        :scalar->char   :char         '(\ā)
+    :scalar    '(-128.2)       :scalar->char   :char         '(\ｿ)
+    ;; bounds for internal typecast (huge bigint mod 65535 -> 0)
+    :scalar    '(1.1e88M)      :scalar->char   :char         '(\뗖)
+    :scalar    '(111111111111111111111111111111111111111.0M)
+                              :scalar->char   :char         '(\㓂)
     ;; missing args
-    :float    '()             :float->asciichar   :char         '()
+    :scalar    '()             :scalar->char   :char         '()
+
     )
 
-
-
-(tabular
-  (future-fact ":float->asciichar drops the top :float down to an integer value in [0..128] and pushes that ASCII character"
-    (register-type-and-check-instruction
-        ?set-stack ?items char-type ?instruction ?get-stack) => ?expected)
-
-    ?set-stack  ?items          ?instruction  ?get-stack         ?expected
-    ;; overflows create :errors
-    :float    '(1.1e88M)      :float->asciichar   :char         '()
-    :float    '(1.1e88M)      :float->asciichar   :error        '()
-    :float    '(111111111111111111111111111111111111111111.0M)
-                              :float->asciichar   :char         '()
-    :float    '(111111111111111111111111111111111111111111.0M)
-                              :float->asciichar   :error        '()
-                              )
-
-(tabular
-  (fact ":float->char drops the top :float down to an integer value in [0..65535] and pushes that ASCII character"
-    (register-type-and-check-instruction
-        ?set-stack ?items char-type ?instruction ?get-stack) => ?expected)
-
-    ?set-stack  ?items          ?instruction  ?get-stack         ?expected
-    ;; all the letters
-    :float    '(88.9)         :float->char   :char         '(\X)
-    :float    '(37.2)         :float->char   :char         '(\%)
-    :float    '(-22771.9)     :float->char   :char         (list (char 42763.1))
-    :float    '(200.2)        :float->char   :char         '(\È)
-    ;; comparison to :integer->char
-    :float    '(0.2)          :float->char   :char         (list (char 0))
-    :float    '(65535.3)      :float->char   :char         (list (char 0))
-    :float    '(256.9)        :float->char   :char         '(\Ā)
-    :float    '(-128.2)       :float->char   :char         (list (char 65406.8))
-    ;; bounds for internal typecast (huge bigint mod 65535 -> 0)
-    :float    '(1.1e88M)      :float->char   :char         '(\뗖)
-    :float    '(111111111111111111111111111111111111111.0M)
-                              :float->char   :char         '(\㓂)
-    ;; missing args
-    :float    '()             :float->char   :char         '())
 
 
 (tabular

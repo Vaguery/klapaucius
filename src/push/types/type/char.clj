@@ -5,6 +5,7 @@
             [push.util.stack-manipulation :as u]
             [push.util.code-wrangling :as fix]
             [push.instructions.aspects :as aspects]
+            [push.util.numerics :as num]
             ))
 
 
@@ -42,47 +43,28 @@
 
 
 
-(def float->asciichar
+(def scalar->asciichar
   (core/build-instruction
-    float->asciichar
-    "`:float->asciichar` pops the top `:float` value, reduces it to an integer modulo 128, and pushes the `:char` that is represented by that ASCII value"
+    scalar->asciichar
+    "`:scalar->asciichar` pops the top `:sclar` value, reduces it modulo 128, and pushes the `:char` that is represented by that ASCII value"
     :tags #{:string :conversion :base}
-    (d/consume-top-of :float :as :arg)
-    (d/calculate [:arg] #(char (mod %1 128)) :as :c)
+    (d/consume-top-of :scalar :as :arg)
+    (d/calculate [:arg] 
+      #(char (num/scalar-to-index %1 128)) :as :c)
     (d/push-onto :char :c)))
 
 
 
-(def float->char
+(def scalar->char
   (core/build-instruction
-    float->char
-    "`:float->char` pops the top `:float` value, reduces it to an integer modulo 65535, and pushes the `:char` that is represented by that unicode value"
+    scalar->char
+    "`:scalar->char` pops the top `:scalar` value, reduces it modulo 65535, and pushes the `:char` that is represented by that unicode value"
     :tags #{:string :conversion :base}
-    (d/consume-top-of :float :as :arg)
-    (d/calculate [:arg] #(char (mod %1 65535)) :as :c)
+    (d/consume-top-of :scalar :as :arg)
+    (d/calculate [:arg]
+      #(char (num/scalar-to-index %1 65535)) :as :c)
     (d/push-onto :char :c)))
 
-
-
-(def integer->asciichar
-  (core/build-instruction
-    integer->asciichar
-    "`:integer->asciichar` pops the top `:integer` value, reduces it modulo 128, and pushes the `:char` that is represented by that ASCII value"
-    :tags #{:string :conversion :base}
-    (d/consume-top-of :integer :as :arg)
-    (d/calculate [:arg] #(char (mod %1 128)) :as :c)
-    (d/push-onto :char :c)))
-
-
-
-(def integer->char
-  (core/build-instruction
-    integer->char
-    "`:integer-char` pops the top `:integer` value, reduces it modulo 65535, and pushes the `:char` that is represented by that unicode value"
-    :tags #{:string :conversion :base}
-    (d/consume-top-of :integer :as :arg)
-    (d/calculate [:arg] #(char (mod %1 65535)) :as :c)
-    (d/push-onto :char :c)))
 
 
 
@@ -119,10 +101,8 @@
         (t/attach-instruction , char-lowercase?)
         (t/attach-instruction , char-uppercase?)
         (t/attach-instruction , char-whitespace?)
-        (t/attach-instruction , float->asciichar)
-        (t/attach-instruction , float->char)
-        (t/attach-instruction , integer->asciichar)
-        (t/attach-instruction , integer->char)
+        (t/attach-instruction , scalar->asciichar)
+        (t/attach-instruction , scalar->char)
         (t/attach-instruction , string->chars)
         ))
 
