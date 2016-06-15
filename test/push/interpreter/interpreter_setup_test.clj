@@ -324,10 +324,10 @@
 
 
 (fact "basic-interpreter can be passed a hashmap of populated stacks to merge into the core"
-  (u/get-stack just-basic :integer ) => '()
+  (u/get-stack just-basic :scalar ) => '()
   (u/get-stack (m/basic-interpreter :stacks {:scalar '(7 6 5)}) :scalar ) => '(7 6 5)
   (u/get-stack (m/basic-interpreter :stacks {:foo '(7 6 5)}) :foo ) => '(7 6 5)
-  (u/get-stack (m/basic-interpreter :stacks {:foo '(7 6 5)}) :integer ) => '()
+  (u/get-stack (m/basic-interpreter :stacks {:foo '(7 6 5)}) :scalar ) => '()
   (u/get-stack just-basic :foo ) => nil)
 
 
@@ -365,9 +365,9 @@
 
 (fact "`classic-interpreter` can have its :stacks set"
   (keys (:stacks classy)) => (contains
-    [:boolean :char :code :environment :error :exec :float :integer :log :print :return :string :unknown]
+    [:boolean :char :code :environment :error :exec :scalar :log :print :return :string :unknown]
     :in-any-order)
-  (:integer (:stacks (c/classic-interpreter :stacks {:integer '(8)}))) => '(8)
+  (:scalar (:stacks (c/classic-interpreter :stacks {:scalar '(8)}))) => '(8)
   (:boolean (:stacks (c/classic-interpreter :stacks {:boolean '(:test)}))) => '(:test))
 
 
@@ -514,7 +514,7 @@
 
 
 (fact "u/get-stack will return an empty list for an existing (but empty) stack"
-  (u/get-stack just-basic :integer) => '())
+  (u/get-stack just-basic :scalar) => '())
 
 
 (fact "u/set-stack replaces a stack completely"
@@ -550,7 +550,7 @@
 
 (fact "push-item does not do type-checking"
   (u/get-stack (
-    push-item (m/basic-interpreter :stacks {:integer '(1 2 3)}) :integer false)  :integer) =>
+    push-item (m/basic-interpreter :stacks {:scalar '(1 2 3)}) :scalar false)  :scalar) =>
     '(false 1 2 3))
 
 
@@ -560,7 +560,7 @@
 
 
 (fact "push-item will not change the interpreter if the item is nil"
-  (u/get-stack (push-item just-basic :integer nil) :integer) => '())
+  (u/get-stack (push-item just-basic :scalar nil) :scalar) => '())
 
 
 ;; reconfigure
