@@ -248,6 +248,16 @@
 
 
 
+(def char->integer
+  (core/build-instruction
+    char->integer
+    "`:char->integer` pops the top `:char` item, and converts it to an (integer) index"
+    :tags #{:base :conversion}
+    (d/consume-top-of :char :as :arg1)
+    (d/calculate [:arg1] #(long %1) :as :int)
+    (d/push-onto :scalar :int)))
+
+
 
 (def scalar-type
   ( ->  (t/make-type  :scalar
@@ -263,6 +273,7 @@
         aspects/make-storable
         aspects/make-taggable
         aspects/make-visible 
+        (t/attach-instruction , char->integer)
         (t/attach-instruction , integer-totalistic3)
         (t/attach-instruction , scalar-abs)
         (t/attach-instruction , scalar-add)

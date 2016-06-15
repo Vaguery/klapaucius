@@ -5,7 +5,7 @@
   (:use push.util.stack-manipulation)
   (:use push.types.core)
   (:use push.instructions.aspects)
-  (:use push.types.type.integer)
+  (:use push.types.type.scalar)
   (:use push.instructions.aspects.repeatable-and-cycling)
   (:use push.types.module.environment)
   )

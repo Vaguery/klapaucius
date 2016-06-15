@@ -5,8 +5,7 @@
             [push.types.type.char]
             [push.types.module.code]
             [push.types.module.exec]
-            [push.types.type.float]
-            [push.types.type.integer]
+            [push.types.type.scalar]
             [push.types.type.string]
             [push.types.module.environment]
             [push.types.module.print]
@@ -26,8 +25,7 @@
   - code-module
   - environment-module
   - exec-module
-  - integer-type
-  - float-type
+  - scalar-type
   - log-module
   - print-module
   - string-type
@@ -68,10 +66,9 @@
           counter
           done?)
         (i/register-types , (concat
-                              [push.types.type.integer/integer-type
+                              [push.types.type.scalar/scalar-type
                                push.types.type.boolean/boolean-type
                                push.types.type.char/char-type
-                               push.types.type.float/float-type
                                push.types.type.string/string-type
                                ]
                                types))
