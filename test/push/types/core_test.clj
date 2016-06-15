@@ -48,8 +48,7 @@
                                     :char
                                     :code
                                     :exec 
-                                    :float 
-                                    :integer 
+                                    :scalar 
                                     :string] :in-any-order))
 
 

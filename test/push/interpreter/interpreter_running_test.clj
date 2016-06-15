@@ -95,19 +95,19 @@
 
 (fact "types added to the router with `register-type` are used by `handle-item`"
   (map :name (:routers (register-type just-basic foo-type))) => [:foo]
-  (u/get-stack (handle-item (register-type just-basic foo-type) 99) :integer) => '()
+  (u/get-stack (handle-item (register-type just-basic foo-type) 99) :scalar) => '()
   (u/get-stack (handle-item (register-type just-basic foo-type) 99) :foo) => '(99))
 
 
-(fact "handle-item sends integers to :integer"
-  (u/get-stack (handle-item classy 8) :integer) => '(8)
-  (u/get-stack (handle-item classy -8) :integer) => '(-8)
-  (u/get-stack (handle-item (c/classic-interpreter :stacks {:integer '(1)}) -8) :integer) =>
+(fact "handle-item sends scalars to :scalar (when told to)"
+  (u/get-stack (handle-item classy 8) :scalar) => '(8)
+  (u/get-stack (handle-item classy -8) :scalar) => '(-8)
+  (u/get-stack (handle-item (c/classic-interpreter :stacks {:scalar '(1)}) -8) :scalar) =>
     '(-8 1))
 
 
 (future-fact "handle-item unquotes QuotedCode items it routes"
-  (u/get-stack (handle-item classy (code/push-quote 88)) :integer) => '()
+  (u/get-stack (handle-item classy (code/push-quote 88)) :scalar) => '()
   )
 
 
@@ -131,21 +131,6 @@
     (u/get-stack (handle-item kinda-knows-a :a) :ref) => '(:a)   ;; quoting!
     (u/get-stack (handle-item kinda-knows-a :a) :exec) => '()    ;; quoting
   ))
-
-
-
-; (fact "handle-item handles integer overflow")
-
-
-(fact "handle-item sends floats to :float"
-  (u/get-stack (handle-item classy 8.0) :float) => '(8.0)
-  (u/get-stack (handle-item classy -8.0) :float) => '(-8.0)
-  (u/get-stack (handle-item (c/classic-interpreter :stacks {:float '(1.0)}) -8.0) :float) =>
-    '(-8.0 1.0))
-
-
-; (fact "handle-item handles float overflow")
-; (fact "handle-item handles float underflow")
 
 
 (fact "handle-item sends booleans to :boolean"
@@ -207,8 +192,8 @@
 
 (def intProductToFloat
   (instr/build-instruction intProductToFloat
-    (dsl/consume-top-of :integer :as :arg1)
-    (dsl/consume-top-of :integer :as :arg2)
+    (dsl/consume-top-of :scalar :as :arg1)
+    (dsl/consume-top-of :scalar :as :arg2)
     (dsl/calculate [:arg1 :arg2] #(float (* %1 %2)) :as :p)
     (dsl/push-onto :float :p)))
 
@@ -218,7 +203,7 @@
     (m/basic-interpreter 
       :program [1.1 2.2 :intProductToFloat]
       :counter 22
-      :stacks {:integer '(1 2 3)
+      :stacks {:scalar '(1 2 3)
                :exec '(:intProductToFloat)}
       :config {:step-limit 23})
     intProductToFloat))
@@ -241,7 +226,7 @@
 
 
 (fact "calling `reset-interpreter` clears the other stacks"
-  (u/get-stack knows-some-things :integer) => '(1 2 3)
+  (u/get-stack knows-some-things :scalar) => '(1 2 3)
   (:stacks (reset-interpreter knows-some-things)) => 
     (merge m/minimal-stacks {:exec '(1.1 2.2 :intProductToFloat)}))
 
@@ -295,7 +280,7 @@
 (fact "`is-done?` returns true when :exec and :environment are empty, but not when :exec is empty and :environment has at least one item"
   (is-done? (m/basic-interpreter :stacks {:exec '()}  :config {:step-limit 99})) => true
   (is-done? (m/basic-interpreter 
-              :stacks {:exec '() :environment '({:integer '(9)})}
+              :stacks {:exec '() :environment '({:scalar '(9)})}
               :config {:step-limit 99})) => false)
 
 ;; logging
@@ -353,7 +338,7 @@
 (fact "`merge-environment` overwrites most stacks"
   (:stacks (u/merge-environment 
             just-basic
-            {:integer '(1 2 3)
+            {:scalar '(1 2 3)
              :boolean '(false)
              :exec '(:foo)})) =>
     '{:boolean (false),
@@ -362,8 +347,7 @@
       :environment (), 
       :error (), 
       :exec (:foo), 
-      :float (),
-      :integer (1 2 3), 
+      :scalar (1 2 3), 
       :log (), 
       :print (), 
       :return (), 
@@ -418,7 +402,7 @@
              :error '(:error1 :error2)
              :return '(:return1 :return2)
              :unknown '(:nope :no-idea)
-             :integer '(1 2 3)
+             :scalar '(1 2 3)
              }))
 
 
@@ -431,7 +415,7 @@
              :error '(:error1 :error2)
              :return '(:return1 :return2)
              :unknown '(:nope :no-idea)
-             :integer '(1 2 3)
+             :scalar '(1 2 3)
              }))
 
 
@@ -445,8 +429,7 @@
       :environment (), 
       :error (:error1 :error2), 
       :exec (:return2 :return1 3 33), 
-      :float (), 
-      :integer (), 
+      :scalar (), 
       :log ({:item "ENVIRONMENT STACK POPPED", :step 1} :log1 :log2), 
       :print (), 
       :return (), 
@@ -468,8 +451,7 @@
       :environment (), 
       :error (:error1 :error2), 
       :exec (), 
-      :float (), 
-      :integer (1 2 3), 
+      :scalar (1 2 3), 
       :log (:log1 :log2), 
       :print (), 
       :return (:return1 :return2), 
@@ -487,7 +469,7 @@
 
 
 (def simple-things (c/classic-interpreter 
-                      :program [1 2 false :integer-add true :boolean-or]
+                      :program [1 2 false :scalar-add true :boolean-or]
                       :config {:step-limit 1000}))
 
 
@@ -497,9 +479,8 @@
                                :char    '(), 
                                :code    '(), 
                                :error   '(), 
-                               :exec    '(1 2 false :integer-add true :boolean-or), 
-                               :float   '(), 
-                               :integer '(),
+                               :exec    '(1 2 false :scalar-add true :boolean-or), 
+                               :scalar '(),
                                :print   '(), 
                                :string  '(), 
                                :unknown '()})
@@ -509,9 +490,8 @@
                                :char    '(), 
                                :code    '(), 
                                :error   '(), 
-                               :exec    '(2 false :integer-add true :boolean-or), 
-                               :float   '(), 
-                               :integer '(1), 
+                               :exec    '(2 false :scalar-add true :boolean-or), 
+                               :scalar  '(1), 
                                :print   '(), 
                                :string  '(), 
                                :unknown '()})
@@ -522,8 +502,7 @@
                                :code    '(), 
                                :error   '(), 
                                :exec    '(:boolean-or), 
-                               :float   '(), 
-                               :integer '(3), 
+                               :scalar  '(3), 
                                :print   '(), 
                                :string  '(), 
                                :unknown '()}))
@@ -533,15 +512,14 @@
 (fact "I can run a program that is passed in as a seq"
   (:stacks (run-n
             (c/classic-interpreter 
-              :program '(1 2 ((false :integer-add) (true)) :boolean-or)
+              :program '(1 2 ((false :scalar-add) (true)) :boolean-or)
               :config {:step-limit 1000}) 1000)) => (contains
                               {:boolean '(true), 
                                :char    '(), 
                                :code    '(), 
                                :error   '(), 
                                :exec    '(), 
-                               :float   '(), 
-                               :integer '(3),
+                               :scalar '(3),
                                :print   '(), 
                                :string  '(), 
                                :unknown '()}))
@@ -558,8 +536,7 @@
                                :code    '(), 
                                :error   '(), 
                                :exec    '(1 :exec-y 8), 
-                               :float   '(), 
-                               :integer '(), 
+                               :scalar  '(), 
                                :print   '(), 
                                :string  '(), 
                                :unknown '()})
@@ -570,13 +547,12 @@
                                :code    '(), 
                                :error   '(), 
                                :exec    '(8 :exec-y 8), 
-                               :float   '(), 
-                               :integer '(8 8 8 8 8 8 8 8 8 8 1), 
+                               :scalar  '(8 8 8 8 8 8 8 8 8 8 1), 
                                :print   '(), 
                                :string  '(), 
                                :unknown '()})
-  (count (u/get-stack (run-n forever-8 12000) :integer)) => 4000
-  (count (u/get-stack (run-n forever-8 50000) :integer)) => 16667
+  (count (u/get-stack (run-n forever-8 12000) :scalar)) => 4000
+  (count (u/get-stack (run-n forever-8 50000) :scalar)) => 16667
 
   (:done? (run-n simple-things 0)) =>           false
   (:done? (run-n simple-things 5)) =>           true
@@ -591,7 +567,7 @@
 (fact "`run-n` produces a log"
     (u/get-stack (run-n simple-things 177) :log) => '({:item :boolean-or, :step 6}
                                                     {:item true, :step 5} 
-                                                    {:item :integer-add, :step 4} 
+                                                    {:item :scalar-add, :step 4} 
                                                     {:item false, :step 3} 
                                                     {:item 2, :step 2} 
                                                     {:item 1, :step 1}))
@@ -602,7 +578,7 @@
 
 (fact "`entire-run` produces a lazy seq of all the steps from the initialization to the stated endpoint"
   (count (entire-run simple-things 22)) => 22
-  (map #(u/get-stack % :integer) (entire-run simple-things 22)) =>
+  (map #(u/get-stack % :scalar) (entire-run simple-things 22)) =>
     '(() (1) (2 1) (2 1) (3) (3) (3) (3) (3) (3)
       (3) (3) (3) (3) (3) (3) (3) (3) (3) (3) (3) (3)))
 
@@ -637,7 +613,7 @@
   (u/get-stack (push-program-to-code forever-8) :code) => '((1 :exec-y 8))
 
   (u/get-stack (push-program-to-code simple-things) :code) =>
-    '((1 2 false :integer-add true :boolean-or)))
+    '((1 2 false :scalar-add true :boolean-or)))
 
 
 ;; reset-interpreter and push-program-to-code
