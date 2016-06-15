@@ -43,7 +43,7 @@
 
 
 (tabular
-  (fact "`foos-build` pushes a new :foos vector by consuming as many :foo items as the :integer indicates"
+  (fact "`foos-build` pushes a new :foos vector by consuming as many :foo items as the :scalar indicates"
     (check-instruction-with-all-kinds-of-stack-stuff
         ?new-stacks foos-type ?instruction) => (contains ?expected))
 
@@ -51,33 +51,45 @@
 
     {:foos    '([1 2 3])
      :foo     '(7 77 777 7777)
-     :integer '(1)}            :foos-build       {:foos    '([7] [1 2 3])
+     :scalar  '(1)}            :foos-build       {:foos    '([7] [1 2 3])
                                                   :foo     '(77 777 7777)
-                                                  :integer '()}
+                                                  :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos    '([1 2 3])
      :foo     '(7 77 777 7777)
-     :integer '(-1)}           :foos-build       {:foos    '([7 77 777] [1 2 3])
+     :scalar  '(-1)}           :foos-build       {:foos    '([7 77 777] [1 2 3])
                                                   :foo     '(7777)
-                                                  :integer '()}
+                                                  :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos    '([1 2 3])
      :foo     '(7 77 777 7777)
-     :integer '(0)}            :foos-build       {:foos    '([] [1 2 3])
+     :scalar  '(3/2)}         :foos-build       {:foos    '([7 77] [1 2 3])
+                                                  :foo     '(777 7777)
+                                                  :scalar  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos    '([1 2 3])
+     :foo     '(7 77 777 7777)
+     :scalar  '(0.7)}         :foos-build       {:foos    '([7 ] [1 2 3])
+                                                  :foo     '(77 777 7777)
+                                                  :scalar  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos    '([1 2 3])
+     :foo     '(7 77 777 7777)
+     :scalar  '(0)}            :foos-build       {:foos    '([] [1 2 3])
                                                   :foo     '(7 77 777 7777)
-                                                  :integer '()}
+                                                  :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos    '([1 2 3])
      :foo     '(7)
-     :integer '(99)}           :foos-build       {:foos    '([] [1 2 3])
+     :scalar  '(99)}           :foos-build       {:foos    '([] [1 2 3])
                                                   :foo     '(7)
-                                                  :integer '()}
+                                                  :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos    '([1 2 3])
      :foo     '()
-     :integer '(99)}           :foos-build       {:foos    '([] [1 2 3])
+     :scalar  '(99)}           :foos-build       {:foos    '([] [1 2 3])
                                                   :foo     '()
-                                                  :integer '()})
+                                                  :scalar  '()})
 
 
 (tabular
@@ -291,7 +303,7 @@
 
 
 (tabular
-  (fact "`foos-indexof` pushes an :integer indicating where :foo is in :foos (or -1)"
+  (fact "`foos-indexof` pushes a :scalar indicating where :foo is in :foos (or -1)"
     (check-instruction-with-all-kinds-of-stack-stuff
         ?new-stacks foos-type ?instruction) => (contains ?expected))
 
@@ -299,15 +311,15 @@
 
     {:foos   '([1 2 3])
      :foo    '(3)}          :foos-indexof       {:foos    '()
-                                                 :integer '(2)}
+                                                 :scalar '(2)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos   '([1 2 3])
      :foo    '(99)}         :foos-indexof       {:foos    '()
-                                                 :integer '(-1)}
+                                                 :scalar '(-1)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos   '([1 2 1])
      :foo    '(1)}          :foos-indexof       {:foos    '()
-                                                 :integer '(0)}
+                                                 :scalar '(0)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
 
@@ -336,23 +348,23 @@
 
 
 (tabular
-  (fact "`foos-length` pushes the length of the top :foos vector onto :integer"
+  (fact "`foos-length` pushes the length of the top :foos vector onto :scalar"
     (check-instruction-with-all-kinds-of-stack-stuff
         ?new-stacks foos-type ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction     ?expected
 
     {:foos     '([1 2 3])
-     :integer  '()}           :foos-length        {:foos    '()
-                                                   :integer '(3)}
+     :scalar   '()}           :foos-length        {:foos    '()
+                                                   :scalar  '(3)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos     '([1 2])
-     :integer  '()}           :foos-length        {:foos    '()
-                                                   :integer '(2)}
+     :scalar   '()}           :foos-length        {:foos    '()
+                                                   :scalar  '(2)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos     '([])
-     :integer  '()}           :foos-length        {:foos    '()
-                                                   :integer '(0)}
+     :scalar   '()}           :foos-length        {:foos    '()
+                                                   :scalar  '(0)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
 
@@ -373,29 +385,39 @@
 
 
 (tabular
-  (fact "`foos-nth` pops an :integer to index the position in the nth :foos item to push to :foo"
+  (fact "`foos-nth` pops a :scalar to index the position in the nth :foos item to push to :foo"
     (check-instruction-with-all-kinds-of-stack-stuff
         ?new-stacks foos-type ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction     ?expected
 
     {:foos     '([1 2 3])
-     :integer  '(0)
+     :scalar   '(0)
      :foo      '()}           :foos-nth         {:foos '()
                                                  :foo  '(1)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos     '([1 2 3])
-     :integer  '(3)
+     :scalar   '(3)
      :foo      '()}           :foos-nth         {:foos '()
                                                  :foo  '(1)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos     '([1 2 3])
-     :integer  '(-7)
+     :scalar   '(1/2)
+     :foo      '()}           :foos-nth         {:foos '()
+                                                 :foo  '(2)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos     '([1 2 3])
+     :scalar   '(-3/2)
+     :foo      '()}           :foos-nth         {:foos '()
+                                                 :foo  '(3)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos     '([1 2 3])
+     :scalar   '(-7)
      :foo      '()}           :foos-nth         {:foos '()
                                                  :foo  '(3)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos     '([])
-     :integer  '(2)
+     :scalar   '(2)
      :foo      '()}           :foos-nth         {:foos '()
                                                  :foo  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -403,7 +425,7 @@
 
 
 (tabular
-  (fact "`foos-occurrencesof` pushes an :integer how many :foo occur in :foos"
+  (fact "`foos-occurrencesof` pushes a :scalar how many :foo occur in :foos"
     (check-instruction-with-all-kinds-of-stack-stuff
         ?new-stacks foos-type ?instruction) => (contains ?expected))
 
@@ -411,49 +433,55 @@
 
     {:foos   '([1 2 3])
      :foo    '(3)}         :foos-occurrencesof   {:foos    '()
-                                                  :integer '(1)}
+                                                  :scalar  '(1)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos   '([1 1 3])
      :foo    '(1)}         :foos-occurrencesof   {:foos    '()
-                                                  :integer '(2)}
+                                                  :scalar  '(2)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos   '([1 2 1])
      :foo    '(99)}        :foos-occurrencesof  {:foos    '()
-                                                  :integer '(0)}
+                                                  :scalar  '(0)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
 
 
 (tabular
-  (fact "`foos-portion` pops two :integer values and does some crazy math to extract a subvector from the top `:foos item"
+  (fact "`foos-portion` pops two :scalar  values and does some crazy math to extract a subvector from the top `:foos item"
     (check-instruction-with-all-kinds-of-stack-stuff
         ?new-stacks foos-type ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction     ?expected
 
     {:foos     '([1 2 3 4 5 6])
-     :integer  '(2 3)}          :foos-portion        {:foos '([3])}
+     :scalar   '(2 3)}            :foos-portion        {:foos '([3])}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos     '([1 2 3 4 5 6])
-     :integer  '(2 2)}          :foos-portion        {:foos '([])}
+     :scalar   '(2 2)}            :foos-portion        {:foos '([])}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos     '([1 2 3 4 5 6])
-     :integer  '(11 2)}          :foos-portion        {:foos '([3 4 5 6])}
+     :scalar   '(11 2)}           :foos-portion        {:foos '([3 4 5 6])}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos     '([1 2 3 4 5 6])
-     :integer  '(22 -11)}          :foos-portion        {:foos '([1 2 3 4 5 6])}
+     :scalar   '(1.1 2.7)}        :foos-portion        {:foos '([2 3])}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos     '([1 2 3 4 5 6])
-     :integer  '(19 19)}          :foos-portion        {:foos '([])}
+     :scalar   '(3.881 11/4)}     :foos-portion        {:foos '([4])}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos     '([1 2 3 4 5 6])
-     :integer  '(0 1)}          :foos-portion        {:foos '([1])}
+     :scalar   '(22 -11)}         :foos-portion        {:foos '([1 2 3 4 5 6])}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos     '([1 2 3 4 5 6])
-     :integer  '(0 3)}          :foos-portion        {:foos '([1 2 3])}
+     :scalar   '(19 19)}          :foos-portion        {:foos '([])}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos     '([1 2 3 4 5 6])
-     :integer  '(3 0)}          :foos-portion        {:foos '([1 2 3])}
+     :scalar   '(0 1)}            :foos-portion        {:foos '([1])}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos     '([1 2 3 4 5 6])
+     :scalar   '(0 3)}            :foos-portion        {:foos '([1 2 3])}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos     '([1 2 3 4 5 6])
+     :scalar   '(3 0)}            :foos-portion        {:foos '([1 2 3])}
     )
 
 
@@ -601,41 +629,51 @@
 
 
 (tabular
-  (fact "`foos-set` pops an :integer to index the position in the top :foos item to replace with the top :foo"
+  (fact "`foos-set` pops a :scalar to index the position in the top :foos item to replace with the top :foo"
     (check-instruction-with-all-kinds-of-stack-stuff
         ?new-stacks foos-type ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction     ?expected
 
     {:foos     '([1 2 3])
-     :integer  '(0)
+     :scalar   '(0)
      :foo      '(99)}          :foos-set        {:foos '([99 2 3])
                                                  :foo  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos     '([1 2 3])
-     :integer  '(2)
+     :scalar   '(2)
      :foo      '(99)}          :foos-set        {:foos '([1 2 99])
                                                  :foo  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos     '([1 2 3])
-     :integer  '(-2)
+     :scalar   '(1/2)
      :foo      '(99)}          :foos-set        {:foos '([1 99 3])
                                                  :foo  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos     '([1 2 3])
-     :integer  '(11)
+     :scalar   '(81728176236763776723547234277M)
      :foo      '(99)}          :foos-set        {:foos '([1 2 99])
                                                  :foo  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos     '([1 2 3])
-     :integer  '(11)
+     :scalar   '(-2)
+     :foo      '(99)}          :foos-set        {:foos '([1 99 3])
+                                                 :foo  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos     '([1 2 3])
+     :scalar   '(11)
+     :foo      '(99)}          :foos-set        {:foos '([1 2 99])
+                                                 :foo  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos     '([1 2 3])
+     :scalar   '(11)
      :foo      '()}          :foos-set          {:foos '([1 2 3])
-                                                 :integer  '(11)}
+                                                 :scalar   '(11)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos     '([])
-     :integer  '(11)
+     :scalar   '(11)
      :foo      '(8)}          :foos-set       {:foos   '([]) ;; NOTE behavior!
-                                               :integer '()
+                                               :scalar  '()
                                                :foo '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
@@ -643,30 +681,42 @@
 
 
 (tabular
-  (fact "`foos-take` pops an :integer to index the position in the top :foos item to trim to"
+  (fact "`foos-take` pops a :scalar to index the position in the top :foos item to trim to"
     (check-instruction-with-all-kinds-of-stack-stuff
         ?new-stacks foos-type ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction     ?expected
 
     {:foos     '([1 2 3])
-     :integer  '(1)}           :foos-take        {:foos    '([1])
-                                                   :integer '()}
+     :scalar   '(1)}           :foos-take        {:foos    '([1])
+                                                   :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos     '([1 2])
-     :integer  '(0)}           :foos-take        {:foos    '([]) ;; NOTE empty
-                                                   :integer '()}
+     :scalar   '(0)}           :foos-take        {:foos    '([]) ;; NOTE empty
+                                                   :scalar  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos     '([1 2])
+     :scalar   '(1/2)}         :foos-take        {:foos    '([1])
+                                                   :scalar  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos     '([1 2 3 4 5])
+     :scalar   '(2.4)}         :foos-take        {:foos    '([1 2 3])
+                                                   :scalar  '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos     '([1 2 3 4 5])
+     :scalar   '(-2.4)}         :foos-take        {:foos    '([1 2 3 4])
+                                                   :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos     '([1 2 3])
-     :integer  '(10)}           :foos-take        {:foos    '([1 2])
-                                                   :integer '()}
+     :scalar   '(10)}           :foos-take        {:foos    '([1 2])
+                                                   :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos     '([1 2 3])
-     :integer  '(-11)}           :foos-take        {:foos    '([1])
-                                                   :integer '()}
+     :scalar   '(-11)}           :foos-take        {:foos    '([1])
+                                                   :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos     '([1 2 3])
-     :integer  '(-12)}           :foos-take        {:foos    '([])
-                                                   :integer '()}
+     :scalar   '(-12)}           :foos-take        {:foos    '([])
+                                                   :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )

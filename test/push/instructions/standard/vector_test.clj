@@ -204,7 +204,7 @@
 
 
 (tabular
-  (fact "`vector-indexof` pushes an :integer indicating where :code is in :vector (or -1)"
+  (fact "`vector-indexof` pushes a :scalar indicating where :code is in :vector (or -1)"
     (check-instruction-with-all-kinds-of-stack-stuff
       ?new-stacks standard-vector-type ?instruction) => 
     (contains ?expected))
@@ -213,15 +213,15 @@
 
     {:vector  '([1 2 3])
      :code    '(3)}          :vector-indexof    {:vector    '()
-                                                 :integer '(2)}
+                                                 :scalar '(2)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:vector  '([1 2 3])
      :code    '(99)}         :vector-indexof    {:vector    '()
-                                                 :integer '(-1)}
+                                                 :scalar '(-1)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:vector  '([1 2 1])
      :code    '(1)}          :vector-indexof    {:vector    '()
-                                                 :integer '(0)}
+                                                 :scalar '(0)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
 
@@ -251,7 +251,7 @@
 
 
 (tabular
-  (fact "`vector-length` pushes the length of the top :vector onto :integer"
+  (fact "`vector-length` pushes the length of the top :vector onto :scalar"
     (check-instruction-with-all-kinds-of-stack-stuff
       ?new-stacks standard-vector-type ?instruction) => 
     (contains ?expected))
@@ -259,16 +259,16 @@
     ?new-stacks                ?instruction     ?expected
 
     {:vector   '([1 2 3])
-     :integer  '()}           :vector-length      {:vector    '()
-                                                   :integer '(3)}
+     :scalar   '()}           :vector-length      {:vector    '()
+                                                   :scalar  '(3)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:vector   '([1 2])
-     :integer  '()}           :vector-length      {:vector    '()
-                                                   :integer '(2)}
+     :scalar   '()}           :vector-length      {:vector    '()
+                                                   :scalar  '(2)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:vector   '([])
-     :integer  '()}           :vector-length      {:vector    '()
-                                                   :integer '(0)}
+     :scalar   '()}           :vector-length      {:vector    '()
+                                                   :scalar '(0)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
 
@@ -290,7 +290,7 @@
 
 
 (tabular
-  (fact "`vector-nth` pops an :integer to index the position in the nth :vector item to push to :code"
+  (fact "`vector-nth` pops a :scalar to index the position in the nth :vector item to push to :code"
     (check-instruction-with-all-kinds-of-stack-stuff
       ?new-stacks standard-vector-type ?instruction) => 
     (contains ?expected))
@@ -298,22 +298,32 @@
     ?new-stacks                ?instruction     ?expected
 
     {:vector   '([1 2 3])
-     :integer  '(0)
+     :scalar  '(0)
      :code     '()}           :vector-nth       {:vector '()
                                                  :code  '(1)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:vector   '([1 2 3])
-     :integer  '(3)
+     :scalar  '(3)
      :code     '()}           :vector-nth       {:vector '()
                                                  :code  '(1)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:vector   '([1 2 3])
-     :integer  '(-7)
+     :scalar  '(-7)
+     :code     '()}           :vector-nth       {:vector '()
+                                                 :code  '(3)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector   '([1 2 3 4 5 6 7])
+     :scalar  '(11/5)
+     :code     '()}           :vector-nth       {:vector '()
+                                                 :code  '(4)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:vector   '([1 2 3 4 5 6 7])
+     :scalar  '(1.2)
      :code     '()}           :vector-nth       {:vector '()
                                                  :code  '(3)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:vector   '([])
-     :integer  '(2)
+     :scalar  '(2)
      :code     '()}           :vector-nth       {:vector '()
                                                  :code  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -321,7 +331,7 @@
 
 
 (tabular
-  (fact "`vector-occurrencesof` pushes an :integer how many copies of the top :code item occur in :vector"
+  (fact "`vector-occurrencesof` pushes a :scalar how many copies of the top :code item occur in :vector"
     (check-instruction-with-all-kinds-of-stack-stuff
       ?new-stacks standard-vector-type ?instruction) => 
     (contains ?expected))
@@ -330,49 +340,49 @@
 
     {:vector  '([1 2 3])
      :code    '(3)}         :vector-occurrencesof   {:vector    '()
-                                                     :integer '(1)}
+                                                     :scalar '(1)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:vector  '([1 1 3])
      :code    '(1)}         :vector-occurrencesof   {:vector    '()
-                                                     :integer '(2)}
+                                                     :scalar '(2)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:vector  '([1 2 1])
      :code    '(99)}        :vector-occurrencesof  {:vector    '()
-                                                     :integer '(0)}
+                                                     :scalar '(0)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
 
 
 (tabular
-  (fact "`vector-portion` pops two :integer values and does some crazy math to extract a subvector from the top `:vector item"
+  (fact "`vector-portion` pops two :scalar values and does some crazy math to extract a subvector from the top `:vector item"
     (check-instruction-with-all-kinds-of-stack-stuff
         ?new-stacks standard-vector-type ?instruction) => (contains ?expected))
 
     ?new-stacks                   ?instruction          ?expected
 
     {:vector   '([1 2 3 4 5 6])
-     :integer  '(2 3)}           :vector-portion     {:vector '([3])}
+     :scalar  '(2 3)}           :vector-portion     {:vector '([3])}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:vector   '([1 2 3 4 5 6])
-     :integer  '(2 2)}           :vector-portion     {:vector '([])}
+     :scalar  '(2 2)}           :vector-portion     {:vector '([])}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:vector   '([1 2 3 4 5 6])
-     :integer  '(11 2)}          :vector-portion     {:vector '([3 4 5 6])}
+     :scalar  '(11 2)}          :vector-portion     {:vector '([3 4 5 6])}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:vector   '([1 2 3 4 5 6])
-     :integer  '(22 -11)}        :vector-portion     {:vector '([1 2 3 4 5 6])}
+     :scalar  '(22 -11)}        :vector-portion     {:vector '([1 2 3 4 5 6])}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:vector   '([1 2 3 4 5 6])
-     :integer  '(19 19)}         :vector-portion     {:vector '([])}
+     :scalar  '(19 19)}         :vector-portion     {:vector '([])}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:vector   '([1 2 3 4 5 6])
-     :integer  '(0 1)}           :vector-portion     {:vector '([1])}
+     :scalar  '(0 1)}           :vector-portion     {:vector '([1])}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:vector   '([1 2 3 4 5 6])
-     :integer  '(0 3)}           :vector-portion     {:vector '([1 2 3])}
+     :scalar  '(0 3)}           :vector-portion     {:vector '([1 2 3])}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:vector   '([1 2 3 4 5 6])
-     :integer  '(3 0)}           :vector-portion     {:vector '([1 2 3])}
+     :scalar  '(3 0)}           :vector-portion     {:vector '([1 2 3])}
     )
 
 
@@ -574,7 +584,7 @@
 
 
 (tabular
-  (fact "`vector-set` pops an :integer to index the position in the top :vector item to replace with the top :code"
+  (fact "`vector-set` pops a :scalar to index the position in the top :vector item to replace with the top :code"
     (check-instruction-with-all-kinds-of-stack-stuff
       ?new-stacks standard-vector-type ?instruction) => 
     (contains ?expected))
@@ -582,34 +592,34 @@
     ?new-stacks             ?instruction         ?expected
 
     {:vector   '([1 2 3])
-     :integer  '(0)
+     :scalar  '(0)
      :code     '(99)}        :vector-set        {:vector '([99 2 3])
                                                  :code  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:vector   '([1 2 3])
-     :integer  '(2)
+     :scalar  '(2)
      :code     '(99)}        :vector-set        {:vector '([1 2 99])
                                                  :code  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:vector   '([1 2 3])
-     :integer  '(-2)
+     :scalar  '(-2)
      :code     '(99)}        :vector-set        {:vector '([1 99 3])
                                                  :code  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:vector   '([1 2 3])
-     :integer  '(11)
+     :scalar  '(11)
      :code     '(99)}        :vector-set        {:vector '([1 2 99])
                                                  :code  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:vector   '([1 2 3])
-     :integer  '(11)
+     :scalar  '(11)
      :code     '()}          :vector-set        {:vector '([1 2 3])
-                                                 :integer  '(11)}
+                                                 :scalar  '(11)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:vector   '([])
-     :integer  '(11)
+     :scalar  '(11)
      :code     '(8)}         :vector-set        {:vector   '([]) ;; NOTE behavior!
-                                                 :integer '()
+                                                 :scalar '()
                                                  :code '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
@@ -617,7 +627,7 @@
 
 
 (tabular
-  (fact "`vector-take` pops an :integer to index the position in the top :vector item to trim to"
+  (fact "`vector-take` pops a :scalar to index the position in the top :vector item to trim to"
     (check-instruction-with-all-kinds-of-stack-stuff
       ?new-stacks standard-vector-type ?instruction) => 
     (contains ?expected))
@@ -625,23 +635,23 @@
     ?new-stacks                ?instruction         ?expected
 
     {:vector   '([1 2 3])
-     :integer  '(1)}           :vector-take       {:vector  '([1])
-                                                   :integer '()}
+     :scalar  '(1)}           :vector-take       {:vector  '([1])
+                                                   :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:vector   '([1 2])
-     :integer  '(0)}           :vector-take       {:vector  '([]) ;; NOTE empty
-                                                   :integer '()}
+     :scalar  '(0)}           :vector-take       {:vector  '([]) ;; NOTE empty
+                                                   :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:vector   '([1 2 3])
-     :integer  '(10)}          :vector-take       {:vector  '([1 2])
-                                                   :integer '()}
+     :scalar  '(10)}          :vector-take       {:vector  '([1 2])
+                                                   :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:vector   '([1 2 3])
-     :integer  '(-11)}         :vector-take       {:vector  '([1])
-                                                   :integer '()}
+     :scalar  '(-11)}         :vector-take       {:vector  '([1])
+                                                   :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:vector   '([1 2 3])
-     :integer  '(-12)}         :vector-take       {:vector  '([])
-                                                   :integer '()}
+     :scalar  '(-12)}         :vector-take       {:vector  '([])
+                                                   :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )

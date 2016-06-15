@@ -3,6 +3,8 @@
             [push.types.core :as t]
             [push.instructions.dsl]
             [push.instructions.aspects :as aspects]
+            [push.util.numerics :as num]
+            [clojure.math.numeric-tower :as nt]
             [push.util.code-wrangling :as fix]
             ))
 
@@ -37,12 +39,12 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`" typename "-build` pops the top `:integer` item, and calculates an index modulo the size of the `:" rootname "` stack. It takes the stack, down to that index, and pushes a new `:" typename "` vector out of those elements (top element last in the vector).")
+      (str "`" typename "-build` pops the top `:scalar` item, and calculates an index modulo the size of the `:" rootname "` stack. It takes the stack, down to that index, and pushes a new `:" typename "` vector out of those elements (top element last in the vector).")
       :tags #{:vector}
-      `(push.instructions.dsl/consume-top-of :integer :as :where)
+      `(push.instructions.dsl/consume-top-of :scalar :as :where)
       `(push.instructions.dsl/consume-stack ~rootname :as :items) 
-      `(push.instructions.dsl/calculate 
-        [:where :items] #(fix/safe-mod %1 (count %2)) :as :idx)
+      `(push.instructions.dsl/calculate [:where :items]
+        #(if (empty? %2) 0 (num/scalar-to-index %1 (count %2))) :as :idx)
       `(push.instructions.dsl/calculate 
         [:idx :items] #(into [] (take %1 %2)) :as :new-vector)
       `(push.instructions.dsl/calculate 
@@ -222,7 +224,7 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`" typename "-indexof` pops the top `" typename "` item and the top `" rootname "` item, and pushes an `:integer` indicating the first appearance of the latter in the former (or -1 if it's not found).")
+      (str "`" typename "-indexof` pops the top `" typename "` item and the top `" rootname "` item, and pushes a `:scalar` (integer) indicating the first appearance of the latter in the former (or -1 if it's not found).")
       :tags #{:vector}
       `(push.instructions.dsl/consume-top-of ~rootname :as :arg2)
       `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
@@ -252,7 +254,7 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`" typename "-length` pops the top `" typename "` item and pushes its count to the `:integer` stack.")
+      (str "`" typename "-length` pops the top `" typename "` item and pushes its count to the `:scalar` stack.")
       :tags #{:vector}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
       '(push.instructions.dsl/calculate [:arg1] #(count %1) :as :len)
@@ -279,14 +281,14 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`" typename "-nth` pops the top `" typename "` item and the the top `:integer`. It converts the `:integer` value into an index (modulo the vector's length) then pushes the indexed element to the `" rootname "` stack.")
+      (str "`" typename "-nth` pops the top `" typename "` item and the the top `:scalar`. It converts the `:scalar` value into an index (modulo the vector's length) then pushes the indexed element to the `" rootname "` stack.")
       :tags #{:vector}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
-      '(push.instructions.dsl/consume-top-of :integer :as :int)
-      `(push.instructions.dsl/calculate 
-        [:arg1 :int] #(fix/safe-mod %2 (count %1)) :as :idx)
-      `(push.instructions.dsl/calculate 
-        [:arg1 :idx] #(if (empty? %1) nil (nth %1 %2)) :as :result)
+      '(push.instructions.dsl/consume-top-of :scalar :as :int)
+      `(push.instructions.dsl/calculate [:arg1 :int]
+        #(if (empty? %1) 0 (num/scalar-to-index %2 (count %1))) :as :idx)
+      `(push.instructions.dsl/calculate [:arg1 :idx]
+        #(if (empty? %1) nil (nth %1 %2)) :as :result)
       `(push.instructions.dsl/push-onto ~rootname :result)))))
 
 
@@ -297,7 +299,7 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`" typename "-occurrencesof` pops the top `" typename "` item and the the top `" rootname "`. It pushes an `:integer` indicating how many copies of the latter appear in the former.")
+      (str "`" typename "-occurrencesof` pops the top `" typename "` item and the the top `" rootname "`. It pushes a `:scalar` (integer) indicating how many copies of the latter appear in the former.")
       :tags #{:vector}
       `(push.instructions.dsl/consume-top-of ~typename :as :vec)
       `(push.instructions.dsl/consume-top-of ~rootname :as :item)
@@ -313,15 +315,15 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`" typename "-portion` pops the top `" typename "` item and the the top two `:integer` values (call these `A` and `B`). It pushes a new `" typename "` which only includes items between `A` and `B` (which are coerced to fall in range by truncation; see code).")
+      (str "`" typename "-portion` pops the top `" typename "` item and the the top two `:scalar` values (call these `A` and `B`). It pushes a new `" typename "` which only includes items between `A` and `B` (which are rounded and coerced to fall in range by truncation; see code).")
       :tags #{:vector}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg)
-      '(push.instructions.dsl/consume-top-of :integer :as :a)
-      '(push.instructions.dsl/consume-top-of :integer :as :b)
+      '(push.instructions.dsl/consume-top-of :scalar :as :a)
+      '(push.instructions.dsl/consume-top-of :scalar :as :b)
       `(push.instructions.dsl/calculate [:arg :a]
-          #(min (count %1) (max 0 %2)) :as :cropped-a)
+          #(min (count %1) (max 0 (nt/round %2))) :as :cropped-a)
       `(push.instructions.dsl/calculate [:arg :b]
-          #(min (count %1) (max 0 %2)) :as :cropped-b)
+          #(min (count %1) (max 0 (nt/round %2))) :as :cropped-b)
       `(push.instructions.dsl/calculate [:arg :cropped-a :cropped-b]
           #(into [] (drop (min %2 %3) (take (max %2 %3) %1))) :as :subvector)
       `(push.instructions.dsl/push-onto ~typename :subvector)))))
@@ -412,13 +414,13 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`" typename "-set` pops the top `" typename "` item, the top `:integer` and the the top `" rootname "` item. It pushes a new `" typename "` which has the indexed item (modulo length) replaced with the new element. If the `" typename "` is empty, it is returned but the other arguments are consumed.")
+      (str "`" typename "-set` pops the top `" typename "` item, the top `:scalar` and the the top `" rootname "` item. It pushes a new `" typename "` which has the indexed item (modulo length) replaced with the new element. If the `" typename "` is empty, it is returned but the other arguments are consumed.")
       :tags #{:vector}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg)
       `(push.instructions.dsl/consume-top-of ~rootname :as :subst)
-      `(push.instructions.dsl/consume-top-of :integer :as :which)
-      `(push.instructions.dsl/calculate 
-        [:arg :which] #(fix/safe-mod %2 (count %1)) :as :idx)
+      `(push.instructions.dsl/consume-top-of :scalar :as :which)
+      `(push.instructions.dsl/calculate [:arg :which]
+        #(if (empty? %1) 0 (num/scalar-to-index %2 (count %1))) :as :idx)
       `(push.instructions.dsl/calculate 
         [:arg :idx :subst] #(if (empty? %1) %1 (into [] (assoc %1 %2 %3))) :as :result)
       `(push.instructions.dsl/push-onto ~typename :result)))))
@@ -447,12 +449,12 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`" typename "-take` pops the top `" typename "` item and the the top `:integer`. It converts the `:integer` value into an index (modulo one more than the vector's length) then pushes a new `" typename "` item containing only the items in the original from the start up to the indexed point.")
+      (str "`" typename "-take` pops the top `" typename "` item and the the top `:scalar`. It converts the `:scalar` value into an index (modulo one more than the vector's length) then pushes a new `" typename "` item containing only the items in the original from the start up to the indexed point.")
       :tags #{:vector}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
-      `(push.instructions.dsl/consume-top-of :integer :as :int)
-      `(push.instructions.dsl/calculate 
-        [:arg1 :int] #(fix/safe-mod %2 (inc (count %1))) :as :idx)
+      `(push.instructions.dsl/consume-top-of :scalar :as :int)
+      `(push.instructions.dsl/calculate [:arg1 :int]
+        #(if (empty? %1) 0 (num/scalar-to-index %2 (inc (count %1)))) :as :idx)
       '(push.instructions.dsl/calculate 
         [:arg1 :idx] #(into [] (take %2 %1)) :as :result)
       `(push.instructions.dsl/push-onto ~typename :result)))))
