@@ -30,6 +30,17 @@
     (d/push-onto :booleans :table)))
 
 
+
+(def boolean-3bittable
+  (core/build-instruction
+    boolean-3bittable
+    "`:boolean-3bittable` pops the top `:scalar` item and pushes the result of applying `(exotics/scalar-to-truth-table i 3)` to :booleans"
+    :tags #{:boolean :conversion}
+    (d/consume-top-of :scalar :as :value)
+    (d/calculate [:value] #(exotics/scalar-to-truth-table %1 3) :as :table)
+    (d/push-onto :booleans :table)))
+
+
 (def boolean-arity2
   (core/build-instruction
     boolean-arity2
