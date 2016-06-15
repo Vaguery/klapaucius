@@ -14,6 +14,8 @@
 
 (defn xor2 [p q] (or (and p (not q)) (and q (not p))))
 
+(defn bit [bool] (if bool 1 0))
+
 
 ;; INSTRUCTIONS
 
@@ -21,34 +23,40 @@
 (def boolean-2bittable
   (core/build-instruction
     boolean-2bittable
-    "`:boolean-2bittable` pops the top `:integer` item, converts it into a 2-bit truth table by taking its value (modulo 16) in radix 2, pops 2 `:boolean` items (`q` and `p` respectively in stack order) and returns the indicated result"
+    "`:boolean-2bittable` pops the top `:scalar` item and pushes the result of applying `(exotics/scalar-to-truth-table i 2)` to :booleans"
     :tags #{:boolean :conversion}
-    (d/consume-top-of :integer :as :which)
+    (d/consume-top-of :scalar :as :value)
+    (d/calculate [:value] #(exotics/scalar-to-truth-table %1 2) :as :table)
+    (d/push-onto :booleans :table)))
+
+
+(def boolean-arity2
+  (core/build-instruction
+    boolean-arity2
+    "`:boolean-arity2` pops the top `:scalar` item, creates a truth table on 2 inputs using `(exotics/scalar-to-truth-table i 2)`, pops the top two `:boolean` values and uses them to look up a `:boolean` result in the table"
+    :tags #{:boolean :conversion}
+    (d/consume-top-of :scalar :as :value)
+    (d/calculate [:value] #(exotics/scalar-to-truth-table %1 2) :as :table)
     (d/consume-top-of :boolean :as :q)
     (d/consume-top-of :boolean :as :p)
-    (d/calculate [:which] #(exotics/integer-to-truth-table (mod %1 16) 2) :as :table)
-    (d/calculate [:p :q] #(+ (* 2 (exotics/bit-to-int %1)) (exotics/bit-to-int %2)) :as :idx)
-    (d/calculate [:table :idx] #(nth %1 %2) :as :result) 
+    (d/calculate [:p :q] #(+ (bit %1) (* 2 (bit %2))) :as :index)
+    (d/calculate [:table :index] #(nth %1 %2) :as :result)
     (d/push-onto :boolean :result)))
 
 
 
-(def boolean-3bittable
+(def boolean-arity3
   (core/build-instruction
-    boolean-3bittable
-    "`:boolean-3bittable` pops the top `:integer` item, converts it into a 3-bit truth table by taking its value (modulo 32) in radix 2, pops 3 `:boolean` items (`r`, `q` and `p` respectively in stack order) and returns the indicated result"
+    boolean-arity3
+    "`:boolean-arity3` pops the top `:scalar` item, creates a truth table on 3 inputs using `(exotics/scalar-to-truth-table i 3)`, pops the top 3 `:boolean` values and uses them to look up a `:boolean` result in the table"
     :tags #{:boolean :conversion}
-    (d/consume-top-of :integer :as :which)
+    (d/consume-top-of :scalar :as :value)
+    (d/calculate [:value] #(exotics/scalar-to-truth-table %1 3) :as :table)
     (d/consume-top-of :boolean :as :r)
     (d/consume-top-of :boolean :as :q)
     (d/consume-top-of :boolean :as :p)
-    (d/calculate [:which] #(exotics/integer-to-truth-table (mod %1 32) 3) :as :table)
-    (d/calculate [:p :q :r]
-      #(+ 
-        (* 4 (exotics/bit-to-int %1))
-        (* 2 (exotics/bit-to-int %2))
-        (exotics/bit-to-int %3)) :as :idx)
-    (d/calculate [:table :idx] #(nth %1 %2) :as :result) 
+    (d/calculate [:p :q :r] #(+ (bit %1) (* 2 (bit %2)) (* 4 (bit %3))) :as :index)
+    (d/calculate [:table :index] #(nth %1 %2) :as :result)
     (d/push-onto :boolean :result)))
 
 
@@ -82,48 +90,25 @@
 
 
 
-(def float->boolean
+(def scalar->boolean
   (core/build-instruction
-    float->boolean
-    "`:float->boolean` pops the top `:float` item, and pushes `false` if it is 0.0, or `true` if it is any other value"
+    scalar->boolean
+    "`:scalar->boolean` pops the top `:scalar` item, and pushes `false` if it is zero.0, or `true` if it is any other value"
     :tags #{:boolean :conversion :base}
-    (d/consume-top-of :float :as :arg)
+    (d/consume-top-of :scalar :as :arg)
     (d/calculate [:arg] #(not (zero? %1)) :as :result)
     (d/push-onto :boolean :result)))
 
 
 
-(def floatsign->boolean
+(def scalarsign->boolean
   (core/build-instruction
-    floatsign->boolean
-    "`:floatsign->boolean` pops the top `:float` item, and pushes `true` if it positive, or `false` if it is zero or negative"
+    scalarsign->boolean
+    "`:scalarsign->boolean` pops the top `:scalar` item, and pushes `true` if it positive, or `false` if it is zero or negative"
     :tags #{:boolean :conversion :base}
-    (d/consume-top-of :float :as :arg)
+    (d/consume-top-of :scalar :as :arg)
     (d/calculate [:arg] #(not (neg? %1)) :as :result)
     (d/push-onto :boolean :result)))
-
-
-
-(def integer->boolean
-  (core/build-instruction
-    integer->boolean
-    "`:integer->boolean` pops the top `:integer` item, and pushes `false` if it is 0, or `true` if it is any other value"
-    :tags #{:boolean :conversion :base}
-    (d/consume-top-of :integer :as :arg)
-    (d/calculate [:arg] #(not (zero? %1)) :as :result)
-    (d/push-onto :boolean :result)))
-
-
-
-(def intsign->boolean
-  (core/build-instruction
-    intsign->boolean
-    "`:intsign->boolean` pops the top `:integer` item, and pushes `true` if it positive, or `false` if it is zero or negative"
-    :tags #{:boolean :conversion :base}
-    (d/consume-top-of :integer :as :arg)
-    (d/calculate [:arg] #(not (neg? %1)) :as :result)
-    (d/push-onto :boolean :result)))
-
 
 
 (def boolean-type
@@ -142,12 +127,12 @@
         (t/attach-instruction , boolean-2bittable)
         (t/attach-instruction , boolean-3bittable)
         (t/attach-instruction , bool-and)
+        (t/attach-instruction , boolean-arity2)
+        (t/attach-instruction , boolean-arity3)
         (t/attach-instruction , bool-not)
         (t/attach-instruction , bool-or)
         (t/attach-instruction , bool-xor)
-        (t/attach-instruction , float->boolean)
-        (t/attach-instruction , floatsign->boolean)
-        (t/attach-instruction , integer->boolean)
-        (t/attach-instruction , intsign->boolean)
+        (t/attach-instruction , scalar->boolean)
+        (t/attach-instruction , scalarsign->boolean)
         ))
 

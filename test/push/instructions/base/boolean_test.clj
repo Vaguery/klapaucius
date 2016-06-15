@@ -10,62 +10,100 @@
 ;; support items (now located in push.util.exotics)
 
 
-(fact "integer-to-truth-table"
-  (integer-to-truth-table 11 2) =>
-    [true true false true]
-  (integer-to-truth-table 11 3) =>
-    [true true false true false false false false]
-  (integer-to-truth-table 31 4) =>
-    [true true true true true false false false false false false false false false false false]
-  (integer-to-truth-table 0 3) => 
-    [false false false false false false false false])
+(fact "scalar-to-truth-table puts bits in correct order and pads with false as needed"
+  (scalar-to-truth-table 19 3) =>
+    [true true false false true false false false]
+ ;;    1    2    4     8    16    32    64   128
+ ;;   FFF  FFT  FTF   FTT  TFF   TFT   TTF   TTT
+
+  (scalar-to-truth-table 1 3) =>
+    [true false false false false false false false]
+
+  (scalar-to-truth-table 1 1) =>
+    [true false]
+
+  (scalar-to-truth-table 1 2) =>
+    [true false false false]
+    )
 
 
-(fact "integer-to-truth-table with too few bits"
-  (integer-to-truth-table 0 1) => [false false]
-  (integer-to-truth-table 1 1) => [true false]
-  (integer-to-truth-table 2 1) => [false true]
-  (integer-to-truth-table 3 1) => [true true]
-  (integer-to-truth-table 6 1) => [false true true]
-  (integer-to-truth-table 11 1) => [true true false true]
-  (integer-to-truth-table 310 1) => [false true true false true true false false true])
+(fact "scalar-to-truth-table trims unasked-for bits"
+  (scalar-to-truth-table 7777777 3) =>
+    [true false false false true true true true] ;;... true false true true false true false true false true true false true true true
+
+  (scalar-to-truth-table 1024 1) =>
+    [false false] ;; false false false false false false false false true
+    )
 
 
-(fact "integer-to-truth-table with really bad args"
-  (integer-to-truth-table -11 1) => (throws #"argument error")
-  (integer-to-truth-table 11 0) => (throws #"argument error"))
+(fact "scalar-to-truth-table accepts scalars"
+  (scalar-to-truth-table 8.3 3) =>
+    [false false false true false false false false]
+  (scalar-to-truth-table -8.3 3) =>
+    [false false false true false false false false]
+  (scalar-to-truth-table 1e82 3) =>
+    [false false false false false false false false]
+  (scalar-to-truth-table 771251672M 3) =>
+    [false false false true true false true true]
+  (scalar-to-truth-table 1623761723/41 3) =>
+    [false false false true false true true true]
+    )
+
+
+(fact "scalar-to-truth-table with too few bits"
+  (scalar-to-truth-table 0 1) => [false false]
+  (scalar-to-truth-table 1 1) => [true false]
+  (scalar-to-truth-table 2 1) => [false true]
+  (scalar-to-truth-table 3 1) => [true true]
+  (scalar-to-truth-table 6 1) => [false true]
+  (scalar-to-truth-table 11 1) => [true true]
+  (scalar-to-truth-table 310 1) => [false true]
+  )
+
+
+(fact "scalar-to-truth-table with really bad args"
+  (scalar-to-truth-table 11 -1) => (throws #"argument error")
+  (scalar-to-truth-table 11 0) => (throws #"argument error")
+  )
 
 
 ;; all the conversions
 
 
 (tabular
-  (fact ":integer->boolean is false if 0, true otherwise
-         :intsign->boolean is false if neg, true otherwise
-         ditto :float->boolean and :floatsign->boolean"
+  (fact ":scalar->boolean is false if 0, true otherwise
+         :scalarsign->boolean is false if neg, true otherwise"
     (register-type-and-check-instruction
         ?set-stack ?items boolean-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction           ?get-stack     ?expected
-    :integer    '(0)         :integer->boolean      :boolean       '(false)
-    :integer    '(11)        :integer->boolean      :boolean       '(true)
-    :integer    '(-4)        :integer->boolean      :boolean       '(true)
-    :integer    '(0)         :intsign->boolean      :boolean       '(true)
-    :integer    '(11)        :intsign->boolean      :boolean       '(true)
-    :integer    '(-4)        :intsign->boolean      :boolean       '(false)
+    :scalar     '(0)         :scalar->boolean      :boolean       '(false)
+    :scalar     '(11)        :scalar->boolean      :boolean       '(true)
+    :scalar     '(-4)        :scalar->boolean      :boolean       '(true)
+    :scalar     '(0)         :scalarsign->boolean  :boolean       '(true)
+    :scalar     '(11)        :scalarsign->boolean  :boolean       '(true)
+    :scalar     '(-4)        :scalarsign->boolean  :boolean       '(false)
 
-    :float    '(0.0)         :float->boolean        :boolean       '(false)
-    :float    '(11.0)        :float->boolean        :boolean       '(true)
-    :float    '(-4.0)        :float->boolean        :boolean       '(true)
-    :float    '(0.0)         :floatsign->boolean    :boolean       '(true)
-    :float    '(11.0)        :floatsign->boolean    :boolean       '(true)
-    :float    '(-4.0)        :floatsign->boolean    :boolean       '(false))
+    :scalar     '(0.0)       :scalar->boolean       :boolean       '(false)
+    :scalar     '(11.0)      :scalar->boolean       :boolean       '(true)
+    :scalar     '(-4.0)      :scalar->boolean       :boolean       '(true)
+    :scalar     '(0.0)       :scalarsign->boolean   :boolean       '(true)
+    :scalar     '(11.0)      :scalarsign->boolean   :boolean       '(true)
+    :scalar     '(-4.0)      :scalarsign->boolean   :boolean       '(false)
 
+    :scalar     '(0/7)       :scalar->boolean       :boolean       '(false)
+    :scalar     '(11/7)      :scalar->boolean       :boolean       '(true)
+    :scalar     '(-4/7)      :scalar->boolean       :boolean       '(true)
+    :scalar     '(0/7)       :scalarsign->boolean   :boolean       '(true)
+    :scalar     '(11/7)      :scalarsign->boolean   :boolean       '(true)
+    :scalar     '(-4/7)      :scalarsign->boolean   :boolean       '(false)
+    )
+ 
 
 ;; quotable
 
 (tabular
-  (fact ":boolean->code move the top :boolean item to :code;"
+  (fact ":boolean->code move the top :boolean item to :code"
     (register-type-and-check-instruction
         ?set-stack ?items boolean-type ?instruction ?get-stack) => ?expected)
 
@@ -141,145 +179,97 @@
 
 
 
-
-(fact "in support of following test"
-  (integer-to-truth-table 3 2) => [true true false false]
-  (integer-to-truth-table (mod -312 16) 2) => [false false false true]
-  )
-
 (tabular
-  (fact "`:boolean-2bittable` takes an :integer to make a lookup table for 2 :booleans"
+  (fact "`:boolean-2bittable` pops a `:scalar`, and pushes the 4-entry `:booleans` truth table"
     (check-instruction-with-all-kinds-of-stack-stuff
         ?new-stacks boolean-type ?instruction) => (contains ?expected))
 
-    ?new-stacks                  ?instruction              ?expected
-    ;; 3 -> TTFF
-    ;;      0124
-    ;; p    0011
-    ;; q    0101
-    {:integer '(3)
-     :boolean '(true true)}      :boolean-2bittable     {:integer '()
-                                                         :boolean '(false)}
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:integer '(3)
-     :boolean '(true false)}      :boolean-2bittable     {:integer '()
-                                                         :boolean '(true)}
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:integer '(3)
-     :boolean '(false true)}      :boolean-2bittable     {:integer '()
-                                                         :boolean '(false)}
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:integer '(3)
-     :boolean '(false false)}      :boolean-2bittable     {:integer '()
-                                                         :boolean '(true)}
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ;; -312 -> FFFT
-    ;;         0124
-    ;; p       0011
-    ;; q       0101
-    {:integer '(-312)
-     :boolean '(true true)}      :boolean-2bittable     {:integer '()
-                                                         :boolean '(true)}
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:integer '(-312)
-     :boolean '(true false)}      :boolean-2bittable     {:integer '()
-                                                         :boolean '(false)}
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:integer '(-312)
-     :boolean '(false true)}      :boolean-2bittable     {:integer '()
-                                                         :boolean '(false)}
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:integer '(-312)
-     :boolean '(false false)}      :boolean-2bittable     {:integer '()
-                                                         :boolean '(false)}
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
-    ;; 0 -> FFFF
-    ;;      0124
-    ;; p    0011
-    ;; q    0101
-    {:integer '(0)
-     :boolean '(true true)}      :boolean-2bittable     {:integer '()
-                                                         :boolean '(false)}
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:integer '(0)
-     :boolean '(true false)}      :boolean-2bittable     {:integer '()
-                                                         :boolean '(false)}
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:integer '(0)
-     :boolean '(false true)}      :boolean-2bittable     {:integer '()
-                                                         :boolean '(false)}
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:integer '(0)
-     :boolean '(false false)}      :boolean-2bittable     {:integer '()
-                                                         :boolean '(false)}
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
+    ?new-stacks        ?instruction              ?expected
+    {:scalar  '(3)
+     :booleans '()}    :boolean-2bittable     {:scalar  '()
+                                               :booleans '([true true false false])}
     )
 
 
 
-(fact "in support of following test"
-  (integer-to-truth-table 23 3) =>
-    [true true true false true false false false]
-  (integer-to-truth-table (mod -311 32) 3) =>
-    [true false false true false false false false]
-  )
-
 (tabular
-  (fact "`:boolean-3bittable` takes an :integer to make a lookup table for 2 :booleans"
+  (fact "`:boolean-3bittable` takes a :scalar to make a 3-bit :booleans truth table"
     (check-instruction-with-all-kinds-of-stack-stuff
         ?new-stacks boolean-type ?instruction) => (contains ?expected))
 
-    ?new-stacks                  ?instruction              ?expected
-    ;; 23 -> TTTFTFFF
-    ;;       01234567
-    ;; p     00001111
-    ;; q     00110011
-    ;; r     01010101
-    {:integer '(23)
-     :boolean '(false false false)}
-                                 :boolean-3bittable     {:integer '()
-                                                         :boolean '(true)}
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:integer '(23)
-     :boolean '(false true false)}
-                                 :boolean-3bittable     {:integer '()
-                                                         :boolean '(true)}
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:integer '(23)
-     :boolean '(true false true)}
-                                 :boolean-3bittable     {:integer '()
-                                                         :boolean '(false)}
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:integer '(23)
-     :boolean '(true true true)}
-                                 :boolean-3bittable     {:integer '()
-                                                         :boolean '(false)}
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ;; -311 -> TFFTFFFF
-    ;;         01234567
-    ;; p       00001111
-    ;; q       00110011
-    ;; r       01010101
-    {:integer '(-311)
-     :boolean '(true true true)}
-                                 :boolean-3bittable     {:integer '()
-                                                         :boolean '(false)}
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:integer '(-311)
-     :boolean '(false false false)}
-                                 :boolean-3bittable     {:integer '()
-                                                         :boolean '(true)}
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:integer '(-311)
-     :boolean '(true false false)}
-                                 :boolean-3bittable     {:integer '()
-                                                         :boolean '(false)}
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:integer '(-311)
-     :boolean '(false true false)}
-                                 :boolean-3bittable     {:integer '()
-                                                         :boolean '(false)}
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ?new-stacks           ?instruction           ?expected
+    {:scalar '(23)
+     :booleans '()}
+                          :boolean-3bittable     {:scalar '()
+                                                  :booleans '([true true true false true false false false])}
+    )
+
+
+
+(tabular
+  (fact "`:boolean-arity2` pops a `:scalar`, makes a lookup table, and pops two `:boolean` values as inputs, pushes the result from the table"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks boolean-type ?instruction) => (contains ?expected))
+
+  ;; see the table above for expected values for truth table 3
+  ;; [true true false false]
+  ;;   FF   FT    TF    TT
+  ;;   pq   pq    pq    pq
+    ?new-stacks                ?instruction      ?expected
+    {:scalar  '(3)
+     :boolean '(true true)}
+               ;  q    p
+                              :boolean-arity2   {:scalar  '()
+                                                  :boolean '(false)}
+    {:scalar  '(3)
+     :boolean '(true false)}
+               ;  q    p
+                              :boolean-arity2   {:scalar  '()
+                                                  :boolean '(false)}
+    {:scalar  '(3)
+     :boolean '(false true)}
+               ;  q    p
+                              :boolean-arity2   {:scalar  '()
+                                                  :boolean '(true)}
+    {:scalar  '(3)
+     :boolean '(false false)}
+               ;  q    p
+                              :boolean-arity2   {:scalar  '()
+                                                  :boolean '(true)}
+    )
+
+
+(tabular
+  (fact "`:boolean-arity3` pops a `:scalar`, makes a lookup table, and pops 3 `:boolean` values as inputs, pushes the result from the table"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks boolean-type ?instruction) => (contains ?expected))
+
+  ;; see the table above for expected values for truth table 23
+  ;; [true true true false true false false false]
+  ;;   FFF  FFT  FTF  FTT   TFF   TFT   TTF   TTT
+  ;;   pqr  pqr  pqr  pqr   pqr   pqr   pqr   pqr
+
+    ?new-stacks                ?instruction      ?expected
+    {:scalar  '(23)
+     :boolean '(true true true)}  
+               ;  r    q    p 
+                               :boolean-arity3   {:scalar  '()
+                                                  :boolean '(false)}
+    {:scalar  '(23)
+     :boolean '(true false false)}  
+               ;  r    q    p 
+                               :boolean-arity3   {:scalar  '()
+                                                  :boolean '(true)}
+    {:scalar  '(23)
+     :boolean '(false true false)}  
+               ;  r    q    p 
+                               :boolean-arity3   {:scalar  '()
+                                                  :boolean '(true)}
+    {:scalar  '(23)
+     :boolean '(false false false)} 
+               ;  r    q    p 
+                               :boolean-arity3   {:scalar  '()
+                                                  :boolean '(true)}
     )
 
 ;; combinators
@@ -363,5 +353,7 @@
     ;; just shifting things
     :boolean    '(false true)   :boolean-flush      :boolean       '()
     ;; missing args 
-    :boolean    '()             :boolean-flush      :boolean       '())
+    :boolean    '()             :boolean-flush      :boolean       '()
+    )
+
 

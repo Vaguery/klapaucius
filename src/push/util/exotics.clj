@@ -1,4 +1,5 @@
-(ns push.util.exotics)
+(ns push.util.exotics
+  (:require [clojure.math.numeric-tower :as nt]))
 
 
 (defn char-to-digits
@@ -39,20 +40,21 @@
 (defn bit-to-int [b] (if b 1 0))
 
 
-(defn integer-to-truth-table
-  "Takes an integer value and a (positive) number of bits to use, and returns the n-bit truth table in canonical order. If the number of bits is lower than that needed, only the minimum number are returned; no fewer than two bits will ever be returned."
+(defn scalar-to-truth-table
+  "Takes an scalar value and a (positive) number of bits to use, and returns the n-bit truth table derived from the scalar's binary value read in canonical order (lowest bit at the left). The scalar's absolute value is used. NOTE: THE NUMBER OF BITS MUST BE A POSITIVE INTEGER. If the number of bits is lower than that needed, only the required number are returned, taken from the left end. If the number of bits in the scalar is more than what's asked for, only the least-significant 2^n bits are returned. No fewer than two bits will ever be returned."
   [i bits]
-  (let [len       (nth (iterate (partial * 2) 1) bits)
-        seed      (.toString (biginteger i) 2)
-        shortfall (- len (count seed))]
-  (if (and (pos? bits) ((complement neg?) i))
-    (into []
-      (reverse
-        (map 
-          {\0 false \1 true} 
-          (concat 
-            (repeat shortfall \0) 
-            (seq seed)))))
-    (throw (Exception. "integer-to-truth-table argument error")))))
+  (if (pos? bits)
+    (let [len       (nth (iterate (partial * 2) 1) bits)
+          seed      (.toString (biginteger (nt/abs i)) 2)
+          shortfall (max 0 (- len (count seed)))]
+      (into []
+        (take len 
+          (reverse
+            (map 
+              {\0 false \1 true}
+                (concat 
+                  (repeat shortfall \0)
+                  (seq seed)))))))
+    (throw (Exception. "scalar-to-truth-table argument error"))))
 
 
