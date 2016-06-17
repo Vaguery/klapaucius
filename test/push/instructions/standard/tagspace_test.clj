@@ -456,8 +456,25 @@
 
 
 
+(let 
+  [taggy (make-tagspace {1 2 3 4 5 6})]
+(tabular
+  (fact "`:tagspace-normalize` pops a :tagspace and cleans up the keys by setting the first to 0, and the rest to the following integer values"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks tagspace-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                 ?instruction      ?expected
+    {:tagspace (list taggy)}    :tagspace-normalize  
+                                                 {:scalar  '()
+                                                  :tagspace (list (make-tagspace
+                                                    {0 2, 1 4, 2 6}))}
+    ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:tagspace (list (make-tagspace {9 2 17 4 -2 6}))}    
+                                :tagspace-normalize  
+                                                 {:scalar  '()
+                                                  :tagspace (list (make-tagspace
+                                                    {0 6, 1 2, 2 4}))}
+
+    ))
 
 
-
-
-(future-fact "tagspace-normalize")

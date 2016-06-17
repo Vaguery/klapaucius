@@ -155,7 +155,7 @@
     :tags #{:tagspace :collection}
     (d/consume-top-of :tagspace :as :ts)
     (d/calculate [:ts] #(vals (:contents %1)) :as :items)
-    (d/calculate [:items] #(make-tagspace (zipmap %1 (range))) :as :result)
+    (d/calculate [:items] #(make-tagspace (zipmap (range) %1 )) :as :result)
     (d/push-onto :tagspace :result)))
 
 
