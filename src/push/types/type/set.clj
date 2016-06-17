@@ -8,6 +8,8 @@
   (:use push.types.type.tagspace)
   )
 
+
+
 (def code->set
   (core/build-instruction
     code->set
@@ -17,6 +19,7 @@
     (d/calculate [:arg]
       #(into #{} (if (seq? %1) %1 (list %1))) :as :result)
     (d/push-onto :set :result)))
+
 
 
 (def vector->set
@@ -29,10 +32,12 @@
     (d/push-onto :set :result)))
 
 
+
 (def set-difference
   (t/simple-2-in-1-out-instruction
     "`:set-difference` pops the top two `:set` items, and pushes their difference"
     :set "difference" 'sets/difference))
+
 
 
 (def set-intersection
@@ -41,16 +46,18 @@
     :set "intersection" 'sets/intersection))
 
 
+
 (def set-subset?
   (core/build-instruction
     set-subset?
-    "`:set-subset?` pops the top two `:float` values (call them `A` and `B`, respectively). Pushes `true` if `B` is a subset of `A`, `false` otherwise."
+    "`:set-subset?` pops the top two `:set` values (call them `A` and `B`, respectively). Pushes `true` if `B` is a subset of `A`, `false` otherwise."
     :tags #{:set :predicate}
     (d/consume-top-of :set :as :b)
     (d/consume-top-of :set :as :a)
     (d/calculate [:a :b]
       #(sets/subset? %2 %1) :as :well?)
     (d/push-onto :boolean :well?)))
+
 
 
 (def set-superset?
@@ -65,10 +72,12 @@
     (d/push-onto :boolean :well?)))
 
 
+
 (def set-union
   (t/simple-2-in-1-out-instruction
     "`:set-union` pops the top two `:set` items, and pushes their union"
     :set "union" 'sets/union))
+
 
 
 (def standard-set-type

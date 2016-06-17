@@ -74,6 +74,98 @@
                                 ; :scalar-add        :scalar      Double/isNaN
 
 
+
+
+(tabular
+  (fact ":scalar-arccosine the arccosine of a :scalar that falls between -1 and 1 (inclusive)"
+    (register-type-and-check-instruction
+        ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items    ?instruction        ?get-stack   ?expected
+    :scalar     '(0.0)    :scalar-arccosine   :scalar      '(1.5707963267948966)
+    :scalar     '(1)
+                          :scalar-arccosine   :scalar      '(0.0)
+    :scalar     '(-1)
+                          :scalar-arccosine   :scalar      '(3.141592653589793)
+    :scalar     '(1/17)
+                          :scalar-arccosine   :scalar      '(1.5119388208478153)
+    :scalar     '(0.00000000000000000001M)
+                          :scalar-arccosine   :scalar      '(1.5707963267948966)
+
+
+    :scalar     '(-2)     :scalar-arccosine   :scalar      '()
+    :scalar     '(-2)     :scalar-arccosine   :error       (list {:step 0, 
+                                                                  :item ":scalar-arccosine bad argument"})
+
+    :scalar     (list cljInf)
+                          :scalar-arccosine   :scalar      '()
+    :scalar     (list cljInf)
+                          :scalar-arccosine   :error       (list {:step 0,
+                                                                  :item ":scalar-arccosine bad argument"})
+    :scalar     '()       :scalar-arccosine   :scalar      '()
+    )
+
+
+
+(tabular
+  (fact ":scalar-arcsine the arcsine of a :scalar that falls between -1 and 1 (inclusive)"
+    (register-type-and-check-instruction
+        ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items    ?instruction        ?get-stack   ?expected
+    :scalar     '(0.0)    :scalar-arcsine     :scalar      '(0.0)
+    :scalar     '(1)
+                          :scalar-arcsine     :scalar      '(1.5707963267948966)
+    :scalar     '(-1)
+                          :scalar-arcsine     :scalar      '(-1.5707963267948966)
+    :scalar     '(1/17)
+                          :scalar-arcsine     :scalar      '(0.05885750594708124)
+    :scalar     '(0.00000000000000000001M)
+                          :scalar-arcsine     :scalar      (list (Math/asin 0.00000000000000000001M))
+
+
+    :scalar     '(-2)     :scalar-arcsine     :scalar      '()
+    :scalar     '(-2)     :scalar-arcsine     :error       (list {:step 0, 
+                                                                  :item ":scalar-arcsine bad argument"})
+
+    :scalar     (list cljInf)
+                          :scalar-arcsine     :scalar      '()
+    :scalar     (list cljInf)
+                          :scalar-arcsine     :error       (list {:step 0,
+                                                                  :item ":scalar-arcsine bad argument"})
+    :scalar     '()       :scalar-arcsine     :scalar      '()
+    )
+
+
+
+
+(tabular
+  (fact ":scalar-arctangent the arctangent of a :scalar"
+    (register-type-and-check-instruction
+        ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items    ?instruction        ?get-stack   ?expected
+    :scalar     '(0.0)    :scalar-arctangent  :scalar      '(0.0)
+    :scalar     '(1)
+                          :scalar-arctangent  :scalar      '(0.7853981633974483)
+    :scalar     '(-1)
+                          :scalar-arctangent  :scalar      '(-0.7853981633974483)
+    :scalar     '(1/17)
+                          :scalar-arctangent  :scalar      '(0.0587558227157227)
+    :scalar     '(0.00000000000000000001M)
+                          :scalar-arctangent  :scalar      (list (Math/asin 0.00000000000000000001M))
+
+    :scalar     '(-2)     :scalar-arctangent  :scalar     '(-1.1071487177940904)
+    :scalar     (list Math/PI)
+                          :scalar-arctangent  :scalar     '(1.2626272556789115)
+
+    :scalar     '()       :scalar-arctangent     :scalar      '()
+    )
+
+
+
+
+
 (tabular
   (fact ":scalar-ceiling applies clojure.math.numeric-tower/ceil to the top :scalar"
     (register-type-and-check-instruction
@@ -337,6 +429,91 @@
 
 
 
+(tabular
+  (fact ":scalar-ln the ln of a :scalar, or an :error if out of range"
+    (register-type-and-check-instruction
+        ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items    ?instruction     ?get-stack   ?expected
+    :scalar     (list Math/E)
+                          :scalar-ln        :scalar      '(1.0)
+    :scalar     (list (* 2 Math/E))
+                          :scalar-ln        :scalar      '(1.6931471805599452)
+    :scalar     (list (* Math/E Math/E))
+                          :scalar-ln        :scalar      '(2.0)
+    :scalar     (list (* Math/E Math/E Math/E))
+                          :scalar-ln        :scalar      '(3.0)
+
+
+    :scalar     '(0)      :scalar-ln        :scalar      '()
+    :scalar     '(0)      :scalar-ln        :error       '({:step 0, :item ":scalar-ln bad argument"})
+    :scalar     '(-2712893)      
+                          :scalar-ln        :scalar      '()
+    :scalar     '(-2712893)      
+                          :scalar-ln        :error       '({:step 0, :item ":scalar-ln bad argument"})
+
+    :scalar     '()       :scalar-ln        :scalar      '()
+    )
+
+
+
+
+(tabular
+  (fact ":scalar-ln1p the ln1p of a :scalar, or an :error if out of range"
+    (register-type-and-check-instruction
+        ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items    ?instruction     ?get-stack   ?expected
+    :scalar     (list (dec' Math/E))
+                          :scalar-ln1p        :scalar      '(1.0)
+    :scalar     (list (dec' (* 2 Math/E)))
+                          :scalar-ln1p        :scalar      '(1.6931471805599454)
+    :scalar     (list (dec' (* Math/E Math/E)))
+                          :scalar-ln1p        :scalar      '(2.0)
+    :scalar     (list (dec' (* Math/E Math/E Math/E)))
+                          :scalar-ln1p        :scalar      '(3.0)
+
+    :scalar     '(0)      :scalar-ln1p        :scalar      '(0.0)
+
+
+    :scalar     '(-1)      :scalar-ln1p        :scalar      '()
+    :scalar     '(-1)      :scalar-ln1p        :error       '({:step 0, :item ":scalar-ln1p bad argument"})
+    :scalar     '(-2712893)      
+                          :scalar-ln1p        :scalar      '()
+    :scalar     '(-2712893)      
+                          :scalar-ln1p        :error       '({:step 0, :item ":scalar-ln1p bad argument"})
+
+    :scalar     '()       :scalar-ln1p        :scalar      '()
+    )
+
+
+
+
+(tabular
+  (fact ":scalar-log10 the log10 of a :scalar, or an :error if out of range"
+    (register-type-and-check-instruction
+        ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items    ?instruction       ?get-stack   ?expected
+    :scalar     '(1)      :scalar-log10        :scalar      '(0.0)
+    :scalar     '(1/100)  :scalar-log10        :scalar      '(-2.0)
+    :scalar     '(10)     :scalar-log10        :scalar      '(1.0)
+    :scalar     '(100)    :scalar-log10        :scalar      '(2.0)
+    :scalar     '(1000)   :scalar-log10        :scalar      '(3.0)
+
+
+    :scalar     '(0)      :scalar-log10        :scalar      '()
+    :scalar     '(0)      :scalar-log10        :error       '({:step 0, :item ":scalar-log10 bad argument"})
+    :scalar     '(-2712893)      
+                          :scalar-log10        :scalar      '()
+    :scalar     '(-2712893)      
+                          :scalar-log10        :error       '({:step 0, :item ":scalar-log10 bad argument"})
+
+    :scalar     '()       :scalar-log10        :scalar      '()
+    )
+
+
+
 
 (tabular
   (fact ":scalar-multiply returns the sum of the top two :scalar items"
@@ -362,6 +539,48 @@
 ;; out-of-bounds and edge cases
 
     ; :scalar     '(-2/9 2.0M)     :scalar-multiply     :scalar   '(-0.4444444444444444)
+
+
+
+
+(tabular
+  (fact ":scalar-power produces the result of raising the second :scalar to the power of the first, or an :error if the result is not a scalar"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks scalar-type ?instruction) => (contains ?expected))
+
+    ?new-stacks           ?instruction     ?expected
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:scalar '(2 8)}       :scalar-power     {:scalar '(64)
+                                              :error '()} 
+    {:scalar '(3 3/7)}     :scalar-power     {:scalar '(27/343)
+                                              :error '()} 
+    {:scalar '(1/2 100.0)} :scalar-power     {:scalar '(10.0)
+                                              :error '()} 
+    {:scalar '(0.5 100.0)} :scalar-power     {:scalar '(10.0)
+                                              :error '()} 
+    {:scalar '(3/7 100)}   :scalar-power     {:scalar '(7.196856730011521)
+                                              :error '()} 
+    {:scalar '(1/2 0)}     :scalar-power     {:scalar '(0.0)
+                                              :error '()} 
+    {:scalar '(-2.8 100)}  :scalar-power     {:scalar '(2.5118864315095823E-6)
+                                              :error '()} 
+    {:scalar '(-1/2 100)}  :scalar-power     {:scalar '(0.1)
+                                              :error '()} 
+    {:scalar '(-2 100)}    :scalar-power     {:scalar '(1/10000)
+                                              :error '()} 
+    {:scalar '(-1e13 1e13)} :scalar-power    {:scalar '(0.0)
+                                              :error '()}
+
+
+    {:scalar '(0.5 -10.0)} :scalar-power     {:scalar '()
+                                              :error '({:item ":scalar-power did not produce a :scalar result", :step 0})}
+    {:scalar '(1/13 -10)}  :scalar-power     {:scalar '()
+                                              :error '({:item ":scalar-power did not produce a :scalar result", :step 0})}
+    {:scalar '(1e13 1e13)}  :scalar-power    {:scalar '()
+                                              :error '({:item ":scalar-power did not produce a :scalar result", :step 0})}
+    {:scalar '(1e13 -1e13)} :scalar-power    {:scalar '()
+                                              :error '({:item ":scalar-power did not produce a :scalar result", :step 0})}
+)
 
 
 
@@ -481,6 +700,50 @@
     :scalar     '()        :scalar-π     :scalar        '(3.141592653589793)
     )
 
+
+
+
+(tabular
+  (fact ":scalar-sqrt the sqrt of a :scalar, or an :error if out of range"
+    (register-type-and-check-instruction
+        ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items    ?instruction       ?get-stack   ?expected
+    :scalar     '(1)      :scalar-sqrt        :scalar      '(1)
+    :scalar     '(4/9)    :scalar-sqrt        :scalar      '(2/3)
+    :scalar     '(100)    :scalar-sqrt        :scalar      '(10)
+    :scalar     '(81)     :scalar-sqrt        :scalar      '(9)
+    :scalar     '(10000)  :scalar-sqrt        :scalar      '(100)
+    :scalar     '(0.64)   :scalar-sqrt        :scalar      '(0.8)
+
+
+    :scalar     '(0)      :scalar-sqrt        :scalar      '(0)
+    :scalar     '(-27)    :scalar-sqrt        :scalar      '()
+    :scalar     '(-27)    :scalar-sqrt        :error       '({:step 0, :item ":scalar-sqrt bad argument"})
+
+    :scalar     '()       :scalar-sqrt        :scalar      '()
+    )
+
+
+
+
+(tabular
+  (fact ":scalar-tangent the tangent of a :scalar, or an :error if out of range"
+    (register-type-and-check-instruction
+        ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items    ?instruction       ?get-stack   ?expected
+    :scalar     '(1)      :scalar-tangent     :scalar      (list (Math/tan 1))
+    :scalar     '(0)      :scalar-tangent     :scalar      '(0.0)
+    
+
+    :scalar     (list cljInf)
+                          :scalar-tangent     :scalar      '()
+    :scalar     (list cljInf)
+                          :scalar-tangent     :error       '({:step 0, :item ":scalar-tangent bad argument"})
+
+    :scalar     '()       :scalar-tangent     :scalar      '()
+    )
 
 
 

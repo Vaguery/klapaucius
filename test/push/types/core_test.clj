@@ -16,8 +16,8 @@
 
 
 (fact "`make-type` takes a type name at a minimum"
-  (let [i (make-type :integer)]
-    (:name i) => :integer
+  (let [i (make-type :numbery-thing)]
+    (:name i) => :numbery-thing
     (:attributes i) => #{}
     (:instructions i) => {}
     (router/router-recognize? (:router i) 99) => false  ;; NOTE! default recognizer
@@ -25,8 +25,8 @@
 
 
 (fact "`make-type` can be called with a type name and a :recognizer"
-  (let [i (make-type :integer :recognized-by integer?)]
-    (:name i) => :integer
+  (let [i (make-type :numbery-thing :recognized-by integer?)]
+    (:name i) => :numbery-thing
     (:attributes i) => #{}
     (:instructions i) => {}
     (router/router-recognize? (:router i) 99) => true
@@ -38,7 +38,7 @@
 
 (fact "`make-type` takes an optional :attributes set"
   (:attributes (make-type 
-                  :integer 
+                  :numbery-thing 
                   :recognized-by integer? 
                   :attributes #{:comparable :numeric})) => #{:comparable :numeric})
 

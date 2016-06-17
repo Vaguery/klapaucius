@@ -181,9 +181,9 @@
                                                           :tagspace (list taggy)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec '()
-     :vector '([-3 :foo \g :integer-add [6.2] 11/8])
+     :vector '([-3 :foo \g :scalar-add [6.2] 11/8])
      :tagspace (list taggy)}    :tagspace-lookupvector   {:exec 
-                                                            '((2 :foo \g :integer-add [6.2] 4))
+                                                            '((2 :foo \g :scalar-add [6.2] 4))
                                                           :vector  '()
                                                           :tagspace (list taggy)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

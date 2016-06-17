@@ -453,25 +453,25 @@
 (fact "ready-for-instruction? returns false if the :needs of the specified instruction aren't met"
   (let [abbr #'push.interpreter.core/ready-for-instruction?
         foo
-          (i/make-instruction :foo :needs {:integer 2})
+          (i/make-instruction :foo :needs {:bar 2})
         an-int
-          (register-instruction (m/basic-interpreter :stacks {:integer '(1)}) foo)
+          (register-instruction (m/basic-interpreter :stacks {:bar '(1)}) foo)
         many-ints
-          (register-instruction (m/basic-interpreter :stacks {:integer '(1 2 3 4)}) foo)]
-    (count (u/get-stack an-int :integer)) => 1
+          (register-instruction (m/basic-interpreter :stacks {:bar '(1 2 3 4)}) foo)]
+    (count (u/get-stack an-int :bar)) => 1
     (abbr an-int :foo) => false
-    (count (u/get-stack many-ints :integer )) => 4
+    (count (u/get-stack many-ints :bar )) => 4
     (#'push.interpreter.core/contains-at-least?
-        many-ints :integer 2) => true
+        many-ints :bar 2) => true
     (abbr many-ints :foo) => true))
 
 
 (fact "ready-for-instruction? returns false if the named instruction is not registered"
   (let [abbr #'push.interpreter.core/ready-for-instruction?
         foo
-          (i/make-instruction :foo :needs {:integer 2})
+          (i/make-instruction :foo :needs {:bar 2})
         an-int
-          (register-instruction (m/basic-interpreter :stacks {:integer '(1)}) foo)]
+          (register-instruction (m/basic-interpreter :stacks {:bar '(1)}) foo)]
     (abbr an-int :bar) => false))
 
 
@@ -489,12 +489,12 @@
 
 
 (fact "execute-instruction will add an :error message if the needs aren't met"
-  (let [foo (i/make-instruction :foo :needs {:integer 3} :transaction (fn [a] 99))
+  (let [foo (i/make-instruction :foo :needs {:bar 3} :transaction (fn [a] 99))
       he-knows-foo (register-instruction just-basic foo)]
     (u/get-stack (execute-instruction he-knows-foo :foo) :error) => 
       '({:step 0 :item ":foo missing arguments"})
     (execute-instruction
-      (assoc-in he-knows-foo [:stacks :integer] '(1 2 3 4)) :foo) => 99))
+      (assoc-in he-knows-foo [:stacks :bar] '(1 2 3 4)) :foo) => 99))
 
 
 (fact "execute-instruction will throw an Exception if the token is not registered"
@@ -518,7 +518,7 @@
 
 
 (fact "u/set-stack replaces a stack completely"
-  (u/get-stack (u/set-stack just-basic :integer '(1 2 3)) :integer) => '(1 2 3)
+  (u/get-stack (u/set-stack just-basic :bar '(1 2 3)) :bar) => '(1 2 3)
   )
 
 
@@ -543,9 +543,9 @@
 
 
 (fact "push-item pushes the specified item to the stack, returning the updated Interpreter"
-  (u/get-stack (push-item just-basic :integer 9) :integer) => '(9)
+  (u/get-stack (push-item just-basic :bar 9) :bar) => '(9)
   (u/get-stack (push-item 
-    (m/basic-interpreter :stacks {:integer '(1 2 3)}) :integer 9) :integer) => '(9 1 2 3))
+    (m/basic-interpreter :stacks {:bar '(1 2 3)}) :bar 9) :bar) => '(9 1 2 3))
 
 
 (fact "push-item does not do type-checking"

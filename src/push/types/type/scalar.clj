@@ -26,6 +26,44 @@
 
 
 
+(def scalar-arccosine
+  (core/build-instruction
+    scalar-arccosine
+    "`:scalar-arccosine` pops the top `:scalar` value, and if it is between -1.0 and 1.0 it returns the arccos(theta), for theta between 0.0 and π; otherwise it consumes the argument and adds an :error"
+    :tags #{:arithmetic :base :dangerous}
+    (d/consume-top-of :scalar :as :arg)
+    (d/calculate [:arg] #(or (> %1 1) (< %1 -1)) :as :bad-arg?)
+    (d/calculate [:bad-arg? :arg]
+      #(if %1 nil (Math/acos %2)) :as :result)
+    (d/calculate [:bad-arg?]
+      #(if %1 ":scalar-arccosine bad argument" nil) :as :warning)
+    (d/push-onto :scalar :result)
+    (d/record-an-error :from :warning)))
+
+
+
+(def scalar-arcsine
+  (core/build-instruction
+    scalar-arcsine
+    "`:scalar-arcsine` pops the top `:scalar` value, and if it is between -1.0 and 1.0 it returns the asin(theta), for theta between 0.0 and π; otherwise it consumes the argument and adds an :error"
+    :tags #{:arithmetic :base :dangerous}
+    (d/consume-top-of :scalar :as :arg)
+    (d/calculate [:arg] #(or (> %1 1) (< %1 -1)) :as :bad-arg?)
+    (d/calculate [:bad-arg? :arg]
+      #(if %1 nil (Math/asin %2)) :as :result)
+    (d/calculate [:bad-arg?]
+      #(if %1 ":scalar-arcsine bad argument" nil) :as :warning)
+    (d/push-onto :scalar :result)
+    (d/record-an-error :from :warning)))
+
+
+
+(def scalar-arctangent (t/simple-1-in-1-out-instruction
+  ":`scalar-arctangent` pops the top `:scalar` and pushes atan(theta) (assuming the angle lies between ±π/2) to `:scalar`"
+  :scalar "arctangent" #(Math/atan %)))
+
+
+
 (def scalar-ceiling (t/simple-1-in-1-out-instruction
   "`:scalar-ceiling` pops the top `:scalar` value, and pushes the next-largest integer value"
   :scalar "ceiling" 'math/ceil))
@@ -82,6 +120,57 @@
 
 
 
+(def scalar-ln
+  (core/build-instruction
+    scalar-ln
+    "`:scalar-ln` pops the top `:scalar` value. If it is a strictly positive (non-zero) value, its natural logarithm is pushed; otherwise, the argument is consumed but an error is pushed to the :error stack."
+    :tags #{:arithmetic :base :dangerous}
+    (d/consume-top-of :scalar :as :arg)
+    (d/calculate [:arg] #( (complement pos?) %1) :as :bad-arg?)
+    (d/calculate [:bad-arg? :arg]
+      #(if %1 nil (Math/log %2)) :as :result)
+    (d/calculate [:bad-arg?]
+      #(if %1 ":scalar-ln bad argument" nil) :as :warning)
+    (d/push-onto :scalar :result)
+    (d/record-an-error :from :warning)))
+
+
+
+(def scalar-ln1p
+  (core/build-instruction
+    scalar-ln1p
+    "`:scalar-ln1p` pops the top `:scalar` value. If it is a value greater than -1.0, `(Math/log1p x)` is pushed; otherwise, it consumes the argument and an error is pushed to the :error stack."
+    :tags #{:arithmetic :base :dangerous}
+    (d/consume-top-of :scalar :as :arg)
+    (d/calculate [:arg]
+      #(<= %1 -1) :as :bad-arg?)
+    (d/calculate [:bad-arg? :arg]
+      #(if %1 nil (Math/log1p %2)) :as :result)
+    (d/calculate [:bad-arg?]
+      #(if %1 ":scalar-ln1p bad argument" nil) :as :warning)
+    (d/push-onto :scalar :result)
+    (d/record-an-error :from :warning)))
+
+
+
+
+(def scalar-log10
+  (core/build-instruction
+    scalar-log10
+    "`:scalar-log10` pops the top `:scalar` value. If it is a strictly positive (non-zero) value, its base-10 logarithm is pushed; otherwise, the argument is consumed but an error is pushed to the :error stack."
+    :tags #{:arithmetic :base :dangerous}
+    (d/consume-top-of :scalar :as :arg)
+    (d/calculate [:arg]
+      #( (complement pos?) %1) :as :bad-arg?)
+    (d/calculate [:bad-arg? :arg]
+      #(if %1 nil (Math/log10 %2)) :as :result)
+    (d/calculate [:bad-arg?]
+      #(if %1 ":scalar-log10 bad argument" nil) :as :warning)
+    (d/push-onto :scalar :result)
+    (d/record-an-error :from :warning)))
+
+
+
 (def scalar-modulo
   (core/build-instruction
     scalar-modulo
@@ -103,6 +192,7 @@
   :scalar "multiply" '*'))
 
 
+
 (def scalar-π
   (core/build-instruction
     scalar-π
@@ -110,6 +200,25 @@
     :tags #{:arithmetic :base}
     (d/calculate [] #(Math/PI) :as :pi)
     (d/push-onto :scalar :pi)))
+
+
+
+(def scalar-power
+  (core/build-instruction
+    scalar-power
+    "`:scalar-power` pops the top two `:scalar` values (call them `exponent` and `base` respectively). It calculates `(numeric-tower/expt base exponent)`. In cases of overflow, an :error is pushed."
+    :tags #{:arithmetic :base :dangerous}
+    (d/consume-top-of :scalar :as :exp)
+    (d/consume-top-of :scalar :as :base)
+    (d/calculate [:base :exp] #(math/expt %1 %2) :as :prelim)
+    (d/calculate [:prelim]
+      #(or (Double/isNaN %1) (Double/isInfinite %1)) :as :bad-result)
+    (d/calculate [:bad-result :prelim] #(if %1 nil %2) :as :result)
+    (d/calculate [:bad-result]
+      #(if %1 ":scalar-power did not produce a :scalar result") :as :warning)
+    (d/push-onto :scalar :result)
+    (d/record-an-error :from :warning)
+  ))
 
 
 
@@ -130,9 +239,44 @@
 
 
 
+(def scalar-sqrt
+  (core/build-instruction
+    scalar-sqrt
+    "`:scalar-sqrt` pops the top `:scalar` value. If it's not negative, its square root is pushed; otherwise, the argument is consumed and an error is pushed to the `:error` stack."
+    :tags #{:arithmetic :base :dangerous}
+    (d/consume-top-of :scalar :as :arg)
+    (d/calculate [:arg]
+      #(neg? %1) :as :bad-arg?)
+    (d/calculate [:bad-arg? :arg]
+      #(if %1 nil (math/sqrt %2)) :as :result)
+    (d/calculate [:bad-arg?]
+      #(if %1 ":scalar-sqrt bad argument" nil) :as :warning)
+    (d/push-onto :scalar :result)
+    (d/record-an-error :from :warning)))
+
+
+
 (def scalar-subtract (t/simple-2-in-1-out-instruction
   "`:scalar-subtract` pops the top two `:scalar` items, and pushes the difference of the top item subtracted from the second"
   :scalar "subtract" '-'))
+
+
+
+(def scalar-tangent
+  (core/build-instruction
+    scalar-tangent
+    "`:scalar-tangent` pops the top `:scalar` value and calculates tan(theta). If the result is a non-infinite number, it pushes that to :scalar; otherwise, it consumes the argument and pushes an :error"
+    :tags #{:arithmetic :base :dangerous}
+    (d/consume-top-of :scalar :as :arg)
+    (d/calculate [:arg]
+      #(Double/isNaN (Math/tan %1)) :as :bad-arg?)
+    (d/calculate [:bad-arg? :arg]
+      #(if %1 nil (Math/tan %2)) :as :result)
+    (d/calculate [:bad-arg?]
+      #(if %1 ":scalar-tangent bad argument" nil) :as :warning)
+    (d/push-onto :scalar :result)
+    (d/record-an-error :from :warning)))
+
 
 
 
@@ -277,6 +421,9 @@
         (t/attach-instruction , integer-totalistic3)
         (t/attach-instruction , scalar-abs)
         (t/attach-instruction , scalar-add)
+        (t/attach-instruction , scalar-arccosine)
+        (t/attach-instruction , scalar-arcsine)
+        (t/attach-instruction , scalar-arctangent)
         (t/attach-instruction , scalar-ceiling)
         (t/attach-instruction , scalar-cosine)
         (t/attach-instruction , scalar-dec)
@@ -285,16 +432,22 @@
         (t/attach-instruction , scalar-few)
         (t/attach-instruction , scalar-floor)
         (t/attach-instruction , scalar-inc)
+        (t/attach-instruction , scalar-ln)
+        (t/attach-instruction , scalar-ln1p)
         (t/attach-instruction , scalar-lots)
+        (t/attach-instruction , scalar-log10)
         (t/attach-instruction , scalar-many)
         (t/attach-instruction , scalar-modulo)
         (t/attach-instruction , scalar-multiply)
         (t/attach-instruction , scalar-π)
+        (t/attach-instruction , scalar-power)
         (t/attach-instruction , scalar-round)
         (t/attach-instruction , scalar-sign)
         (t/attach-instruction , scalar-sine)
         (t/attach-instruction , scalar-some)
+        (t/attach-instruction , scalar-sqrt)
         (t/attach-instruction , scalar-subtract)
+        (t/attach-instruction , scalar-tangent)
         (t/attach-instruction , boolean->float)
         (t/attach-instruction , boolean->signedfloat)
         (t/attach-instruction , boolean->integer)

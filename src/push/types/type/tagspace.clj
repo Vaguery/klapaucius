@@ -190,7 +190,7 @@
 (def tagspace-scale
   (core/build-instruction
     tagspace-scale
-    "`:tagspace-scale` pops the top `:tagspace` item and the top `:scalar`, and pushes a new `:tagspace` in which the numeric keys have all been multipled by the `:float` (even if it is negative or zero)."
+    "`:tagspace-scale` pops the top `:tagspace` item and the top `:scalar`, and pushes a new `:tagspace` in which the numeric keys have all been multipled by the `:scalar` (even if it is negative or zero)."
     :tags #{:tagspace :collection}
     (d/consume-top-of :tagspace :as :arg1)
     (d/consume-top-of :scalar :as :scale)
