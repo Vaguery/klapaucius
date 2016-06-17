@@ -57,24 +57,24 @@
 (def generator-counter
   (core/build-instruction
     generator-counter
-    "`:generator-counter` pops an `:integer` and uses that to create a `:generator` that will count by 1 from the starting point."
+    "`:generator-counter` pops a `:scalar` and uses that to create a `:generator` that will count by 1 from the starting point."
     :tags #{:generator}
-    (d/consume-top-of :integer :as :arg)
-    (d/calculate [:arg] #(make-generator %1 inc) :as :g)
+    (d/consume-top-of :scalar :as :arg)
+    (d/calculate [:arg] #(make-generator %1 inc') :as :g)
     (d/push-onto :generator :g)))
 
 
 
-(def generator-jump
+(def generator-jumpsome
   (core/build-instruction
-    generator-jump
-    "`:generator-jump` pops the top `:generator` and the top `:integer`, and calls the `:generator`'s  `step` function as many times as the `:integer` indicates. The number of steps is calculated modulo 100. The advanced `:generator` is pushed to the `:generator` stack. If the `:integer` is negative or zero, there is no change to the state. If the `:generator` is exhausted in the process, it is discarded."
+    generator-jumpsome
+    "`:generator-jumpsome` pops the top `:generator` and the top `:scalar`, and calls the `:generator`'s  `step` function as many (integer) times as the rounded `:scalar` indicates. The number of steps is calculated modulo 100. The advanced `:generator` is pushed to the `:generator` stack. If the `:scalar` is negative or zero, there is no change to the state. If the `:generator` is exhausted in the process, it is discarded."
     :tags #{:generator}
     (d/consume-top-of :generator :as :arg)
-    (d/consume-top-of :integer :as :steps)
+    (d/consume-top-of :scalar :as :steps)
     (d/calculate [:arg :steps]
       #(first 
-        (drop (mod %2 100)
+        (drop (mod (bigint %2) 100)
           (iterate (fn [g] (if (nil? g) nil (step-generator g))) %1))) :as :result)
     (d/push-onto :generator :result)))
 
@@ -107,23 +107,23 @@
 (def generator-stepper
   (core/build-instruction
     generator-stepper
-    "`:generator-stepper` pops 2 `:integer` values (A and B) and uses them to create a `:generator` that will start from B and change by A (positive or negative) at every step."
+    "`:generator-stepper` pops 2 `:scalar` values (A and B) and uses them to create a `:generator` that will start from B and change by A (positive or negative) at every step."
     :tags #{:generator}
-    (d/consume-top-of :integer :as :arg1)
-    (d/consume-top-of :integer :as :arg2)
-    (d/calculate [:arg1 :arg2] #(make-generator %2 (partial + %1)) :as :g)
+    (d/consume-top-of :scalar :as :arg1)
+    (d/consume-top-of :scalar :as :arg2)
+    (d/calculate [:arg1 :arg2] #(make-generator %2 (partial +' %1)) :as :g)
     (d/push-onto :generator :g)))
 
 
 
-(def generator-totalisticint3
+(def generator-totalistic3
   (core/build-instruction
-    generator-totalisticint3
-    "`:generator-totalisticint3` pops an `:integer` and uses that to create a `:generator` that will cycle through a digitwise totalistic rewrite rule of width 3."
+    generator-totalistic3
+    "`:generator-totalistic3` pops a `:scalar` and uses that to create a `:generator` that will cycle through a digitwise totalistic rewrite rule of width 3. The scalar is converted to a `bigint` when consumed."
     :tags #{:generator}
-    (d/consume-top-of :integer :as :arg)
+    (d/consume-top-of :scalar :as :arg)
     (d/calculate [:arg]
-      #(make-generator %1 (fn [x] (exotics/rewrite-digits x 3))) :as :g)
+      #(make-generator (bigint %1) (fn [x] (exotics/rewrite-digits x 3))) :as :g)
     (d/push-onto :generator :g)))
 
 
@@ -136,11 +136,11 @@
                     :attributes #{:generator})
       (t/attach-instruction , generator-again)
       (t/attach-instruction , generator-counter)
-      (t/attach-instruction , generator-jump)
+      (t/attach-instruction , generator-jumpsome)
       (t/attach-instruction , generator-next)
       (t/attach-instruction , generator-reset)
       (t/attach-instruction , generator-stepper)
-      (t/attach-instruction , generator-totalisticint3)
+      (t/attach-instruction , generator-totalistic3)
       aspects/make-visible 
       aspects/make-movable
       aspects/make-quotable
