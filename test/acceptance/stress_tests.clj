@@ -166,9 +166,6 @@
                 (if (is-done? s)
                   (println (str n
                                 "  "
-                                (if (pos? (count (get-in s [:stacks :scalar])))
-                                  (str "[scalars:" (count (get-in s [:stacks :scalar])) "]\n")
-                                  "")
                                 (:counter s) 
                                 (str "[?:" (count (get-in s [:stacks :unknown])) "]")
                                 (reduce-kv

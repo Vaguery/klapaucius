@@ -544,7 +544,7 @@
 
 
 (tabular
-  (fact ":scalar-power produces the result of raising the second :scalar to the power of the first, or an :error if the result is not a scalar"
+  (future-fact ":scalar-power produces the result of raising the second :scalar to the power of the first, or an :error if the result is not a scalar"
     (check-instruction-with-all-kinds-of-stack-stuff
         ?new-stacks scalar-type ?instruction) => (contains ?expected))
 

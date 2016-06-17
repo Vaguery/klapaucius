@@ -440,7 +440,7 @@
         (t/attach-instruction , scalar-modulo)
         (t/attach-instruction , scalar-multiply)
         (t/attach-instruction , scalar-π)
-        (t/attach-instruction , scalar-power)
+        ; (t/attach-instruction , scalar-power)
         (t/attach-instruction , scalar-round)
         (t/attach-instruction , scalar-sign)
         (t/attach-instruction , scalar-sine)
