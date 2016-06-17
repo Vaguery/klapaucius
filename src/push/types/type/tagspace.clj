@@ -67,12 +67,12 @@
 
 
 
-(def tagspace-lookupint
+(def tagspace-lookup
   (core/build-instruction
-    tagspace-lookupint
-    "`:tagspace-lookupint` pops the top `:integer` and the top `:tagspace`. The indicated item is looked up and pushed to `:exec`; if the `:tagspace` is empty, no item is pushed to `:exec`. The `:tagspace` is returned to that stack. (Note this behavior differs from most other `:tagspace` functions in that the `:tagspace` is returned immediately.)"
+    tagspace-lookup
+    "`:tagspace-lookup` pops the top `:scalar` and the top `:tagspace`. The indicated item is looked up and pushed to `:exec`; if the `:tagspace` is empty, no item is pushed to `:exec`. The `:tagspace` is returned to that stack. (Note this behavior differs from most other `:tagspace` functions in that the `:tagspace` is returned immediately.)"
     :tags #{:tagspace :collection}
-    (d/consume-top-of :integer :as :idx)
+    (d/consume-top-of :scalar :as :idx)
     (d/consume-top-of :tagspace :as :ts)
     (d/calculate [:idx :ts] #(find-in-tagspace %2 %1) :as :result)
     (d/push-onto :exec :result)
@@ -80,41 +80,14 @@
 
 
 
-(def tagspace-lookupintegers
+(def tagspace-lookupscalars
   (core/build-instruction
-    tagspace-lookupintegers
-    "`:tagspace-lookupintegers` pops the top `:integers` item and the top `:tagspace`. Every element of the `:integers` is used as a key and looked up, consolidated into a list, and pushed to `:exec`; if the `:tagspace` is empty, an empty list is pushed to `:exec`. The `:tagspace` is returned to that stack."
+    tagspace-lookupscalars
+    "`:tagspace-lookupscalars` pops the top `:scalars` item and the top `:tagspace`. Every element of the `:scalars` is used as a key and looked up, consolidated into a list, and pushed to `:exec`; if the `:tagspace` is empty, an empty list is pushed to `:exec`. The `:tagspace` is returned to that stack."
     :tags #{:tagspace :collection}
-    (d/consume-top-of :integers :as :indices)
+    (d/consume-top-of :scalars :as :indices)
     (d/consume-top-of :tagspace :as :ts)
     (d/calculate [:indices :ts] 
-      #(remove nil? (map (fn [k] (find-in-tagspace %2 k)) %1)) :as :results)
-    (d/push-onto :exec :results)
-    (d/push-onto :tagspace :ts)))
-
-
-
-(def tagspace-lookupfloat
-  (core/build-instruction
-    tagspace-lookupfloat
-    "`:tagspace-lookupfloat` pops the top `:float` and the top `:tagspace`. The indicated item is looked up and pushed to `:exec`; if the `:tagspace` is empty, no item is pushed to `:exec`. The `:tagspace` is returned to that stack. (Note this behavior differs from most other `:tagspace` functions in that the `:tagspace` is returned immediately.)"
-    :tags #{:tagspace :collection}
-    (d/consume-top-of :float :as :idx)
-    (d/consume-top-of :tagspace :as :ts)
-    (d/calculate [:idx :ts] #(find-in-tagspace %2 %1) :as :result)
-    (d/push-onto :exec :result)
-    (d/push-onto :tagspace :ts)))
-
-
-
-(def tagspace-lookupfloats
-  (core/build-instruction
-    tagspace-lookupfloats
-    "`:tagspace-lookupfloats` pops the top `:floats` item and the top `:tagspace`. Every element of the `:floats` is used as a key and looked up, consolidated into a list, and pushed to `:exec`; if the `:tagspace` is empty, an empty list is pushed to `:exec`. The `:tagspace` is returned to that stack."
-    :tags #{:tagspace :collection}
-    (d/consume-top-of :floats :as :indices)
-    (d/consume-top-of :tagspace :as :ts)
-    (d/calculate [:indices :ts]
       #(remove nil? (map (fn [k] (find-in-tagspace %2 k)) %1)) :as :results)
     (d/push-onto :exec :results)
     (d/push-onto :tagspace :ts)))
@@ -175,6 +148,18 @@
 
 
 
+(def tagspace-normalize
+  (core/build-instruction
+    tagspace-normalize
+    "`:tagspace-normalize` pops the top `:tagspace` item, and pushes a new `:tagspace` in which the first item is at index 0 and all items are indexed with integers indicating their positional order."
+    :tags #{:tagspace :collection}
+    (d/consume-top-of :tagspace :as :ts)
+    (d/calculate [:ts] #(vals (:contents %1)) :as :items)
+    (d/calculate [:items] #(make-tagspace (zipmap %1 (range))) :as :result)
+    (d/push-onto :tagspace :result)))
+
+
+
 (def tagspace-new
   (core/build-instruction
     tagspace-new
@@ -185,13 +170,13 @@
 
 
 
-(def tagspace-offsetfloat
+(def tagspace-offset
   (core/build-instruction
-    tagspace-offsetfloat
-    "`:tagspace-offsetfloat` pops the top `:tagspace` item and the top `:float`, and pushes a new `:tagspace` in which the numeric keys have all had the `:float` added to them."
+    tagspace-offset
+    "`:tagspace-offset` pops the top `:tagspace` item and the top `:scalar`, and pushes a new `:tagspace` in which the numeric keys have all had the `:scalar` added to them."
     :tags #{:tagspace :collection}
     (d/consume-top-of :tagspace :as :arg1)
-    (d/consume-top-of :float :as :offset)
+    (d/consume-top-of :scalar :as :offset)
     (d/calculate [:arg1 :offset]
       #(make-tagspace
         (reduce-kv
@@ -202,30 +187,13 @@
 
 
 
-(def tagspace-offsetint
+(def tagspace-scale
   (core/build-instruction
-    tagspace-offsetint
-    "`:tagspace-offsetint` pops the top `:tagspace` item and the top `:integer`, and pushes a new `:tagspace` in which the numeric keys have all had the `:integer` added to them."
+    tagspace-scale
+    "`:tagspace-scale` pops the top `:tagspace` item and the top `:scalar`, and pushes a new `:tagspace` in which the numeric keys have all been multipled by the `:float` (even if it is negative or zero)."
     :tags #{:tagspace :collection}
     (d/consume-top-of :tagspace :as :arg1)
-    (d/consume-top-of :integer :as :offset)
-    (d/calculate [:arg1 :offset]
-      #(make-tagspace
-        (reduce-kv
-          (fn [r k v] (assoc r (+' k %2) v))
-          (sorted-map)
-          (:contents %1))) :as :result)
-    (d/push-onto :tagspace :result)))
-
-
-
-(def tagspace-scalefloat
-  (core/build-instruction
-    tagspace-scalefloat
-    "`:tagspace-scalefloat` pops the top `:tagspace` item and the top `:float`, and pushes a new `:tagspace` in which the numeric keys have all been multipled by the `:float` (even if it is negative or zero)."
-    :tags #{:tagspace :collection}
-    (d/consume-top-of :tagspace :as :arg1)
-    (d/consume-top-of :float :as :scale)
+    (d/consume-top-of :scalar :as :scale)
     (d/calculate [:arg1 :scale]
       #(make-tagspace
         (reduce-kv
@@ -236,30 +204,13 @@
 
 
 
-(def tagspace-scaleint
+(def tagspace-split
   (core/build-instruction
-    tagspace-scaleint
-    "`:tagspace-scaleint` pops the top `:tagspace` item and the top `:integer`, and pushes a new `:tagspace` in which the numeric keys have all been multipled by the `:integer` (even if it is negative or zero)."
+    tagspace-split
+    "`:tagspace-split` pops the top `:tagspace` item and the top `:scalar`, and pushes two new `:tagspace` items in a list to `:exec`, which contain all the items with keys _below_ the `:scalar`, and another with all the keys at or above (inclusive)."
     :tags #{:tagspace :collection}
     (d/consume-top-of :tagspace :as :arg1)
-    (d/consume-top-of :integer :as :scale)
-    (d/calculate [:arg1 :scale]
-      #(make-tagspace
-        (reduce-kv
-          (fn [r k v] (assoc r (*' k %2) v))
-          (sorted-map)
-          (:contents %1))) :as :result)
-    (d/push-onto :tagspace :result)))
-
-
-
-(def tagspace-splitwithfloat
-  (core/build-instruction
-    tagspace-splitwithfloat
-    "`:tagspace-splitwithfloat` pops the top `:tagspace` item and the top `:float`, and pushes two new `:tagspace` items in a list to `:exec`, which contain all the items with keys _below_ the `:float`, and all the keys above (inclusive)."
-    :tags #{:tagspace :collection}
-    (d/consume-top-of :tagspace :as :arg1)
-    (d/consume-top-of :float :as :cutoff)
+    (d/consume-top-of :scalar :as :cutoff)
     (d/calculate [:arg1 :cutoff]
       #(map 
           make-tagspace
@@ -274,61 +225,20 @@
 
 
 
-(def tagspace-splitwithint
+(def tagspace-tidy
   (core/build-instruction
-    tagspace-splitwithint
-    "`:tagspace-splitwithint` pops the top `:tagspace` item and the top `:integer`, and pushes two new `:tagspace` items in a list to `:exec`, which contain all the items with keys _below_ the `:integer`, and all the keys above (inclusive)."
-    :tags #{:tagspace :collection}
-    (d/consume-top-of :tagspace :as :arg1)
-    (d/consume-top-of :integer :as :cutoff)
-    (d/calculate [:arg1 :cutoff]
-      #(map 
-          make-tagspace
-          (vals 
-            (reduce-kv
-              (fn [r k v] (if (< k %2) 
-                            (assoc-in r [:low k] v)
-                            (assoc-in r [:high k] v)))
-              {:low (sorted-map) :high (sorted-map)}
-              (:contents %1)))) :as :result)
-    (d/push-onto :exec :result)))
-
-
-
-(def tagspace-tidywithfloats
-  (core/build-instruction
-    tagspace-tidywithfloats
-    "`:tagspace-tidywithfloats` pops the top `:tagspace` item and the top two `:float` items (call them END and START respectively), and pushes a new `:tagspace` in which the first item is at index START, the last is at END, all the rest are evenly distributed between. The indices are all coerced to be `:float` values. If the two are identical, then only the last item of the collection will be retained as it will overwrite the others."
+    tagspace-tidy
+    "`:tagspace-tidy` pops the top `:tagspace` item and the top two `:scalar` items (call them END and START respectively), and pushes a new `:tagspace` in which the first item is at index START, the last is at END, all the rest are evenly distributed between. If START and END are identical, then only the last item of the collection will be retained as it will overwrite the others."
     :tags #{:tagspace :collection}
     (d/consume-top-of :tagspace :as :ts)
-    (d/consume-top-of :float :as :end)
-    (d/consume-top-of :float :as :start)
+    (d/consume-top-of :scalar :as :end)
+    (d/consume-top-of :scalar :as :start)
     (d/calculate [:ts] #(vals (:contents %1)) :as :items)
     (d/calculate [:items] #(count %1) :as :how-many)
     (d/calculate [:start :end :how-many]
       #(if (< %3 2) 0 (/ (-' %2 %1) (dec %3))) :as :delta)
     (d/calculate [:how-many :start :delta]
-        #(map double (take %1 (iterate (partial + %3) %2))) :as :indices)
-    (d/calculate [:indices :items] #(make-tagspace (zipmap %1 %2)) :as :result)
-    (d/push-onto :tagspace :result)))
-
-
-
-
-(def tagspace-tidywithints
-  (core/build-instruction
-    tagspace-tidywithints
-    "`:tagspace-tidywithints` pops the top `:tagspace` item and the top two `:integer` items (call them END and START respectively), and pushes a new `:tagspace` in which the first item is at index START, the last is at END, all the rest are evenly distributed between. The indices are all coerced to be `:integer` values. If the two are identical, then only the last item of the collection will be retained as it will overwrite the others."
-    :tags #{:tagspace :collection}
-    (d/consume-top-of :tagspace :as :ts)
-    (d/consume-top-of :integer :as :end)
-    (d/consume-top-of :integer :as :start)
-    (d/calculate [:ts] #(vals (:contents %1)) :as :items)
-    (d/calculate [:items] #(count %1) :as :how-many)
-    (d/calculate [:start :end :how-many]
-      #(if (< %3 2) 0 (/ (-' %2 %1) (dec %3))) :as :delta)
-    (d/calculate [:how-many :start :delta]
-        #(map long (take %1 (iterate (partial + %3) %2))) :as :indices)
+        #(take %1 (iterate (partial +' %3) %2)) :as :indices)
     (d/calculate [:indices :items] #(make-tagspace (zipmap %1 %2)) :as :result)
     (d/push-onto :tagspace :result)))
 
@@ -353,23 +263,18 @@
                     :attributes #{:collection :tagspace})
       (t/attach-instruction , tagspace-count)
       (t/attach-instruction , tagspace-keys)
-      (t/attach-instruction , tagspace-lookupint)
-      (t/attach-instruction , tagspace-lookupintegers)
-      (t/attach-instruction , tagspace-lookupfloat)
-      (t/attach-instruction , tagspace-lookupfloats)
+      (t/attach-instruction , tagspace-lookup)
+      (t/attach-instruction , tagspace-lookupscalars)
       (t/attach-instruction , tagspace-lookupvector)
       (t/attach-instruction , tagspace-max)
       (t/attach-instruction , tagspace-merge)
       (t/attach-instruction , tagspace-min)
       (t/attach-instruction , tagspace-new)
-      (t/attach-instruction , tagspace-offsetfloat)
-      (t/attach-instruction , tagspace-offsetint)
-      (t/attach-instruction , tagspace-scalefloat)
-      (t/attach-instruction , tagspace-scaleint)
-      (t/attach-instruction , tagspace-splitwithfloat)
-      (t/attach-instruction , tagspace-splitwithint)
-      (t/attach-instruction , tagspace-tidywithfloats)
-      (t/attach-instruction , tagspace-tidywithints)
+      (t/attach-instruction , tagspace-normalize)
+      (t/attach-instruction , tagspace-offset)
+      (t/attach-instruction , tagspace-scale)
+      (t/attach-instruction , tagspace-split)
+      (t/attach-instruction , tagspace-tidy)
       (t/attach-instruction , tagspace-values)
       aspects/make-cycling
       aspects/make-equatable
