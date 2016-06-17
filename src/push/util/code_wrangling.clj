@@ -15,6 +15,7 @@
       (inc counter)))
 
 
+
 (defn count-code-points
   "Takes a nested list and counts the total number of seqs and non-seq items in those collections. Literal 'nil' is 1; an empty list '() or #{} or {} is 1. In other words, it only counts lists and things inside lists, not vectors, maps, or other kinds of collection (and is thus different from `count-collection-points`)."
   [item & {:keys [counter] :or {counter 0}}]
@@ -23,6 +24,7 @@
       (reduce #(+ %1 (count-code-points %2)) (inc counter) item)
     :else
       (inc counter)))
+
 
 
 (defn contains-anywhere?
@@ -36,6 +38,7 @@
     ))
 
 
+
 (defn find-in-tree [tree target]
   (loop [loc (zip/seq-zip (seq tree))
          collector []]
@@ -47,6 +50,7 @@
                  collector)))))
 
 
+
 (defn nth-code-point
   "`nth-code-point` takes a :code item (any clojure form) and an integer index, and traverses the code item as a tree (of nested lists and items) in a depth-first order, returning the indexed node."
   [code idx]
@@ -56,6 +60,7 @@
       (zip/node loc)
       (recur (zip/next loc)                                   
              (inc counter)))))
+
 
 
 (defn containers-in
@@ -71,8 +76,9 @@
         (find-in-tree t target))))
 
 
+
 (defn replace-in-code
-  "Takes three Push :code items, and traverses the first argument in a depth-first order, replacing every occurrence of the second arg (if any) with the third."
+  "Takes three Push :code items, and traverses the first argument in a depth-first order, replacing every occurrence of the second arg (if any) with the third. The replacement will ONLY occur in code blocks; it will not replace elements of vectors that appear in those code blocks."
   [code old-code new-code]
   (let [placeholder (gensym)]
     (loop [loc (zip/seq-zip code)]
@@ -85,13 +91,12 @@
                 (zip/next (zip/replace fixing new-code))
                 (zip/next fixing)))))
         (recur
-          (if (= (zip/node loc) old-code)
+          (let [this-thing (zip/node loc)]
+          (if (and (= this-thing old-code) (= (type this-thing) (type old-code)))
             (zip/next (zip/replace loc placeholder))
-            (zip/next loc)))))))
+            (zip/next loc))))))))
 
 
-
-  ; (w/postwalk-replace {old new} code)
 
 (defn replace-nth-in-code
   "Takes two Push :code items and an integer, and replaces the node (counted in depth-first order) of the first code with the second code item."
@@ -104,9 +109,11 @@
              (inc counter)))))
 
 
+
 (defn safe-mod
   "Takes two integers, and returns 0 if the second is 0, otherwise (mod A B)"
   [a b]
   (if (zero? b)
       0
       (mod a b)))
+

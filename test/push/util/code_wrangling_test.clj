@@ -189,11 +189,18 @@
 
 
 (fact "`replace-in-code` doesn't stumble over recursions"
-  (replace-in-code '(1 (2 3) (4 (1 2) 3) 4) 3 '(3 3 3)) => '(1 (2 (3 3 3)) (4 (1 2) (3 3 3)) 4))
+  (replace-in-code '(1 (2 3) (4 (1 2) 3) 4) 3 '(3 3 3)) => 
+    '(1 (2 (3 3 3)) (4 (1 2) (3 3 3)) 4))
 
 
-(future-fact "`replace-in-code` doesn't get mixed up about vectors"
-  (replace-in-code '(1 (2 [1 2] 3) (4 (1 2) 3) 4) '(1 2) 99) => '(1 (2 [1 2] 3) (4 99 3) 4))
+(fact "`replace-in-code` doesn't get mixed up and replace content of vectors"
+  (replace-in-code '(1 [1] [1 (1)]) 1 99) => 
+    '(99 [1] [1 (1)])
+  (replace-in-code '(1 [1] [1 (1)]) '(1) 99) => 
+    '(1 [1] [1 (1)])
+  (replace-in-code '(1 (2 [1 2] 3) (4 (1 2) 3) 4) '(1 2) 99) => 
+    '(1 (2 [1 2] 3) (4 99 3) 4)
+    )
 
 
 ;; replace-nth-in-code

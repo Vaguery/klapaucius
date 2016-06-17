@@ -48,9 +48,6 @@
   ))
 
 
-(future-fact "stepping causes the generator to disappear if it produces nil"
-  () => false)
-
 (fact "generator-type knows some instructions"
   (keys (:instructions generator-type)) =>
     (contains [:generator-dup :generator-save] :in-any-order :gaps-ok))

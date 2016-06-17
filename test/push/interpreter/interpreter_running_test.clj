@@ -16,6 +16,7 @@
 
 (def just-basic (m/basic-interpreter))
 (def classy (c/classic-interpreter))
+(def supreme (owe/make-everything-interpreter))
 
 
 (fact "`handle-item` pushes an item to the :unknown stack if unrecognized when :config :lenient? is true"
@@ -106,8 +107,14 @@
     '(-8 1))
 
 
-(future-fact "handle-item unquotes QuotedCode items it routes"
-  (u/get-stack (handle-item classy (code/push-quote 88)) :scalar) => '()
+(fact "handle-item unquotes QuotedCode items it routes"
+  (u/get-stack (handle-item supreme
+    (push.types.type.quoted/push-quote 88)) :scalar) => '()
+  (u/get-stack (handle-item supreme
+    (push.types.type.quoted/push-quote 88)) :code) => '(88)
+  (u/get-stack (handle-item supreme
+    (push.types.type.quoted/push-quote
+      (push.types.type.quoted/push-quote 88))) :code) => (list (push.types.type.quoted/push-quote 88))
   )
 
 
