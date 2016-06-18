@@ -1,5 +1,5 @@
 (ns acceptance.stress-tests
-  (:require [push.instructions.dsl :as dsl]
+  (:require [push.instructions.dsl :as [dsl]]
             [push.instructions.core :as instr]
             [push.types.core :as types]
             [push.util.stack-manipulation :as u]
@@ -167,7 +167,6 @@
                   (println (str n
                                 "  "
                                 (:counter s) 
-                                (str "[?:" (count (get-in s [:stacks :unknown])) "]")
                                 (reduce-kv
                                   (fn [line k v]
                                     (str line "," (count (get-in s [:stacks k]))))
