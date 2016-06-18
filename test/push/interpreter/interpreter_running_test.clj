@@ -438,7 +438,7 @@
 
       :log ({:item "ENVIRONMENT STACK POPPED", :step 1} :log1 :log2),
 
-      :print (), :quoted (), :rational (), :rationals (), :ref (), :refs (), :return (), :scalar (), :scalars (), :set (), :string (), :strings (), :tagspace (),
+      :print (), :quoted (),  :ref (), :refs (), :return (), :scalar (), :scalars (), :set (), :string (), :strings (), :tagspace (),
 
       :unknown (:nope :no-idea),
 
@@ -457,7 +457,7 @@
 
       :log (:log1 :log2),
 
-      :print (), :quoted (), :rational (), :rationals (), :ref (), :refs (), :return (:return1 :return2),
+      :print (), :quoted (), :ref (), :refs (), :return (:return1 :return2),
 
       :scalar (1 2 3),
 

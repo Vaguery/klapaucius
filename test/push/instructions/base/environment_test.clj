@@ -90,12 +90,12 @@
 
 (fact "starting-here is as expected"
   (:stacks starting-here) =>
-    '{:boolean (), :booleans (), :char (), :chars (), :code (), :environment (), :error (:oops :ow), :exec (:foo :bar), :generator (), :log (1 2 3), :print ("hi"), :quoted (), :rational (), :rationals (), :ref (), :refs (), :return (), :scalar (1 2), :scalars (), :set (), :string (), :strings (), :tagspace (), :unknown (:weird), :vector ()})
+    '{:boolean (), :booleans (), :char (), :chars (), :code (), :environment (), :error (:oops :ow), :exec (:foo :bar), :generator (), :log (1 2 3), :print ("hi"), :quoted (),  :ref (), :refs (), :return (), :scalar (1 2), :scalars (), :set (), :string (), :strings (), :tagspace (), :unknown (:weird), :vector ()})
 
 
 (fact "has-memories is as expected"
     (:stacks has-memories) =>
-    '{:boolean (), :booleans (), :char (), :chars (), :code (), :environment ({:boolean (), :booleans (), :char (), :chars (), :code (), :environment (), :error (:oops :ow), :exec (:bar), :generator (), :log (1 2 3), :print ("hi"), :quoted (), :rational (), :rationals (), :ref (), :refs (), :return (), :scalar (1 2), :scalars (), :set (), :string (), :strings (), :tagspace (), :unknown (:weird), :vector ()}), :error (:oops :ow), :exec (:foo), :generator (), :log (1 2 3), :print ("hi"), :quoted (), :rational (), :rationals (), :ref (), :refs (), :return (), :scalar (1 2), :scalars (), :set (), :string (), :strings (), :tagspace (), :unknown (:weird), :vector ()})
+    '{:boolean (), :booleans (), :char (), :chars (), :code (), :environment ({:boolean (), :booleans (), :char (), :chars (), :code (), :environment (), :error (:oops :ow), :exec (:bar), :generator (), :log (1 2 3), :print ("hi"), :quoted (), :ref (), :refs (), :return (), :scalar (1 2), :scalars (), :set (), :string (), :strings (), :tagspace (), :unknown (:weird), :vector ()}), :error (:oops :ow), :exec (:foo), :generator (), :log (1 2 3), :print ("hi"), :quoted (), :ref (), :refs (), :return (), :scalar (1 2), :scalars (), :set (), :string (), :strings (), :tagspace (), :unknown (:weird), :vector ()})
 
 
 (fact "new-memories is as expected"
@@ -118,8 +118,6 @@
          :log (1 2 3),
          :print ("hi"),
          :quoted (),
-         :rational (),
-         :rationals (),
          :ref (),
          :refs (),
          :return (),
@@ -137,8 +135,6 @@
       :log (1 2 3 4 5 6 7),
       :print ("hi"),
       :quoted (),
-      :rational (),
-      :rationals (),
       :ref (),
       :refs (),
       :return (1 11 1111),
@@ -166,8 +162,6 @@
       :log (1 2 3),                    ;; kept
       :print ("hi"),                   ;; kept
       :quoted (),
-      :rational (),
-      :rationals (),
       :ref (),
       :refs (),
       :return (),
@@ -194,8 +188,6 @@
       :log (1 2 3 4 5 6 7),              ;; retained
       :print ("hi"),
       :quoted (),
-      :rational (),
-      :rationals (),
       :ref (),
       :refs (),
       :return (),                        ;; popped and sent to :exec

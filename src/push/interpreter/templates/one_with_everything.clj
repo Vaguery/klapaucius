@@ -6,7 +6,6 @@
   (:use push.types.type.char)
   (:use push.types.module.code)
   (:use push.types.module.exec)
-  (:use push.types.type.rational)
   (:use push.types.type.scalar)
   (:use push.types.type.string)
   (:use push.types.type.ref)
@@ -38,14 +37,12 @@
     string-type
     tagspace-type
     scalar-type
-    rational-type
 
     (build-vectorized-type boolean-type)
     (build-vectorized-type char-type)
     (build-vectorized-type ref-type)
     (build-vectorized-type string-type)
     (build-vectorized-type scalar-type)
-    (build-vectorized-type rational-type)
 
     standard-vector-type
     standard-set-type
@@ -80,12 +77,10 @@
   - quoted-type
   - ref-type
   - string-type
-  - rational-type
   - scalar-type
   - booleans-type
   - chars-type
   - strings-type
-  - rationals-type
   - scalars-type
   - standard-set-type
   - tagspace-type
