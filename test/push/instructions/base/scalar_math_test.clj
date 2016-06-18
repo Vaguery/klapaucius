@@ -70,8 +70,32 @@
     )
 
 
-;    :scalar     (list cljInf cljNinf)
-                                ; :scalar-add        :scalar      Double/isNaN
+
+
+
+(tabular
+  (fact ":scalar-add does not die when given bigdec and rational arguments"
+    (register-type-and-check-instruction
+        ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items          ?instruction      ?get-stack     ?expected
+    :scalar     '(1M 1/3)        :scalar-add        :scalar      '(4/3)
+    )
+
+
+
+
+(tabular
+  (fact ":scalar-add creates an `:error` if the result would be a NaN value"
+    (register-type-and-check-instruction
+        ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items          ?instruction      ?get-stack     ?expected
+    :scalar     (list cljInf cljNinf)
+                                :scalar-add        :scalar        '()
+    :scalar     (list cljInf cljNinf)
+                                :scalar-add        :error         '({:step 0, :item ":scalar-add produced NaN"}))
+
 
 
 
@@ -256,7 +280,7 @@
                                                    :error '()} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(0 92)}       :scalar-divide     {:scalar '()
-                                                   :error '({:item ":scalar-divide 0 denominator", :step 0})} 
+                                                   :error '({:item ":scalar-divide Div0", :step 0})} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(92 -11/12)}  :scalar-divide     {:scalar '(-11/1104)
                                                    :error '()} 
@@ -265,7 +289,7 @@
                                                    :error '()} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(0/3 1/2)}    :scalar-divide     {:scalar '()
-                                                   :error '({:item ":scalar-divide 0 denominator", :step 0})} 
+                                                   :error '({:item ":scalar-divide Div0", :step 0})} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(9.2 -11/12)} :scalar-divide     {:scalar (list (/ -11/12 9.2))
                                                    :error '()} 
@@ -274,10 +298,10 @@
                                                    :error '()} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(0N 8)}       :scalar-divide     {:scalar '()
-                                                   :error '({:item ":scalar-divide 0 denominator", :step 0})} 
+                                                   :error '({:item ":scalar-divide Div0", :step 0})} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(0M 0N)}       :scalar-divide     {:scalar '()
-                                                   :error '({:item ":scalar-divide 0 denominator", :step 0})} 
+                                                   :error '({:item ":scalar-divide Div0", :step 0})} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(2M 3M)}       :scalar-divide     {:scalar '(1.5M)
                                                    :error '()} 
@@ -294,14 +318,30 @@
 )
 
 
-;; out of bounds/edge cases
-    ; {:scalar   '(92M 8)}       :scalar-divide     {:scalar '()
-    ;                                                :error '()} 
 
-    ;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ; {:scalar   (list cljInf cljInf)}
-    ;                            :scalar-divide     {:scalar '(0.0)
-    ;                                                :error '()} 
+
+(tabular
+  (fact ":scalar-divide does not die when given bigdec and rational arguments"
+    (register-type-and-check-instruction
+        ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items          ?instruction      ?get-stack       ?expected
+    :scalar     '(1/3 10M)      :scalar-divide     :scalar         '(30N)
+    )
+
+
+
+
+(tabular
+  (fact ":scalar-divide creates an `:error` if the result would be a NaN value"
+    (register-type-and-check-instruction
+        ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items          ?instruction      ?get-stack     ?expected
+    :scalar     (list cljInf cljInf)
+                                :scalar-divide        :scalar        '()
+    :scalar     (list cljInf cljInf)
+                                :scalar-divide        :error         '({:step 0, :item ":scalar-divide produced NaN"}))
 
 
 
@@ -387,7 +427,7 @@
                                                    :error '()} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(0 92)}       :scalar-modulo     {:scalar '()
-                                                   :error '({:item ":scalar-modulo 0 denominator", :step 0})} 
+                                                   :error '({:item ":scalar-modulo Div0", :step 0})} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(1 21/12)}  :scalar-modulo     {:scalar '(3/4)
                                                    :error '()} 
@@ -396,7 +436,7 @@
                                                    :error '()} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(0/3 1/2)}    :scalar-modulo     {:scalar '()
-                                                   :error '({:item ":scalar-modulo 0 denominator", :step 0})} 
+                                                   :error '({:item ":scalar-modulo Div0", :step 0})} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(0.25 -11/8)} :scalar-modulo     {:scalar '(0.125)
                                                    :error '()} 
@@ -408,24 +448,39 @@
                                                    :error '()} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(0N 8)}       :scalar-modulo     {:scalar '()
-                                                   :error '({:item ":scalar-modulo 0 denominator", :step 0})} 
+                                                   :error '({:item ":scalar-modulo Div0", :step 0})} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(0M 0N)}       :scalar-modulo     {:scalar '()
-                                                   :error '({:item ":scalar-modulo 0 denominator", :step 0})} 
+                                                   :error '({:item ":scalar-modulo Div0", :step 0})} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(1.2M 32M)}    :scalar-modulo  {:scalar '(0.8M)
                                                    :error '()} 
                                                    )
 
 
-; ;;     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;     {:scalar   (list cljInf 32M)}       :scalar-modulo  {:scalar '(0.8M)
-;                                                    :error '()} 
 
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ; {:scalar   (list 1.2 cljInf)}
-    ;                            :scalar-modulo  {:scalar '(0.8M)
-    ;                                                :error '()} 
+(tabular
+  (fact ":scalar-modulo does not die when given bigdec and rational arguments"
+    (register-type-and-check-instruction
+        ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items          ?instruction      ?get-stack       ?expected
+    :scalar     '(3/7 10M)      :scalar-modulo     :scalar         '(1/7)
+    )
+
+
+
+
+(tabular
+  (fact ":scalar-modulo creates an `:error` if the result would be a NaN value"
+    (register-type-and-check-instruction
+        ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items          ?instruction      ?get-stack     ?expected
+    :scalar     (list cljInf cljInf)
+                                :scalar-modulo        :scalar        '()
+    :scalar     (list cljInf cljInf)
+                                :scalar-modulo        :error         '({:step 0, :item ":scalar-modulo produced NaN"}))
 
 
 
@@ -536,10 +591,30 @@
     )
 
 
-;; out-of-bounds and edge cases
 
-    ; :scalar     '(-2/9 2.0M)     :scalar-multiply     :scalar   '(-0.4444444444444444)
 
+(tabular
+  (fact ":scalar-multiply does not die when given bigdec and rational arguments"
+    (register-type-and-check-instruction
+        ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items          ?instruction      ?get-stack       ?expected
+    :scalar     '(10M 1/3)      :scalar-multiply     :scalar      '(10/3)
+    )
+
+
+
+
+(tabular
+  (fact ":scalar-multiply creates an `:error` if the result would be a NaN value"
+    (register-type-and-check-instruction
+        ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items          ?instruction      ?get-stack     ?expected
+    :scalar     (list 0 cljInf)
+                                :scalar-multiply        :scalar        '()
+    :scalar     (list 0 cljInf)
+                                :scalar-multiply        :error         '({:step 0, :item ":scalar-multiply produced NaN"}))
 
 
 
@@ -688,6 +763,31 @@
     :scalar     '(-2/9 2.0)     :scalar-subtract     :scalar   '(2.2222222222222223)
     :scalar     '()             :scalar-subtract     :scalar      '()
     )
+
+
+
+(tabular
+  (fact ":scalar-subtract does not die when given bigdec and rational arguments"
+    (register-type-and-check-instruction
+        ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items          ?instruction      ?get-stack       ?expected
+    :scalar     '(1M 1/3)        :scalar-subtract     :scalar      '(-2/3)
+    )
+
+
+
+
+(tabular
+  (fact ":scalar-subtract creates an `:error` if the result would be a NaN value"
+    (register-type-and-check-instruction
+        ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items          ?instruction      ?get-stack     ?expected
+    :scalar     (list cljInf cljInf)
+                                :scalar-subtract        :scalar        '()
+    :scalar     (list cljInf cljInf)
+                                :scalar-subtract        :error         '({:step 0, :item ":scalar-subtract produced NaN"}))
 
 
 
