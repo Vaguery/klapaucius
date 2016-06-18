@@ -2,8 +2,8 @@
   (:require [push.util.stack-manipulation :as u]
             [push.interpreter.core :as i]
             [push.instructions.core :as inst]
-            [push.interpreter.templates.minimum :as m]
-            [push.interpreter.templates.classic :as c])
+            [push.core :as push]
+            [push.interpreter.templates.minimum :as m])
   (:use midje.sweet)
   (:use push.instructions.dsl)
   )
@@ -577,7 +577,7 @@
 
     (get-local-from-dslblob :inst
       (#'push.instructions.dsl/save-instructions
-        [(c/classic-interpreter) {}] :as :inst)) =>
+        [(push/interpreter) {}] :as :inst)) =>
           (contains [:code-pop :boolean-print :string-swap]))
 
 

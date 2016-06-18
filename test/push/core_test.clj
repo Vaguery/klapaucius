@@ -17,6 +17,15 @@
   (:program (p/interpreter :program [1 2 3])) => [1 2 3])
 
 
+(fact "when I invoke push.core/interpreter with a :stacks argument, the indicated items are present on the result"
+  (:stacks (p/interpreter :stacks {:foo '(1 2 3)})) =>
+    (contains {:foo '(1 2 3)}))
+
+
+(fact "I can use merge-stacks to merge new values onto an interpreter"
+  (:stacks (p/merge-stacks (p/interpreter) {:foo '(1 2 3)})) => (contains {:foo '(1 2 3)}))
+
+
 (fact "I can produce a list of instructions from an interpreter"
   (p/known-instructions (p/interpreter)) =>
     (contains [:scalar-add :boolean-or :code-dup :exec-y]

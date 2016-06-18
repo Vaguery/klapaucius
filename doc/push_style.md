@@ -13,44 +13,52 @@ Consider this example
 ~~~text
 ;; Push program
 
-[2 4 :integer-subtract 5 6 :integer-add :integer-lt]
+[2 4 :scalar-subtract 5 6 :scalar-add :scalar-lt]
 
 ;; initial setup
 ;; note: the program has been put onto :exec "backwards",
 ;;       in the sense that Clojure's `(into '() program)`
 ;;       would have proceeded item-by-item
 
-:exec    '(2 4 :integer-subtract 5 6 :integer-add :integer-lt)
-:integer '()
+:exec    '(2 4 :scalar-subtract 5 6 :scalar-add :scalar-lt)
+:scalar  '()
 :boolean '()
 
 ;; steps
 
-:exec    '(4 :integer-subtract 5 6 :integer-add :integer-lt)
-:integer '(2)
+:exec    '(4 :scalar-subtract 5 6 :scalar-add :scalar-lt)
+:scalar  '(2)
 :boolean '()
 
-:exec    '(:integer-subtract 5 6 :integer-add :integer-lt)
-:integer '(4 2)
+:exec    '(:scalar-subtract 5 6 :scalar-add :scalar-lt)
+:scalar  '(4 2)
 :boolean '()
 
-:exec    '(5 6 :integer-add :integer-lt)
-:integer '(-2)
+:exec    '(5 6 :scalar-add :scalar-lt)
+:scalar  '(-2)
 :boolean '()
 
-:exec    '(6 :integer-add :integer-lt)
-:integer '(5 -2)
+:exec    '(6 :scalar-add :scalar-lt)
+:scalar  '(5 -2)
 :boolean '()
 
-:exec    '(:integer-add :integer-lt)
-:integer '(6 5 -2)
+:exec    '(:scalar-add :scalar-lt)
+:scalar  '(6 5 -2)
 :boolean '()
 
-:exec    '(:integer-lt)
-:integer '(11 -2)
+:exec    '(:scalar -lt)
+:scalar  '(11 -2)
 :boolean '()
 
 :exec    '()
-:integer '(11 -2)
+:scalar  '(11 -2)
 :boolean '(true)
 ~~~
+
+## Collection types
+
+TBD
+
+## Continuation forms
+
+TBD

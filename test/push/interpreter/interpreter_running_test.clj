@@ -5,9 +5,8 @@
   (:require [push.types.core :as types])
   (:require [push.util.stack-manipulation :as u])
   (:require [push.interpreter.templates.minimum :as m])
-  (:require [push.interpreter.templates.classic :as c])
   (:require [push.instructions.aspects :as aspects])
-  (:require [push.interpreter.templates.one-with-everything :as owe])
+  (:require [push.core :as push])
   (:require [push.types.module.code :as code])
   (:require [push.router.core :as router])
   (:use [push.interpreter.core])
@@ -15,23 +14,22 @@
 
 
 (def just-basic (m/basic-interpreter))
-(def classy (c/classic-interpreter))
-(def supreme (owe/make-everything-interpreter))
+(def supreme (push/interpreter))
 
 
 (fact "`handle-item` pushes an item to the :unknown stack if unrecognized when :config :lenient? is true"
   (let [junk {:x 1 :y 2}]
     (u/get-stack
       (handle-item 
-        (c/classic-interpreter :config {:lenient? true})
+        (push/interpreter :config {:lenient? true})
         junk)
       :unknown) => '({:x 1, :y 2})))
 
 
 (fact "`handle-item` throws an exception on unrecognized items when :config :lenient? is not true (or unset)"
   (handle-item 
-    (c/classic-interpreter :config {:lenient? false})
-    (c/classic-interpreter)) =>  (throws #"Push Parsing Error: "))
+    (push/interpreter :config {:lenient? false})
+    (push/interpreter)) =>  (throws #"Push Parsing Error: "))
 
 
 (fact "handle-item pushes unknown keywords to the :ref stack, regardless of :lenient? setting"
@@ -40,16 +38,16 @@
 
 (fact "handle-item will push unregistered keywords, but not bound ones with empty bindings"
   (u/get-stack (handle-item
-    (owe/make-everything-interpreter :bindings {:a 8}) :a) :ref) => '() ;; lookup
+    (push/interpreter :bindings {:a 8}) :a) :ref) => '() ;; lookup
   (u/get-stack (handle-item
-    (owe/make-everything-interpreter :bindings {:a 8}) :a) :exec) => '(8) ;; lookup
+    (push/interpreter :bindings {:a 8}) :a) :exec) => '(8) ;; lookup
   (u/get-stack (handle-item
-    (owe/make-everything-interpreter :bindings {:a 8 :b nil}) :b) :ref) => '()
+    (push/interpreter :bindings {:a 8 :b nil}) :b) :ref) => '()
   (u/get-stack (handle-item
-    (owe/make-everything-interpreter :bindings {:a 8 :b nil}) :b) :exec) => '()
+    (push/interpreter :bindings {:a 8 :b nil}) :b) :exec) => '()
 
 
-  (let [dumb (owe/make-everything-interpreter :bindings {:a 8 :b nil})]
+  (let [dumb (push/interpreter :bindings {:a 8 :b nil})]
     (routers-see? dumb :X)=> true
     (routers-see? dumb :a)=> true
     (routers-see? dumb :b)=> true
@@ -100,11 +98,17 @@
   (u/get-stack (handle-item (register-type just-basic foo-type) 99) :foo) => '(99))
 
 
+
 (fact "handle-item sends scalars to :scalar (when told to)"
-  (u/get-stack (handle-item classy 8) :scalar) => '(8)
-  (u/get-stack (handle-item classy -8) :scalar) => '(-8)
-  (u/get-stack (handle-item (c/classic-interpreter :stacks {:scalar '(1)}) -8) :scalar) =>
-    '(-8 1))
+  (u/get-stack (handle-item supreme 8) :scalar) => '(8)
+  (u/get-stack (handle-item supreme -8) :scalar) => '(-8)
+  (:stacks (push/interpreter :stacks {:scalar '(1)})) =>
+    (contains {:scalar '(1)})
+  (:stacks
+    (handle-item (push/interpreter :stacks {:scalar '(1)}) -8)) =>
+    (contains {:scalar '(-8 1)})
+    )
+
 
 
 (fact "handle-item unquotes QuotedCode items it routes"
@@ -122,7 +126,7 @@
 
 
 (fact "if the :quote-refs? flag is true in the interpreter, all keywords ALWAYS go to :refs"
-  (let [knows-a (owe/make-everything-interpreter :bindings {:a 8})]
+  (let [knows-a (push/interpreter :bindings {:a 8})]
     (:bindings knows-a) => {:a '(8)}
     (bound-keyword? knows-a :a) => true
     (u/get-stack (handle-item knows-a :a) :ref) => '()   ;; normal
@@ -130,7 +134,7 @@
 
   (let [kinda-knows-a
           (assoc
-            (owe/make-everything-interpreter :bindings {:a 8})
+            (push/interpreter :bindings {:a 8})
             :quote-refs?
             true)]
     (:bindings kinda-knows-a) => {:a '(8)}
@@ -141,41 +145,41 @@
 
 
 (fact "handle-item sends booleans to :boolean"
-  (u/get-stack (handle-item classy false) :boolean) => '(false)
-  (u/get-stack (handle-item classy true) :boolean) => '(true)
-  (u/get-stack (handle-item (c/classic-interpreter :stacks {:boolean '(false)}) true) :boolean) =>
+  (u/get-stack (handle-item supreme false) :boolean) => '(false)
+  (u/get-stack (handle-item supreme true) :boolean) => '(true)
+  (u/get-stack (handle-item (push/interpreter :stacks {:boolean '(false)}) true) :boolean) =>
     '(true false))
 
 
 (fact "handle-item sends characters to :char"
-  (u/get-stack (handle-item classy \J) :char) => '(\J)
-  (u/get-stack (handle-item classy \o) :char) => '(\o)
-  (u/get-stack (handle-item (c/classic-interpreter :stacks {:char '(\Y)}) \e) :char) =>
+  (u/get-stack (handle-item supreme \J) :char) => '(\J)
+  (u/get-stack (handle-item supreme \o) :char) => '(\o)
+  (u/get-stack (handle-item (push/interpreter :stacks {:char '(\Y)}) \e) :char) =>
     '(\e \Y))
 
 
 (fact "handle-item sends strings to :string"
-  (u/get-stack (handle-item classy "foo") :string) => '("foo")
-  (u/get-stack (handle-item classy "") :string) => '("")
-  (u/get-stack (handle-item (c/classic-interpreter :stacks {:string '("bar")}) "baz") :string) =>
+  (u/get-stack (handle-item supreme "foo") :string) => '("foo")
+  (u/get-stack (handle-item supreme "") :string) => '("")
+  (u/get-stack (handle-item (push/interpreter :stacks {:string '("bar")}) "baz") :string) =>
     '("baz" "bar"))
 
 
 (fact "handle-item 'unwraps' lists onto :exec"
-  (u/get-stack (handle-item classy '(1 2 3)) :exec) => '(1 2 3)
-  (u/get-stack (handle-item classy '(1 (2) (3))) :exec) => '(1 (2) (3))
-  (u/get-stack (handle-item classy '(1 () ())) :exec) => '(1 () ())
-  (u/get-stack (handle-item classy '()) :exec) => '())
+  (u/get-stack (handle-item supreme '(1 2 3)) :exec) => '(1 2 3)
+  (u/get-stack (handle-item supreme '(1 (2) (3))) :exec) => '(1 (2) (3))
+  (u/get-stack (handle-item supreme '(1 () ())) :exec) => '(1 () ())
+  (u/get-stack (handle-item supreme '()) :exec) => '())
 
 
 (fact "the :exec stack stays a list when a list is unwrapped onto it"
-  (list? (u/get-stack (handle-item classy '(1 2 3)) :exec)) => 
+  (list? (u/get-stack (handle-item supreme '(1 2 3)) :exec)) => 
     true
-  (list? (u/get-stack (handle-item classy '(1 (2) (3))) :exec)) => 
+  (list? (u/get-stack (handle-item supreme '(1 (2) (3))) :exec)) => 
     true
-  (list? (u/get-stack (handle-item classy '(1 () ())) :exec)) => 
+  (list? (u/get-stack (handle-item supreme '(1 () ())) :exec)) => 
     true
-  (list? (u/get-stack (handle-item classy '()) :exec)) => 
+  (list? (u/get-stack (handle-item supreme '()) :exec)) => 
     true)
 
 
@@ -401,7 +405,7 @@
 
 
 (def ready-to-pop 
-  (c/classic-interpreter 
+  (push/interpreter 
     :config {:step-limit 1000}
     :stacks {:exec '() 
              :environment '({:exec (3 33)})
@@ -414,7 +418,7 @@
 
 
 (def unready-to-pop 
-  (c/classic-interpreter 
+  (push/interpreter 
     :config {:step-limit 1000}
     :stacks {:exec '() 
              :environment '()
@@ -430,18 +434,15 @@
   (is-done? ready-to-pop) => false
 
   (:stacks (step ready-to-pop)) =>
-    '{:boolean (), 
-      :char (), 
-      :code (), 
-      :environment (), 
-      :error (:error1 :error2), 
-      :exec (:return2 :return1 3 33), 
-      :scalar (), 
-      :log ({:item "ENVIRONMENT STACK POPPED", :step 1} :log1 :log2), 
-      :print (), 
-      :return (), 
-      :string (), 
-      :unknown (:nope :no-idea)})
+    '{:boolean (), :booleans (), :char (), :chars (), :code (), :environment (), :error (:error1 :error2), :exec (:return2 :return1 3 33), :generator (),
+
+      :log ({:item "ENVIRONMENT STACK POPPED", :step 1} :log1 :log2),
+
+      :print (), :quoted (), :rational (), :rationals (), :ref (), :refs (), :return (), :scalar (), :scalars (), :set (), :string (), :strings (), :tagspace (),
+
+      :unknown (:nope :no-idea),
+
+      :vector ()})
 
 
 (fact "the counter advances when the :environment pops"
@@ -452,18 +453,19 @@
   (is-done? unready-to-pop) => true
 
   (:stacks (step unready-to-pop)) =>
-    '{:boolean (),
-      :char (), 
-      :code (), 
-      :environment (), 
-      :error (:error1 :error2), 
-      :exec (), 
-      :scalar (1 2 3), 
-      :log (:log1 :log2), 
-      :print (), 
-      :return (:return1 :return2), 
-      :string (), 
-      :unknown (:nope :no-idea)})
+    '{:boolean (), :booleans (), :char (), :chars (), :code (), :environment (), :error (:error1 :error2), :exec (), :generator (),
+
+      :log (:log1 :log2),
+
+      :print (), :quoted (), :rational (), :rationals (), :ref (), :refs (), :return (:return1 :return2),
+
+      :scalar (1 2 3),
+
+      :scalars (), :set (), :string (), :strings (), :tagspace (),
+
+      :unknown (:nope :no-idea),
+
+      :vector ()})
 
 
 (fact "the counter does not advance when the :environment does not pop!"
@@ -475,7 +477,7 @@
 ;; a fixture or two
 
 
-(def simple-things (c/classic-interpreter 
+(def simple-things (push/interpreter 
                       :program [1 2 false :scalar-add true :boolean-or]
                       :config {:step-limit 1000}))
 
@@ -518,7 +520,7 @@
 
 (fact "I can run a program that is passed in as a seq"
   (:stacks (run-n
-            (c/classic-interpreter 
+            (push/interpreter 
               :program '(1 2 ((false :scalar-add) (true)) :boolean-or)
               :config {:step-limit 1000}) 1000)) => (contains
                               {:boolean '(true), 
@@ -533,7 +535,7 @@
 
 
 (def forever-8
-  (c/classic-interpreter :program [1 :exec-y 8]))
+  (push/interpreter :program [1 :exec-y 8]))
 
 
 (fact "`run-n` doesn't care about halting conditions"

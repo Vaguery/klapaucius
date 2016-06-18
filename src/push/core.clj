@@ -6,7 +6,6 @@
 ;; functions that need to be exposed
 
 ;; interpreters:
-;; new interpreter from template (classic, minimum, o.w.e.)
 ;; step interpreter
 ;; run interpreter
 ;; then-run function (load new code, run that)
@@ -24,6 +23,13 @@
 ;; remove type from interpreter instance
 
 
+
+(defn merge-stacks
+  "takes an interpreter and a hash-map of stacks, and merges the hash-map with those of the interpreter"
+  [interpreter stacks]
+  (assoc interpreter :stacks (merge (:stacks interpreter) stacks)))
+
+
 (defn interpreter
   "Creates a new Push interpreter and returns it. Keyword arguments permit setting the :program, :stacks, :bindings, :instructions, :config, :counter, or :done? flag."
   [& {:keys [program stacks bindings config counter done?]
@@ -33,14 +39,16 @@
            config {}
            counter 0
            done? false}}]
-    (i/reset-interpreter
-      (owe/make-everything-interpreter
-        :program program
-        :stacks stacks
-        :bindings bindings
-        :config config
-        :counter counter
-        :done? done?)))
+    (merge-stacks 
+      (i/reset-interpreter
+        (owe/make-everything-interpreter
+          :program program
+          :stacks stacks
+          :bindings bindings
+          :config config
+          :counter counter
+          :done? done?))
+      stacks))
 
 
 (defn known-instructions
