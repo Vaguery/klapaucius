@@ -1,5 +1,20 @@
 # Recent changes
 
+## 0.1.19, 0.1.18, 0.1.17
+
+- `:scalar` type has replaced all references to both the `:integer` and `:float` type
+- indexing with arbitrary scalars is done by first reducing the "index" `modulo` the size of the collection, and then "sliding" upwards to the next-largest integer; if the index is still larger than the size of the collection after `modulo` reduction, the first item is returned
+- `:string->integer` and `:string->float` have been removed until a more effective and robust recognizer algorithm is available
+- numerous instructions have been combined due to the collapse of `:integer` and `:float` to a single type
+- the routing function of the interpreter has been rewritten from scratch to permit
+  - more flexible `:recognizer` predicates
+  - arbitrary preprocessing items before they are sent to their destination stacks
+  - differences between the `:name` of a type and its `:target-stack`
+- the interpreter now recognizes `QuotedCode` items, which (using the features just described) are routed to `:code` after being "unwrapped". Convenience function `push-code` creates a `QuotedCode` record from an arbitrary Push item or code block; when it is routed by the interpreter it is sent to `:code`, but the `QuotedCode` "wrapper" s removed. This permits more flexibility in continuation results from instructions.
+- `:scalar-power` has been disabled until an overflow (which leads to timeouts) can be resolved
+- several arithmetic instructions used to return their arguments to their sources when they produced an `:error` (such as square root of negative numbers, or arcsin of a number out of range). These now consume their arguments.
+
+
 ## 0.1.16, 0.1.15, 0.1.14
 
 - interpreter routing now uses `PushRouter` records, which are stored in each type definition
