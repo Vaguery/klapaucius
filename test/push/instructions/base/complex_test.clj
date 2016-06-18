@@ -49,6 +49,20 @@
 
 
 (tabular
+  (fact ":complex-conjugate returns the conjugate of a Complex record"
+    (register-type-and-check-instruction
+        ?set-stack ?items complex-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items       ?instruction        ?get-stack     ?expected
+    :complex    (list (->Complex 1 2))
+                             :complex-conjugate  :complex       (list (->Complex 1 -2))
+    :complex    (list (->Complex 0 0))
+                             :complex-conjugate  :complex       (list (->Complex 0 0))
+    )
+
+
+
+(tabular
   (fact ":complex-divide returns the quotient of two Complex records"
     (register-type-and-check-instruction
         ?set-stack ?items complex-type ?instruction ?get-stack) => ?expected)

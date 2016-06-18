@@ -27,6 +27,19 @@
 
 
 
+
+(def complex-conjugate
+  (core/build-instruction
+    complex-conjugate
+    "`:complex-conjugate` pops the top `:complex` item and pushes its complex conjugate"
+    :tags #{:complex :numeric}
+    (d/consume-top-of :complex :as :arg1)
+    (d/calculate [:arg1] #(complex/conjugate %1) :as :cc)
+    (d/push-onto :complex :cc)
+    ))
+
+
+
 (def complex-divide
   (core/build-instruction
     complex-divide
@@ -103,6 +116,7 @@
         aspects/make-taggable
         aspects/make-visible 
         (t/attach-instruction , complex-add)
+        (t/attach-instruction , complex-conjugate)
         (t/attach-instruction , complex-divide)
         (t/attach-instruction , complex-multiply)
         (t/attach-instruction , complex-subtract)

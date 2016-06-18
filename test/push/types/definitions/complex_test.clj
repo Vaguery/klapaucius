@@ -16,8 +16,8 @@
 
 
 
-(fact "complex-conjugate returns the conjugate of a Complex record"
-  (complex-conjugate (->Complex 1/3 0.4)) => (->Complex 1/3 -0.4)
+(fact "conjugate returns the conjugate of a Complex record"
+  (conjugate (->Complex 1/3 0.4)) => (->Complex 1/3 -0.4)
   )
 
 

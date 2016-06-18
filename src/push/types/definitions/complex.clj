@@ -36,7 +36,7 @@
 
 
 
-(defn complex-conjugate
+(defn conjugate
   "takes a Complex record and returns its complex conjugate"
   [c]
   (->Complex
