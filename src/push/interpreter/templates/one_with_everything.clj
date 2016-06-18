@@ -65,7 +65,7 @@
 
 
 (defn make-everything-interpreter
-  "A convenience function that creates a new Interpreter record set up 'like Clojush'.
+  "A convenience function that creates a new Interpreter with (almost) every defined type and instruction.
 
   With no arguments, it has an empty :program, and these types are loaded (in this order):
   

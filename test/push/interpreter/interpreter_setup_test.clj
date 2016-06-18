@@ -6,7 +6,7 @@
             [push.interpreter.templates.one-with-everything :as everything]
             [push.instructions.aspects :as aspects]
             [push.interpreter.templates.minimum :as m]
-            [push.interpreter.templates.classic :as c])
+            [push.core :as push])
   (:use midje.sweet)
   (:use [push.util.type-checkers :only (boolean?)])
   (:use push.interpreter.core)
@@ -14,7 +14,7 @@
 
 
 (def just-basic (m/basic-interpreter))
-(def classy (c/classic-interpreter))
+(def supreme (push/interpreter))
 
 
 ;; program
@@ -331,75 +331,6 @@
   (u/get-stack just-basic :foo ) => nil)
 
 
-;;;; classic-interpreter
-
-
-;; this function creates a Push interpreter that pre-loads all the core types
-;; and their instructions on creation
-
-
-(fact "`classic-interpreter` has `boolean-type` registered"
-  (:types classy) =>
-    (contains push.types.type.boolean/boolean-type))
-
-
-(fact "`classic-interpreter` has `string-type` registered"
-  (:types classy) =>
-    (contains push.types.type.string/string-type))
-
-
-(fact "`classic-interpreter` has `char-type` registered"
-  (:types classy) =>
-    (contains push.types.type.char/char-type))
-
-
-(fact "`classic-interpreter` has `code-module` registered"
-  (keys (:instructions classy)) =>
-    (contains :code-stackdepth)) ;; there's probably a more appropriate check
-
-
-(fact "`classic-interpreter` has `exec-module` registered"
-  (keys (:instructions classy)) =>
-    (contains :exec-stackdepth))  ;; there's probably a more appropriate check
-
-
-(fact "`classic-interpreter` can have its :stacks set"
-  (keys (:stacks classy)) => (contains
-    [:boolean :char :code :environment :error :exec :scalar :log :print :return :string :unknown]
-    :in-any-order)
-  (:scalar (:stacks (c/classic-interpreter :stacks {:scalar '(8)}))) => '(8)
-  (:boolean (:stacks (c/classic-interpreter :stacks {:boolean '(:test)}))) => '(:test))
-
-
-(fact "`classic-interpreter` can have its :bindings set"
-  (:bindings classy) => {}
-  (:bindings (c/classic-interpreter :bindings [1 2 3])) =>
-    {:input!1 '(1), :input!2 '(2), :input!3 '(3)}
-  (:bindings (c/classic-interpreter :bindings {:a 8 :b false})) => {:a '(8), :b '(false)})
-  
-
-(fact "`classic-interpreter` can have its :config set"
-  (:config classy) => m/interpreter-default-config
-  (:config (c/classic-interpreter :config {:weird-config 88})) => 
-    (contains {:weird-config 88}))
-
-
-(fact "`classic-interpreter` can have its :counter set"
-  (:counter classy) => 0
-  (:counter (c/classic-interpreter :counter 7777)) => 7777)
-
-
-(fact "`one-with-everything` knows all kinds of instructions already"
-  (let [benchmarker (everything/make-everything-interpreter)]
-    (println (str "Interpreter with Everything: "
-                  (count (keys (:instructions benchmarker)))
-                  " instructions, "
-                  (count (:routers benchmarker))
-                  " routers."))
-    (keys (:instructions benchmarker)) =>  ;; just a sampling as a rough check
-      (contains [:scalar-add :boolean-and :char≥? :string-concat] :in-any-order :gaps-ok)))
-
-
 ;;;; manipulating existing interpreters
 
 
@@ -413,7 +344,7 @@
     (:foo (:instructions (register-instruction just-basic foo))) => foo))
 
 
-(fact "register-instruction throws an exception if a token is reassigned (because that's what Clojush does)"
+(fact "register-instruction throws an exception if a token is reassigned "
   (let [foo (i/make-instruction :foo)]
     (register-instruction (register-instruction just-basic foo) foo) =>
       (throws Exception "Push Instruction Redefined:':foo'")))
@@ -422,11 +353,11 @@
 ;; forget-instruction
 
 (fact "forget-instruction drops the indicated instruction from the Interpreter"
-  (keys (:instructions classy)) => (contains :scalar-add)
+  (keys (:instructions supreme)) => (contains :scalar-add)
   (keys (:instructions 
-    (forget-instruction classy :scalar-add))) =not=> (contains :scalar-add)
+    (forget-instruction supreme :scalar-add))) =not=> (contains :scalar-add)
   (keys (:instructions 
-    (forget-instruction classy :foo-bar))) => (keys (:instructions classy)))
+    (forget-instruction supreme :foo-bar))) => (keys (:instructions supreme)))
 
 
 
