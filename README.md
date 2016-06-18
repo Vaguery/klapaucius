@@ -23,7 +23,7 @@ The project is written in Clojure 1.8, and depends heavily on [Midje](https://gi
 
 ### Project status
 
-`klapaucius "0.1.16-SNAPSHOT"` includes a fully working interpreter, but is undergoing rapid expansion (thus the `SNAPSHOT` designation). While the current version is rigorously tested,  **substantial deep architectural changes** will be made leading up the 0.2 release. If you're going to work on it, please contact me during this great leap forward, and submit pull requests for small amounts of work in numerous git branches!
+`klapaucius "0.1.19-SNAPSHOT"` includes a fully working interpreter, but is undergoing rapid expansion (thus the `SNAPSHOT` designation). While the current version is rigorously tested,  **substantial deep architectural changes** will be made leading up the 0.2 release. If you're going to work on it, please contact me during this great leap forward, and submit pull requests for small amounts of work in numerous git branches!
 
 ### Project dependencies
 
@@ -53,12 +53,12 @@ Using `leiningen`, add the following dependency to your `project.clj`
   (push/interpreter
     :bindings {:speed 88.2 :burden 2 :african? false}))
 
-(def my-push-program [1 :burden :integer-add])
+(def my-push-program [1 :burden :scalar-add])
 
-(def final-integer-stack
+(def final-scalar-stack
   (push/get-stack
     (push/run runner my-push-program 1000)
-    :integer))
+    :scalar))
 ```
 
 ### In the REPL
@@ -75,9 +75,9 @@ user=> (def runner (push/interpreter :bindings {:speed 8.1 :burden 2 :african? f
 ;; don't do this except to learn a lesson:
 user=> (push/run
   #_=>   runner
-  #_=>   [1 :burden :integer-add]
+  #_=>   [1 :burden :scalar-add]
   #_=>   1000)
-#push.interpreter.core.Interpreter{:program [1 :burden :integer-add], :types ({:name :numeric-scaling, :attributes #{:numeric}, :instructions {:integer-few #push.instructions.core.Instruction{:token :integer-few, :docstring "`:integer-few` pops the top `:integer` value, and calculates `(mod 10 x)`.", :tags #{:numeric}, :needs {:integer 1}, :products {:integer 1}...
+#push.interpreter.core.Interpreter{:program [1 :burden :scalar-add], :types ({:name :numeric-scaling, :attributes #{:numeric}, :instructions {:scalar-few #push.instructions.core.Instruction{:token :scalar-few, :docstring "`:scalar-few` pops the top `:scalar` value, and calculates `(mod 10 x)`.", :tags #{:numeric}, :needs {:scalar 1}, :products {:scalar 1}...
 
 ;; (push/run INTERPRETER) returns the ENTIRE interpreter state after running the program, including all the instruction definitions, stack contents, logs and more!
 
@@ -85,24 +85,24 @@ user=> (push/run
 ;; better to capture the state of the interpreter in a `var`
 user=> (def ran-it (push/run
   #_=>   runner
-  #_=>   [1 :burden :integer-add]
+  #_=>   [1 :burden :scalar-add]
   #_=>   1000))
 #'user/ran-it
 
 
-user=> (push/get-stack ran-it :integer)
+user=> (push/get-stack ran-it :scalar)
 (3)
 
 
 ;; push/run requires 3 arguments: an interpreter, a program, and a step limit
 ;; but it permits an optional :bindings argument (a hashmap)
 ;; plus several other optional arguments (see docs)
-user=> (push/get-stack (push/run runner [1 :burden :integer-add] 300 :bindings {:burden 87}) :integer)
+user=> (push/get-stack (push/run runner [1 :burden :scalar-add] 300 :bindings {:burden 87}) :scalar)
 (88)
 
 
 user=> (push/known-instructions runner)
-(:strings-cutflip :integers-yankdup :integer-max :line-circle-miss? :floats-length :string-cutstack :print-space :integer-multiply :strings-shatter :integers-contains? :char-lowercase? :booleans-rotate :float->boolean :string-butlast :code-return-pop :string-min :strings-stackdepth :set-return :integers-print :string-occurrencesofchar :push-bindingset :integer-sign :circle-yank :char-max :exec-do*count :string-stackdepth :booleans-last :circle-swap :integers-set :integers-byexample :vector-replace :code-flipstack :exec-pop :boolean-dup :integers-take :line-print :integer-mod :set-flipstack :integers-replacefirst :string>? :environment-stackdepth :string->float :vector-return-pop :set-pop :string->integer :floats-contains? :strings-equal?
+(:strings-cutflip :scalars-yankdup :scalar-max :line-circle-miss?  :string-cutstack :print-space :scalar-multiply :strings-shatter :scalars-contains? :char-lowercase? :booleans-rotate :string-butlast :code-return-pop :string-min :strings-stackdepth :set-return :scalars-print :string-occurrencesofchar :push-bindingset :scalar-sign :circle-yank :char-max :exec-do*count :string-stackdepth :booleans-last :circle-swap :scalars-set :scalars-byexample :vector-replace :code-flipstack :exec-pop :boolean-dup :scalars-take :line-print :scalar-mod :set-flipstack :scalars-replacefirst :string>? :environment-stackdepth :vector-return-pop :set-pop :string->scalar :strings-equal?
 ;;... a HUGE list of known instructions will follow
 )
 
@@ -116,11 +116,11 @@ user=> (:bindings runner)
 
 
 user=> (:program ran-it)
-[1 :burden :integer-add]
+[1 :burden :scalar-add]
 
 
 user=> (:stacks ran-it)
-{:booleans (), :integers (), :unknown (), :exec (), :return (), :float (), :strings (), :circle (), :string (), :vector (), :print (), :integer (3), :chars (), :line (), :code (), :point (), :error (), :environment (), :set (), :log ({:step 4, :item :integer-add} {:step 3, :item 2} {:step 2, :item :burden} {:step 1, :item 1}), :boolean (), :char (), :floats ()}
+{:booleans (), :scalars (), :unknown (), :exec (), :return (), :strings (), :circle (), :string (), :vector (), :print (), :scalar (3), :chars (), :line (), :code (), :point (), :error (), :environment (), :set (), :log ({:step 4, :item :scalar-add} {:step 3, :item 2} {:step 2, :item :burden} {:step 1, :item 1}), :boolean (), :char ()}
 
 ;; NOTICE THE :log STACK ^^^
 
@@ -145,12 +145,11 @@ A Push program is an arbitrary ordered list composed of _bindings_, _instruction
   - `:boolean` (`true` and `false`)
   - `:char` (single Clojure `char` items)
   - `:code` (any items; not a "type" but a special module)
-  - `:float` (floating-point numbers)
-  - `:integer` 
+  - `:scalar`  (any numeric value)
   - `:string` 
   - `:set` (set of arbitrary items)
   - `:vector` (collection of arbitrary items)
-  - and a wide variety of specialized `:vector` subtypes which by definition only hold a single type of item, including `:booleans`, `:chars`, `:floats`, `:integers`, `:strings`
+  - and a wide variety of specialized `:vector` subtypes which by definition only hold a single type of item, including `:booleans`, `:chars`, `:scalars`, `:strings`
 - if the item a list of items, the list is "unwrapped" and pushed back onto the `:exec` stack so the items inside it will be executed in turn
 
 And that's about it. There are a few other special-purpose stacks, mainly used for IO and logging. It's possible to extend the language easily by defining new types (which in Push means little more than "literals that are recognized and sent to a stack"), the stacks that go with them, and instructions to manipulate them usefully.
