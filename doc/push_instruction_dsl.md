@@ -4,16 +4,16 @@ The Push Instruction DSL is a highly-constrained domain-specific language for de
 
 ## What a Push instruction does
 
-Every Push instruction takes an entire `Interpreter` as its argument, and returns a modified `Interpreter` as its result. The transformation of the `Interpreter` state from input to output is composed of a series of imperative transformations in the DSL, using ephemeral state variables saved in a "scratch map" in order to pass intermediate results between steps of processing.
+Every Push instruction takes an entire `Interpreter` as its argument, and returns a modified `Interpreter` as its result. The transformation of the `Interpreter` state from input to output is composed of a series of imperative transformations in the DSL, conducted as a single uninterruptible _transaction_ and using ephemeral state variables saved in a "scratch map" in order to pass intermediate results between steps of processing.
 
 Let me walk through a few examples of simple and complex instruction behavior, just to clarify:
 
-- `:integer-divide` pops two `:integer` values as arguments (call them `B` and `A`, respectively); if `B` is zero, it pushes both values back onto the `:integer` stack unchanged, and pushes an item with the value `":integer-divide 0 denominator"` onto the `:error` stack; otherwise, it pushes the integer quotient `A÷B` onto the `:integer` stack
+- `:scalar-divide` pops two `:scalar` values as arguments (call them `B` and `A`, respectively); if `B` is not zero, then it calculates the quotient `A÷B` and pushes that onto the `:scalar` stack. If `B` is zero, then it pushes an `:error` item with the message `":scalar-divide 0 denominator"` onto the `:error` stack
 - `:exec-if` pops the top two `:exec` items and the top `:boolean` item; if the latter is `true`, the first `:exec` item is pushed back onto that stack; if `false`, the second one is.
-- `:string-cutflip` takes an `:integer` argument, and transforms it into an index over the `:string` stack by taking its value modulo that stack's current size; if the stack is empty, the index is 0. It then takes all items from the `:string` stack down to the indexed item, and reverses their order, leaving the remainder of the stack unchanged.
-- `:push-inputs` pushes a list of all the currently defined `input` keywords (in lexicographically sorted order) onto the `:exec` stack
+- `:string-cutflip` takes a `:scalar` argument, and transforms that number into an index over the `:string` stack by taking its value modulo that stack's current size; if the stack is empty, the index is 0. It then reverses the order of all items on the `:string` stack from the top down to the index position, leaving the remainder of the stack unchanged.
+- `:push-bindings` pushes a list of all the currently defined `input` keywords (in lexicographically sorted order) onto the `:exec` stack
 
-Almost all Push instructions consume arguments from one or more specified stacks. Whenever any argument is missing, everything else is left in place and an `:error` is added to that stack recording the shortage. So for example, `:integer-divide` will not change the values on the `:integer` stack if there is only one number there.
+As you can see, there's a lot going on inside many of the standard Push instructions. Not only are arguments popped from stacks, but branching calculations can occur, outcomes may change depending on arguments' or intermediate calculations' values, and so on. The Push DSL exists to _manage_ that potential complexity. It intentionally limits the scope of Clojure with the goal of keeping individual instructions---even your domain-specific ones---manageable and maintainable.
 
 ## DSL fundamentals
 
@@ -30,7 +30,7 @@ The Push Instruction DSL is a very constrained subset of Clojure. While the defi
 - simplify logging and debugging information with globally-defined side-effects
 - automate the generation of "standard" instructions for new user-defined types
 
-As I said, there are some constraints on the types of things that can happen within an instruction definition, in one transaction step:
+As I said, there are some constraints on the types of things that can happen within an instruction definition, in one DSL step:
 
 - one item can be popped from a stack, stored in a scratch variable
 - an entire stack can be moved into a scratch variable (deleting them)
@@ -48,24 +48,39 @@ Thus, the overall structure of every Push instruction follows the same general b
 2. calculate the correct result(s), saving them to scratch variables
 3. place the result(s) from scratch storage onto the appropriate stack(s), one stack at a time
 
-While one instruction may consume arguments and another may simply "read" them, all of the standard Push 3.0 and Clojush instructions have be built on this simplified framework.
+While one instruction may consume arguments and another may simply "read" them, all of the standard Push 3.0 and Clojush instructions can be built on this simplified framework.
 
 ## A couple of (working) examples
 
 These are calls to the `build-instruction` macro, which creates a new `Instruction` record with various other settings besides the transaction itself. The last few lines of each (after the `:tags` line) are the transaction proper.
 
-`:boolean->integer`:
+`:boolean->signedint`:
 
 ~~~clojure
-(def boolean->integer
+(def boolean->signedint
   (core/build-instruction
-    boolean->integer
-    "`:boolean->integer` pops the top `:boolean`. If it's `true`, it pushes 1; if `false`, it pushes 0."
+    boolean->signedint
+    "`:boolean->signedint` pops the top `:boolean`. If it's `true`, it pushes 1; if `false`, it pushes -1."
     :tags #{:base :conversion}
-    (d/consume-top-of :boolean :as :arg1)
-    (d/calculate [:arg1] #(if %1 1 0) :as :logic)
-    (d/push-onto :scalar :logic)))
+    (push.instructions.dsl/consume-top-of :boolean :as :arg1)
+    (push.instructions.dsl/calculate [:arg1] #(if %1 1 -1) :as :logic)
+    (push.instructions.dsl/push-onto :scalar :logic)))
 ~~~
+
+Let's walk through that definition of `:boolean->signedint`. I'm defining the instruction using the `push.instructions.core/build-instruction` macro, which compiles the information that follows into a self-contained `Instruction` Clojure record. The first argument, here `boolean->signedint`, is simply the name of the instruction itself, and it will be the keyword used by a running Interpreter to recognize the instruction. Wherever the keyword `:boolean->signedint` appears in a Push program, an `Interpreter` which "knows" this instruction will immediately execute the following code. The next argument is the documentation string, which explains the way this particular instruction behaves when interpreted. Then there's a keyword-named argument, `:tags`, which helps classify the "family" and behavior of this particular instruction for human readers.
+
+Finally we begin with the steps executed, in sequence, when this instruction is invoked by a running interpreter. Here's what the DSL steps do:
+
+1. `(push.instructions.dsl/consume-top-of :boolean :as :arg1)` This pops the top item from the `:boolean` stack, and stores it in a new "scratch variable" called `:arg1`
+2. `(push.instructions.dsl/calculate [:arg1] #(if %1 1 -1) :as :logic)` This slightly convoluted syntax is used in the DSL to permit some simple argument-checking algorithms to be applied to more or less arbitrary Clojure code: The _argument_ of this calculation is explicitly `:arg1`, and the function which follows refers to that argument using a positional placeholder. Finally, the result is stored in a new scratch variable called `:logic`.
+3. `(push.instructions.dsl/push-onto :scalar :logic)` This step takes whatever is found in the scratch variable `:logic` and pushes it onto the `:scalar` stack.
+
+A few things to notice about the DSL:
+
+- Push "arguments" (items popped from stacks to be consumed or even referred to within a running instruction) _must_ be stored in scratch variables before being referenced in a calculation or pushed somewhere new
+- intermediate calculations _must_ be complete items can be pushed onto stacks
+- results of calculations can _only_ be stored in scratch variables
+- items to be pushed onto stacks can _only_ be obtained from scratch variables
 
 `:code-do*range`:
 
@@ -73,26 +88,49 @@ These are calls to the `build-instruction` macro, which creates a new `Instructi
 (def code-do*range
   (core/build-instruction
     code-do*range
-    "`:code-do*range` pops the top item of `:code` and the top two `:integer` values (call them `end` and `start`, respectively, with `end` being the top `:integer` item). It constructs a continuation depending on the relation between the `end` and `start` values:
+    "`:code-do*range` pops the top item of `:code` and the top two `:scalar` values (call them `end` and `start`, respectively, with `end` being the top `:scalar` item). It constructs a continuation depending on the relation between the `end` and `start` values:
 
-      - `end` > `start`: `'([start] [code] ([start+1] [end] :code-quote [code] :code-do*Range))`
-      - `end` < `start`: `'([start] [code] ([start-1] [end] :code-quote [code] :code-do*Range))`
-      - `end` = `start`: `'(end [code])`
+      - `end` > `(inc start)`: `'([start] [code] ((inc [start]) [end] :code-quote [code] :code-do*Range))`
+      - `end` < `(dec start)`: `'([start] [code] ((dec [start]) [end] :code-quote [code] :code-do*Range))`
+      - (`end` - `start`) ≤ 1: `'((dec [start]) [code])`
 
     This continuation is pushed to the `:exec` stack."
     :tags #{:complex :base}
     (d/consume-top-of :code :as :do-this)
-    (d/consume-top-of :integer :as :end)
-    (d/consume-top-of :integer :as :start)
-    (d/calculate [:start :end] #(= %1 %2) :as :done?)
-    (d/calculate [:start :end] #(+ %1 (compare %2 %1)) :as :next)
+    (d/consume-top-of :scalar :as :end)
+    (d/consume-top-of :scalar :as :start)
+    (d/calculate [:start :end] #(num/within-1? %1 %2) :as :done?)
+    (d/calculate [:start :end] #(+' %1 (compare %2 %1)) :as :next)
     (d/calculate
       [:do-this :start :end :next :done?] 
       #(if %5
-           (list %3 %1)
+           (list %4 %1)
            (list %2 %1 (list %4 %3 :code-quote %1 :code-do*range))) :as :continuation)
     (d/push-onto :exec :continuation)))
 ~~~
+
+Here I've abbreviated the namespace of the DSL instructions as `d`, but it's still a reference (in the original context) to `push.instructions.dsl`. Let's walk through this example's DSL steps, too.
+
+1. `(d/consume-top-of :code :as :do-this)` pops the top `:code` item and stores it in a scratch variable called `:do-this`
+2. `(d/consume-top-of :scalar :as :end)` pops the top `:scalar` and stores it in `:end`
+3. `(d/consume-top-of :scalar :as :start)` pops the top `:scalar` and stores it in `:start`
+4. `(d/calculate [:start :end] #(num/within-1? %1 %2) :as :done?)` We use the numerical values stored in `:start` and `:end`, invoking a predicate function `within-1?` stored in another namespace, to determine whether the looping this instruction is responsible for is "done" or not
+5. `(d/calculate [:start :end] #(+' %1 (compare %2 %1)) :as :next)` Regardless of whether we're done or not, we'll want to know the `:next` counter this instruction is supposed to emit
+6. ```
+  (d/calculate
+      [:do-this :start :end :next :done?] 
+      #(if %5
+           (list %4 %1)
+           (list %2 %1 (list %4 %3 :code-quote %1 :code-do*range))) :as :continuation)
+  ```
+  Here we're using the accumulated intermediate values and calculations to construct an appropriate _continuation_ result
+7. `(d/push-onto :exec :continuation)` The continuation result we construct in the previous step is pushed onto `:exec`, and we're done
+
+Again, there are a few things to note here:
+
+- DSL `calculate` steps are able to refer to arbitrary Clojure code indirectly. Whenever you need to do complex calculations (or invoke system libraries or utilities), _as long as you can obtain the necessary arguments in previous steps_ you can invoke those external functions or helpers whenever you want.
+- Many of the more important Push instructions, and especially the ones that handle conditional processing, iteration and looping, use "continuation forms" for producing intermediate results. In this case, `:code-do*range` produces a continuation form that (in some cases) includes a new copy of `:code-do*range`. That's how Push interpreters generally should break down long-running calculations of arbitrary complexity.
+
 
 ## DSL scratch variables
 
@@ -122,6 +160,8 @@ All scratch variables are referred to by Clojure keywords (not symbols). These a
 
   If the index (obtained via a local scratch value) is not an integer (including `nil`), an Exception is raised. If it is an integer, it is treated as before, and `mod`ded into the appropriate range.
 
+  _Note:_ Top be valid, the index must produce a `true` response to Clojure's `integer?` predicate!
+
   The relative order of `:at` and `:as` arguments are not crucial, except for readability, but both must be present.
     
 - [X] `consume-stack [stackname :as local]`
@@ -132,21 +172,21 @@ All scratch variables are referred to by Clojure keywords (not symbols). These a
 
 - [X] `consume-top-of [stackname :as local]`
 
-  Example: `consume-top-of :float as :numerator`
+  Example: `consume-top-of :scalar as :numerator`
   
   Pops an item from `stackname` and stores under key `local`. Raises an Exception if `stackname` is empty or undefined. Will overwrite any prior value stored in `local`.
 
 - [X] `count-of [stackname :as local]`
 
-  Example: `count-of :float :as :float-size`
+  Example: `count-of :scalar :as :width`
 
   Stores the number of items in stack `stackname` in scratch variable `local`.
 
 - [X] `delete-nth-of [stackname :at where]`
   
-  Example: `delete-nth-of :integer :at -19`
+  Example: `delete-nth-of :string :at -19`
 
-  Example: `delete-nth-of :integer :at :bad-number`
+  Example: `delete-nth-of :string :at :bad-number`
 
   Removes the item in position `where` from the named stack without storing it.
 
@@ -156,7 +196,7 @@ All scratch variables are referred to by Clojure keywords (not symbols). These a
 
 - [X] `delete-top-of [stackname]`
   
-  Example: `delete-top-of :float`
+  Example: `delete-top-of :boolean`
 
   Pop an item (and discards it) from `stackname`.
 
@@ -170,7 +210,7 @@ All scratch variables are referred to by Clojure keywords (not symbols). These a
 
 - [X] `insert-as-nth-of [stackname :local :at where]`
   
-  Example: `insert-as-nth-of :integer :new-int :at -19`
+  Example: `insert-as-nth-of :vector :new-vector :at -19`
 
   Example: `insert-as-nth-of :boolean :new-bool :at :index`
 
@@ -188,7 +228,7 @@ All scratch variables are referred to by Clojure keywords (not symbols). These a
 
 - [X] `push-these-onto [stackname [locals]]`
 
-  Example: `push-these-onto :integer [:quotient :remainder]`
+  Example: `push-these-onto :exec [:quotient :remainder]`
 
   Push _each_ of the indicated scratch values in the _vector_ onto the top of the indicated stack, one at a time, first one pushed first, last one pushed last (and thus ending up at the top). If any of them is `nil` that's OK; nothing bad will happen.
 
@@ -214,7 +254,7 @@ All scratch variables are referred to by Clojure keywords (not symbols). These a
   
   Example: `record-an-error :from :my-bad-message`
 
-  Constructs a map with keys `:step` and `:item`, the former set to the current `Interpreter` counter, and the latter set to the value stored in the named scratch variable. This is pushed to the `:error` stack. For example, this is used to produce a record of divide-by-zero errors when `:integer-divide` is given a zero denominator.
+  Constructs a map with keys `:step` and `:item`, the former set to the current `Interpreter` counter, and the latter set to the value stored in the named scratch variable. This is pushed to the `:error` stack. For example, this is used to produce a record of divide-by-zero errors when `:scalar-divide` is given a zero denominator.
 
 - [X] `save-nth-of [stackname :at where :as local]`
   
@@ -238,13 +278,13 @@ All scratch variables are referred to by Clojure keywords (not symbols). These a
 
 - [X] `save-stack [stackname :as local]`
 
-  Example: `save-stack :float :as :unsorted`
+  Example: `save-stack :foo :as :unsorted`
 
   Saves a copy of the entire list `stackname` into scratch variable `local`. Does not clear the stack.
 
 - [X] `replace-stack [stackname local]`
   
-  Example: `replace-stack :integer :converted-floats`
+  Example: `replace-stack :foo :converted-floats`
 
   Replace the indicated stack with the contents of the scratch variable `local`.
 
@@ -254,27 +294,44 @@ All scratch variables are referred to by Clojure keywords (not symbols). These a
 
 Each of the Push Instruction DSL instructions has a strict structure that helps identify arguments consumed by the stacks from which they're taken. As a result, every `Instruction` record has an automatically-constructed `:needs` key, which contains a tally of the items needed to execute the defined DSL code. Popping an argument from a stack counts as one item needed; saving or deleting a stack (or pushing an item onto it) simply requires the stack be present.
 
-For example, the `:needs` of the two instructions shown above are:
+For example, the `:needs` of the instruction shown in the example up top (`:boolean->signedint` and `:code-do*range`)
 
 - `:boolean->integer`
-  - `(d/consume-top-of :boolean :as :arg1)` needs `{:boolean 1}`
-  - `(d/calculate [:arg1] #(if %1 1 0) :as :logic)` needs `{}`
-  - `(d/push-onto :scalar :logic)` needs `{:integer 0}`
-  - total needs: `{:boolean 1 :integer 0}`
+    - `(d/consume-top-of :boolean :as :arg1)`
+    - `(d/calculate [:arg1] #(if %1 1 -1) :as :logic)`
+    - `(d/push-onto :scalar :logic)))`
+  - total needs: `{:boolean 1 :scalar 0}`
 - `:code-do*range`
   - `(d/consume-top-of :code :as :do-this)` needs `{:code 1}`
-  - `(d/consume-top-of :integer :as :end)` needs `{:integer 1}`
-  - `(d/consume-top-of :integer :as :start)` needs `{:integer 1}`
+  - `(d/consume-top-of :scalar :as :end)` needs `{:scalar 1}`
+  - `(d/consume-top-of :scalar :as :start)` needs `{:scalar 1}`
   - `(d/calculate…)` needs `{}`
   - `(d/calculate…)` needs `{}`
   - `(d/calculate…)` needs `{}`
   - `(d/push-onto :exec :continuation)`  needs `{:exec 0}`
-  - total needs: `{:integer 2 :code 1 :exec 0}`
+  - total needs: `{:scalar 2 :code 1 :exec 0}`
 
 Whenever any Push instruction is executed, the `Interpreter` first checks to see whether the specified `:needs` are currently present in the stacks. If they are, the instruction proceeds; if not, the instruction will fail, and (depending on configuration) an `:error` will be pushed that that stack indicating arguments were missing at this time-step.
 
-### Mapping the Push language
+## Writing your own instructions using the DSL
 
-As noted above, Push instructions don't "return results", but rather affect the `Interpreter` state directly, sometimes in subtle ways. But the majority do produce items pushed to stacks, and we can as easily calculate the `:products` of a Push instruction from its source code as we can its `:needs`. 
+The Push DSL is surprisingly complete, especially with the flexibility it provides for using helpers in `calculate`. It may feel stilted in comparison to your own Clojure coding style preferences, but realize that its purpose is to support the automation of several chores you'd be obliged to handle in every instruction you wrote.
 
-[TBD: diagram of the instructions, stacks and so forth]
+- argument-checking is automated
+- instructions can be constructed _functionally_ for arbitrary or new types
+- any instruction can be used as part of a _higher-order function_
+
+Take a moment to compare the implementation of `:code-do*range` in the Push DSL, with the [same instruction implemented in the Clojush system](https://github.com/lspector/Clojush/blob/c6e9bc5e9835ed3c57703509e5b9fb988ea5f081/src/clojush/instructions/code.clj#L95-L120).
+
+If you glance at that code, you'll see
+
+- arguments are checked right in the instruction function itself
+- the predicates used for argument checking are composed of nested arbitrary logic
+- most of the function is construction of various local variables in a `let` block
+- the `push-item` function includes the convoluted function that constructs its own argument _inline_
+- the whole function is essentially wrapped in a conditional `if` statement that _literally does nothing_ if the initial conditions 20+ lines earlier are not met
+
+`/shrug`
+
+So if you find yourself thinking that it would be easier to write arbitrary Clojure code for your new instructions and types, feel free to do so. Just not here.
+
