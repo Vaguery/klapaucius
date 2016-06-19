@@ -17,7 +17,7 @@
 (defn make-tagspace
   "Creates a new empty tagspace"
   ([] (->TagSpace (sorted-map)))
-  ([starting-items] (->TagSpace (into (sorted-map) starting-items)))
+  ([starting-items] (->TagSpace (with-precision 100 (into (sorted-map) starting-items))))
   )
 
 
@@ -132,7 +132,7 @@
     (d/consume-top-of :tagspace :as :arg2)
     (d/consume-top-of :tagspace :as :arg1)
     (d/calculate [:arg1 :arg2]
-      #(make-tagspace (into (sorted-map) (merge (:contents %1) (:contents %2)))) :as :result)
+      #(make-tagspace (n/pN (merge (:contents %1) (:contents %2)))) :as :result)
     (d/push-onto :tagspace :result)))
 
 
@@ -181,7 +181,7 @@
     (d/calculate [:arg1 :offset]
       #(make-tagspace
         (reduce-kv
-          (fn [r k v] (assoc r (n/pN (+' k %2)) v))
+          (fn [r k v] (n/pN (assoc r (n/safe-add k %2) v)))
           (sorted-map)
           (:contents %1))) :as :result)
     (d/push-onto :tagspace :result)))
@@ -198,7 +198,7 @@
     (d/calculate [:arg1 :scale]
       #(make-tagspace
         (reduce-kv
-          (fn [r k v] (assoc r (n/pN (*' k %2)) v))
+          (fn [r k v] (assoc r (n/safe-times k %2) v))
           (sorted-map)
           (:contents %1))) :as :result)
     (d/push-onto :tagspace :result)))

@@ -90,6 +90,9 @@
   (safe-add 9M 1/3) => 28/3
   (safe-add 9.8M 1/3) => (+ 9.8 1/3)
 
+  ;; examples from bugs
+  (safe-add  789266345N 52478280M) => 841744625M
+
   (safe-add 9 "nope!") => (throws)
   )
 
