@@ -50,6 +50,10 @@
   ([range] (into [] (repeatedly (random-integer 10) #(random-float range)))))
 
 
+(defn random-rational
+  [] (/ (random-integer 200) (inc (random-integer 200))))
+
+
 
 (defn random-char
   [] (char (+ 32 (random-integer 200))))
@@ -93,7 +97,9 @@
                                      9 (random-floats 40)
                                      10  (random-chars)
                                      11 (random-strings)
-                                     12 (into #{} (bunch-a-junk interpreter 8))
+                                     12 (random-rational)
+                                     13 (bigdec (random-integer))
+                                     14 (into #{} (bunch-a-junk interpreter 8))
 
                                      (any-instruction interpreter)))))
 

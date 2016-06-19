@@ -8,6 +8,17 @@
             ))
 
 
+;; complex-parts
+;; complex-new
+;; complex-zero
+;; scalar->complex
+;; complex-scale
+;; complex-shift
+;; complex-dominate?
+;; complex-dominated
+;; complex-dominating
+;; complex-reciprocal
+
 
 
 (def complex-add

@@ -2,6 +2,7 @@
   (:require [push.instructions.core :as core]
             [push.instructions.dsl :as dsl]
             [push.types.core :as t]
+            [push.util.numerics :as n]
             ))
 
 
@@ -11,7 +12,7 @@
 (defn store-in-tagspace
   "Stores an item in the numeric index indicated in the tagspace record"
   [ts item idx]
-  (assoc-in ts [:contents idx] item))
+  (n/pN (assoc-in ts [:contents idx] item)))
 
 
 ;; INSTRUCTIONS

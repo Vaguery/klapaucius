@@ -6,7 +6,7 @@
             [push.util.code-wrangling :as u]
             [push.instructions.aspects :as aspects]
             [clojure.math.numeric-tower :as math]
-            [push.util.numerics :as num]
+            [push.util.numerics :as n]
             ))
 
 
@@ -131,8 +131,8 @@
     (d/consume-top-of :code :as :do-this)
     (d/consume-top-of :scalar :as :end)
     (d/consume-top-of :scalar :as :start)
-    (d/calculate [:start :end] #(num/within-1? %1 %2) :as :done?)
-    (d/calculate [:start :end] #(+' %1 (compare %2 %1)) :as :next)
+    (d/calculate [:start :end] #(n/within-1? %1 %2) :as :done?)
+    (d/calculate [:start :end] #(n/pN (+' %1 (compare %2 %1))) :as :next)
     (d/calculate
       [:do-this :start :end :next :done?] 
       #(if %5
@@ -174,7 +174,7 @@
     (d/consume-top-of :scalar :as :i)
     (d/calculate [:c] #(if (seq? %1) %1 (list %1)) :as :list)
     (d/calculate [:list :i]
-      #(if (empty? %1) 0 (num/scalar-to-index %2 (count %1))) :as :idx)
+      #(if (empty? %1) 0 (n/scalar-to-index %2 (count %1))) :as :idx)
     (d/calculate [:list :idx] #(drop %2 %1) :as :result)
     (d/push-onto :code :result)))
 
@@ -188,7 +188,7 @@
     (d/consume-top-of :code :as :c)
     (d/consume-top-of :scalar :as :i)
     (d/calculate [:c] #(u/count-code-points %1) :as :size)
-    (d/calculate [:size :i] #(num/scalar-to-index %2 %1) :as :idx)
+    (d/calculate [:size :i] #(n/scalar-to-index %2 %1) :as :idx)
     (d/calculate [:c :idx] #(u/nth-code-point %1 %2) :as :result)
     (d/push-onto :code :result)))
 
@@ -222,7 +222,7 @@
     (d/consume-top-of :code :as :b)
     (d/consume-top-of :scalar :as :i)
     (d/calculate [:b] #(u/count-code-points %1) :as :size)
-    (d/calculate [:i :size] #(num/scalar-to-index %1 %2) :as :idx)
+    (d/calculate [:i :size] #(n/scalar-to-index %1 %2) :as :idx)
     (d/calculate [:a :b :idx] #(u/replace-nth-in-code %2 %1 %3) :as :replaced)
     (d/save-max-collection-size :as :limit)
     (d/calculate [:replaced :limit] #(if (< (u/count-code-points %1) %2) %1 nil) :as :result)
@@ -337,7 +337,7 @@
     (d/consume-top-of :scalar :as :i)
     (d/calculate [:c] #(if (seq? %1) %1 (list %1)) :as :list)
     (d/calculate [:list :i]
-      #(if (empty? %1) 0 (num/scalar-to-index %2 (count %1))) :as :idx)
+      #(if (empty? %1) 0 (n/scalar-to-index %2 (count %1))) :as :idx)
     (d/calculate [:list :idx] #(if (empty? %1) nil (nth %1 %2)) :as :result)
     (d/push-onto :code :result)))
 

@@ -2,6 +2,7 @@
   (:require [push.instructions.core :as core]
             [push.instructions.dsl :as dsl]
             [push.types.core :as t]
+            [push.util.numerics :as n]
             ))
 
 
@@ -9,6 +10,14 @@
 
 
 ;; INSTRUCTIONS
+
+
+(defn index-maker
+  [howmany start delta]
+  (map
+    #(n/pN (+' start (*' %1 delta)))
+    (range 0 howmany)))
+
 
 
 (defn to-tagspace
@@ -26,9 +35,11 @@
       `(push.instructions.dsl/consume-top-of :scalar :as :start)
       `(push.instructions.dsl/calculate [:arg] #(count %1) :as :howmany)
       `(push.instructions.dsl/calculate [:start :end :howmany]
-        #(if (< %3 2) 0 (/ (-' %2 %1) (dec %3))) :as :delta)
+        #(if (< %3 2)
+          0 
+          (n/pN (/ (-' %2 %1) (dec %3)))) :as :delta)
       `(push.instructions.dsl/calculate [:howmany :start :delta]
-          #(take %1 (iterate (partial +' %3) %2)) :as :indices)
+          #(index-maker %1 %2 %3) :as :indices)
       `(push.instructions.dsl/calculate [:indices :arg]
           #(push.types.type.tagspace/make-tagspace (zipmap %1 %2)) :as :result)
       `(push.instructions.dsl/push-onto :tagspace :result)

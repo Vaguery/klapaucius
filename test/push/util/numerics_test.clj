@@ -3,6 +3,18 @@
   (:use push.util.numerics))
 
 
+
+(fact "pN applies `with-precision` to an arbitrary thing"
+  (* 99M 1/3) => (throws)
+  (with-precision 100 (* 99M 1/3)) => 33.000M
+  (pN (* 99M 1/3)) => 33.00M
+  (pN (* 99M 1/3)) => 33.00M
+  (pN 1/3) => 1/3
+  (pN 3M) => 3M
+  )
+
+
+
 (fact "scalar-to-index"
   (scalar-to-index 9 2) => 1
   (scalar-to-index 9.1 2) => 0

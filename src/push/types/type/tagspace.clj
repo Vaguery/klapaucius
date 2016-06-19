@@ -3,6 +3,7 @@
             [push.types.core :as t]
             [push.instructions.dsl :as d]
             [push.instructions.aspects :as aspects]
+            [push.util.numerics :as n]
             )
   (:use push.types.type.generator))
 
@@ -36,7 +37,7 @@
   "Takes a tagspace and a numeric key, and returns the last first item at or after the index in the tagspace. If the index is larger than the largest key, it 'wraps around' and returns the first item."
   [ts idx]
   (let [contents (:contents ts)
-        keepers (filter (fn [[k v]] (<= idx k)) contents)]
+        keepers (filter (fn [[k v]] (n/pN (<= idx k))) contents)]
     (if (empty? keepers)
       (second (first contents))
       (second (first keepers)))))
@@ -180,7 +181,7 @@
     (d/calculate [:arg1 :offset]
       #(make-tagspace
         (reduce-kv
-          (fn [r k v] (assoc r (+' k %2) v))
+          (fn [r k v] (assoc r (n/pN (+' k %2)) v))
           (sorted-map)
           (:contents %1))) :as :result)
     (d/push-onto :tagspace :result)))
@@ -197,7 +198,7 @@
     (d/calculate [:arg1 :scale]
       #(make-tagspace
         (reduce-kv
-          (fn [r k v] (assoc r (*' k %2) v))
+          (fn [r k v] (assoc r (n/pN (*' k %2)) v))
           (sorted-map)
           (:contents %1))) :as :result)
     (d/push-onto :tagspace :result)))
@@ -216,7 +217,7 @@
           make-tagspace
           (vals 
             (reduce-kv
-              (fn [r k v] (if (< k %2) 
+              (fn [r k v] (if (n/pN (< k %2)) 
                             (assoc-in r [:low k] v)
                             (assoc-in r [:high k] v)))
               {:low (sorted-map) :high (sorted-map)}
@@ -236,7 +237,7 @@
     (d/calculate [:ts] #(vals (:contents %1)) :as :items)
     (d/calculate [:items] #(count %1) :as :how-many)
     (d/calculate [:start :end :how-many]
-      #(if (< %3 2) 0 (/ (-' %2 %1) (dec %3))) :as :delta)
+      #(n/pN (if (< %3 2) 0 (/ (-' %2 %1) (dec %3)))) :as :delta)
     (d/calculate [:how-many :start :delta]
         #(take %1 (iterate (partial +' %3) %2)) :as :indices)
     (d/calculate [:indices :items] #(make-tagspace (zipmap %1 %2)) :as :result)
