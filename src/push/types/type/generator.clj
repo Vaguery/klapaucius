@@ -4,6 +4,7 @@
             [push.instructions.dsl :as d]
             [push.instructions.aspects :as aspects]
             [push.util.exotics :as exotics]
+            [push.util.numerics :as n]
             ))
 
 
@@ -35,7 +36,7 @@
   "Takes a generator, and applies its step-function to its state. Returns a list containing the new result, and the updated generator."
   [g]
   (let [gen       (:step-function g) 
-        new-value (apply gen (list (:state g)))]
+        new-value (n/pN (apply gen (list (:state g))))]
     (if (nil? new-value) nil (make-generator new-value gen (:origin g)))))
 
 
