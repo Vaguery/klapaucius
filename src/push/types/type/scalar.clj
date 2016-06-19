@@ -102,18 +102,12 @@
 
     (d/consume-top-of :scalar :as :denominator)
     (d/consume-top-of :scalar :as :numerator)
-    (d/calculate [:denominator] #(zero? %1) :as :div0)
-    (d/calculate [:div0 :denominator :numerator]
-      #(if %1 nil (math/safe-quotient %3 %2)) :as :quotient)
-    (d/calculate [:div0 :quotient]
-      #(and (not %1) (Double/isNaN %2)) :as :nan)
+    (d/calculate [:numerator :denominator] #(math/safe-quotient %1 %2) :as :quotient)
+    (d/calculate [:quotient] #(if %1 (Double/isNaN %1) false) :as :nan)
     (d/calculate [:nan :quotient] #(if %1 nil %2) :as :quotient)
     (d/push-onto :scalar :quotient)
-    (d/calculate [:div0]
-      #(if %1 ":scalar-divide Div0" nil) :as :warn1)
     (d/calculate [:nan]
       #(if %1 ":scalar-divide produced NaN" nil) :as :warn2)
-    (d/record-an-error :from :warn1)
     (d/record-an-error :from :warn2)
     ))
 
@@ -200,18 +194,12 @@
     
     (d/consume-top-of :scalar :as :denominator)
     (d/consume-top-of :scalar :as :numerator)
-    (d/calculate [:denominator] #(zero? %1) :as :div0)
-    (d/calculate [:div0 :denominator :numerator]
-      #(if %1 nil (math/safe-modulo %3 %2)) :as :remainder)
-    (d/calculate [:div0 :remainder]
-      #(and (not %1) (Double/isNaN %2)) :as :nan)
+    (d/calculate [:numerator :denominator] #(math/safe-modulo %1 %2) :as :remainder)
+    (d/calculate [:remainder] #(if %1 (Double/isNaN %1) false) :as :nan)
     (d/calculate [:nan :remainder] #(if %1 nil %2) :as :remainder)
     (d/push-onto :scalar :remainder)
-    (d/calculate [:div0]
-      #(if %1 ":scalar-modulo Div0" nil) :as :warn1)
     (d/calculate [:nan]
       #(if %1 ":scalar-modulo produced NaN" nil) :as :warn2)
-    (d/record-an-error :from :warn1)
     (d/record-an-error :from :warn2)
     ))
 

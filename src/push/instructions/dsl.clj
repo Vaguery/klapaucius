@@ -3,6 +3,7 @@
             [push.util.code-wrangling :as fix]
             [push.util.exceptions :as oops]
             [push.interpreter.core :as i]
+            [dire.core :refer [with-handler!]]
             ))
 
 
@@ -467,26 +468,6 @@
                      [interpreter (assoc scratch as top-item)]))))
 
 
-(defn calculate
-  "Takes a PushDSL blob, a vector of keywords referring to scratch
-  item keys, a function over _those keys_ (using positional notation),
-  and an :as keyword in which to store the result of the function.
-
-  Exceptions when:
-  - [args] is not a vector
-  - no :as argument is present
-  - the wrong number of arguments are provided
-  - (does not check for nil arguments)"
-  [[interpreter scratch] args fxn & {:keys [as]}]
-  (let [locals (map scratch args)
-        result (if (vector? args)
-                  (apply fxn locals)
-                  (oops/throw-function-argument-exception args))]
-    (if (nil? as)
-      (oops/throw-missing-key-exception :as)
-      [interpreter (assoc scratch as result)])))
-
-
 (defn save-bindings
   "Saves a sorted list of all the registered :bindings keywords to the named scratch variable"
   [[interpreter scratch] & {:keys [as]}]
@@ -527,3 +508,54 @@
           (let [err-item {:step c :item msg}
                 new-err (conj old-err err-item)]
             [(u/set-stack interpreter :error new-err) scratch]))))))
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;;  The all-important calculate
+;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+
+(defn calculate
+  "Takes a PushDSL blob, a vector of keywords referring to scratch
+  item keys, a function over _those keys_ (using positional notation),
+  and an :as keyword in which to store the result of the function.
+
+  Exceptions when:
+  - [args] is not a vector
+  - no :as argument is present
+  - the wrong number of arguments are provided
+  - (does not check for nil arguments)"
+  [[interpreter scratch] args fxn & {:keys [as]}]
+  (let [locals (map scratch args)
+        result (if (vector? args)
+                  (apply fxn locals)
+                  (oops/throw-function-argument-exception args))]
+    (if (nil? as)
+      (oops/throw-missing-key-exception :as)
+      [interpreter (assoc scratch as result)])))
+
+
+
+(defn add-error-message!
+  "Creates a new `:error` item on the interpreter's stack, with the current `:step` and `:item` field containing the string passed in"
+  [interpreter item]
+  (let [e (u/get-stack interpreter :error)
+        t (:counter interpreter)
+        new-error {:step t :item item}]
+    (i/push-item interpreter :error new-error)))
+
+
+
+(with-handler! #'calculate
+  "Handles Div0 errors in `calculate`"
+  #(re-find #"Divide by zero" (.getMessage %))
+  (fn
+    [e [interpreter scratch] args fxn & {:keys [as]}]
+      [(add-error-message! interpreter (.getMessage e))
+       (assoc scratch as nil)]
+    ))
+

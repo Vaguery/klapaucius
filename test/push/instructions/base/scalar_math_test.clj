@@ -280,7 +280,7 @@
                                                    :error '()} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(0 92)}       :scalar-divide     {:scalar '()
-                                                   :error '({:item ":scalar-divide Div0", :step 0})} 
+                                                   :error '({:item "Divide by zero", :step 0})} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(92 -11/12)}  :scalar-divide     {:scalar '(-11/1104)
                                                    :error '()} 
@@ -289,7 +289,7 @@
                                                    :error '()} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(0/3 1/2)}    :scalar-divide     {:scalar '()
-                                                   :error '({:item ":scalar-divide Div0", :step 0})} 
+                                                   :error '({:item "Divide by zero", :step 0})} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(9.2 -11/12)} :scalar-divide     {:scalar (list (/ -11/12 9.2))
                                                    :error '()} 
@@ -298,10 +298,10 @@
                                                    :error '()} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(0N 8)}       :scalar-divide     {:scalar '()
-                                                   :error '({:item ":scalar-divide Div0", :step 0})} 
+                                                   :error '({:item "Divide by zero", :step 0})} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(0M 0N)}       :scalar-divide     {:scalar '()
-                                                   :error '({:item ":scalar-divide Div0", :step 0})} 
+                                                   :error '({:item "Divide by zero", :step 0})} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(2M 3M)}       :scalar-divide     {:scalar '(1.5M)
                                                    :error '()} 
@@ -427,7 +427,7 @@
                                                    :error '()} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(0 92)}       :scalar-modulo     {:scalar '()
-                                                   :error '({:item ":scalar-modulo Div0", :step 0})} 
+                                                   :error '({:item "Divide by zero", :step 0})} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(1 21/12)}  :scalar-modulo     {:scalar '(3/4)
                                                    :error '()} 
@@ -436,7 +436,7 @@
                                                    :error '()} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(0/3 1/2)}    :scalar-modulo     {:scalar '()
-                                                   :error '({:item ":scalar-modulo Div0", :step 0})} 
+                                                   :error '({:item "Divide by zero", :step 0})} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(0.25 -11/8)} :scalar-modulo     {:scalar '(0.125)
                                                    :error '()} 
@@ -448,10 +448,10 @@
                                                    :error '()} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(0N 8)}       :scalar-modulo     {:scalar '()
-                                                   :error '({:item ":scalar-modulo Div0", :step 0})} 
+                                                   :error '({:item "Divide by zero", :step 0})} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(0M 0N)}       :scalar-modulo     {:scalar '()
-                                                   :error '({:item ":scalar-modulo Div0", :step 0})} 
+                                                   :error '({:item "Divide by zero", :step 0})} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(1.2M 32M)}    :scalar-modulo  {:scalar '(0.8M)
                                                    :error '()} 

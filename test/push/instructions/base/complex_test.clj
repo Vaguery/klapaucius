@@ -92,7 +92,7 @@
     :complex    (list (->Complex 0 0) (->Complex 2 7))
                              :complex-divide        :complex       '()
     :complex    (list (->Complex 0 0) (->Complex 2 7))
-                             :complex-divide        :error       '({:item ":complex-divide Div0", :step 0})
+                             :complex-divide        :error       '({:item "Divide by zero", :step 0})
    )
 
 

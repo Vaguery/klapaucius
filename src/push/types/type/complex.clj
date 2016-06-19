@@ -59,18 +59,14 @@
 
     (d/consume-top-of :complex :as :denominator)
     (d/consume-top-of :complex :as :numerator)
-    (d/calculate [:denominator] #(complex/complex-zero? %1) :as :div0)
-    (d/calculate [:div0 :denominator :numerator]
-      #(if %1 nil (complex/complex-quotient %3 %2)) :as :quotient)
-    (d/calculate [:div0 :quotient]
-      #(and (not %1) (complex/complex-NaN? %2)) :as :nan)
+    (d/calculate [:numerator :denominator]
+      #(complex/complex-quotient %1 %2) :as :quotient)
+    (d/calculate [:quotient]
+      #(if %1 (complex/complex-NaN? %1) false) :as :nan)
     (d/calculate [:nan :quotient] #(if %1 nil %2) :as :quotient)
     (d/push-onto :complex :quotient)
-    (d/calculate [:div0]
-      #(if %1 ":complex-divide Div0" nil) :as :warn1)
     (d/calculate [:nan]
       #(if %1 ":complex-divide produced NaN" nil) :as :warn2)
-    (d/record-an-error :from :warn1)
     (d/record-an-error :from :warn2)
     ))
 
