@@ -43,6 +43,7 @@
       (second (first keepers)))))
 
 
+
 ;; INSTRUCTIONS
 
 
@@ -182,7 +183,7 @@
       #(make-tagspace
         (reduce-kv
           (fn [r k v] (n/pN (assoc r (n/safe-add k %2) v)))
-          (sorted-map)
+          {}
           (:contents %1))) :as :result)
     (d/push-onto :tagspace :result)))
 
@@ -199,7 +200,7 @@
       #(make-tagspace
         (reduce-kv
           (fn [r k v] (assoc r (n/safe-times k %2) v))
-          (sorted-map)
+          {}
           (:contents %1))) :as :result)
     (d/push-onto :tagspace :result)))
 
@@ -220,9 +221,13 @@
               (fn [r k v] (if (n/pN (< k %2)) 
                             (assoc-in r [:low k] v)
                             (assoc-in r [:high k] v)))
-              {:low (sorted-map) :high (sorted-map)}
+              {:low {} :high {}}
               (:contents %1)))) :as :result)
     (d/push-onto :exec :result)))
+
+
+
+
 
 
 
@@ -237,9 +242,8 @@
     (d/calculate [:ts] #(vals (:contents %1)) :as :items)
     (d/calculate [:items] #(count %1) :as :how-many)
     (d/calculate [:start :end :how-many]
-      #(n/pN (if (< %3 2) 0 (/ (-' %2 %1) (dec %3)))) :as :delta)
-    (d/calculate [:how-many :start :delta]
-        #(take %1 (iterate (partial +' %3) %2)) :as :indices)
+      #(if (< %3 2) 0 (n/safe-quotient (n/safe-diff %2 %1) (dec %3))) :as :delta)
+    (d/calculate [:how-many :start :delta] #(n/index-maker %1 %2 %3) :as :indices)
     (d/calculate [:indices :items] #(make-tagspace (zipmap %1 %2)) :as :result)
     (d/push-onto :tagspace :result)))
 

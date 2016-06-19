@@ -12,13 +12,6 @@
 ;; INSTRUCTIONS
 
 
-(defn index-maker
-  [howmany start delta]
-  (map
-    #(n/pN (+' start (*' %1 delta)))
-    (range 0 howmany)))
-
-
 
 (defn to-tagspace
   "returns a new x->tagspace instruction for the given collection type or module."
@@ -39,7 +32,7 @@
           0 
           (n/pN (/ (-' %2 %1) (dec %3)))) :as :delta)
       `(push.instructions.dsl/calculate [:howmany :start :delta]
-          #(index-maker %1 %2 %3) :as :indices)
+          #(n/index-maker %1 %2 %3) :as :indices)
       `(push.instructions.dsl/calculate [:indices :arg]
           #(push.types.type.tagspace/make-tagspace (zipmap %1 %2)) :as :result)
       `(push.instructions.dsl/push-onto :tagspace :result)

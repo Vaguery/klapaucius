@@ -120,3 +120,13 @@
             (bigdecimal? arg1) (safe-modulo (downsample-bigdec arg1) arg2)
             (bigdecimal? arg2) (safe-modulo arg1 (downsample-bigdec arg2))
             :else (throw e) )))))
+
+
+
+(defn index-maker
+  "takes a count, a start scalar and a step size, and produces a non-lazy collection of numerical values"
+  [howmany start delta]
+  (map
+    #(pN (+' start (*' %1 delta)))
+    (range 0 howmany)))
+
