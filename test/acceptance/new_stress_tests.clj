@@ -116,7 +116,7 @@
   [i]
   {:steps (:counter i)
    :errors (count (push/get-stack i :error))
-   :items (map :item (push/get-stack i :error))
+   :items (frequencies (map :item (push/get-stack i :error)))
    :scalar (push/get-stack i :scalar)
   })
 
