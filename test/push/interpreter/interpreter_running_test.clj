@@ -133,9 +133,9 @@
     (u/get-stack (handle-item knows-a :a) :exec) => '(8)) ;; normal
 
   (let [kinda-knows-a
-          (assoc
+          (assoc-in
             (push/interpreter :bindings {:a 8})
-            :quote-refs?
+            [:config :quote-refs?]
             true)]
     (:bindings kinda-knows-a) => {:a '(8)}
     (bound-keyword? kinda-knows-a :a) => true
@@ -184,7 +184,7 @@
 
 
 (fact "handle-item will execute a registered instruction"
- (let [foo (instr/make-instruction :foo :transaction (fn [a] 761))
+ (let [foo (instr/make-instruction :foo :transaction (fn [a] [761]))
        registry {:foo foo}
        he-knows-foo (m/basic-interpreter :instructions registry)]
    (handle-item he-knows-foo :foo) => 761))
@@ -192,7 +192,7 @@
 
 
 (fact "handle-item will not execute an unregistered instruction if :lenient is false"
- (let [foo (instr/make-instruction :foo :transaction (fn [a] 761))
+ (let [foo (instr/make-instruction :foo :transaction (fn [a] [761]))
        registry {:foo foo}
        he-knows-foo (m/basic-interpreter :instructions registry :config {:lenient? false})]
    (handle-item he-knows-foo {:thing 9}) => (throws #"Push Parsing Error:")))

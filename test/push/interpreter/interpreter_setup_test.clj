@@ -410,22 +410,24 @@
 
 
 (fact "execute-instruction applies the named instruction to the Interpreter itself"
-  (let [foo (i/make-instruction :foo :transaction (fn [a] 99))
-        bar (i/make-instruction :bar)
+  (let [foo (i/make-instruction :foo :transaction (fn [a] [99])) ;; returns a tuple!
+        bar (i/make-instruction :bar :transaction (fn [a] [a]))  ;; returns a tuple!
         he-knows-foo (register-instruction
           (register-instruction just-basic foo) bar)]
     (keys (:instructions he-knows-foo)) => (just :foo :bar)
     (execute-instruction he-knows-foo :foo) => 99
-    (execute-instruction he-knows-foo :bar) => he-knows-foo))
+    (execute-instruction he-knows-foo :bar) => he-knows-foo
+    ))
 
 
 (fact "execute-instruction will add an :error message if the needs aren't met"
-  (let [foo (i/make-instruction :foo :needs {:bar 3} :transaction (fn [a] 99))
-      he-knows-foo (register-instruction just-basic foo)]
+  (let [foo (i/make-instruction :foo :needs {:bar 3} :transaction (fn [a] [99]))
+        he-knows-foo (register-instruction just-basic foo)]
     (u/get-stack (execute-instruction he-knows-foo :foo) :error) => 
       '({:step 0 :item ":foo missing arguments"})
     (execute-instruction
-      (assoc-in he-knows-foo [:stacks :bar] '(1 2 3 4)) :foo) => 99))
+      (u/set-stack he-knows-foo :bar '(1 2 3 4)) :foo) => 99
+    ))
 
 
 (fact "execute-instruction will throw an Exception if the token is not registered"

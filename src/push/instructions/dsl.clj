@@ -354,13 +354,13 @@
 (defn quote-all-bindings
   "Sets the Interpreter's `:quote-refs?` flag to `true`, so that any keyword that would normally be recognized as a bound variable is instead pushed to the :ref stack without being resolved"
   [[interpreter scratch]]
-  [(assoc interpreter :quote-refs? true) scratch])
+  [(assoc-in interpreter [:config :quote-refs?] true) scratch])
 
 
 (defn quote-no-bindings
   "Sets the Interpreter's `:quote-refs?` flag to `false`, so that any keyword that is registered is resolved by examining the items associated with it"
   [[interpreter scratch]]
-  [(assoc interpreter :quote-refs? false) scratch])
+  [(assoc-in interpreter [:config :quote-refs?] false) scratch])
 
 
 (defn replace-binding

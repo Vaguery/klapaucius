@@ -192,8 +192,12 @@
 
 
 (defn apply-instruction
+  "takes an interpreter and a token; returns a TUPLE containing the interpreter and the `:scratch` variables (in that order)"
   [interpreter token]
-  ((:transaction (get-instruction interpreter token)) interpreter))
+  (let [tuple ((:transaction (get-instruction interpreter token)) interpreter)]
+    
+    (first tuple) ;; the interpreter itself
+    ))
 
 
 (defn push-item
@@ -286,7 +290,7 @@
     (keyword? item)
       (cond
         (bound-keyword? interpreter item)
-          (if (:quote-refs? interpreter)
+          (if (get-in interpreter [:config :quote-refs?])
             (push-item interpreter :ref item)
             (push-item interpreter :exec (peek-at-binding interpreter item)))
         (instruction? interpreter item)

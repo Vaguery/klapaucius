@@ -28,17 +28,24 @@
 
 (fact ":push-quoterefs turns on the interpreter's :quote-refs? flag"
   (let [no (push.interpreter.templates.one-with-everything/make-everything-interpreter)]
-    (:quote-refs? no) => nil
-    (:quote-refs? (i/execute-instruction no :push-quoterefs)) => true))
+    (get-in no [:config :quote-refs?]) => nil
+    (get-in
+      (i/execute-instruction no :push-quoterefs)
+      [:config :quote-refs?]) => true))
 
 
 
 (fact ":push-unquoterefs turns off the interpreter's :quote-refs? flag"
   (let [no 
-    (assoc (push.interpreter.templates.one-with-everything/make-everything-interpreter)
-      :quote-refs? true)]
-    (:quote-refs? no) => true
-    (:quote-refs? (i/execute-instruction no :push-unquoterefs)) => false
+    (assoc-in
+      (push.interpreter.templates.one-with-everything/make-everything-interpreter)
+      [:config :quote-refs?]
+      true)]
+    (get-in 
+      no [:config :quote-refs?]) => true
+    (get-in
+      (i/execute-instruction no :push-unquoterefs)
+      [:config :quote-refs?]) => false
     ))
 
 

@@ -806,7 +806,7 @@
                   (consume-top-of :scalar :as :arg2)
                   (calculate [:arg1 :arg2] #(+ %1 %2) :as :sum)
                   (push-onto :scalar :sum))]
-  (class (int-add afew)) => push.interpreter.core.Interpreter))
+  (class (first (int-add afew))) => push.interpreter.core.Interpreter))
 
 
 (fact "applying the function does the things it's supposed to"
@@ -815,7 +815,7 @@
                   (consume-top-of :scalar :as :arg2)
                   (calculate [:arg1 :arg2] #(+ %1 %2) :as :sum)
                   (push-onto :scalar :sum))]
-  (u/get-stack (int-add afew) :scalar) => '(3 3)))
+  (u/get-stack (first (int-add afew)) :scalar) => '(3 3)))
 
 
 ;; `push-these-onto [stackname [locals]]`
