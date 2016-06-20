@@ -110,6 +110,11 @@
       :boolean :as :foo) =not=> (throws)))
 
 
+  (fact "`consume-top-of` also saves anything it eats by appending it to scratch variable `:ARGS`"
+    (second (consume-top-of [afew {:foo \f}] :scalar :as :foo)) => {:foo 1 :ARGS [1]}
+    )
+
+
 ;; delete-nth
 
 (facts "about `delete-nth`"
@@ -486,6 +491,12 @@
   (fact "`consume-nth-of` throws up if you forget the :at argument"
     (consume-nth-of [afew {}] :scalar :as :foo) =>
       (throws #"missing key: :at")))
+
+
+  (fact "`consume-nth-of` also saves anything it eats by appending it to scratch variable `:ARGS`"
+    (second (consume-nth-of [afew {:foo false}] :scalar :at 11 :as :foo)) =>
+      {:foo 3 :ARGS [3]}
+    )
 
 
 ;; `get-nth-of [stackname :at where]` (shared functionality)

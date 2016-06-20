@@ -83,6 +83,13 @@
                   [which old-stack]))))
 
 
+(defn save-ARG
+  [scratch item]
+  (let [old-args (:ARGS scratch)]
+    (assoc scratch :ARGS (conj old-args item))))
+
+
+
 ;; DSL instructions
 
 
@@ -143,6 +150,7 @@
 
 
 
+
 (defn consume-top-of
   "Takes an PushDSL blob, a stackname (keyword) and a scratch variable
   (keyword) in which to store the top value from that stack.
@@ -151,13 +159,16 @@
     - the stack doesn't exist
     - the stack is empty"
   [ [interpreter scratch] stackname & {:keys [as]}]
-  (let [old-stack (u/get-stack interpreter stackname)]
+  (let [old-stack (u/get-stack interpreter stackname)
+        old-args (:ARGS scratch)]
     (cond (nil? old-stack) (oops/throw-unknown-stack-exception stackname)
           (empty? old-stack) (oops/throw-empty-stack-exception stackname)
           (nil? as) (oops/throw-missing-key-exception :as)
           :else (let [top-item (first old-stack)]
                   [(u/set-stack interpreter stackname (rest old-stack))
-                   (assoc scratch as top-item)]))))
+                   (-> scratch
+                       (save-ARG , top-item)
+                       (assoc , as top-item)) ]))))
       
 
 
@@ -176,6 +187,7 @@
       [interpreter (assoc scratch scratch-var (count stack))]
       (oops/throw-unknown-stack-exception stackname))
     (oops/throw-missing-key-exception :as)))
+
 
 
 (defn consume-nth-of
@@ -199,7 +211,9 @@
       (let [new-stack (delete-nth old-stack idx)
             saved-item (nth old-stack idx)]
         [(u/set-stack interpreter stackname new-stack)
-         (assoc scratch as saved-item)]))))
+         (-> scratch
+             (save-ARG , saved-item)
+             (assoc , as saved-item))]))))
 
 
 (defn delete-nth-of
