@@ -103,7 +103,7 @@
        words &form]
     (do 
     `(fn [~interpreter] 
-      (-> [~interpreter {:ARGS []}] ~@transactions)))))
+      (-> [~interpreter {:ARGS '()}] ~@transactions)))))
 
 
 (defrecord Instruction [token docstring tags needs products transaction])

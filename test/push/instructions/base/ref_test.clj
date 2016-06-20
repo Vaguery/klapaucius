@@ -41,8 +41,7 @@
       (push.interpreter.templates.one-with-everything/make-everything-interpreter)
       [:config :quote-refs?]
       true)]
-    (get-in 
-      no [:config :quote-refs?]) => true
+    (get-in no [:config :quote-refs?]) => true
     (get-in
       (i/execute-instruction no :push-unquoterefs)
       [:config :quote-refs?]) => false
