@@ -30,11 +30,13 @@
       `(push.instructions.dsl/calculate [:start :end :howmany]
         #(if (< %3 2)
           0 
-          (n/pN (/ (-' %2 %1) (dec %3)))) :as :delta)
+          (/ (-' %2 %1) (dec %3))) :as :delta)
       `(push.instructions.dsl/calculate [:howmany :start :delta]
-          #(n/index-maker %1 %2 %3) :as :indices)
+          #(if %3 (n/index-maker %1 %2 %3) nil) :as :indices)
       `(push.instructions.dsl/calculate [:indices :arg]
-          #(push.types.type.tagspace/make-tagspace (zipmap %1 %2)) :as :result)
+          #(if %2
+            (push.types.type.tagspace/make-tagspace (zipmap %1 %2))
+            nil) :as :result)
       `(push.instructions.dsl/push-onto :tagspace :result)
       ))))
 

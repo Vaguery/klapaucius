@@ -117,6 +117,21 @@
 
 
 
+
+(tabular
+  (fact ":exec-do*range consumes arguments but reports runtime errors"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks exec-module ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction             ?expected
+
+    {:exec     '(:foo :bar)
+     :scalar   '(4M 2/3)}        :exec-do*range   {:exec '(:bar)
+                                                   :error  '({:item "Non-terminating decimal expansion; no exact representable decimal result.", :step 0} {:item "Non-terminating decimal expansion; no exact representable decimal result.", :step 0})} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
 (tabular
   (fact ":exec-if pops either the top or second :exec item"
     (check-instruction-with-all-kinds-of-stack-stuff

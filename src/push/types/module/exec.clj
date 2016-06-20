@@ -51,12 +51,14 @@
     (d/consume-top-of :scalar :as :start)
     (d/calculate [:start :end]
       #(n/within-1? %1 %2) :as :done?)
-    (d/calculate [:start :end] 
-      #(n/pN (+' %1 (compare %2 %1))) :as :next)
+    (d/calculate [:start :end]  #(+' %1 (compare %2 %1)) :as :next)
     (d/calculate
       [:do-this :start :end :next :done?] 
-      #(if %5
-           (list %4 %1)
+      #(cond
+        (nil? %4) nil
+        (nil? %5) nil
+        %5 (list %4 %1)
+        :else
            (list %2 %1 (list %4 %3 :exec-do*range %1))) :as :continuation)
     (d/push-onto :exec :continuation)))
 

@@ -20,7 +20,7 @@
 (defn within-1?
   "predicate returns true if the absolute difference between two numbers is 1.0 or smaller"
   [num1 num2]
-  (pN (<= (nt/abs (-' num1 num2)) 1)))
+  (<= (nt/abs (-' num1 num2)) 1))
 
 
 
@@ -56,6 +56,6 @@
   "takes a count, a start scalar and a step size, and produces a non-lazy collection of numerical values"
   [howmany start delta]
   (map
-    #(pN (+' start (*' %1 delta)))
+    #(+' start (*' %1 delta))
     (range 0 howmany)))
 

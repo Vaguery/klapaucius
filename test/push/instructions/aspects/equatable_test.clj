@@ -29,6 +29,7 @@
       :boolean) => '(true)))
 
 
+
 (fact "notequal?-instruction returns an Instruction with the correct stuff"
   (let [foo-notequal (notequal?-instruction (make-type :foo))]
     (class foo-notequal) => push.instructions.core.Instruction
@@ -44,6 +45,7 @@
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(1 1)}) foo-notequal)
         :foo-notequal?)
       :boolean) => '(false)))
+
 
 
 (fact "`make-equatable` takes adds the :equatable attribute to a PushType record"

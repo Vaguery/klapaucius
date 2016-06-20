@@ -234,6 +234,24 @@
 
 
 (tabular
+  (fact ":code-do*range consumes all arguments and reports runtime errors if they occur"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks code-module ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction             ?expected
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code     '(:foo :bar)
+     :scalar  '(2M 1/3)}         :code-do*range    {:exec '()
+                                                    :scalar '()
+                                                    :code '(:bar)
+                                                    :error '({:item "Non-terminating decimal expansion; no exact representable decimal result.", :step 0},
+                                                      {:item "Non-terminating decimal expansion; no exact representable decimal result.", :step 0})} 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
+(tabular
   (fact ":code-do*times does complicated things involving continuations (see tests)"
     (check-instruction-with-all-kinds-of-stack-stuff
         ?new-stacks code-module ?instruction) => (contains ?expected))

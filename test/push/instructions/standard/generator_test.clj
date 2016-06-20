@@ -168,3 +168,19 @@
         result => nil
         ))
 
+
+
+(fact ":generator-jumpsome consumes arguments but reports runtime errors"
+  (let [g (push.interpreter.templates.one-with-everything/make-everything-interpreter
+            :stacks {:scalar '(120) 
+                     :generator (list (make-generator 8M #(+ 1/3 %)))})
+        result (:stacks 
+                    (i/execute-instruction g :generator-jumpsome))]
+    result => (contains {:generator '()
+                         :scalar '()
+                         :error '({:item "Non-terminating decimal expansion; no exact representable decimal result.", :step 0})
+                         })))
+
+
+        
+

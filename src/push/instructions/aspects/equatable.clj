@@ -19,8 +19,7 @@
       :tags #{:equatable}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
       `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
-      '(push.instructions.dsl/calculate [:arg1 :arg2]
-          #(push.util.numerics/pN (= %1 %2)) :as :check)
+      '(push.instructions.dsl/calculate [:arg1 :arg2] #(= %1 %2) :as :check)
       '(push.instructions.dsl/push-onto :boolean :check)))))
 
 
@@ -38,6 +37,5 @@
       :tags #{:equatable}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
       `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
-      '(push.instructions.dsl/calculate [:arg1 :arg2]
-        #(push.util.numerics/pN (not= %1 %2)) :as :check)
+      '(push.instructions.dsl/calculate [:arg1 :arg2] #(not= %1 %2) :as :check)
       '(push.instructions.dsl/push-onto :boolean :check)))))

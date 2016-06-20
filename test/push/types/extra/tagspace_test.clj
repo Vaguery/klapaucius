@@ -71,3 +71,8 @@
     ))
 
 
+
+(fact "find-in-tagspace can't really handle typeclash errors"
+  (let [xy (make-tagspace {7M 11})]
+    (find-in-tagspace xy 1/3) => (throws #"Non-terminating decimal expansion")
+    ))

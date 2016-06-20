@@ -99,3 +99,27 @@
                                                               {10.25 \e}))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ))
+
+
+
+
+
+(let 
+  [foo-type     (t/make-type :foo)
+   fixed-foo    (t/attach-instruction foo-type (to-tagspace foo-type))]
+(tabular
+  (fact "`:foo->tagspace` consumes arguments but reports runtime errors if they occur"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks fixed-foo ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction              ?expected
+
+    {:foo '([1 2 3 4 5])
+     :scalar '(7M 2/3)
+     :tagspace '()}            :foo->tagspace            {:foo '()
+                                                          :scalar '()
+                                                          :tagspace (list (make-tagspace))
+                                                          :error '({:item "Non-terminating decimal expansion; no exact representable decimal result.", :step 0})}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ))
+

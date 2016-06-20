@@ -37,7 +37,7 @@
   "Takes a tagspace and a numeric key, and returns the last first item at or after the index in the tagspace. If the index is larger than the largest key, it 'wraps around' and returns the first item."
   [ts idx]
   (let [contents (:contents ts)
-        keepers (filter (fn [[k v]] (n/pN (<= idx k))) contents)]
+        keepers (filter (fn [[k v]] (<= idx k)) contents)]
     (if (empty? keepers)
       (second (first contents))
       (second (first keepers)))))
@@ -133,7 +133,7 @@
     (d/consume-top-of :tagspace :as :arg2)
     (d/consume-top-of :tagspace :as :arg1)
     (d/calculate [:arg1 :arg2]
-      #(make-tagspace (n/pN (merge (:contents %1) (:contents %2)))) :as :result)
+      #(make-tagspace (merge (:contents %1) (:contents %2))) :as :result)
     (d/push-onto :tagspace :result)))
 
 
@@ -218,7 +218,7 @@
           make-tagspace
           (vals 
             (reduce-kv
-              (fn [r k v] (if (n/pN (< k %2)) 
+              (fn [r k v] (if (< k %2)
                             (assoc-in r [:low k] v)
                             (assoc-in r [:high k] v)))
               {:low {} :high {}}

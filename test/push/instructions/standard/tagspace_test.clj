@@ -225,6 +225,22 @@
 
 
 
+(let 
+  [taggy1  (make-tagspace {1M 2})
+   taggy2  (make-tagspace {1/3 2/3})]
+
+(tabular
+  (fact "`:tagspace-merge` consumes arguments but captures runtime errors"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks tagspace-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction       ?expected
+    {:tagspace (list taggy1 taggy2)}
+                               :tagspace-merge    {:tagspace '()
+                                                   :error '({:item "Non-terminating decimal expansion; no exact representable decimal result.", :step 0})}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ))
+
 
 
 (let 
@@ -253,6 +269,26 @@
                                               :tagspace (list taggy)}
     ))
 
+
+
+(let 
+  [foo-type     (make-taggable (t/make-type :foo))
+   taggy        (make-tagspace {1M 2})]
+
+(tabular
+  (fact "`:foo-tag` consumes arguments but reports runtime errors"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks foo-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction     ?expected
+    {:foo '("bar")
+     :scalar '(1/7)
+     :tagspace (list taggy)}    :foo-tag     {:foo '()
+                                              :scalar  '()
+                                              :tagspace '()
+                                              :error '({:item "Non-terminating decimal expansion; no exact representable decimal result.", :step 0})}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ))
 
 
 
@@ -448,6 +484,24 @@
                                                 :exec (list (list
                                                   (make-tagspace {1 2 3 4 5 6})
                                                   (make-tagspace {})))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ))
+
+
+
+
+
+(let 
+  [taggy (make-tagspace {1M 2})]
+(tabular
+  (fact "`:tagspace-split` consumes arguments but captures runtime errors if they occur"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks tagspace-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction     ?expected
+    {:scalar '(1/3)
+     :tagspace (list taggy)}  :tagspace-split  {:scalar  '()
+                                                :error '({:item "Non-terminating decimal expansion; no exact representable decimal result.", :step 0})}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ))
 

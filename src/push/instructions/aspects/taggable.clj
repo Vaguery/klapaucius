@@ -12,7 +12,7 @@
 (defn store-in-tagspace
   "Stores an item in the numeric index indicated in the tagspace record"
   [ts item idx]
-  (n/pN (assoc-in ts [:contents idx] item)))
+  (assoc-in ts [:contents idx] item))
 
 
 ;; INSTRUCTIONS
