@@ -171,6 +171,8 @@
               (loop [s rando]
                 (if (is-done? s)
                   (println (str n
+                                "  E:"
+                                (count (get-in s [:stacks :error]))
                                 "  "
                                 (:counter s) 
                                 

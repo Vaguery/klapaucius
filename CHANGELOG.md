@@ -1,5 +1,12 @@
 # Recent changes
 
+## 0.1.20
+
+- `push.instructions.dsl/calculate` (the core of the Push DSL, really) now uses [`dire` error-handling](https://github.com/MichaelDrogalis/dire) to short-circuit exceptions raised by common instruction operations. This includes Division by zero, Non-terminating decimal representations, and the odd "Infinity or NaN" error. The DSL step now automatically writes an `:error` to that stack and returns a result (of `calculate`) of `nil`. It's up to the instruction definition to handle that result.
+- have not yet added `NaN` errors to this system, but it will be considered for 0.1.21
+- added numerous tests of edge-conditions in functions using `:scalar` arguments, especially when a `bigdec` and a `rational` are both arguments. The `bigdec` tends to try to convert the `rational` to an arbitrary-length `bigdec`, and if it's a non-terminating decimal (like `1/3`) it will raise an exception
+
+
 ## 0.1.19, 0.1.18, 0.1.17
 
 - `:scalar` type has replaced all references to both the `:integer` and `:float` type
