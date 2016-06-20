@@ -114,12 +114,15 @@
 
 (defn interpreter-details
   [i]
-  {:steps (:counter i)}
-  )
+  {:steps (:counter i)
+   :errors (count (push/get-stack i :error))
+   :items (map :item (push/get-stack i :error))
+   :scalar (push/get-stack i :scalar)
+  })
 
 
 (def many-programs
-  (take 10 (repeatedly #(some-program 100 10))))
+  (take 100 (repeatedly #(some-program 100 10))))
 
 
 (def sample-bindings
@@ -129,19 +132,19 @@
 ; (println many-programs)
 
 
-
-
 (defn launch-some-workers
   []
   (do 
     (doall
       (cp/pmap 32
-        #(println
-          (interpreter-details
-            (run-program % sample-bindings)))
+        #(time
+          (println
+            (str "\n\n"
+              (interpreter-details
+                (run-program % sample-bindings)))))
         many-programs))
     (println :done)))
 
 
-
-;; (launch-some-workers)
+(fact :danger "run some workers in parallel"
+  (launch-some-workers) =not=> (throws))
