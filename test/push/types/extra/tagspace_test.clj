@@ -72,7 +72,17 @@
 
 
 
-(fact "find-in-tagspace can't really handle typeclash errors"
+(fact "find-in-tagspace is actually protected against typeclash errors"
+  (let [xy (make-tagspace {7M 11})
+        yx (make-tagspace {1/3 11})]
+    (find-in-tagspace xy 1/3) => 11
+    (find-in-tagspace yx 7M) => 11
+    ))
+
+
+
+(fact "find-in-tagspace has no trouble being mapped as a result of this protection"
   (let [xy (make-tagspace {7M 11})]
-    (find-in-tagspace xy 1/3) => (throws #"Non-terminating decimal expansion")
+    (map #(find-in-tagspace xy %) [1 9]) => [11 11]
+    (map #(find-in-tagspace xy %) [1 9/7]) => '(11 11)
     ))

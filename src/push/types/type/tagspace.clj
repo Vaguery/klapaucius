@@ -4,6 +4,7 @@
             [push.instructions.dsl :as d]
             [push.instructions.aspects :as aspects]
             [push.util.numerics :as n]
+            [dire.core :refer [with-handler!]]
             )
   (:use push.types.type.generator))
 
@@ -34,13 +35,16 @@
 
 
 (defn find-in-tagspace
-  "Takes a tagspace and a numeric key, and returns the last first item at or after the index in the tagspace. If the index is larger than the largest key, it 'wraps around' and returns the first item."
+  "Takes a tagspace and a numeric key, and returns the last first item at or after the index in the tagspace. If the index is larger than the largest key, it 'wraps around' and returns the first item. This lookup is safe against `bigdec` vs `rational` arithmetic clashes."
   [ts idx]
   (let [contents (:contents ts)
-        keepers (filter (fn [[k v]] (<= idx k)) contents)]
+        keepers (filter (fn [[k v]] (n/pN (<= idx k))) contents)]
     (if (empty? keepers)
       (second (first contents))
       (second (first keepers)))))
+
+
+
 
 
 
@@ -89,8 +93,9 @@
     :tags #{:tagspace :collection}
     (d/consume-top-of :scalars :as :indices)
     (d/consume-top-of :tagspace :as :ts)
-    (d/calculate [:indices :ts] 
-      #(remove nil? (map (fn [k] (find-in-tagspace %2 k)) %1)) :as :results)
+    (d/calculate [:indices :ts]
+      #(map (fn [k] (find-in-tagspace %2 k)) %1) :as :results)
+    (d/calculate [:results] #(if %1 (remove nil? %1) nil) :as :results)
     (d/push-onto :exec :results)
     (d/push-onto :tagspace :ts)))
 

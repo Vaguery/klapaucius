@@ -166,6 +166,26 @@
 
 
 (let 
+  [taggy (make-tagspace {1M 2 3M 4})]
+(tabular
+  (fact "`:tagspace-lookupscalars` bebefits unusually from the safety of `find-in-tagspace` stability"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks tagspace-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction              ?expected
+
+    {:exec '()
+     :scalars '([1/3 2/7])
+     :tagspace (list taggy)}    :tagspace-lookupscalars  {:exec     '((2 2))
+                                                          :scalars  '()
+                                                          :tagspace (list taggy)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ))
+
+
+
+
+(let 
   [taggy (make-tagspace {1 2 3 4 5 6})]
 (tabular
   (fact "`:tagspace-lookupvector` pops an :vector and a :tagspace and retrieves ALL the indicated items"
