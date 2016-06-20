@@ -243,8 +243,10 @@
     (d/calculate [:items] #(count %1) :as :how-many)
     (d/calculate [:start :end :how-many]
       #(if (< %3 2) 0 (/ (-' %2 %1) (dec %3))) :as :delta)
-    (d/calculate [:how-many :start :delta] #(n/index-maker %1 %2 %3) :as :indices)
-    (d/calculate [:indices :items] #(make-tagspace (zipmap %1 %2)) :as :result)
+    (d/calculate [:how-many :start :delta]
+      #(if %3 (n/index-maker %1 %2 %3) nil) :as :indices)
+    (d/calculate [:indices :items]
+      #(if %1 (make-tagspace (zipmap %1 %2)) nil) :as :result)
     (d/push-onto :tagspace :result)))
 
 
