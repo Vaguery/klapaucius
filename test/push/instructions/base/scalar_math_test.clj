@@ -74,12 +74,13 @@
 
 
 (tabular
-  (fact ":scalar-add does not die when given bigdec and rational arguments"
+  (fact ":scalar-add returns an `:error` when the arguments blow up"
     (register-type-and-check-instruction
         ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
 
-    ?set-stack  ?items          ?instruction      ?get-stack     ?expected
-    :scalar     '(1M 1/3)        :scalar-add        :scalar      '(4/3)
+    ?set-stack  ?items          ?instruction      ?get-stack    ?expected
+    :scalar     '(1M 1/3)        :scalar-add        :scalar     '()
+    :scalar     '(1M 1/3)        :scalar-add        :error      '({:step 0, :item "Non-terminating decimal expansion; no exact representable decimal result."})
     )
 
 
@@ -321,12 +322,13 @@
 
 
 (tabular
-  (fact ":scalar-divide does not die when given bigdec and rational arguments"
+  (fact ":scalar-divide captures runtime errors"
     (register-type-and-check-instruction
         ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction      ?get-stack       ?expected
-    :scalar     '(1/3 10M)      :scalar-divide     :scalar         '(30N)
+    :scalar     '(1/3 10M)      :scalar-divide     :scalar         '()
+    :scalar     '(1/3 10M)      :scalar-divide     :error         '({:item "Non-terminating decimal expansion; no exact representable decimal result.", :step 0})
     )
 
 
@@ -460,12 +462,13 @@
 
 
 (tabular
-  (fact ":scalar-modulo does not die when given bigdec and rational arguments"
+  (fact ":scalar-modulo captures runtime errors"
     (register-type-and-check-instruction
         ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction      ?get-stack       ?expected
-    :scalar     '(3/7 10M)      :scalar-modulo     :scalar         '(1/7)
+    :scalar     '(3/7 10M)      :scalar-modulo     :scalar         '()
+    :scalar     '(3/7 10M)      :scalar-modulo     :error         '({:item "Non-terminating decimal expansion; no exact representable decimal result.", :step 0})
     )
 
 
@@ -480,7 +483,7 @@
     :scalar     (list cljInf cljInf)
                                 :scalar-modulo        :scalar        '()
     :scalar     (list cljInf cljInf)
-                                :scalar-modulo        :error         '({:step 0, :item ":scalar-modulo produced NaN"}))
+                                :scalar-modulo        :error         '({:item "Infinite or NaN", :step 0}))
 
 
 
@@ -594,12 +597,13 @@
 
 
 (tabular
-  (fact ":scalar-multiply does not die when given bigdec and rational arguments"
+  (fact ":scalar-multiply captures runtime errors"
     (register-type-and-check-instruction
         ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction      ?get-stack       ?expected
-    :scalar     '(10M 1/3)      :scalar-multiply     :scalar      '(10/3)
+    :scalar     '(10M 1/3)      :scalar-multiply     :scalar      '()
+    :scalar     '(10M 1/3)      :scalar-multiply     :error      '({:item "Non-terminating decimal expansion; no exact representable decimal result.", :step 0})
     )
 
 
@@ -767,12 +771,13 @@
 
 
 (tabular
-  (fact ":scalar-subtract does not die when given bigdec and rational arguments"
+  (fact ":scalar-subtract passes along runtime errors"
     (register-type-and-check-instruction
         ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction      ?get-stack       ?expected
-    :scalar     '(1M 1/3)        :scalar-subtract     :scalar      '(-2/3)
+    :scalar     '(1M 1/3)        :scalar-subtract     :scalar      '()
+    :scalar     '(1M 1/3)        :scalar-subtract     :error      '({:step 0, :item "Non-terminating decimal expansion; no exact representable decimal result."})
     )
 
 

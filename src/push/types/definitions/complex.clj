@@ -40,7 +40,7 @@
   "takes a Complex record and returns its complex conjugate"
   [c]
   (->Complex
-    (:re c) (math/safe-diff 0 (:im c))))
+    (:re c) (-' 0 (:im c))))
 
 
 
@@ -48,16 +48,16 @@
   "takes two Complex records and returns a new one that is their sum"
   [c1 c2]
   (->Complex
-    (math/safe-add (:re c1) (:re c2))
-    (math/safe-add (:im c1) (:im c2))))
+    (+' (:re c1) (:re c2))
+    (+' (:im c1) (:im c2))))
 
 
 (defn complex-diff
   "takes two Complex records and returns a new one that is their difference"
   [c1 c2]
   (->Complex
-    (math/safe-diff (:re c1) (:re c2))
-    (math/safe-diff (:im c1) (:im c2))))
+    (-' (:re c1) (:re c2))
+    (-' (:im c1) (:im c2))))
 
 
 (defn complex-product
@@ -68,8 +68,8 @@
         i1 (:im c1)
         i2 (:im c2)]
   (->Complex
-    (math/safe-diff (math/safe-times r1 r2) (math/safe-times i1 i2))
-    (math/safe-add (math/safe-times r1 i2) (math/safe-times r2 i1)))))
+    (-' (*' r1 r2) (*' i1 i2))
+    (+' (*' r1 i2) (*' r2 i1)))))
 
 
 
@@ -80,14 +80,11 @@
         r2 (:re c2)
         i1 (:im c1)
         i2 (:im c2)
-        d  (math/safe-add
-              (math/safe-times r2 r2) (math/safe-times i2 i2))
-        n1 (math/safe-add
-              (math/safe-times r1 r2) (math/safe-times i1 i2))
-        n2 (math/safe-diff
-              (math/safe-times i1 r2) (math/safe-times i2 r1))]
+        d  (+' (*' r2 r2) (*' i2 i2))
+        n1 (+' (*' r1 r2) (*' i1 i2))
+        n2 (-' (*' i1 r2) (*' i2 r1))]
     (->Complex
-      (math/safe-quotient n1 d)
-      (math/safe-quotient n2 d))))
+      (/ n1 d)
+      (/ n2 d))))
 
 

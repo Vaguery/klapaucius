@@ -337,6 +337,25 @@
 
 
 
+
+(let 
+  [taggy (make-tagspace {1/3 2 3/5 4 5/7 6})]
+(tabular
+  (fact "`:tagspace-offset` creates an `:error` if the arguments cause a runtime error"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks tagspace-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction              ?expected
+    {:scalar '(17M)
+     :tagspace (list taggy)}  :tagspace-offset     {:scalar  '()
+                                                    :tagspace '()
+                                                    :error '({:item "Non-terminating decimal expansion; no exact representable decimal result.", :step 0})}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ))
+
+
+
+
 (let 
   [taggy (make-tagspace {1 2 3 4 5 6})]
 (tabular
@@ -372,6 +391,23 @@
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ))
 
+
+
+
+(let 
+  [taggy (make-tagspace {1/3 2 3/7 4 5/9 6})]
+(tabular
+  (fact "`:tagspace-scale` catches runtime errors"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks tagspace-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction      ?expected
+    {:scalar '(3M)
+     :tagspace (list taggy)}   :tagspace-scale   {:scalar  '()
+                                                  :tagspace '()
+                                                  :error '({:item "Non-terminating decimal expansion; no exact representable decimal result.", :step 0})}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ))
 
 
 

@@ -19,7 +19,7 @@
       `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
       `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
       '(push.instructions.dsl/calculate [:arg1 :arg2]
-        #(push.util.numerics/pN (< (compare %1 %2) 0)) :as :check)
+        #(< (compare %1 %2) 0) :as :check)
       '(push.instructions.dsl/push-onto :boolean :check)))))
 
 
@@ -37,7 +37,7 @@
       `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
       `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
       '(push.instructions.dsl/calculate [:arg1 :arg2]
-        #(push.util.numerics/pN (< (compare %1 %2) 1)) :as :check)
+        #(< (compare %1 %2) 1) :as :check)
       '(push.instructions.dsl/push-onto :boolean :check)))))
 
 
@@ -56,7 +56,7 @@
       `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
       `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
       '(push.instructions.dsl/calculate [:arg1 :arg2]
-        #(push.util.numerics/pN (> (compare %1 %2) -1)) :as :check)
+        #(> (compare %1 %2) -1) :as :check)
       '(push.instructions.dsl/push-onto :boolean :check)))))
 
 
@@ -75,7 +75,7 @@
       `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
       `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
       '(push.instructions.dsl/calculate [:arg1 :arg2]
-        #(push.util.numerics/pN (> (compare %1 %2) 0)) :as :check)
+        #(> (compare %1 %2) 0) :as :check)
       '(push.instructions.dsl/push-onto :boolean :check)))))
 
 
@@ -93,7 +93,7 @@
       `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
       `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
       '(push.instructions.dsl/calculate [:arg1 :arg2]
-          #(push.util.numerics/pN (if (pos? (compare %1 %2)) %2 %1)) :as :winner)
+          #(if (pos? (compare %1 %2)) %2 %1) :as :winner)
       `(push.instructions.dsl/push-onto ~typename :winner)))))
 
 
@@ -111,6 +111,6 @@
       `(push.instructions.dsl/consume-top-of ~typename :as :arg2)
       `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
       '(push.instructions.dsl/calculate [:arg1 :arg2] 
-          #(push.util.numerics/pN (if (neg? (compare %1 %2)) %2 %1)) :as :winner)
+          #(if (neg? (compare %1 %2)) %2 %1) :as :winner)
       `(push.instructions.dsl/push-onto ~typename :winner)))))
 

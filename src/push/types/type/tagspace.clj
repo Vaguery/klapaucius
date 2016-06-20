@@ -182,7 +182,7 @@
     (d/calculate [:arg1 :offset]
       #(make-tagspace
         (reduce-kv
-          (fn [r k v] (n/pN (assoc r (n/safe-add k %2) v)))
+          (fn [r k v] (assoc r (+' k %2) v))
           {}
           (:contents %1))) :as :result)
     (d/push-onto :tagspace :result)))
@@ -199,7 +199,7 @@
     (d/calculate [:arg1 :scale]
       #(make-tagspace
         (reduce-kv
-          (fn [r k v] (assoc r (n/safe-times k %2) v))
+          (fn [r k v] (assoc r (*' k %2) v))
           {}
           (:contents %1))) :as :result)
     (d/push-onto :tagspace :result)))
@@ -242,7 +242,7 @@
     (d/calculate [:ts] #(vals (:contents %1)) :as :items)
     (d/calculate [:items] #(count %1) :as :how-many)
     (d/calculate [:start :end :how-many]
-      #(if (< %3 2) 0 (n/safe-quotient (n/safe-diff %2 %1) (dec %3))) :as :delta)
+      #(if (< %3 2) 0 (/ (-' %2 %1) (dec %3))) :as :delta)
     (d/calculate [:how-many :start :delta] #(n/index-maker %1 %2 %3) :as :indices)
     (d/calculate [:indices :items] #(make-tagspace (zipmap %1 %2)) :as :result)
     (d/push-onto :tagspace :result)))

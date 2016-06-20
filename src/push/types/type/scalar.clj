@@ -23,16 +23,15 @@
 (def scalar-add
   (core/build-instruction
     scalar-add
-    "`:scalar-add` pops the top two `:scalar` values and pushes their sum to `:scalar`. If the result is `NaN`, an `:error` is produced instead of the sum. If the addition of a Clojure `bigdec` and `rational` would produce a `Non-terminating decimal expansion` exception, the `bigdec` is converted to a `long` or `double` implicitly, depending on whether it's integral or not."
+    "`:scalar-add` pops the top two `:scalar` values and pushes their sum to `:scalar`. If there is a runtime error (for example if the arguments are a rational and a `bigdec` value, or the result is `NaN`) an `:error` is pushed."
     :tags #{:arithmetic :base :dangerous}
     (d/consume-top-of :scalar :as :arg2)
     (d/consume-top-of :scalar :as :arg1)
-    (d/calculate [:arg1 :arg2] #(math/safe-add %1 %2) :as :prelim)
-    (d/calculate [:prelim]
-      #(if (Double/isNaN %1) nil %1) :as :sum)
-    (d/calculate [:prelim]
-      #(if (Double/isNaN %1) ":scalar-add produced NaN" nil) :as :warning)
+    (d/calculate [:arg1 :arg2] #(+' %1 %2) :as :prelim)
+    (d/calculate [:prelim] #(if %1 (Double/isNaN %1) false) :as :nan)
+    (d/calculate [:nan :prelim] #(if %1 nil %2) :as :sum)
     (d/push-onto :scalar :sum)
+    (d/calculate [:nan] #(if %1 ":scalar-add produced NaN" nil) :as :warning)
     (d/record-an-error :from :warning)
     ))
 
@@ -102,7 +101,7 @@
 
     (d/consume-top-of :scalar :as :denominator)
     (d/consume-top-of :scalar :as :numerator)
-    (d/calculate [:numerator :denominator] #(math/safe-quotient %1 %2) :as :quotient)
+    (d/calculate [:numerator :denominator] #(/ %1 %2) :as :quotient)
     (d/calculate [:quotient] #(if %1 (Double/isNaN %1) false) :as :nan)
     (d/calculate [:nan :quotient] #(if %1 nil %2) :as :quotient)
     (d/push-onto :scalar :quotient)
@@ -194,7 +193,7 @@
     
     (d/consume-top-of :scalar :as :denominator)
     (d/consume-top-of :scalar :as :numerator)
-    (d/calculate [:numerator :denominator] #(math/safe-modulo %1 %2) :as :remainder)
+    (d/calculate [:numerator :denominator] #(mod %1 %2) :as :remainder)
     (d/calculate [:remainder] #(if %1 (Double/isNaN %1) false) :as :nan)
     (d/calculate [:nan :remainder] #(if %1 nil %2) :as :remainder)
     (d/push-onto :scalar :remainder)
@@ -209,15 +208,15 @@
 (def scalar-multiply
   (core/build-instruction
     scalar-multiply
-    "`:scalar-multiply` pops the top two `:scalar` values and pushes their product to `:scalar`. If the result is `NaN`, an `:error` is produced instead of the difference. If the multiplication of a Clojure `bigdec` and `rational` would produce a `Non-terminating decimal expansion` exception, the `bigdec` is converted to a `long` or `double` implicitly, depending on whether it's integral or not."
+    "`:scalar-multiply` pops the top two `:scalar` values and pushes their product to `:scalar`. If there is a runtime error (for example if the arguments are a rational and a `bigdec` value, or the result is `NaN`) an `:error` is pushed."
     :tags #{:arithmetic :base :dangerous}
     (d/consume-top-of :scalar :as :arg2)
     (d/consume-top-of :scalar :as :arg1)
-    (d/calculate [:arg1 :arg2] #(math/safe-times %1 %2) :as :prelim)
-    (d/calculate [:prelim]
-      #(if (Double/isNaN %1) nil %1) :as :product)
-    (d/calculate [:prelim]
-      #(if (Double/isNaN %1) ":scalar-multiply produced NaN" nil) :as :warning)
+    (d/calculate [:arg1 :arg2] #(*' %1 %2) :as :prelim)
+    (d/calculate [:prelim] #(if %1 (Double/isNaN %1) false) :as :nan)
+    (d/calculate [:nan :prelim] #(if %1 nil %2) :as :product)
+    (d/calculate [:nan]
+      #(if %1 ":scalar-multiply produced NaN" nil) :as :warning)
     (d/push-onto :scalar :product)
     (d/record-an-error :from :warning)
     ))
@@ -290,15 +289,15 @@
 (def scalar-subtract
   (core/build-instruction
     scalar-subtract
-    "`:scalar-subtract` pops the top two `:scalar` values and pushes their difference to `:scalar`, subtracting the top item from the second. If the result is `NaN`, an `:error` is produced instead of the difference. If the subtraction of a Clojure `bigdec` and `rational` would produce a `Non-terminating decimal expansion` exception, the `bigdec` is converted to a `long` or `double` implicitly, depending on whether it's integral or not."
+    "`:scalar-subtract` pops the top two `:scalar` values and pushes their difference to `:scalar`, subtracting the top item from the second. If there is a runtime error (for example if the arguments are a rational and a `bigdec` value, or the result is `NaN`) an `:error` is pushed."
     :tags #{:arithmetic :base :dangerous}
     (d/consume-top-of :scalar :as :arg2)
     (d/consume-top-of :scalar :as :arg1)
-    (d/calculate [:arg1 :arg2] #(math/safe-diff %1 %2) :as :prelim)
-    (d/calculate [:prelim]
-      #(if (Double/isNaN %1) nil %1) :as :diff)
-    (d/calculate [:prelim]
-      #(if (Double/isNaN %1) ":scalar-subtract produced NaN" nil) :as :warning)
+    (d/calculate [:arg1 :arg2] #(-' %1 %2) :as :prelim)
+    (d/calculate [:prelim] #(if %1 (Double/isNaN %1) false) :as :nan)
+    (d/calculate [:nan :prelim] #(if %1 nil %2) :as :diff)
+    (d/calculate [:nan]
+      #(if %1 ":scalar-subtract produced NaN" nil) :as :warning)
     (d/push-onto :scalar :diff)
     (d/record-an-error :from :warning)
     ))

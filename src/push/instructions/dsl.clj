@@ -559,3 +559,28 @@
        (assoc scratch as nil)]
     ))
 
+
+
+(with-handler! #'calculate
+  "Handles bigdec vs rational errors in `calculate`"
+  #(re-find #"Non-terminating decimal expansion" (.getMessage %))
+  (fn
+    [e [interpreter scratch] args fxn & {:keys [as]}]
+      [(add-error-message! interpreter (.getMessage e))
+       (assoc scratch as nil)]
+    ))
+
+
+(with-handler! #'calculate
+  "Handles bad result (Infinite or NaN) runtime errors in `calculate`"
+  #(re-find #"Infinite or NaN" (.getMessage %))
+  (fn
+    [e [interpreter scratch] args fxn & {:keys [as]}]
+      [(add-error-message! interpreter (.getMessage e))
+       (assoc scratch as nil)]
+    ))
+
+
+
+
+
