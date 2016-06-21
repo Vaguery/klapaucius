@@ -6,6 +6,7 @@
             ))
 
 
+;; interpreter state toggles
 
 (def quote-refs
   (core/build-instruction
@@ -13,6 +14,49 @@
     "`:push-quoterefs` toggles the interpreter state so that all known binding keywords are pushed automatically to the :ref stack without being resolved"
     :tags #{:binding}
     (d/quote-all-bindings)))
+
+
+
+(def unquote-refs
+  (core/build-instruction
+    push-unquoterefs
+    "`:push-unquoterefs` toggles the interpreter state so that all known binding keywords are resolved immediately, not pushed to the :ref stack"
+    :tags #{:binding}
+    (d/quote-no-bindings)))
+
+
+
+(def push-storeARGS
+  (core/build-instruction
+    push-storeARG
+    "`:push-storeARG` sets the `:store-args?` value of the interpreter's `:config`. While it is `true`, the interpreter will save arguments consumed by instructions into the `binding` named `:ARGS`."
+    :tags #{:binding}
+    (d/start-storing-arguments)))
+
+
+
+(def push-discardARGS
+  (core/build-instruction
+    push-discardARG
+    "`:push-discardARG` unsets the `:store-args?` value of the interpreter's `:config`. While it is `false`, the interpreter will not save the arguments consumed by instructions into the `:ARGS` binding."
+    :tags #{:binding}
+    (d/stop-storing-arguments)))
+
+
+
+
+;; storage and retrieval
+
+
+(def ref-ARGS
+  (core/build-instruction
+    ref-ARGS
+    "`:ref-ARGS` (1) pushes the top item currently stored in the special `:ARGS` binding onto `:exec`, and (2) pushes the keyword `:ARGS` onto the `:ref` stack."
+    (d/calculate [] (fn [] :ARGS) :as :dummy)  ;; awful syntax needs to be fixed
+    (d/save-top-of-binding :dummy :as :value)
+    (d/push-onto :exec :value)
+    (d/push-onto :ref :dummy)
+    ))
 
 
 
@@ -106,12 +150,19 @@
 
 
 
-(def unquote-refs
+(def ref-peek
   (core/build-instruction
-    push-unquoterefs
-    "`:push-unquoterefs` toggles the interpreter state so that all known binding keywords are resolved immediately, not pushed to the :ref stack"
+    ref-peek
+    "`:ref-peek` pops the top `:ref` keyword and pushes a copy of the top item on its stack onto the `:exec` stack; it then returns the `:ref` to that stack"
     :tags #{:binding}
-    (d/quote-no-bindings)))
+    (d/consume-top-of :ref :as :arg)
+    (d/save-top-of-binding :arg :as :value)
+    (d/push-onto :exec :value)
+    (d/push-onto :ref :arg)))
+
+
+
+
 
 
 
@@ -122,6 +173,7 @@
 
         (t/attach-instruction quote-refs)
         (t/attach-instruction unquote-refs)
+        (t/attach-instruction ref-ARGS)
         (t/attach-instruction ref-clear)
         (t/attach-instruction ref-dump)
         (t/attach-instruction ref-exchange)
@@ -130,6 +182,7 @@
         (t/attach-instruction ref-known?)
         (t/attach-instruction ref-lookup)
         (t/attach-instruction ref-new)
+        (t/attach-instruction ref-peek)
 
         aspects/make-equatable
         aspects/make-movable

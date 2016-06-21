@@ -172,3 +172,37 @@
     (:bindings (i/execute-instruction (assoc hasref :bindings {}) :ref-exchange)) =>
       {:x (), :y ()} ;; both are created
     ))
+
+
+
+(fact ":ref-ARGS gets the contents of the top :ref but replaces it"
+  (let [hasref 
+    (assoc
+      (push.interpreter.templates.one-with-everything/make-everything-interpreter
+        :stacks {:ref '(:x :y)})
+      :bindings {:ARGS '(88 99 111)})]
+    (push.core/get-stack hasref :ref) => '(:x :y)
+    (:bindings hasref) => {:ARGS '(88 99 111)}
+
+    (push.core/get-stack
+      (i/execute-instruction hasref :ref-ARGS) :exec) => '(88)
+    (push.core/get-stack
+      (i/execute-instruction hasref :ref-ARGS) :ref) => '(:ARGS :x :y)
+    ))
+
+
+
+
+(fact ":ref-peek gets the contents of the top :ref but replaces it"
+  (let [hasref 
+    (assoc
+      (push.interpreter.templates.one-with-everything/make-everything-interpreter
+        :stacks {:ref '(:x :y)})
+      :bindings {:x '(8) :y '(false)})]
+    (push.core/get-stack hasref :ref) => '(:x :y)
+
+    (push.core/get-stack
+      (i/execute-instruction hasref :ref-peek) :exec) => '(8)
+    (push.core/get-stack
+      (i/execute-instruction hasref :ref-peek) :ref) => '(:x :y)
+    ))

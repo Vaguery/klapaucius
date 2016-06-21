@@ -43,6 +43,8 @@
       #'save-stack {(second step) 0}
       #'save-top-of {(second step) 1}
       #'save-top-of-binding {}
+      #'start-storing-arguments {}
+      #'stop-storing-arguments {}
       (oops/throw-unknown-DSL-exception cmd)  )))
 
 
@@ -87,6 +89,8 @@
       #'save-stack {}
       #'save-top-of {}
       #'save-top-of-binding {}
+      #'start-storing-arguments {}
+      #'stop-storing-arguments {}
       (oops/throw-unknown-DSL-exception cmd)  )))
 
 

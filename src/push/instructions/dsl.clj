@@ -400,6 +400,7 @@
     (oops/throw-unknown-stack-exception stackname)))
 
 
+
 (defn retrieve-all-stacks
   "The second argument (:using) is an `:environment` hash of stacks. Delete all stacks from the current Interpreter except :print, :log, :unknown and :error, then merge in the archived stacks. Note: if the archived hash lacks some stacks present in the running stacks, too bad!"
   [[interpreter scratch] & {:keys [using]}]
@@ -507,6 +508,21 @@
     (if (nil? as)
           (oops/throw-missing-key-exception :as)
        [interpreter (assoc scratch as c)])))
+
+
+
+(defn start-storing-arguments
+  "Sets the Interpreter's `:store-args?` flag to `true`. (Many) arguments consumed by instructions executed will be pushed (as code blocks) onto the `:ARGS` binding"
+  [[interpreter scratch]]
+  [(assoc-in interpreter [:config :store-args?] true) scratch])
+
+
+
+(defn stop-storing-arguments
+  "Sets the Interpreter's `:store-args?` flag to `false`. Arguments will be consumed by instructions."
+  [[interpreter scratch]]
+  [(assoc-in interpreter [:config :store-args?] true) scratch])
+
 
 
 (defn record-an-error

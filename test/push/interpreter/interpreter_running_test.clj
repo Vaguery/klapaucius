@@ -198,6 +198,20 @@
    (handle-item he-knows-foo {:thing 9}) => (throws #"Push Parsing Error:")))
 
 
+
+;; argument retention
+
+
+(fact "when :store-args? is true (in :config), the arguments consumed by instructions are saved as a seq onto the :ARGS ref"
+  (let [i (push/interpreter
+            :stacks {:scalar '(1 2 3)}
+            :config {:store-args? true})]
+    (:config (handle-item i :scalar-add)) => (contains {:store-args? true})
+    (:bindings (handle-item i :scalar-add)) => (contains '{:ARGS ((2 1))})
+    (u/get-stack (handle-item i :scalar-add) :scalar) => '(3 3)
+    ))
+
+
 ;; some fixtures:
 
 
