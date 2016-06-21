@@ -28,8 +28,8 @@
 
 (def push-storeARGS
   (core/build-instruction
-    push-storeARG
-    "`:push-storeARG` sets the `:store-args?` value of the interpreter's `:config`. While it is `true`, the interpreter will save arguments consumed by instructions into the `binding` named `:ARGS`."
+    push-storeARGS
+    "`:push-storeARGS` sets the `:store-args?` value of the interpreter's `:config`. While it is `true`, the interpreter will save arguments consumed by instructions into the `binding` named `:ARGS`."
     :tags #{:binding}
     (d/start-storing-arguments)))
 
@@ -37,8 +37,8 @@
 
 (def push-discardARGS
   (core/build-instruction
-    push-discardARG
-    "`:push-discardARG` unsets the `:store-args?` value of the interpreter's `:config`. While it is `false`, the interpreter will not save the arguments consumed by instructions into the `:ARGS` binding."
+    push-discardARGS
+    "`:push-discardARGS` unsets the `:store-args?` value of the interpreter's `:config`. While it is `false`, the interpreter will not save the arguments consumed by instructions into the `:ARGS` binding."
     :tags #{:binding}
     (d/stop-storing-arguments)))
 

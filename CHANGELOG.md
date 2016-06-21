@@ -1,5 +1,18 @@
 # Recent changes
 
+## 0.1.21
+
+- Some minor twiddling of the way instructions are executed (in `push.instructions.dsl/consume-top-of` and `push.instructions.dsl/consume-nth-of`, plus `push.interpreter.core/apply-instruction`) means that the entire tuple of the updated interpreter and the `scratch` map built during execution of an instruction are both returned to the interpreter. This permits:
+- Added a setting in the interpreter's `:config` hash called `:store-args?`. When this is `true` (it's `false` by default), the arguments consumed by an instruction are pushed as a code block onto the special `binding` called `:ARGS`. All interpreters have this `binding` (though it doesn't do anything special in most cases); it's just a nominal hook for:
+- Added several instructions to the `:ref` type.
+  - `:ref-ARGS` pushes the current value of `:ARGS` to `:exec` and also the keyword `:ARGS` onto `:ref`
+  - `:push-storeARGS` sets the interpreter's `:store-args?` value
+  - `:push-discardARGS` unsets the interpreter's `:store-args?` value
+  - `:ref-peek`, which looks up a `:ref` and pushes its current value to `:exec` but also replaces the `:ref` on that stack
+- also various bug fixes, noticed along the way
+
+
+
 ## 0.1.20
 
 - `push.instructions.dsl/calculate` (the core of the Push DSL, really) now uses [`dire` error-handling](https://github.com/MichaelDrogalis/dire) to short-circuit exceptions raised by common instruction operations. This includes Division by zero, Non-terminating decimal representations, and the odd "Infinity or NaN" error. The DSL step now automatically writes an `:error` to that stack and returns a result (of `calculate`) of `nil`. It's up to the instruction definition to handle that result.
