@@ -173,6 +173,9 @@
 
         (t/attach-instruction quote-refs)
         (t/attach-instruction unquote-refs)
+        (t/attach-instruction push-discardARGS)
+        (t/attach-instruction push-storeARGS)
+
         (t/attach-instruction ref-ARGS)
         (t/attach-instruction ref-clear)
         (t/attach-instruction ref-dump)
