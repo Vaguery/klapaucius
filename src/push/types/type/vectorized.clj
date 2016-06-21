@@ -146,16 +146,18 @@
     (eval (list
       'push.instructions.core/build-instruction
       instruction-name
-      (str "`" typename "-do*each` pops the top `" typename "` item and the top of the `:exec` stack, and pushes this continuation form to `:exec`: `([first vector] [exec item] [rest vector] " instruction-name " [exec item])`.")
+      (str "`" typename "-do*each` pops the top `" typename "` item and the top of the `:exec` stack, and pushes this continuation form to `:exec`: `([first vector] [exec item] [rest vector] " instruction-name " [exec item])`. If the vector is empty, it is simply consumed with no result.")
       :tags #{:vector}
       `(push.instructions.dsl/consume-top-of ~typename :as :arg)
       `(push.instructions.dsl/consume-top-of :exec :as :actor)
       `(push.instructions.dsl/calculate [:arg :actor]
-          #(list (or (first %1) '())
-                 %2
-                 (into [] (rest %1))
-                 (keyword ~instruction-name)
-                 %2)
+          #(if (empty? %1)
+            nil
+            (list (first %1)
+                   %2
+                   (into [] (rest %1))
+                   (keyword ~instruction-name)
+                   %2))
           :as :continuation)
       `(push.instructions.dsl/push-onto :exec :continuation)))))
 
