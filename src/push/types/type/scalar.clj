@@ -263,6 +263,17 @@
 
 
 
+(def scalar-reciprocal
+  (core/build-instruction
+    scalar-reciprocal
+    "`:scalar-reciprocal` pushes the reciprocal of the top `:scalar`."
+    :tags #{:arithmetic :base :dangerous}
+    (d/consume-top-of :scalar :as :arg)
+    (d/calculate [:arg] #(/ 1 %1) :as :reciprocal)
+    (d/push-onto :scalar :reciprocal)))
+
+
+
 (def scalar-round (t/simple-1-in-1-out-instruction
   "`:scalar-round` pops the top `:scalar` value, and pushes the closest integer value"
   :scalar "round" 'nt/round))
@@ -546,6 +557,7 @@
         (t/attach-instruction , scalar-π)
         ; (t/attach-instruction , scalar-power)
         (t/attach-instruction , scalar-ratio?)
+        (t/attach-instruction , scalar-reciprocal)
         (t/attach-instruction , scalar-round)
         (t/attach-instruction , scalar-sign)
         (t/attach-instruction , scalar-sine)

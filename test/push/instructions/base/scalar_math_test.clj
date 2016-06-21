@@ -837,6 +837,30 @@
 
 
 (tabular
+  (fact ":scalar-reciprocal the reciprocal of top :scalar, or an :error if out of range"
+    (register-type-and-check-instruction
+        ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items        ?instruction         ?get-stack   ?expected
+    :scalar     '(1)        :scalar-reciprocal        :scalar      '(1)
+    :scalar     '(4/9)      :scalar-reciprocal        :scalar      '(9/4)
+    :scalar     '(100)      :scalar-reciprocal        :scalar      '(1/100)
+    :scalar     '(81N)      :scalar-reciprocal        :scalar      '(1/81)
+    :scalar     '(10000.0)  :scalar-reciprocal        :scalar      '(0.0001)
+    :scalar     '(0.64)     :scalar-reciprocal        :scalar      '(1.5625)
+  
+    :scalar     '(8.1M)     :scalar-reciprocal        :scalar      '()
+    :scalar     '(8.1M)     :scalar-reciprocal        :error      '({:item "Non-terminating decimal expansion; no exact representable decimal result.", :step 0})
+    :scalar     '(0)        :scalar-reciprocal        :scalar      '()
+    :scalar     '(0)        :scalar-reciprocal        :error      '({:item "Divide by zero", :step 0})
+  
+    :scalar     '()         :scalar-reciprocal        :scalar      '()
+    )
+
+
+
+
+(tabular
   (fact ":scalar-sqrt the sqrt of a :scalar, or an :error if out of range"
     (register-type-and-check-instruction
         ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
