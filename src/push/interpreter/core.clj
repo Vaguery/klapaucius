@@ -191,9 +191,20 @@
   (get-in interpreter [:instructions token]))
 
 
+
+
 (defn apply-instruction
+  "takes an interpreter and a token; returns a TUPLE containing the interpreter and the `:scratch` variables (in that order). If the `:store-args?` value is `true` in the interpreter's `:config`, the arguments will be saved into the `:ARGS` binding."
   [interpreter token]
-  ((:transaction (get-instruction interpreter token)) interpreter))
+  (let [tuple   ((:transaction (get-instruction interpreter token)) interpreter)
+        updated (first tuple)
+        args    (:ARGS (second tuple))
+        keep?   (get-in updated [:config :store-args?] false)]
+    (if keep?
+      (bind-value updated :ARGS args) ;; save args in :ARGS binding
+      updated  )))                    ;; the interpreter itself
+      
+
 
 
 (defn push-item
@@ -286,7 +297,7 @@
     (keyword? item)
       (cond
         (bound-keyword? interpreter item)
-          (if (:quote-refs? interpreter)
+          (if (get-in interpreter [:config :quote-refs?])
             (push-item interpreter :ref item)
             (push-item interpreter :exec (peek-at-binding interpreter item)))
         (instruction? interpreter item)

@@ -83,6 +83,13 @@
                   [which old-stack]))))
 
 
+(defn save-ARG
+  [scratch item]
+  (let [old-args (:ARGS scratch)]
+    (assoc scratch :ARGS (conj old-args item))))
+
+
+
 ;; DSL instructions
 
 
@@ -143,6 +150,7 @@
 
 
 
+
 (defn consume-top-of
   "Takes an PushDSL blob, a stackname (keyword) and a scratch variable
   (keyword) in which to store the top value from that stack.
@@ -151,13 +159,16 @@
     - the stack doesn't exist
     - the stack is empty"
   [ [interpreter scratch] stackname & {:keys [as]}]
-  (let [old-stack (u/get-stack interpreter stackname)]
+  (let [old-stack (u/get-stack interpreter stackname)
+        old-args (:ARGS scratch)]
     (cond (nil? old-stack) (oops/throw-unknown-stack-exception stackname)
           (empty? old-stack) (oops/throw-empty-stack-exception stackname)
           (nil? as) (oops/throw-missing-key-exception :as)
           :else (let [top-item (first old-stack)]
                   [(u/set-stack interpreter stackname (rest old-stack))
-                   (assoc scratch as top-item)]))))
+                   (-> scratch
+                       (save-ARG , top-item)
+                       (assoc , as top-item)) ]))))
       
 
 
@@ -176,6 +187,7 @@
       [interpreter (assoc scratch scratch-var (count stack))]
       (oops/throw-unknown-stack-exception stackname))
     (oops/throw-missing-key-exception :as)))
+
 
 
 (defn consume-nth-of
@@ -199,7 +211,9 @@
       (let [new-stack (delete-nth old-stack idx)
             saved-item (nth old-stack idx)]
         [(u/set-stack interpreter stackname new-stack)
-         (assoc scratch as saved-item)]))))
+         (-> scratch
+             (save-ARG , saved-item)
+             (assoc , as saved-item))]))))
 
 
 (defn delete-nth-of
@@ -340,13 +354,13 @@
 (defn quote-all-bindings
   "Sets the Interpreter's `:quote-refs?` flag to `true`, so that any keyword that would normally be recognized as a bound variable is instead pushed to the :ref stack without being resolved"
   [[interpreter scratch]]
-  [(assoc interpreter :quote-refs? true) scratch])
+  [(assoc-in interpreter [:config :quote-refs?] true) scratch])
 
 
 (defn quote-no-bindings
   "Sets the Interpreter's `:quote-refs?` flag to `false`, so that any keyword that is registered is resolved by examining the items associated with it"
   [[interpreter scratch]]
-  [(assoc interpreter :quote-refs? false) scratch])
+  [(assoc-in interpreter [:config :quote-refs?] false) scratch])
 
 
 (defn replace-binding
@@ -384,6 +398,7 @@
                           :else (list replacement))]
       [(u/set-stack interpreter stackname new-stack) scratch])
     (oops/throw-unknown-stack-exception stackname)))
+
 
 
 (defn retrieve-all-stacks
@@ -493,6 +508,21 @@
     (if (nil? as)
           (oops/throw-missing-key-exception :as)
        [interpreter (assoc scratch as c)])))
+
+
+
+(defn start-storing-arguments
+  "Sets the Interpreter's `:store-args?` flag to `true`. (Many) arguments consumed by instructions executed will be pushed (as code blocks) onto the `:ARGS` binding"
+  [[interpreter scratch]]
+  [(assoc-in interpreter [:config :store-args?] true) scratch])
+
+
+
+(defn stop-storing-arguments
+  "Sets the Interpreter's `:store-args?` flag to `false`. Arguments will be consumed by instructions."
+  [[interpreter scratch]]
+  [(assoc-in interpreter [:config :store-args?] true) scratch])
+
 
 
 (defn record-an-error

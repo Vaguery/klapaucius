@@ -110,6 +110,11 @@
       :boolean :as :foo) =not=> (throws)))
 
 
+  (fact "`consume-top-of` also saves anything it eats by appending it to scratch variable `:ARGS`"
+    (second (consume-top-of [afew {:foo \f}] :scalar :as :foo)) => {:foo 1 :ARGS [1]}
+    )
+
+
 ;; delete-nth
 
 (facts "about `delete-nth`"
@@ -488,6 +493,12 @@
       (throws #"missing key: :at")))
 
 
+  (fact "`consume-nth-of` also saves anything it eats by appending it to scratch variable `:ARGS`"
+    (second (consume-nth-of [afew {:foo false}] :scalar :at 11 :as :foo)) =>
+      {:foo 3 :ARGS [3]}
+    )
+
+
 ;; `get-nth-of [stackname :at where]` (shared functionality)
 
 
@@ -795,7 +806,7 @@
                   (consume-top-of :scalar :as :arg2)
                   (calculate [:arg1 :arg2] #(+ %1 %2) :as :sum)
                   (push-onto :scalar :sum))]
-  (class (int-add afew)) => push.interpreter.core.Interpreter))
+  (class (first (int-add afew))) => push.interpreter.core.Interpreter))
 
 
 (fact "applying the function does the things it's supposed to"
@@ -804,7 +815,7 @@
                   (consume-top-of :scalar :as :arg2)
                   (calculate [:arg1 :arg2] #(+ %1 %2) :as :sum)
                   (push-onto :scalar :sum))]
-  (u/get-stack (int-add afew) :scalar) => '(3 3)))
+  (u/get-stack (first (int-add afew)) :scalar) => '(3 3)))
 
 
 ;; `push-these-onto [stackname [locals]]`

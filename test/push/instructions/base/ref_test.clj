@@ -28,17 +28,23 @@
 
 (fact ":push-quoterefs turns on the interpreter's :quote-refs? flag"
   (let [no (push.interpreter.templates.one-with-everything/make-everything-interpreter)]
-    (:quote-refs? no) => nil
-    (:quote-refs? (i/execute-instruction no :push-quoterefs)) => true))
+    (get-in no [:config :quote-refs?]) => nil
+    (get-in
+      (i/execute-instruction no :push-quoterefs)
+      [:config :quote-refs?]) => true))
 
 
 
 (fact ":push-unquoterefs turns off the interpreter's :quote-refs? flag"
   (let [no 
-    (assoc (push.interpreter.templates.one-with-everything/make-everything-interpreter)
-      :quote-refs? true)]
-    (:quote-refs? no) => true
-    (:quote-refs? (i/execute-instruction no :push-unquoterefs)) => false
+    (assoc-in
+      (push.interpreter.templates.one-with-everything/make-everything-interpreter)
+      [:config :quote-refs?]
+      true)]
+    (get-in no [:config :quote-refs?]) => true
+    (get-in
+      (i/execute-instruction no :push-unquoterefs)
+      [:config :quote-refs?]) => false
     ))
 
 
@@ -165,4 +171,38 @@
       {:f '(8), :x '(), :y '(false)}
     (:bindings (i/execute-instruction (assoc hasref :bindings {}) :ref-exchange)) =>
       {:x (), :y ()} ;; both are created
+    ))
+
+
+
+(fact ":ref-ARGS gets the contents of the top :ref but replaces it"
+  (let [hasref 
+    (assoc
+      (push.interpreter.templates.one-with-everything/make-everything-interpreter
+        :stacks {:ref '(:x :y)})
+      :bindings {:ARGS '(88 99 111)})]
+    (push.core/get-stack hasref :ref) => '(:x :y)
+    (:bindings hasref) => {:ARGS '(88 99 111)}
+
+    (push.core/get-stack
+      (i/execute-instruction hasref :ref-ARGS) :exec) => '(88)
+    (push.core/get-stack
+      (i/execute-instruction hasref :ref-ARGS) :ref) => '(:ARGS :x :y)
+    ))
+
+
+
+
+(fact ":ref-peek gets the contents of the top :ref but replaces it"
+  (let [hasref 
+    (assoc
+      (push.interpreter.templates.one-with-everything/make-everything-interpreter
+        :stacks {:ref '(:x :y)})
+      :bindings {:x '(8) :y '(false)})]
+    (push.core/get-stack hasref :ref) => '(:x :y)
+
+    (push.core/get-stack
+      (i/execute-instruction hasref :ref-peek) :exec) => '(8)
+    (push.core/get-stack
+      (i/execute-instruction hasref :ref-peek) :ref) => '(:x :y)
     ))

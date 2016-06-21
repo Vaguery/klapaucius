@@ -129,8 +129,6 @@
   (some-bindings 10))
 
 
-; (println many-programs)
-
 
 (defn launch-some-workers
   []

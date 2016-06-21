@@ -43,6 +43,8 @@
       #'save-stack {(second step) 0}
       #'save-top-of {(second step) 1}
       #'save-top-of-binding {}
+      #'start-storing-arguments {}
+      #'stop-storing-arguments {}
       (oops/throw-unknown-DSL-exception cmd)  )))
 
 
@@ -87,6 +89,8 @@
       #'save-stack {}
       #'save-top-of {}
       #'save-top-of-binding {}
+      #'start-storing-arguments {}
+      #'stop-storing-arguments {}
       (oops/throw-unknown-DSL-exception cmd)  )))
 
 
@@ -103,7 +107,7 @@
        words &form]
     (do 
     `(fn [~interpreter] 
-      (first (-> [~interpreter {}] ~@transactions))))))
+      (-> [~interpreter {:ARGS '()}] ~@transactions)))))
 
 
 (defrecord Instruction [token docstring tags needs products transaction])
