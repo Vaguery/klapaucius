@@ -186,6 +186,7 @@
                                     (str line "," (count (get-in s [:bindings k]))))
                                   "**"
                                   (:bindings s))
+                                ; "\n   " (get-in s [:bindings :ARGS])
 
                             ))
                   (recur (do 
