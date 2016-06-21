@@ -128,6 +128,17 @@
 
 
 
+(def scalar-fractional
+  (core/build-instruction
+    scalar-fractional
+    "`:scalar-fractional` pushes just the fractional part of the top `:scalar`."
+    :tags #{:arithmetic :base}
+    (d/consume-top-of :scalar :as :arg)
+    (d/calculate [:arg] #(mod (nt/abs %1) 1) :as :result)
+    (d/push-onto :scalar :result)))
+
+
+
 (def scalar-inc (t/simple-1-in-1-out-instruction
   "`:scalar-inc` adds 1 to the top `:scalar` item"
   :scalar "inc" 'inc'))
@@ -444,6 +455,53 @@
     (d/push-onto :scalar :int)))
 
 
+;; SUBTYPES
+
+
+(def scalar-bigdec?
+  (core/build-instruction
+    scalar-bigdec?
+    "`:scalar-bigdec?` pops the top `:scalar` item, and pushes `true` if it is a Clojure bigdec"
+    :tags #{:numeric :predicate}
+    (d/consume-top-of :scalar :as :arg)
+    (d/calculate [:arg] #(instance? java.math.BigDecimal %1) :as :result)
+    (d/push-onto :boolean :result)))
+
+
+
+(def scalar-float?
+  (core/build-instruction
+    scalar-float?
+    "`:scalar-float?` pops the top `:scalar` item, and pushes `true` if it is a Clojure float or is a BigDecimal"
+    :tags #{:numeric :predicate}
+    (d/consume-top-of :scalar :as :arg)
+    (d/calculate [:arg]
+      #(or (float? %1) (instance? java.math.BigDecimal %1)) :as :result)
+    (d/push-onto :boolean :result)))
+
+
+
+(def scalar-integer?
+  (core/build-instruction
+    scalar-integer?
+    "`:scalar-integer?` pops the top `:scalar` item, and pushes `true` if it is a Clojure integer"
+    :tags #{:numeric :predicate}
+    (d/consume-top-of :scalar :as :arg)
+    (d/calculate [:arg] #(integer? %1) :as :result)
+    (d/push-onto :boolean :result)))
+
+
+
+(def scalar-ratio?
+  (core/build-instruction
+    scalar-ratio?
+    "`:scalar-ratio?` pops the top `:scalar` item, and pushes `true` if it is a ratio"
+    :tags #{:numeric :predicate}
+    (d/consume-top-of :scalar :as :arg)
+    (d/calculate [:arg] #(ratio? %1) :as :result)
+    (d/push-onto :boolean :result)))
+
+
 
 (def scalar-type
   ( ->  (t/make-type  :scalar
@@ -466,14 +524,18 @@
         (t/attach-instruction , scalar-arccosine)
         (t/attach-instruction , scalar-arcsine)
         (t/attach-instruction , scalar-arctangent)
+        (t/attach-instruction , scalar-bigdec?)
         (t/attach-instruction , scalar-ceiling)
         (t/attach-instruction , scalar-cosine)
         (t/attach-instruction , scalar-dec)
         (t/attach-instruction , scalar-divide)
         (t/attach-instruction , scalar-E)
         (t/attach-instruction , scalar-few)
+        (t/attach-instruction , scalar-float?)
         (t/attach-instruction , scalar-floor)
+        (t/attach-instruction , scalar-fractional)
         (t/attach-instruction , scalar-inc)
+        (t/attach-instruction , scalar-integer?)
         (t/attach-instruction , scalar-ln)
         (t/attach-instruction , scalar-ln1p)
         (t/attach-instruction , scalar-lots)
@@ -483,6 +545,7 @@
         (t/attach-instruction , scalar-multiply)
         (t/attach-instruction , scalar-π)
         ; (t/attach-instruction , scalar-power)
+        (t/attach-instruction , scalar-ratio?)
         (t/attach-instruction , scalar-round)
         (t/attach-instruction , scalar-sign)
         (t/attach-instruction , scalar-sine)

@@ -388,6 +388,34 @@
 
 
 (tabular
+  (fact ":scalar-fractional produces just the remainder mod 1"
+    (register-type-and-check-instruction
+        ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items     ?instruction        ?get-stack  ?expected
+    :scalar     '(0)      :scalar-fractional     :scalar    '(0)
+    :scalar     '(0.25)   :scalar-fractional     :scalar    '(0.25)
+    :scalar     '(11.25)  :scalar-fractional     :scalar    '(0.25)
+    :scalar     '(-11.25) :scalar-fractional     :scalar    '(0.25)
+    :scalar     '(1e-2)   :scalar-fractional     :scalar    '(0.01)
+    :scalar     '(-1e-2)  :scalar-fractional     :scalar    '(0.01)
+    
+    :scalar     '(1/3)    :scalar-fractional     :scalar    '(1/3)
+    :scalar     '(11/3)   :scalar-fractional     :scalar    '(2/3)
+    :scalar     '(-4/3)   :scalar-fractional     :scalar    '(1/3)
+
+    :scalar     '(17N)    :scalar-fractional     :scalar    '(0)
+
+    :scalar     '(17M)    :scalar-fractional     :scalar    '(0M)
+    :scalar     '(17.2M)  :scalar-fractional     :scalar    '(0.2M)
+    :scalar     '(-7.2M)  :scalar-fractional     :scalar    '(0.2M)
+    :scalar     '(1e-2M)  :scalar-fractional     :scalar    '(0.01M)
+    )
+
+
+
+
+(tabular
   (fact ":scalar-inc increments the top :scalar by 1"
     (register-type-and-check-instruction
         ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
