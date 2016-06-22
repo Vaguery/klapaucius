@@ -62,6 +62,7 @@
                                        :set     (list what-simple-case-knows))
 
 
+
 (tabular
   (fact ":push-bindingcount pushes the number of binding keys to :scalar"
     (register-type-and-check-instruction-in-this-interpreter

@@ -249,6 +249,7 @@
     scalar-power
     "`:scalar-power` pops the top two `:scalar` values (call them `exponent` and `base` respectively). It calculates `(numeric-tower/expt base exponent)`. In cases of overflow, an :error is pushed."
     :tags #{:arithmetic :base :dangerous}
+
     (d/consume-top-of :scalar :as :exp)
     (d/consume-top-of :scalar :as :base)
     (d/calculate [:base :exp] #(nt/expt %1 %2) :as :prelim)
