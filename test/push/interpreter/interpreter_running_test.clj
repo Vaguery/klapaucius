@@ -449,7 +449,7 @@
   (is-done? ready-to-pop) => false
 
   (:stacks (step ready-to-pop)) =>
-    '{:boolean (), :booleans (), :char (), :chars (), :code (), :environment (), :error (:error1 :error2), :exec (:return2 :return1 3 33), :generator (),
+    '{:boolean (), :booleans (), :char (), :chars (), :code (), :complex (), :complexes (), :environment (), :error (:error1 :error2), :exec (:return2 :return1 3 33), :generator (),
 
       :log ({:item "ENVIRONMENT STACK POPPED", :step 1} :log1 :log2),
 
@@ -468,7 +468,7 @@
   (is-done? unready-to-pop) => true
 
   (:stacks (step unready-to-pop)) =>
-    '{:boolean (), :booleans (), :char (), :chars (), :code (), :environment (), :error (:error1 :error2), :exec (), :generator (),
+    '{:boolean (), :booleans (), :char (), :chars (), :code (), :complex (), :complexes (), :environment (), :error (:error1 :error2), :exec (), :generator (),
 
       :log (:log1 :log2),
 

@@ -8,10 +8,14 @@
 (defrecord Complex [re im])
 
 
+
+
+
 (defn complexify
-  "Takes a number and returns a Complex record {:re n :im 0}"
-  [n]
-  (->Complex n 0))
+  "If there's one argument, returns a Complex record that's {:re n :im 0}; if there are two arguments, returns {:re arg1 :im arg2}"
+  ([n] (->Complex n 0))
+  ([r i] (->Complex r i))
+  )
 
 
 

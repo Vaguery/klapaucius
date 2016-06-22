@@ -8,17 +8,6 @@
             ))
 
 
-;; complex-parts
-;; complex-new
-;; complex-zero
-;; scalar->complex
-;; complex-scale
-;; complex-shift
-;; complex-dominate?
-;; complex-dominated
-;; complex-dominating
-;; complex-reciprocal
-
 
 
 (def complex-add
@@ -75,7 +64,7 @@
 (def complex-multiply
   (core/build-instruction
     complex-multiply
-    "`:complex-multiply` pops the top two `:complex` values and pushes their product to `:complex`. If the result is or contains `NaN`, an `:error` is produced instead of the product. If the multiplication of a Clojure `bigdec` and `rational` would produce a `Non-terminating decimal expansion` exception, the `bigdec` is converted to a `long` or `double` implicitly, depending on whether it's integral or not."
+    "`:complex-multiply` pops the top two `:complex` values and pushes their product to `:complex`. If the result is or contains `NaN`, an `:error` is produced instead of the product. "
     :tags #{:arithmetic :base :dangerous}
     (d/consume-top-of :complex :as :arg2)
     (d/consume-top-of :complex :as :arg1)
@@ -88,6 +77,65 @@
     (d/record-an-error :from :warning)
     ))
 
+
+
+(def complex-parts
+  (core/build-instruction
+    complex-parts
+    "`:complex-parts` pops the top `:complex` value and pushes a code block containing its real and imaginary parts (in that order) onto `:exec`"
+    :tags #{:complex}
+    (d/consume-top-of :complex :as :arg)
+    (d/calculate [:arg] #(vals %1) :as :parts)
+    (d/push-onto :exec :parts)
+    ))
+
+
+
+(def complex-reciprocal
+  (core/build-instruction
+    complex-reciprocal
+    "`:complex-reciprocal` pops the top `:complex` value and pushes its reciprocal."
+    :tags #{:arithmetic :base :dangerous}
+    (d/consume-top-of :complex :as :arg)
+    (d/calculate [:arg]
+        #(complex/complex-quotient (complex/complexify 1) %1) :as :prelim)
+    (d/calculate [:prelim] #(if %1 (complex/complex-NaN? %1) false) :as :nan)
+    (d/calculate [:nan :prelim] #(if %1 nil %2) :as :product)
+    (d/calculate [:nan]
+      #(if %1 ":complex-reciprocal produced NaN" nil) :as :warning)
+    (d/push-onto :complex :product)
+    (d/record-an-error :from :warning)
+    ))
+
+
+
+(def complex-scale
+  (core/build-instruction
+    complex-scale
+    "`:complex-scale` pops the top `:complex` value and the top `:scalar`, and pushes their product to `:complex`."
+    :tags #{:arithmetic :base :dangerous}
+    (d/consume-top-of :scalar :as :arg2)
+    (d/consume-top-of :complex :as :arg1)
+    (d/calculate [:arg1 :arg2]
+        #(complex/complexify (*' (:re %1) %2)
+                             (*' (:im %1) %2)) :as :result)
+    (d/push-onto :complex :result)
+    ))
+
+
+
+(def complex-shift
+  (core/build-instruction
+    complex-shift
+    "`:complex-shift` pops the top `:complex` value and the top `:scalar`, and pushes the result of adding the `:scalar` to each component of the `:complex` value."
+    :tags #{:arithmetic :base :dangerous}
+    (d/consume-top-of :scalar :as :arg2)
+    (d/consume-top-of :complex :as :arg1)
+    (d/calculate [:arg1 :arg2]
+        #(complex/complexify (+' (:re %1) %2)
+                             (+' (:im %1) %2)) :as :result)
+    (d/push-onto :complex :result)
+    ))
 
 
 
@@ -104,6 +152,42 @@
     (d/calculate [:nan] #(if %1 ":complex-subtract produced NaN" nil) :as :warning)
     (d/push-onto :complex :diff)
     (d/record-an-error :from :warning)
+    ))
+
+
+
+(def complex-zero
+  (core/build-instruction
+    complex-zero
+    "`:complex-zero` pushes {re:0 im:0} onto `:complex`."
+    :tags #{:complex}
+    (d/calculate [] (fn [] (complex/complexify 0)) :as :new)
+    (d/push-onto :complex :new)
+    ))
+
+
+
+(def scalar->complex
+  (core/build-instruction
+    scalar->complex
+    "`:scalar->complex` pops the top two `:scalar` values (call them IM and RE, respectively) and pushes a new `:complex` item with those components."
+    :tags #{:complex}
+    (d/consume-top-of :scalar :as :im)
+    (d/consume-top-of :scalar :as :re)
+    (d/calculate [:re :im] #(complex/complexify %1 %2) :as :new)
+    (d/push-onto :complex :new)
+    ))
+
+
+
+(def scalar-complexify
+  (core/build-instruction
+    scalar-complexify
+    "`:scalar-complexify` pops the top `:scalar` value and pushes a new `:complex` item with 0 imaginary component."
+    :tags #{:complex}
+    (d/consume-top-of :scalar :as :re)
+    (d/calculate [:re] #(complex/complexify %1 0) :as :new)
+    (d/push-onto :complex :new)
     ))
 
 
@@ -126,7 +210,14 @@
         (t/attach-instruction , complex-conjugate)
         (t/attach-instruction , complex-divide)
         (t/attach-instruction , complex-multiply)
+        (t/attach-instruction , complex-parts)
+        (t/attach-instruction , complex-reciprocal)
+        (t/attach-instruction , complex-scale)
+        (t/attach-instruction , complex-shift)
         (t/attach-instruction , complex-subtract)
+        (t/attach-instruction , complex-zero)
+        (t/attach-instruction , scalar-complexify)
+        (t/attach-instruction , scalar->complex)
 
   ))
 

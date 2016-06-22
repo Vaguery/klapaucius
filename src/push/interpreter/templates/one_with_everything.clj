@@ -6,6 +6,7 @@
   (:use push.type.item.boolean)
   (:use push.type.item.char)
   (:use push.type.module.code)
+  (:use push.type.item.complex)
   (:use push.type.module.exec)
   (:use push.type.item.scalar)
   (:use push.type.item.string)
@@ -38,12 +39,14 @@
     string-type
     tagspace-type
     scalar-type
+    complex-type
 
     (build-vectorized-type boolean-type)
     (build-vectorized-type char-type)
     (build-vectorized-type ref-type)
     (build-vectorized-type string-type)
     (build-vectorized-type scalar-type)
+    (build-vectorized-type complex-type)
 
     standard-vector-type
     standard-set-type
@@ -79,10 +82,12 @@
   - ref-type
   - string-type
   - scalar-type
+  - complex-type
   - booleans-type
   - chars-type
   - strings-type
   - scalars-type
+  - complexes-type
   - standard-set-type
   - tagspace-type
   - standard-vector-type (loaded last as a default)

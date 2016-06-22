@@ -6,6 +6,7 @@
             [push.util.numerics :as num]
             [clojure.math.numeric-tower :as nt]
             [push.util.code-wrangling :as fix]
+            [inflections.core :as inflect]
             ))
 
 
@@ -466,7 +467,7 @@
 (defn build-vectorized-type
   "creates a vector [sub]type for another Push type"
   [content-type]
-  (let [typename (keyword (str (name (:name content-type)) "s"))
+  (let [typename (keyword (inflect/plural (name (:name content-type))))
         rootname (keyword (name (:name content-type)))]
     ( ->  (t/make-type  typename
                         :recognized-by #(vector-of-type? % content-type)

@@ -42,7 +42,7 @@
 
 (fact "I can produce the router list for an interpreter"
   (p/routing-list (p/interpreter)) =>
-    (contains [:ref :refs :boolean :char :generator :quoted :string :booleans :chars :strings :tagspace :scalars :vector :set :scalar] :in-any-order))
+    (contains [:ref :refs :boolean :char :complex :complexes :generator :quoted :string :booleans :chars :strings :tagspace :scalars :vector :set :scalar] :in-any-order))
 
 
 

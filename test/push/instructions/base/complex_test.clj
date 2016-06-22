@@ -144,6 +144,88 @@
 
 
 
+
+(tabular
+  (fact ":complex-parts returns a code block containing the parts (to :exec)"
+    (register-type-and-check-instruction
+        ?set-stack ?items complex-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items       ?instruction        ?get-stack     ?expected
+
+    :complex    (list (->Complex 1M 2/3))
+                             :complex-parts        :exec        '((1M 2/3))
+    :complex    (list (->Complex -1 -2))
+                             :complex-parts        :exec        '((-1 -2))
+    )
+
+
+
+
+(tabular
+  (fact ":complex-scale multiplies a :scalar by a :complex"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks complex-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction             ?expected
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:complex (list (complexify 2 3))
+     :scalar  '(2)}           :complex-scale    {:complex (list (complexify 4 6))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:complex (list (complexify 2M 3))
+     :scalar  '(3N)}           :complex-scale  {:complex (list (complexify 6M 9N))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
+(tabular
+  (fact ":complex-scale handles errors"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks complex-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction             ?expected
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:complex (list (complexify 2M 3M))
+     :scalar  '(2/3)}        :complex-scale    {:complex '()
+                                                :error '({:item "Non-terminating decimal expansion; no exact representable decimal result.", :step 0})}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
+(tabular
+  (fact ":complex-shift multiplies a :scalar by a :complex"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks complex-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction             ?expected
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:complex (list (complexify 2 3))
+     :scalar  '(2)}           :complex-shift    {:complex (list (complexify 4 5))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:complex (list (complexify 2M 3))
+     :scalar  '(3N)}           :complex-shift  {:complex (list (complexify 5M 6N))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
+(tabular
+  (fact ":complex-shift handles errors"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks complex-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction             ?expected
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:complex (list (complexify 2M 3M))
+     :scalar  '(2/3)}        :complex-shift    {:complex '()
+                                                :error '({:item "Non-terminating decimal expansion; no exact representable decimal result.", :step 0})}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
+
 (tabular
   (fact ":complex-subtract returns the difference of two Complex records"
     (register-type-and-check-instruction
@@ -176,4 +258,90 @@
     :complex    (list (->Complex cljInf 2/3) (->Complex cljInf 4))
                              :complex-subtract        :error       '({:item ":complex-subtract produced NaN", :step 0})
    )
+
+
+
+(tabular
+  (fact ":scalar->complex returns a new :complex from :scalar items"
+    (register-type-and-check-instruction
+        ?set-stack ?items complex-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items       ?instruction     ?get-stack     ?expected
+    :scalar     '(1 2)      :scalar->complex   :complex   (list (->Complex 2 1))
+    :scalar     '(0 0)      :scalar->complex   :complex   (list (->Complex 0 0))
+    :scalar     '(0  )      :scalar->complex   :complex   (list )
+   )
+
+
+
+(tabular
+  (fact ":scalar-complexify returns a new :complex"
+    (register-type-and-check-instruction
+        ?set-stack ?items complex-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items       ?instruction     ?get-stack     ?expected
+    :scalar     '(1 2)    :scalar-complexify   :complex   (list (->Complex 1 0))
+    :scalar     '(9 0)    :scalar-complexify   :complex   (list (->Complex 9 0))
+    :scalar     '()       :scalar-complexify   :complex   (list )
+   )
+
+
+(tabular
+  (fact ":complex-zero returns a new :complex"
+    (register-type-and-check-instruction
+        ?set-stack ?items complex-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items   ?instruction     ?get-stack     ?expected
+    :complex    '()      :complex-zero    :complex   (list (->Complex 0 0))
+   )
+
+
+
+(tabular
+  (fact ":complex-reciprocal returns the quotient of two Complex records"
+    (register-type-and-check-instruction
+        ?set-stack ?items complex-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items    ?instruction     ?get-stack     ?expected
+    :complex    (list (->Complex 1 1))
+                    :complex-reciprocal    :complex  (list (->Complex 1/2 -1/2))
+    :complex    (list (->Complex 1/3 1/4))
+                    :complex-reciprocal    :complex  (list (->Complex 48/25 -36/25))
+    :complex    (list (->Complex 0 1))
+                    :complex-reciprocal    :complex  (list (->Complex 0 -1))
+    :complex    (list (->Complex 1M 2M))
+                    :complex-reciprocal    :complex  (list (->Complex 0.2M -0.4M))
+    )
+
+
+
+(tabular
+  (fact ":complex-reciprocal returns reasonable errors"
+    (register-type-and-check-instruction
+        ?set-stack ?items complex-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items    ?instruction     ?get-stack     ?expected
+    :complex    (list (->Complex 1 cljInf))
+                    :complex-reciprocal    :complex       '()
+    :complex    (list (->Complex 1 cljInf))
+                    :complex-reciprocal    :error        '({:step 0, :item ":complex-reciprocal produced NaN"})
+
+
+    :complex    (list (->Complex 1 cljNaN))
+                    :complex-reciprocal    :complex       '()
+    :complex    (list (->Complex 1 cljNaN))
+                    :complex-reciprocal    :error        '({:step 0, :item ":complex-reciprocal produced NaN"})
+
+
+    :complex    (list (->Complex 1M 1/3))
+                    :complex-reciprocal    :complex       '()
+    :complex    (list (->Complex 1M 1/3))
+                    :complex-reciprocal    :error        '({:item "Non-terminating decimal expansion; no exact representable decimal result.", :step 0})
+
+    :complex    (list (->Complex 0 0))
+                    :complex-reciprocal    :complex       '()
+    :complex    (list (->Complex 0 0))
+                    :complex-reciprocal    :error        '({:item "Divide by zero", :step 0})
+
+)
 
