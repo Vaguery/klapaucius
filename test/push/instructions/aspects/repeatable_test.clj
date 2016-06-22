@@ -3,11 +3,12 @@
             [push.core :as push])
   (:use midje.sweet)
   (:use push.util.stack-manipulation)
-  (:use push.types.core)
+  (:use push.type.core)
   (:use push.instructions.aspects)
-  (:use push.types.type.scalar)
+  (:use push.type.item.scalar)
   (:use push.instructions.aspects.repeatable-and-cycling)
-  (:use push.types.module.environment)
+  (:use push.type.module.environment)
+  (:use push.type.definitions.generator)
   )
 
 
@@ -45,7 +46,7 @@
                           (i/execute-instruction
                             (i/register-instruction context foo-echo) :foo-echo)
                           :generator))]
-      (push.types.type.generator/step-generator new-g) => new-g
+      (step-generator new-g) => new-g
 ))) 
 
 
@@ -75,7 +76,7 @@
     (let [stepped (i/execute-instruction
                             (i/register-instruction context foo-echoall) :foo-echoall)
           new-g (first (get-stack stepped :generator))]
-      (push.types.type.generator/step-generator new-g) => new-g
+      (step-generator new-g) => new-g
 
       (:state new-g) => '(1234 56 (7) [8 9])
 ))) 
@@ -109,7 +110,7 @@
           new-g (first (get-stack stepped :generator))]
 
       (:state new-g) => '(1234 (56 (7) [8 9]))
-      (:state (push.types.type.generator/step-generator new-g)) => '(56 ((7) [8 9]))
+      (:state (step-generator new-g)) => '(56 ((7) [8 9]))
 
 ))) 
 

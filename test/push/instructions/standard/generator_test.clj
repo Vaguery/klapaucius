@@ -1,10 +1,11 @@
 (ns push.instructions.standard.generator-test
   (:require [push.interpreter.core :as i]
-            [push.types.core :as t]
+            [push.type.core :as t]
             [push.core :as push])
   (:use midje.sweet)
   (:use [push.util.test-helpers])
-  (:use [push.types.type.generator])
+  (:use [push.type.definitions.generator])
+  (:use [push.type.item.generator])
   )
 
 

@@ -1,11 +1,11 @@
 (ns push.instructions.base.print_test
   (:require [push.interpreter.core :as i]
-            [push.types.core :as t])
+            [push.type.core :as t])
   (:use midje.sweet)
   (:use [push.util.test-helpers])
   (:use push.instructions.aspects)
   (:use push.instructions.aspects.printable)
-  (:use push.types.module.print) 
+  (:use push.type.module.print) 
   )
 
 

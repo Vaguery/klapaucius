@@ -2,7 +2,7 @@
   (:require [push.interpreter.core :as i])
   (:use midje.sweet)
   (:use [push.util.test-helpers])
-  (:use [push.types.type.string])  ;; sets up string-type
+  (:use [push.type.item.string])  ;; sets up string-type
   )
 
 

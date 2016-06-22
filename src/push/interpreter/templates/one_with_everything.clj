@@ -1,29 +1,30 @@
 (ns push.interpreter.templates.one-with-everything
   (:require [push.util.stack-manipulation :as u]
             [push.interpreter.templates.minimum :as m]
-            [push.util.exceptions :as oops])
-  (:use push.types.type.boolean)
-  (:use push.types.type.char)
-  (:use push.types.module.code)
-  (:use push.types.module.exec)
-  (:use push.types.type.scalar)
-  (:use push.types.type.string)
-  (:use push.types.type.ref)
-  (:use push.types.module.environment)
-  (:use push.types.module.print)
-  (:use push.types.module.log)
-  (:use push.types.module.error)
-  (:use push.types.type.generator)
-  (:use push.types.type.quoted)
-  (:use push.types.type.tagspace)
-  (:use push.types.type.vectorized)
-  (:use push.types.type.vector)
-  (:use push.types.type.set)
+            [push.util.exceptions :as oops]
+            [push.interpreter.definitions :as defs])
+  (:use push.type.item.boolean)
+  (:use push.type.item.char)
+  (:use push.type.module.code)
+  (:use push.type.module.exec)
+  (:use push.type.item.scalar)
+  (:use push.type.item.string)
+  (:use push.type.item.ref)
+  (:use push.type.module.environment)
+  (:use push.type.module.print)
+  (:use push.type.module.log)
+  (:use push.type.module.error)
+  (:use push.type.item.generator)
+  (:use push.type.item.quoted)
+  (:use push.type.item.tagspace)
+  (:use push.type.item.vectorized)
+  (:use push.type.item.vector)
+  (:use push.type.item.set)
   (:use [push.interpreter.core])
   (:use [push.util.type-checkers])
 
-  (:use push.types.module.introspection)
-  (:use push.types.module.random-scalars)
+  (:use push.type.module.introspection)
+  (:use push.type.module.random-scalars)
   )
 
 
@@ -105,15 +106,16 @@
            counter 0
            done? false}}]
   (let [all-stacks (merge m/minimal-stacks stacks)]
-    (-> (->Interpreter  program 
-                        '()        ;; types
-                        []         ;; router
-                        all-stacks 
-                        {}         ;; inputs
-                        {}         ;; instructions
-                        (merge m/interpreter-default-config config)
-                        counter
-                        done?)
+    (-> (defs/make-interpreter
+          program 
+          '()        ;; types
+          []         ;; router
+          all-stacks 
+          {}         ;; inputs
+          {}         ;; instructions
+          (merge m/interpreter-default-config config)
+          counter
+          done?)
         (register-types all-kinds-of-types)
         (register-modules all-kinds-of-modules)
         (bind-inputs bindings)

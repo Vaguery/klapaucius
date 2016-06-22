@@ -1,7 +1,7 @@
 (ns push.instructions.aspects.movable
   (:require [push.instructions.core :as core]
             [push.instructions.dsl :as dsl]
-            [push.types.core :as t]
+            [push.type.core :as t]
             [push.util.code-wrangling :as util]
             [push.util.numerics :as num]
             ))

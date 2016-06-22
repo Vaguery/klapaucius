@@ -3,7 +3,7 @@
             [push.interpreter.templates.minimum :as m])
   (:use midje.sweet)
   (:use push.util.stack-manipulation)
-  (:use push.types.core)
+  (:use push.type.core)
   (:use push.instructions.aspects)
   (:use push.instructions.aspects.storable)
   )

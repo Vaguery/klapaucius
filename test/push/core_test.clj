@@ -5,7 +5,7 @@
 
 
 (fact "I can produce a generic interpreter"
-  (class (p/interpreter)) => push.interpreter.core.Interpreter )
+  (class (p/interpreter)) => push.interpreter.definitions.Interpreter )
 
 
 (fact "I can set input values"

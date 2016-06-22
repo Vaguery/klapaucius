@@ -2,34 +2,9 @@
   (:require [push.util.stack-manipulation :as u]
             [push.util.exceptions :as oops]
             [push.router.core :as router])
+  (:use [push.interpreter.definitions])
   (:use [push.util.type-checkers])
   )
-
-
-(defrecord Interpreter [program
-                        types
-                        routers
-                        stacks
-                        bindings
-                        instructions 
-                        config 
-                        counter 
-                        done?])
-
-
-(defn make-interpreter
-  "simple wrapper around ->Interpreter"
-  [program types routers stacks bindings instructions config counter done?]
-  (->Interpreter
-    program
-    types
-    routers
-    stacks
-    bindings
-    instructions
-    (merge {:lenient? true} config)
-    counter
-    done?))
 
 
 (defn register-type
@@ -114,7 +89,7 @@
   (contains? (:bindings interpreter) kwd))
 
 
-(defn- add-instruction
+(defn add-instruction
   "Takes an Interpreter and an Instruction (record), and adds the instruction to the :instructions registry of the interpreter, without checking for prior definitions."
   [interpreter instruction]
   (assoc-in

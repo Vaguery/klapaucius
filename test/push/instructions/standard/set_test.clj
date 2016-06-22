@@ -1,9 +1,9 @@
 (ns push.instructions.standard.set_test
   (:require [push.interpreter.core :as i]
-            [push.types.core :as t])
+            [push.type.core :as t])
   (:use midje.sweet)
   (:use [push.util.test-helpers])
-  (:use [push.types.type.set])
+  (:use [push.type.item.set])
   )
 
 

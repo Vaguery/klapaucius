@@ -2,7 +2,7 @@
   (:require [push.util.stack-manipulation :as u]
             [push.instructions.dsl :as d]
             [push.interpreter.core :as i]
-            [push.types.core :as t]
+            [push.type.core :as t]
             [push.interpreter.templates.minimum :as m])
   (:use midje.sweet)
   (:use [push.instructions.aspects.visible])
@@ -115,7 +115,7 @@
 
 
 (fact "a generated string-fromX instruction has a reasonable docstring"
-  (:docstring (push.types.type.string/simple-item-to-string-instruction :foo)) =>
+  (:docstring (push.type.item.string/simple-item-to-string-instruction :foo)) =>
     "`:foo->string` pops the top item from the `:foo` stack and converts it to a `:string` (using Clojure's `str` function)")
 
 

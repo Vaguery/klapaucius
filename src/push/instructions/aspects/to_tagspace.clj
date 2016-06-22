@@ -1,10 +1,9 @@
 (ns push.instructions.aspects.to-tagspace
   (:require [push.instructions.core :as core]
             [push.instructions.dsl :as dsl]
-            [push.types.core :as t]
+            [push.type.core :as t]
             [push.util.numerics :as n]
             ))
-
 
 
 
@@ -35,7 +34,7 @@
           #(if %3 (n/index-maker %1 %2 %3) nil) :as :indices)
       `(push.instructions.dsl/calculate [:indices :arg]
           #(if %2
-            (push.types.type.tagspace/make-tagspace (zipmap %1 %2))
+            (push.type.definitions.tagspace/make-tagspace (zipmap %1 %2))
             nil) :as :result)
       `(push.instructions.dsl/push-onto :tagspace :result)
       ))))

@@ -1,7 +1,7 @@
 (ns acceptance.stress-tests
   (:require [push.instructions.dsl :as dsl]
             [push.instructions.core :as instr]
-            [push.types.core :as types]
+            [push.type.core :as types]
             [push.util.stack-manipulation :as u]
             [clojure.string :as s]
             )

@@ -10,7 +10,7 @@
   (:use push.instructions.aspects.taggable)
   (:use push.instructions.aspects.to-tagspace)
   (:use push.instructions.aspects.visible)
-  (:require [push.types.core :as t]
+  (:require [push.type.core :as t]
             ))
 
 

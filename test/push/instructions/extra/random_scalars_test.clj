@@ -1,10 +1,10 @@
 (ns push.instructions.extra.random-scalars-test
   (:require [push.interpreter.core :as i]
-            [push.types.core :as t]
+            [push.type.core :as t]
             [push.util.code-wrangling :as u])
   (:use midje.sweet)
   (:use [push.util.test-helpers])
-  (:use push.types.module.random-scalars)
+  (:use push.type.module.random-scalars)
   )
 
 

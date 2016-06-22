@@ -4,7 +4,7 @@
             [push.interpreter.templates.one-with-everything :as owe])
   (:use midje.sweet)
   (:use [push.util.test-helpers])
-  (:use [push.types.module.environment])
+  (:use [push.type.module.environment])
   )
 
 

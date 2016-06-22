@@ -4,7 +4,7 @@
   (:use midje.sweet)
   (:use push.util.stack-manipulation)
   (:use push.instructions.aspects)
-  (:use push.types.core)
+  (:use push.type.core)
   (:use push.util.numerics)
   (:use push.instructions.aspects.movable)
   )

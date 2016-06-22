@@ -2,8 +2,8 @@
   (:require [push.interpreter.core :as i])
   (:use midje.sweet)
   (:use [push.util.test-helpers])
-  (:use [push.types.definitions.complex])
-  (:use [push.types.type.complex])
+  (:use [push.type.definitions.complex])
+  (:use [push.type.item.complex])
   )
 
 

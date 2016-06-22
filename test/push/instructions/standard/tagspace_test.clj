@@ -1,9 +1,10 @@
 (ns push.instructions.standard.tagspace-test
   (:require [push.interpreter.core :as i]
-            [push.types.core :as t])
+            [push.type.core :as t])
   (:use midje.sweet)
   (:use [push.util.test-helpers])
-  (:use [push.types.type.tagspace])
+  (:use [push.type.definitions.tagspace])
+  (:use [push.type.item.tagspace])
   (:use [push.instructions.aspects])
   )
 

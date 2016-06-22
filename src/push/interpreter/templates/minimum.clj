@@ -1,5 +1,6 @@
 (ns push.interpreter.templates.minimum
-  (:require [push.interpreter.core :as i])
+  (:require [push.interpreter.core :as i]
+            [push.interpreter.definitions :as d])
   )
 
 
@@ -58,7 +59,7 @@
            counter 0
            done? false}}]
   (let [all-stacks (merge minimal-stacks stacks)]
-    (-> (i/make-interpreter
+    (-> (d/make-interpreter
           program 
           '()            ;; types are registered below
           router         ;; router

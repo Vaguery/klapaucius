@@ -2,8 +2,8 @@
   (:use midje.sweet)
   (:use [push.util.test-helpers])
   (:require [push.interpreter.core :as i])
-  (:require [push.types.core :as t])
-  (:use [push.types.type.vector])
+  (:require [push.type.core :as t])
+  (:use [push.type.item.vector])
   )
 
 

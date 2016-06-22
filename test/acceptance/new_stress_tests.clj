@@ -1,6 +1,6 @@
 (ns acceptance.new-stress-tests
   (:require [push.core :as push]
-            [push.types.type.quoted :as qc]
+            [push.type.definitions.quoted :as qc]
             [com.climate.claypoole :as cp]
             )
   (:use midje.sweet))

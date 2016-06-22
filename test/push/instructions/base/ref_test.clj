@@ -1,10 +1,10 @@
 (ns push.instructions.base.ref_test
   (:require [push.interpreter.core :as i]
             [push.util.stack-manipulation :as s]
-            [push.types.core :as t])
+            [push.type.core :as t])
   (:use midje.sweet)
   (:use [push.util.test-helpers])
-  (:use [push.types.type.ref])
+  (:use [push.type.item.ref])
   )
 
 

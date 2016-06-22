@@ -4,7 +4,8 @@
   (:require [push.interpreter.templates.minimum :as basic])
   (:use midje.sweet)
   (:use [push.util.test-helpers])
-  (:use [push.types.type.quoted])
+  (:use [push.type.definitions.quoted])
+  (:use [push.type.item.quoted])
   )
 
 

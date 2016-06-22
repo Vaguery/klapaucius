@@ -2,13 +2,14 @@
   (:use midje.sweet)
   (:require [push.instructions.dsl :as dsl])
   (:require [push.instructions.core :as instr])
-  (:require [push.types.core :as types])
+  (:require [push.type.core :as types])
   (:require [push.util.stack-manipulation :as u])
   (:require [push.interpreter.templates.minimum :as m])
   (:require [push.instructions.aspects :as aspects])
   (:require [push.core :as push])
-  (:require [push.types.module.code :as code])
+  (:require [push.type.module.code :as code])
   (:require [push.router.core :as router])
+  (:require [push.type.definitions.quoted :as qc])
   (:use [push.interpreter.core])
   )
 
@@ -113,12 +114,12 @@
 
 (fact "handle-item unquotes QuotedCode items it routes"
   (u/get-stack (handle-item supreme
-    (push.types.type.quoted/push-quote 88)) :scalar) => '()
+    (qc/push-quote 88)) :scalar) => '()
   (u/get-stack (handle-item supreme
-    (push.types.type.quoted/push-quote 88)) :code) => '(88)
+    (qc/push-quote 88)) :code) => '(88)
   (u/get-stack (handle-item supreme
-    (push.types.type.quoted/push-quote
-      (push.types.type.quoted/push-quote 88))) :code) => (list (push.types.type.quoted/push-quote 88))
+    (qc/push-quote
+      (qc/push-quote 88))) :code) => (list (qc/push-quote 88))
   )
 
 

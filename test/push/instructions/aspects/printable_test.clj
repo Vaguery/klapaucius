@@ -3,9 +3,9 @@
             [push.interpreter.templates.minimum :as m])
   (:use midje.sweet)
   (:use push.util.stack-manipulation)
-  (:use push.types.core)
+  (:use push.type.core)
   (:use push.instructions.aspects)
-  (:use push.types.module.print)
+  (:use push.type.module.print)
   (:use push.instructions.aspects.printable)
   )
 

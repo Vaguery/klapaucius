@@ -1,11 +1,11 @@
 (ns push.instructions.extra.introspection-test
   (:require [push.interpreter.core :as i]
-            [push.types.core :as t]
+            [push.type.core :as t]
             [push.util.code-wrangling :as u]
             [push.interpreter.templates.one-with-everything :as o])
   (:use midje.sweet)
   (:use [push.util.test-helpers])
-  (:use push.types.module.introspection)
+  (:use push.type.module.introspection)
   )
 
 

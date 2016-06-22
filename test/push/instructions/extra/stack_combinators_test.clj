@@ -2,7 +2,7 @@
   (:use midje.sweet)
   (:use [push.util.test-helpers])
   (:require [push.interpreter.core :as i])
-  (:require [push.types.core :as t])
+  (:require [push.type.core :as t])
   (:require [push.util.code-wrangling :as u])
   (:use push.instructions.aspects)
   (:use push.instructions.aspects.movable)

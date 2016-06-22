@@ -2,7 +2,7 @@
   (:require [push.util.stack-manipulation :as u]
             [push.instructions.core :as i]
             [push.instructions.dsl :as d]
-            [push.types.core :as types]
+            [push.type.core :as types]
             [push.interpreter.templates.one-with-everything :as everything]
             [push.instructions.aspects :as aspects]
             [push.interpreter.templates.minimum :as m]

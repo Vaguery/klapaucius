@@ -1,7 +1,7 @@
 (ns push.instructions.aspects.returnable
   (:require [push.instructions.core :as core]
             [push.instructions.dsl :as dsl]
-            [push.types.core :as t]
+            [push.type.core :as t]
             ))
 
 

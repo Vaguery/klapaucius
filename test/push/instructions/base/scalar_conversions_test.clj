@@ -2,7 +2,7 @@
   (:require [push.interpreter.core :as i])
   (:use midje.sweet)
   (:use [push.util.test-helpers])
-  (:use [push.types.type.scalar])
+  (:use [push.type.item.scalar])
   )
 
 

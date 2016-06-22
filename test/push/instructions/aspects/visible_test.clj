@@ -5,7 +5,7 @@
   (:use push.util.stack-manipulation)
   (:use push.instructions.aspects.visible)
   (:use push.instructions.aspects)
-  (:use push.types.core)
+  (:use push.type.core)
   )
 
 

@@ -806,7 +806,7 @@
                   (consume-top-of :scalar :as :arg2)
                   (calculate [:arg1 :arg2] #(+ %1 %2) :as :sum)
                   (push-onto :scalar :sum))]
-  (class (first (int-add afew))) => push.interpreter.core.Interpreter))
+  (class (first (int-add afew))) => push.interpreter.definitions.Interpreter))
 
 
 (fact "applying the function does the things it's supposed to"
