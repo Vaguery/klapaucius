@@ -1,5 +1,6 @@
 (ns push.type.core
   (:require [push.instructions.core :as core]
+            [push.instructions.dsl :as dsl]
             [push.router.core :as router])
   )
 
@@ -76,9 +77,9 @@
       instruction-name
       docstring
       :tags #{:arithmetic :base}
-      `(push.instructions.dsl/consume-top-of ~stackname :as :arg1)
-      `(push.instructions.dsl/calculate [:arg1] #(~operation %1) :as :result)
-      `(push.instructions.dsl/push-onto ~stackname :result)))))
+      `(dsl/consume-top-of ~stackname :as :arg1)
+      `(dsl/calculate [:arg1] #(~operation %1) :as :result)
+      `(dsl/push-onto ~stackname :result)))))
 
 
 (defn simple-2-in-1-out-instruction
@@ -92,10 +93,10 @@
       instruction-name
       docstring
       :tags #{:arithmetic :base}
-      `(push.instructions.dsl/consume-top-of ~stackname :as :arg2)
-      `(push.instructions.dsl/consume-top-of ~stackname :as :arg1)
-      `(push.instructions.dsl/calculate [:arg1 :arg2] #(~operation %1 %2) :as :result)
-      `(push.instructions.dsl/push-onto ~stackname :result)))))
+      `(dsl/consume-top-of ~stackname :as :arg2)
+      `(dsl/consume-top-of ~stackname :as :arg1)
+      `(dsl/calculate [:arg1 :arg2] #(~operation %1 %2) :as :result)
+      `(dsl/push-onto ~stackname :result)))))
 
 
 (defn simple-1-in-predicate
@@ -109,9 +110,9 @@
       instruction-name
       docstring
       :tags #{:arithmetic :base}
-      `(push.instructions.dsl/consume-top-of ~stackname :as :arg1)
-      `(push.instructions.dsl/calculate [:arg1] #(~operation %1) :as :result)
-      '(push.instructions.dsl/push-onto :boolean :result)))))
+      `(dsl/consume-top-of ~stackname :as :arg1)
+      `(dsl/calculate [:arg1] #(~operation %1) :as :result)
+      `(dsl/push-onto :boolean :result)))))
 
 
 (defn simple-item-to-code-instruction
@@ -124,6 +125,6 @@
       instruction-name
       (str "`:" instruction-name "` pops the top `" stackname "` item and pushes it to `:code`")
       :tags #{:complex :base :conversion}
-      `(push.instructions.dsl/consume-top-of ~stackname :as :arg)
-      '(push.instructions.dsl/push-onto :code :arg)))))
+      `(dsl/consume-top-of ~stackname :as :arg)
+      `(dsl/push-onto :code :arg)))))
 
