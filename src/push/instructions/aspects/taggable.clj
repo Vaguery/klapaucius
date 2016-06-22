@@ -1,21 +1,8 @@
 (ns push.instructions.aspects.taggable
-  (:require [push.instructions.core :as core]
-            [push.instructions.dsl :as dsl]
-            [push.type.core :as t]
-            [push.util.numerics :as n]
-            ))
+  (:use [push.instructions.core :only (build-instruction)]
+        [push.instructions.dsl]
+        [push.type.definitions.tagspace]))
 
-
-;; SUPPORT
-
-
-(defn store-in-tagspace
-  "Stores an item in the numeric index indicated in the tagspace record"
-  [ts item idx]
-  (assoc-in ts [:contents idx] item))
-
-
-;; INSTRUCTIONS
 
 
 (defn tag-instruction
@@ -24,15 +11,15 @@
   (let [typename (:name pushtype)
         instruction-name (str (name typename) "-tag")]
     (eval (list
-      'push.instructions.core/build-instruction
+      `build-instruction
       instruction-name
       (str "`:" instruction-name "` pops the top `:scalar`, the top `:tagspace` and the top `" typename "` items. The item is stored in the `:tagspace` under the index specified by the `:scalar`.")
       :tags #{:tagspace :collection}
-      `(push.instructions.dsl/consume-top-of ~typename :as :arg)
-      `(push.instructions.dsl/consume-top-of :tagspace :as :ts)
-      `(push.instructions.dsl/consume-top-of :scalar :as :index)
-      `(push.instructions.dsl/calculate [:ts :arg :index]
-        #(store-in-tagspace  %1 %2 %3) :as :stored)
-      `(push.instructions.dsl/push-onto :tagspace :stored)))))
+
+      `(consume-top-of ~typename :as :arg)
+      `(consume-top-of :tagspace :as :ts)
+      `(consume-top-of :scalar :as :index)
+      `(calculate [:ts :arg :index] #(store-in-tagspace %1 %2 %3) :as :stored)
+      `(push-onto :tagspace :stored)))))
 
 

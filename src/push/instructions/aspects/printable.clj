@@ -1,8 +1,6 @@
 (ns push.instructions.aspects.printable
-  (:require [push.instructions.core :as core]
-            [push.instructions.dsl :as dsl]
-            [push.type.core :as t]
-            ))
+  (:use [push.instructions.core :only (build-instruction)]
+        [push.instructions.dsl]))
 
 
 
@@ -12,10 +10,11 @@
   (let [typename (:name pushtype)
         instruction-name (str (name typename) "-print")]
     (eval (list
-      'push.instructions.core/build-instruction
+      `build-instruction
       instruction-name
       (str "`:" instruction-name "` pops the top `" typename "` item and pushes it to the `:print` stack.")
       :tags #{:io}
-      `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
-      `(push.instructions.dsl/push-onto :print :arg1)))))
+      
+      `(consume-top-of ~typename :as :arg1)
+      `(push-onto :print :arg1)))))
 

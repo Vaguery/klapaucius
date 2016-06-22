@@ -1,8 +1,7 @@
 (ns push.instructions.aspects.returnable
-  (:require [push.instructions.core :as core]
-            [push.instructions.dsl :as dsl]
-            [push.type.core :as t]
-            ))
+  (:use [push.instructions.core :only (build-instruction)]
+        [push.instructions.dsl]))
+
 
 
 
@@ -12,12 +11,14 @@
   (let [typename (:name pushtype)
         instruction-name (str (name typename) "-return")]
     (eval (list
-      'push.instructions.core/build-instruction
+      `build-instruction
       instruction-name
       (str "`:" instruction-name "` pops the top `" typename "` item and pushes it to the `:return` stack.")
       :tags #{:io}
-      `(push.instructions.dsl/consume-top-of ~typename :as :arg1)
-      `(push.instructions.dsl/push-onto :return :arg1)))))
+
+      `(consume-top-of ~typename :as :arg1)
+      `(push-onto :return :arg1)))))
+
 
 
 
@@ -28,11 +29,12 @@
         instruction-name (str (name typename) "-return-pop")
         token (keyword (str (name typename) "-pop"))]
     (eval (list
-      'push.instructions.core/build-instruction
+      `build-instruction
       instruction-name
       (str "`:" instruction-name "` creates a new `" typename "-pop` token shoves it to the _bottom_ of the `:return` stack.")
       :tags #{:io}
-      `(push.instructions.dsl/consume-stack :return :as :old-stack)
-      `(push.instructions.dsl/calculate [:old-stack] 
+
+      `(consume-stack :return :as :old-stack)
+      `(calculate [:old-stack] 
           #(concat %1 (list ~token)) :as :new-stack)
-      `(push.instructions.dsl/replace-stack :return :new-stack)))))
+      `(replace-stack :return :new-stack)))))
