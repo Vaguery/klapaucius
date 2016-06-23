@@ -146,6 +146,43 @@
 
 
 (tabular
+  (fact ":complex-norm returns a the norm"
+    (register-type-and-check-instruction
+        ?set-stack ?items complex-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items       ?instruction        ?get-stack     ?expected
+
+    :complex    (list (->Complex 3 4))
+                             :complex-norm        :scalar        '(5)
+    :complex    (list (->Complex 0 0))
+                             :complex-norm        :scalar        '(0)
+    :complex    (list (->Complex 3/7 4/7))
+                             :complex-norm        :scalar        '(5/7)
+    :complex    (list (->Complex -3/7 -4/7))
+                             :complex-norm        :scalar        '(5/7)
+    )
+
+
+
+(tabular
+  (fact ":complex-norm deals with errors nicely"
+    (register-type-and-check-instruction
+        ?set-stack ?items complex-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items       ?instruction        ?get-stack     ?expected
+
+    :complex    (list (->Complex 1/3 4M))
+                             :complex-norm        :scalar        '()
+    :complex    (list (->Complex 1/3 4M))
+                             :complex-norm        :error         '({:item "Non-terminating decimal expansion; no exact representable decimal result.", :step 0})
+    )
+
+
+
+
+
+
+(tabular
   (fact ":complex-parts returns a code block containing the parts (to :exec)"
     (register-type-and-check-instruction
         ?set-stack ?items complex-type ?instruction ?get-stack) => ?expected)
