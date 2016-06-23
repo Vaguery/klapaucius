@@ -1,8 +1,9 @@
-(ns push.instructions.dsl-test
+ (ns push.instructions.dsl-test
   (:require [push.util.stack-manipulation :as u]
             [push.interpreter.core :as i]
             [push.instructions.core :as inst]
             [push.core :as push]
+            [push.type.definitions.snapshot :as snap]
             [push.interpreter.templates.minimum :as m])
   (:use midje.sweet)
   (:use push.instructions.dsl)
@@ -912,56 +913,84 @@
         '(99)))
 
 
-;; `archive-all-stacks`
+;; `save-snapshot`
 
 
-(fact "`archive-all-stacks` creates a single new :environment item from all the stacks"
-  (get-stack-from-dslblob :environment
-      (archive-all-stacks [afew {}])) => (list (:stacks afew))
-  (get-stack-from-dslblob :environment
-      (archive-all-stacks 
-        (archive-all-stacks [afew {}]))) =>
-          (list
-            (merge (:stacks afew) {:environment (list (:stacks afew))})
-            (:stacks afew)))
+(fact "`save-snapshot` creates a single new :snapshot item from the current interpreter's :stacks, :bindings and :config"
+  (first (get-stack-from-dslblob :snapshot
+      (save-snapshot [afew {}]))) => 
+      (snap/->Snapshot (:stacks afew)
+                       (:bindings afew)
+                       (:config afew)
+                       ))
 
 
-(fact "`archive-all-stacks` works regardless of stack contents"
-  (get-stack-from-dslblob :environment
-      (archive-all-stacks [(m/basic-interpreter) {}])) => (list m/minimal-stacks))
+(fact "`save-snapshot` works regardless of stack contents"
+  (get-stack-from-dslblob :snapshot
+      (save-snapshot [(m/basic-interpreter) {}])) =>
+      (list (snap/->Snapshot (:stacks (m/basic-interpreter))
+                              {}
+                              (:config (m/basic-interpreter)))))
 
 
-;; `retrieve-all-stacks`
+;; `retrieve-snapshot-state`
 
 
-(fact "`retrieve-all-stacks` replaces all the stacks except :print, :log and :error with the argument's ones"
-  (:stacks (first (retrieve-all-stacks [afew {:foo {}}] :using :foo))) =>
-    (contains '{:error (), :log (), :print (), :unknown ()})
-
-  (:stacks (first (retrieve-all-stacks
-                    [afew {:foo {:scalar '(9 99 999)}}]
-                    :using :foo))) =>
-    (contains
-      '{:scalar (9 99 999), :error (), 
-        :log (), :print (), :unknown ()})
-
-  (:stacks 
-    (first 
-      (retrieve-all-stacks
-        [(m/basic-interpreter :stacks {:print '(33) 
-                                       :error '(:oops)
-                                       :scalar '(0 00)
-                                       :unknown '(88)})
-
-          {:foo {:scalar '(9 99 999)}}]
-        :using :foo))) =>
-    (contains
-      '{:error (:oops), :scalar (9 99 999), 
-        :log (), :print (33), :unknown (88)}))
 
 
-(fact "`retrieve-all-stacks` throws an exception if it lacks the hash"
-  (:stacks (first (retrieve-all-stacks [afew {}]))) => (throws #"Push DSL argument error"))
+
+(fact "`retrieve-snapshot-state` replaces all the stacks except :print, :log and :error with the argument's ones"
+
+  (let [s (snap/snapshot
+            (push/interpreter :stacks {:exec    '(1 2 3)
+                                       :print   '(:OLD)
+                                       :log     '(:OLD)
+                                       :error   '(:OLD)
+                                       :unknown '(:OLD)}))
+        r (push/interpreter   :stacks {:exec    '(9 9 9)
+                                       :print   '(:NEW)
+                                       :log     '(:NEW)
+                                       :error   '(:NEW)
+                                       :unknown '(:NEW)
+                                       :foo     '(:FOO)})  ]
+
+    (:stacks 
+      (first (retrieve-snapshot-state [r {:foo s}] :using :foo))) =>
+        (contains {:exec    '(1 2 3)
+                   :print   '(:NEW)
+                   :log     '(:NEW)
+                   :unknown '(:NEW)
+                   :error   '(:NEW)
+                   :foo     '(:FOO)})
+        ))
+
+
+
+
+  ; (:stacks (first (retrieve-snapshot-state
+  ;                   [afew {:foo (snap/snapshot (push/interpreter))}]
+  ;                   :using :foo))) =>
+  ;   (contains
+  ;     '{:scalar (9 99 999), :error (), 
+  ;       :log (), :print (), :unknown ()})
+
+  ; (:stacks 
+  ;   (first 
+  ;     (retrieve-snapshot-state
+  ;       [(m/basic-interpreter :stacks {:print '(33) 
+  ;                                      :error '(:oops)
+  ;                                      :scalar '(0 00)
+  ;                                      :unknown '(88)})
+
+  ;         {:foo {:scalar '(9 99 999)}}]
+  ;       :using :foo))) =>
+  ;   (contains
+  ;     '{:error (:oops), :scalar (9 99 999), 
+  ;       :log (), :print (33), :unknown (88)}))
+
+
+(fact "`retrieve-snapshot-state` throws an exception if it lacks the hash"
+  (:stacks (first (retrieve-snapshot-state [afew {}]))) => (throws #"Push DSL argument error"))
 
 
 

@@ -3,6 +3,7 @@
             [push.util.code-wrangling :as fix]
             [push.util.exceptions :as oops]
             [push.interpreter.core :as i]
+            [push.type.definitions.snapshot :as snap]
             [dire.core :refer [with-handler!]]
             ))
 
@@ -103,12 +104,12 @@
 
 
 
-(defn archive-all-stacks
-  "Pushes the hash-map of all the stacks currently present in the Interpreter onto that Interpreter's `:environement` stack. Does not change any of the stack contents."
+(defn save-snapshot
+  "Creates a `:snapshot` item which contains ALL the current :stacks, :bindings and :config hashes. Does not change any of the stack contents!"
   [[interpreter scratch]]
-  (let [old-env (or (u/get-stack interpreter :environment) '())
-        new-env (conj old-env (:stacks interpreter))] 
-    [(u/set-stack interpreter :environment new-env) scratch]))
+  (let [old-env (or (u/get-stack interpreter :snapshot) '())
+        new-env (conj old-env (snap/snapshot interpreter))] 
+    [(u/set-stack interpreter :snapshot new-env) scratch]))
 
 
 
@@ -401,12 +402,12 @@
 
 
 
-(defn retrieve-all-stacks
-  "The second argument (:using) is an `:environment` hash of stacks. Delete all stacks from the current Interpreter except :print, :log, :unknown and :error, then merge in the archived stacks. Note: if the archived hash lacks some stacks present in the running stacks, too bad!"
+(defn retrieve-snapshot-state
+  "The second argument (:using) is a `:snapshot` item. Delete all stacks from the current Interpreter except :print, :log, :unknown and :error, then merge in the archived stacks. Note: if the archived hash lacks some stacks present in the running stacks, too bad!"
   [[interpreter scratch] & {:keys [using]}]
   (if (nil? using)
     (oops/throw-missing-key-exception using)
-    [(u/merge-environment interpreter (using scratch)) scratch]))
+    [(u/merge-snapshot interpreter (using scratch)) scratch]))
 
 
 (defn save-top-of-binding

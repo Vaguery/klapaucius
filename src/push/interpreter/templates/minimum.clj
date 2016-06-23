@@ -9,7 +9,7 @@
     {:boolean '()
     :char '()
     :code '()
-    :environment '()
+    :snapshot '()
     :error '()
     :scalar '() 
     :exec '()

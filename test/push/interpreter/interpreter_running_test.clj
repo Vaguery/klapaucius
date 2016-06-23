@@ -10,6 +10,7 @@
   (:require [push.type.module.code :as code])
   (:require [push.router.core :as router])
   (:require [push.type.definitions.quoted :as qc])
+  (:require [push.type.definitions.snapshot :as snap])
   (:use [push.interpreter.core])
   )
 
@@ -303,10 +304,10 @@
   (is-done? (m/basic-interpreter :stacks {:exec '(2)} :config {:step-limit 99})) => false)
 
 
-(fact "`is-done?` returns true when :exec and :environment are empty, but not when :exec is empty and :environment has at least one item"
+(fact "`is-done?` returns true when :exec and :snapshot are empty, but not when :exec is empty and :snapshot has at least one item"
   (is-done? (m/basic-interpreter :stacks {:exec '()}  :config {:step-limit 99})) => true
   (is-done? (m/basic-interpreter 
-              :stacks {:exec '() :environment '({:scalar '(9)})}
+              :stacks {:exec '() :snapshot '({:scalar '(9)})}
               :config {:step-limit 99})) => false)
 
 ;; logging
@@ -359,71 +360,82 @@
     '({:item :intProductToFloat, :step 23}))
 
 
-;; merging old environments
+;; merging old snapshots
 
-(fact "`merge-environment` overwrites most stacks"
-  (:stacks (u/merge-environment 
-            just-basic
-            {:scalar '(1 2 3)
-             :boolean '(false)
-             :exec '(:foo)})) =>
-    '{:boolean (false),
-      :char (), 
-      :code (), 
-      :environment (), 
-      :error (), 
-      :exec (:foo), 
-      :scalar (1 2 3), 
-      :log (), 
-      :print (), 
-      :return (), 
-      :string (), 
-      :unknown ()})
+(def s (snap/snapshot (assoc knows-some-things :bindings {:foo '()})))
+
+(fact "snapshot record has stuff"
+  (:bindings s) => {:foo '()}
+  (:config s) => (:config knows-some-things)
+  (:stacks s) => (:stacks knows-some-things) )
 
 
-(fact "`merge-environment` keeps :unknown stack"
-  (:stacks (u/merge-environment 
+(fact "merge-snapshot overwrites :bindings"
+  (:bindings (u/merge-snapshot just-basic s)) => (:bindings s))
+
+
+(fact "merge-snapshot overwrites :config"
+  (:config
+    (u/merge-snapshot (assoc just-basic :config {}) s)) =>
+      (:config s))
+
+
+(fact "`merge-snapshot` keeps :unknown stack"
+  (:stacks (u/merge-snapshot 
             (assoc-in just-basic [:stacks :unknown] '(7 77 777))
-            {:unknown '(1 2 3)})) =>
+            (assoc-in s [:stacks :unknown] '(1 2 3)))) =>
     (contains {:unknown '(7 77 777)}))
 
 
-(fact "`merge-environment` keeps :error stack"
-  (:stacks (u/merge-environment 
+(fact "`merge-snapshot` keeps :error stack"
+  (:stacks (u/merge-snapshot 
             (assoc-in just-basic [:stacks :error] '(7 77 777))
-            {:error '(1 2 3)})) =>
+            (assoc-in s [:stacks :error] '(1 2 3)))) =>
     (contains {:error '(7 77 777)}))
 
 
-(fact "`merge-environment` keeps :log stack"
-  (:stacks (u/merge-environment 
+(fact "`merge-snapshot` keeps :log stack"
+  (:stacks (u/merge-snapshot 
             (assoc-in just-basic [:stacks :log] '(7 77 777))
-            {:log '(1 2 3)})) =>
+            (assoc-in s [:stacks :log] '(1 2 3)))) =>
     (contains {:log '(7 77 777)}))
 
 
-(fact "`merge-environment` keeps :print stack"
-  (:stacks (u/merge-environment 
+(fact "`merge-snapshot` keeps :print stack"
+  (:stacks (u/merge-snapshot 
             (assoc-in just-basic [:stacks :print] '(7 77 777))
-            {:print '(1 2 3)})) =>
+            (assoc-in s [:stacks :print] '(1 2 3)))) =>
     (contains {:print '(7 77 777)}))
 
 
-(fact "`merge-environment` does not keep the :exec stack (that's for :end-environment to do by hand)"
-  (:stacks (u/merge-environment 
+(fact "`merge-snapshot` DOES NOT keep :exec stack"
+  (:stacks (u/merge-snapshot 
             (assoc-in just-basic [:stacks :exec] '(7 77 777))
-            {:exec '(88)})) =>
-    (contains {:exec '(88)}))
+            (assoc-in s [:stacks :exec] '(1 2 3)))) =>
+    (contains {:exec '(1 2 3)}))
 
 
-;; popping saved :environments
+
+;; merge-snapshots and :bindings
+
+(future-fact "merge-snapshot overwrites the :bindings")
+
+;; merge-snapshots and :config
+
+(future-fact "merge-snapshot overwrites the :config")
+
+
+;; popping saved :snapshots
+
+(def s (snap/snapshot 
+        (assoc-in knows-some-things [:stacks :exec] '(888 777))))
 
 
 (def ready-to-pop 
   (push/interpreter 
     :config {:step-limit 1000}
     :stacks {:exec '() 
-             :environment '({:exec (3 33)})
+             :snapshot (list s) 
              :log '(:log1 :log2)
              :error '(:error1 :error2)
              :return '(:return1 :return2)
@@ -436,7 +448,7 @@
   (push/interpreter 
     :config {:step-limit 1000}
     :stacks {:exec '() 
-             :environment '()
+             :snapshot '()
              :log '(:log1 :log2)
              :error '(:error1 :error2)
              :return '(:return1 :return2)
@@ -445,30 +457,29 @@
              }))
 
 
-(fact "calling `step` merges a stored environment if there is one and the :exec stack is empty"
+(fact "calling `step` merges a stored snapshot if there is one and the :exec stack is empty"
+
   (is-done? ready-to-pop) => false
 
-  (:stacks (step ready-to-pop)) =>
-    '{:boolean (), :booleans (), :char (), :chars (), :code (), :complex (), :complexes (), :environment (), :error (:error1 :error2), :exec (:return2 :return1 3 33), :generator (),
-
-      :log ({:item "ENVIRONMENT STACK POPPED", :step 1} :log1 :log2),
-
-      :print (), :quoted (),  :ref (), :refs (), :return (), :scalar (), :scalars (), :set (), :string (), :strings (), :tagspace (),
-
-      :unknown (:nope :no-idea),
-
-      :vector ()})
+  (:stacks (step ready-to-pop)) => (contains
+    '{ :error (:error1 :error2),
+       :exec (:return2 :return1), 
+       :log ({:item "SNAPSHOT STACK POPPED", :step 1} :log1 :log2),
+       :print (), 
+       :scalar (1 2 3),
+       :snapshot (), 
+       :unknown (:nope :no-idea)}))
 
 
-(fact "the counter advances when the :environment pops"
+(fact "the counter advances when the :snapshot pops"
   (inc (:counter ready-to-pop)) => (:counter (step ready-to-pop)))
 
 
-(fact "calling `step` does nothing if there's no stored environment"
+(fact "calling `step` does nothing if there's no stored snapshot"
   (is-done? unready-to-pop) => true
 
   (:stacks (step unready-to-pop)) =>
-    '{:boolean (), :booleans (), :char (), :chars (), :code (), :complex (), :complexes (), :environment (), :error (:error1 :error2), :exec (), :generator (),
+    '{:boolean (), :booleans (), :char (), :chars (), :code (), :complex (), :complexes (), :snapshot (), :error (:error1 :error2), :exec (), :generator (),
 
       :log (:log1 :log2),
 
@@ -483,7 +494,7 @@
       :vector ()})
 
 
-(fact "the counter does not advance when the :environment does not pop!"
+(fact "the counter does not advance when the :snapshot does not pop!"
   (:counter unready-to-pop) => (:counter (step unready-to-pop)))
 
 

@@ -7,7 +7,7 @@
   (:use push.instructions.aspects)
   (:use push.type.item.scalar)
   (:use push.instructions.aspects.repeatable-and-cycling)
-  (:use push.type.module.environment)
+  (:use push.type.item.snapshot)
   (:use push.type.definitions.generator)
   )
 

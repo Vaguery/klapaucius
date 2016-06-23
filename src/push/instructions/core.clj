@@ -13,7 +13,7 @@
   (let [cmd (first step)
         resolved (resolve cmd)]
     (condp = resolved
-      #'archive-all-stacks {:environment 0}
+      #'save-snapshot {:snapshot 0}
       #'bind-item {}
       #'calculate {}
       #'clear-binding {}
@@ -33,7 +33,7 @@
       #'quote-no-bindings {}
       #'record-an-error {}
       #'replace-binding {}
-      #'retrieve-all-stacks {}
+      #'retrieve-snapshot-state {}
       #'save-binding-stack {}
       #'save-bindings {}
       #'save-counter {}
@@ -59,7 +59,7 @@
   (let [cmd (first step)
         resolved (resolve cmd)]
     (condp = resolved
-      #'archive-all-stacks {}
+      #'save-snapshot {}
       #'bind-item {}
       #'calculate {}
       #'clear-binding {}
@@ -79,7 +79,7 @@
       #'quote-no-bindings {}
       #'record-an-error {:log 1}
       #'replace-binding {}
-      #'retrieve-all-stacks {}
+      #'retrieve-snapshot-state {}
       #'save-binding-stack {}
       #'save-bindings {}
       #'save-counter {:scalar 1}

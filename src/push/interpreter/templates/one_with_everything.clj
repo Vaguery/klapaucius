@@ -11,7 +11,7 @@
   (:use push.type.item.scalar)
   (:use push.type.item.string)
   (:use push.type.item.ref)
-  (:use push.type.module.environment)
+  (:use push.type.item.snapshot)
   (:use push.type.module.print)
   (:use push.type.module.log)
   (:use push.type.module.error)
@@ -40,6 +40,8 @@
     tagspace-type
     scalar-type
     complex-type
+    snapshot-type
+
 
     (build-vectorized-type boolean-type)
     (build-vectorized-type char-type)
@@ -58,7 +60,6 @@
     log-module
     error-module
     code-module
-    environment-module
     print-module
     
     standard-introspection-module
@@ -73,7 +74,7 @@
   - boolean-type
   - char-type
   - code-module
-  - environment-module
+  - snapshot-type
   - exec-module
   - generator-type
   - log-module

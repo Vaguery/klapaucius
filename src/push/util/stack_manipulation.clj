@@ -27,20 +27,23 @@
   (peek (get-in interpreter [:stacks stack])))
 
 
-(defn merge-environment
-  "Takes an Interpreter and a hash-map of stacks. Replace ALL the current Interpreter stacks with those in the hash-map, except :print, :log, :unknown and :error (which are retained from the current state)."
-  [interpreter old-environment]
-  (let [permanent
+(defn merge-snapshot
+  "Takes an Interpreter and a `:snapshot` item. Replace ALL the current Interpreter stacks with those in the hash-map, except :print, :log, :unknown and :error (which are retained from the current state). The `:bindings` and `:config` from the `:snapshot` are also copied over."
+  [interpreter snapshot]
+  (let [retained-stacks
               {:print   (get-stack interpreter :print)
                :log     (get-stack interpreter :log)
                :error   (get-stack interpreter :error)
                :unknown (get-stack interpreter :unknown)}
-        tabula-rasa 
-          (reduce-kv (fn [m k v] (assoc m k '())) {} (:stacks interpreter))]
-    (assoc 
-      interpreter 
-      :stacks 
-      (merge tabula-rasa old-environment permanent))))
+        old-bindings (:bindings snapshot)
+        old-config   (:config snapshot)
+        old-stacks   (:stacks snapshot)
+        new-stacks   (merge (:stacks interpreter) old-stacks)
+        new-stacks   (merge new-stacks retained-stacks)]
+    (-> interpreter
+      (assoc , :stacks new-stacks)
+      (assoc , :bindings old-bindings)
+      (assoc , :config old-config))))
 
 
 

@@ -304,7 +304,7 @@
   (keys m/minimal-stacks) =>  (contains [:boolean
                                     :char
                                     :code
-                                    :environment
+                                    :snapshot
                                     :error
                                     :exec 
                                     :scalar

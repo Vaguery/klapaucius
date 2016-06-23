@@ -349,7 +349,7 @@
   [interpreter]
   (let [limit (step-limit interpreter)]
     (or  (and (empty? (u/get-stack interpreter :exec))
-              (empty? (u/get-stack interpreter :environment)))
+              (empty? (u/get-stack interpreter :snapshot)))
          (>= (:counter interpreter) limit))))
 
 
@@ -367,20 +367,20 @@
   (push-item interpreter :log {:step (:counter interpreter) :item item}))
 
 
-(defn soft-environment-ending
-  "Called when an Interpreter has an empty :exec stack but a stored :environment on that stack. Merges the stored stacks, keeps the persistent ones, combines the :exec stacks and puts the :return on top."
+(defn soft-snapshot-ending
+  "Called when an Interpreter has an empty :exec stack but a stored :snapshot on that stack. Merges the stored stacks, keeps the persistent ones, combines the :exec stacks and puts the :return on top."
   [interpreter]
   (let [returns       (u/get-stack interpreter :return)
         current-exec  (u/get-stack interpreter :exec)
-        environments  (u/get-stack interpreter :environment)
-        retrieved     (first environments)
+        snapshots  (u/get-stack interpreter :snapshot)
+        retrieved     (first snapshots)
         old-exec      (:exec retrieved)
         new-exec      (into '() (reverse (concat (reverse returns) current-exec old-exec)))]
-    (-> (u/merge-environment interpreter retrieved)
+    (-> (u/merge-snapshot interpreter retrieved)
         (u/set-stack , :exec new-exec)
-        (u/set-stack , :environment (pop environments))
+        (u/set-stack , :snapshot (pop snapshots))
         (increment-counter ,)
-        (log-routed-item , "ENVIRONMENT STACK POPPED")
+        (log-routed-item , "SNAPSHOT STACK POPPED")
         (set-doneness ,))))
 
 
@@ -392,7 +392,7 @@
   (let [old-exec (u/get-stack interpreter :exec)]
     (if-not (is-done? interpreter)
       (if (empty? old-exec)
-        (soft-environment-ending interpreter)
+        (soft-snapshot-ending interpreter)
         (let [next-item (first old-exec)
               new-exec (pop old-exec)]
           (-> interpreter
