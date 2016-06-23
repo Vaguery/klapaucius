@@ -54,8 +54,8 @@
 
 
 
-(future-fact "within-1? doesn't blow up with BigDecimal"
-  (within-1? 9M 28/3) =not=> throws
+(future "within-1? blows up with BigDecimal"
+  (within-1? 9M 28/3) => throws
 )
 
 

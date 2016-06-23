@@ -416,15 +416,6 @@
 
 
 
-;; merge-snapshots and :bindings
-
-(future-fact "merge-snapshot overwrites the :bindings")
-
-;; merge-snapshots and :config
-
-(future-fact "merge-snapshot overwrites the :config")
-
-
 ;; popping saved :snapshots
 
 (def s (snap/snapshot 
