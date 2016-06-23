@@ -7,6 +7,7 @@
             [clojure.math.numeric-tower :as nt]
             [push.util.numerics :as math]
             [push.util.exotics :as x]
+            [push.type.definitions.complex :as complex]
             ))
 
 
@@ -295,17 +296,14 @@
 (def scalar-sqrt
   (core/build-instruction
     scalar-sqrt
-    "`:scalar-sqrt` pops the top `:scalar` value. If it's not negative, its square root is pushed; otherwise, the argument is consumed and an error is pushed to the `:error` stack."
+    "`:scalar-sqrt` pops the top `:scalar` value. If it's not negative, its square root is pushed to `:scalar`; if it is complex, then a `:complex` is pushed; otherwise, the argument is consumed and an error is pushed to the `:error` stack."
     :tags #{:arithmetic :base :dangerous}
     (d/consume-top-of :scalar :as :arg)
     (d/calculate [:arg]
-      #(neg? %1) :as :bad-arg?)
-    (d/calculate [:bad-arg? :arg]
-      #(if %1 nil (nt/sqrt %2)) :as :result)
-    (d/calculate [:bad-arg?]
-      #(if %1 ":scalar-sqrt bad argument" nil) :as :warning)
-    (d/push-onto :scalar :result)
-    (d/record-an-error :from :warning)))
+      #(neg? %1) :as :complex?)
+    (d/calculate [:complex? :arg]
+      #(if %1 (complex/complexify 0 (nt/sqrt (nt/abs %2))) (nt/sqrt %2)) :as :result)
+    (d/push-onto :exec :result)))
 
 
 
