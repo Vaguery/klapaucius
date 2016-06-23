@@ -265,18 +265,6 @@
                                                 :boolean '()})
 
 
-(tabular
-  (fact ":exec-y applies the Y combinator"
-    (register-type-and-check-instruction
-        ?set-stack ?items exec-module ?instruction ?get-stack) => ?expected)
-
-    ?set-stack  ?items            ?instruction      ?get-stack     ?expected
-    ;; forever
-    :exec    '(1.1 2.2)          :exec-y          :exec         '((1.1 :exec-y 1.1) 2.2) 
-    :exec    '(1.0)              :exec-y          :exec         '((1.0 :exec-y 1.0))     
-    :exec    '()                 :exec-y          :exec         '())
-
-
 
 ;; visible
 

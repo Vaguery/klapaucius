@@ -552,7 +552,8 @@
 
 
 (def forever-8
-  (push/interpreter :program [1 :exec-y 8]))
+  (push/interpreter :program [:exec-laterloop 1 2 3 4 5 6 7 8] 
+                    :config {:step-limit 6}))
 
 
 (fact "`run-n` doesn't care about halting conditions"
@@ -561,24 +562,22 @@
                                :char    '(), 
                                :code    '(), 
                                :error   '(), 
-                               :exec    '(1 :exec-y 8), 
+                               :exec    '(:exec-laterloop 1 2 3 4 5 6 7 8), 
                                :scalar  '(), 
                                :print   '(), 
                                :string  '(), 
                                :unknown '()})
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  (:stacks (run-n forever-8 33)) => (contains
+  (:stacks (run-n forever-8 6)) => (contains
                               {:boolean '(), 
                                :char    '(), 
                                :code    '(), 
                                :error   '(), 
-                               :exec    '(8 :exec-y 8), 
-                               :scalar  '(8 8 8 8 8 8 8 8 8 8 1), 
+                               :exec    '(7 8 (1 :exec-laterloop 1)), 
+                               :scalar  '(6 5 4 3 2), 
                                :print   '(), 
                                :string  '(), 
                                :unknown '()})
-  (count (u/get-stack (run-n forever-8 12000) :scalar)) => 4000
-  (count (u/get-stack (run-n forever-8 50000) :scalar)) => 16667
 
   (:done? (run-n simple-things 0)) =>           false
   (:done? (run-n simple-things 5)) =>           true
@@ -616,8 +615,8 @@
   (:counter (last-changed-step simple-things 22000)) => 6
   (u/get-stack (last-changed-step simple-things 22000) :exec) => '()
 
-  (:counter (last-changed-step forever-8 1000)) => 1000
-  (u/get-stack (last-changed-step forever-8 1000) :exec) => '(:exec-y 8))
+  (:counter (last-changed-step forever-8 1000)) => 12
+  (u/get-stack (last-changed-step forever-8 1000) :exec) => '())
 
 
 (fact "`run-until-done` runs an Interpreter until it reaches the first step when `:done?` is true"
@@ -626,9 +625,9 @@
 
   (:counter (run-until-done simple-things)) => (:counter (run-n simple-things 1000))
 
-  (:counter (run-until-done forever-8)) => 0 ; because it's step-limit isn't set explicitly!
+  (:counter (run-until-done (push/interpreter :program [1 2 3]))) => 0
 
-  (:counter (run-until-done (assoc-in forever-8 [:config :step-limit] 1300))) => 1300)
+  (:counter (run-until-done (assoc-in forever-8 [:config :step-limit] 5))) => 5)
 
 
 
@@ -636,7 +635,8 @@
 
 
 (fact "push-program-to-code pushes the stored :program (as a code block) to :code stack"
-  (u/get-stack (push-program-to-code forever-8) :code) => '((1 :exec-y 8))
+  (u/get-stack (push-program-to-code forever-8) :code) =>
+    '((:exec-laterloop 1 2 3 4 5 6 7 8))
 
   (u/get-stack (push-program-to-code simple-things) :code) =>
     '((1 2 false :scalar-add true :boolean-or)))
