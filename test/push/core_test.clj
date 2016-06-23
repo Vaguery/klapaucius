@@ -28,7 +28,7 @@
 
 (fact "I can produce a list of instructions from an interpreter"
   (p/known-instructions (p/interpreter)) =>
-    (contains [:scalar-add :boolean-or :code-dup :exec-y]
+    (contains [:scalar-add :boolean-or :code-dup :exec-flipstack]
               :in-any-order :gaps-ok))
 
 

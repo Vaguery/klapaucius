@@ -108,6 +108,22 @@
 
 
 
+(def exec-laterloop
+  (core/build-instruction
+    exec-laterloop
+    "`:exec-laterloop` pops the top item from the `:exec` stack, and the top `:scalar item. It calculates an index in the `:exec` stack based on the `:scalar` value, and pushes a continuation in the form `'([item] :exec-laterloop [item])` to the END of the `:exec` stack. If the `:exec` stack is empty except for the looping item, then the loop ceases and nothing is pushed."
+    :tags #{:complex :base}
+    (d/consume-top-of :exec :as :arg)
+    (d/count-of :exec :as :exec-size)
+    (d/calculate [:exec-size :arg]
+      #(if (zero? %1) %2 (list %2 :exec-laterloop %2)) :as :continuation)
+    (d/consume-stack :exec :as :oldstack)
+    (d/calculate [:oldstack :continuation]
+          #(into '() (conj (reverse %1) %2)) :as :newstack)
+    (d/replace-stack :exec :newstack)))
+
+
+
 (def exec-noop
   (core/build-instruction
     exec-noop
@@ -175,16 +191,6 @@
 
 
 
-(def exec-y
-  (core/build-instruction
-    exec-y
-    "`:exec-y` pops the top item from the `:exec` stack, and pushes a continuation in the form `'([item] :exec-y [item])` to the `:exec` stack."
-    :tags #{:complex :base}
-    (d/consume-top-of :exec :as :arg)
-    (d/calculate [:arg] #(list %1 :exec-y %1) :as :continuation)
-    (d/push-onto :exec :continuation)))
-
-
 
 (def exec-module
   ( ->  (t/make-module  :exec
@@ -202,12 +208,12 @@
         (t/attach-instruction , exec-do*range)
         (t/attach-instruction , exec-do*times)
         (t/attach-instruction , exec-k)
+        (t/attach-instruction , exec-laterloop)
         (t/attach-instruction , exec-noop)
         (t/attach-instruction , exec-s)
         (t/attach-instruction , exec-if)
         (t/attach-instruction , exec-do*while)
         (t/attach-instruction , exec-when)
         (t/attach-instruction , exec-while)
-        (t/attach-instruction , exec-y)
         ))
 
