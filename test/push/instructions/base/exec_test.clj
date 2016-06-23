@@ -328,4 +328,16 @@
     :exec    '()               :exec-notequal?      :boolean      '()
     :exec    '()               :exec-notequal?      :exec         '())
 
-; ;; movable
+
+(tabular
+  (fact ":exec-laterloop returns a :boolean indicating whether :first ≠ :second"
+    (register-type-and-check-instruction
+        ?set-stack ?items exec-module ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items     ?instruction    ?get-stack     ?expected
+    :exec    '(1 2 3)      :exec-laterloop   :exec     '(2 3 (1 :exec-laterloop 1))
+    :exec    '(1)          :exec-laterloop   :exec      '(1))
+
+
+
+
