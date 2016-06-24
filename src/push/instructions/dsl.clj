@@ -91,6 +91,15 @@
 
 
 
+(defn add-error-message!
+  "Creates a new `:error` item on the interpreter's stack, with the current `:step` and `:item` field containing the string passed in"
+  [interpreter item]
+  (let [e (u/get-stack interpreter :error)
+        t (:counter interpreter)
+        new-error {:step t :item item}]
+    (i/push-item interpreter :error new-error)))
+
+
 ;; DSL instructions
 
 
@@ -105,11 +114,28 @@
 
 
 (defn save-snapshot
-  "Creates a `:snapshot` item which contains ALL the current :stacks, :bindings and :config hashes. Does not change any of the stack contents!"
+  "Creates a `:snapshot` item which contains ALL the current :stacks, :bindings and :config hashes. Does not change any of the stack contents. Produces an `:error` instead of a snapshot if snapshot image being saved is oversized (per max-collection-size)."
   [[interpreter scratch]]
   (let [old-env (or (u/get-stack interpreter :snapshot) '())
-        new-env (conj old-env (snap/snapshot interpreter))] 
-    [(u/set-stack interpreter :snapshot new-env) scratch]))
+        snap    (snap/snapshot interpreter)
+        bigness (fix/count-collection-points snap)
+        limit   (get-max-collection-size interpreter)]
+    [ (if (< limit bigness)
+        (oops/throw-snapshot-oversize-exception)
+        (u/set-stack interpreter :snapshot (conj old-env snap)))
+      scratch]))
+
+
+
+(with-handler! #'save-snapshot
+  "Handles oversize errors in `save-snapshot`"
+  #(re-find #"snapshot is over size limit" (.getMessage %))
+  (fn
+    [e [interpreter scratch]]
+      [(add-error-message! interpreter (.getMessage e))
+       scratch]
+    ))
+
 
 
 
@@ -303,7 +329,7 @@
   (let [item-size (fix/count-collection-points item)
         stack-size (count stack)
         limit (get-max-collection-size interpreter)]
-    (< limit (+ item-size stack-size))))
+    (< limit (+' item-size stack-size))))
 
 
 
@@ -570,14 +596,6 @@
       [interpreter (assoc scratch as result)])))
 
 
-
-(defn add-error-message!
-  "Creates a new `:error` item on the interpreter's stack, with the current `:step` and `:item` field containing the string passed in"
-  [interpreter item]
-  (let [e (u/get-stack interpreter :error)
-        t (:counter interpreter)
-        new-error {:step t :item item}]
-    (i/push-item interpreter :error new-error)))
 
 
 

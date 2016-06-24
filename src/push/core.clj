@@ -89,7 +89,7 @@
 (defn get-stack
   "returns a named stack from a given interpreter"
   [interpreter stackname]
-  (stackname (:stacks interpreter)))
+  (get-in interpreter [:stacks stackname] '()))
 
 
 

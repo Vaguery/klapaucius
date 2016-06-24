@@ -313,6 +313,32 @@
 
 
 
+
+
+(let 
+  [foo-type     (make-taggable (t/make-type :foo))
+   giant-foo    (take 130000 (repeat 1))
+   taggy        (make-tagspace {0 giant-foo})
+   ]
+
+(tabular
+  (fact "`:foo-tag` fails when the result would be oversized"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks foo-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction     ?expected
+    {:foo (list giant-foo)
+     :scalar '(1)
+     :tagspace (list taggy)}    :foo-tag     {:foo '()
+                                              :scalar  '()
+                                              :error '({:item "foo-tag failed: oversized result", :step 0})}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ))
+
+
+
+
+
 (let 
   [taggy (make-tagspace {6 5 -4 3 2 1})]
 (tabular

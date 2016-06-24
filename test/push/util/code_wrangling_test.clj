@@ -47,6 +47,20 @@
   (count-collection-points #{1 2 #{3 4 5}}) => 7)
 
 
+(defrecord Foo [a b c d])
+
+
+(fact "`count-collection-points` counts records and things in them"
+  (vec (->Foo 1 2 3 4)) => [[:a 1] [:b 2] [:c 3] [:d 4]]
+  (count-collection-points (->Foo 1 2 3 4)) => 13
+  (count-collection-points (->Foo '(1 2 3) 2 3 4)) => 16
+  (count-collection-points (->Foo 
+                             (->Foo 1 2 3 4) 
+                             (->Foo 1 2 3 4) 
+                             (->Foo 1 2 3 4) 
+                             (->Foo 1 2 3 4))) => 61)
+
+
 ;; count-code-points
 
 
