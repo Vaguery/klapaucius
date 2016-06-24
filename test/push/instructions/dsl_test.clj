@@ -4,6 +4,7 @@
             [push.instructions.core :as inst]
             [push.core :as push]
             [push.type.definitions.snapshot :as snap]
+            [push.util.code-wrangling :as fix]
             [push.interpreter.templates.minimum :as m])
   (:use midje.sweet)
   (:use push.instructions.dsl)
@@ -1089,4 +1090,64 @@
     (:bindings (first (replace-binding
                         [afew {:foo '((1 2 3 4))}] :foo))) => {:xxx '((1 2 3 4))}
       (provided (gensym anything) => (symbol "xxx"))))
+
+
+
+;;; oversized-stack?
+
+(fact "oversized-stack? returns true if the combined size of the item and the indicated stack is larger than the interpreter's max-collection-size"
+  (let [skimpy (push/interpreter :config {:max-collection-size 15}
+                                 :stacks {:foo '(1 [2 (3 4) {5 6} 7] 8)} )
+        foostack (get-in skimpy [:stacks :foo])]
+    (fix/count-collection-points (get-in skimpy [:stacks :foo])) => 13
+    (fix/count-collection-points (:stacks skimpy)) => 91
+    (oversized-stack? skimpy foostack skimpy) => true
+    (oversized-stack? skimpy foostack 1) => false
+    )
+  )
+
+
+
+(fact "push-onto balks when the items are oversized"
+  (let [skimpy (push/interpreter :config {:max-collection-size 15}
+                                 :stacks {:foo '(1 [2 (3 4) {5 6} 7] 8)} )
+        foostack (get-in skimpy [:stacks :foo])]
+
+    (get-stack-from-dslblob
+      :error
+      (push-onto [skimpy {:bar skimpy}] :foo :bar)) => 
+        '({:item "oversized push-onto attempted to :foo", :step 0})
+
+    (get-stack-from-dslblob
+      :foo
+      (push-onto [skimpy {:bar skimpy}] :foo :bar)) => 
+        '(1 [2 (3 4) {5 6} 7] 8)
+    )
+  )
+
+
+
+;; save-snapshot
+
+
+
+
+(fact "`save-snapshot` saves a snapshot onto the intepreter's :snapshot stack"
+  (get-stack-from-dslblob
+    :snapshot
+    (save-snapshot [afew {}])) => (list (snap/snapshot afew))
+  )
+
+
+(def skimpy (m/basic-interpreter :config {:max-collection-size 7}))
+
+
+(fact "`save-snapshot` will not save a snapshot if the snapshot is oversized"
+  (get-stack-from-dslblob
+    :snapshot
+    (save-snapshot [skimpy {}])) => '()
+  (get-stack-from-dslblob
+    :error
+    (save-snapshot [skimpy {}])) => '({:step 0, :item "Push runtime error: snapshot is over size limit"})
+  )
 

@@ -3,6 +3,7 @@
             [push.instructions.core :as instr]
             [push.type.core :as types]
             [push.util.stack-manipulation :as u]
+            [push.util.code-wrangling :as fix]
             [clojure.string :as s])
   (:use midje.sweet)
   (:use [push.interpreter.core])
@@ -34,6 +35,12 @@
                             "\n>>> ATTEMPTING " (first (u/get-stack s :exec)) 
                             "\n items on :generator " (count (u/get-stack s :generator))
                             "\n items on :scalar " (u/get-stack s :scalar)
+                            "\n items on :complex " (u/get-stack s :complex)
+                            "\n items on :snapshot " (count (u/get-stack s :snapshot))
+                            "\n points on :tagspace "
+                              (fix/count-collection-points (u/get-stack s :tagspace))
+                            "\n points on :snapshot "
+                              (fix/count-collection-points (u/get-stack s :snapshot))
                             "\n\n"
                             (pr-str (u/peek-at-stack s :log))
                             

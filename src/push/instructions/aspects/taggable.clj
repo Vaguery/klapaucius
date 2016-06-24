@@ -1,7 +1,9 @@
 (ns push.instructions.aspects.taggable
+  (:require [push.util.code-wrangling :as fix])
   (:use [push.instructions.core :only (build-instruction)]
         [push.instructions.dsl]
-        [push.type.definitions.tagspace]))
+        [push.type.definitions.tagspace]
+        ))
 
 
 
@@ -13,13 +15,25 @@
     (eval (list
       `build-instruction
       instruction-name
-      (str "`:" instruction-name "` pops the top `:scalar`, the top `:tagspace` and the top `" typename "` items. The item is stored in the `:tagspace` under the index specified by the `:scalar`.")
+      (str "`:" instruction-name "` pops the top `:scalar`, the top `:tagspace` and the top `" typename "` items. The item is stored in the `:tagspace` under the index specified by the `:scalar`. If the item is too large (bigger than `max-collection-size` in the current interpreter state) then an `:error` is produced instead.")
       :tags #{:tagspace :collection}
 
       `(consume-top-of ~typename :as :arg)
       `(consume-top-of :tagspace :as :ts)
       `(consume-top-of :scalar :as :index)
-      `(calculate [:ts :arg :index] #(store-in-tagspace %1 %2 %3) :as :stored)
-      `(push-onto :tagspace :stored)))))
+      `(save-max-collection-size :as :max)
+      `(calculate [:max :ts :arg]
+        #(< %1
+            (+' (fix/count-collection-points %2)
+                (fix/count-collection-points %3))) :as :fail?)
+      `(calculate [:fail? :ts :arg :index]
+        #(if %1
+            %2
+            (store-in-tagspace %2 %3 %4)) :as :stored)
+      `(calculate [:fail?]
+        #(if %1 (str ~instruction-name " failed: oversized result") nil) :as :warning)
+      `(push-onto :tagspace :stored)
+      `(record-an-error :from :warning)
+      ))))
 
 

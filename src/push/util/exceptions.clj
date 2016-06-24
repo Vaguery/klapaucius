@@ -77,3 +77,10 @@
                         "Push DSL parse error: '"
                         instruction
                         "' is not a known instruction."))))
+
+
+(defn throw-snapshot-oversize-exception
+  []
+  (throw (Exception. "Push runtime error: snapshot is over size limit")))
+
+
