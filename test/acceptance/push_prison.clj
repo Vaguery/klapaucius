@@ -12,7 +12,7 @@
 
 (defn overloaded-interpreter
   [prisoner]
-  (-> (make-everything-interpreter :config {:step-limit 20000 :lenient true}
+  (-> (make-everything-interpreter :config {:step-limit 20000 :lenient true :max-collection-size 138072}
                                    :bindings (:bindings prisoner)
                                    :program (:program prisoner))
       reset-interpreter))
