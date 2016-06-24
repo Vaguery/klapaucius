@@ -5,6 +5,7 @@
             [push.instructions.dsl :as d]
             [push.instructions.aspects :as aspects]
             [push.type.definitions.complex :as complex]
+            [clojure.math.numeric-tower :as nt]
             ))
 
 
@@ -79,6 +80,20 @@
 
 
 
+(def complex-norm
+  (core/build-instruction
+    complex-norm
+    "`:complex-norm` pops the top `:complex` value, calculates its norm, and pushes that result to `:scalar`."
+    :tags #{:arithmetic :base :dangerous}
+    (d/consume-top-of :complex :as :arg)
+    (d/calculate [:arg]
+      #(let [r (:re %1) i (:im %1)]
+          (nt/sqrt (+' (*' r r) (*' i i)))) :as :result)
+    (d/push-onto :scalar :result)
+    ))
+
+
+
 (def complex-parts
   (core/build-instruction
     complex-parts
@@ -106,6 +121,8 @@
     (d/push-onto :complex :product)
     (d/record-an-error :from :warning)
     ))
+
+
 
 
 
@@ -210,6 +227,7 @@
         (t/attach-instruction , complex-conjugate)
         (t/attach-instruction , complex-divide)
         (t/attach-instruction , complex-multiply)
+        (t/attach-instruction , complex-norm)
         (t/attach-instruction , complex-parts)
         (t/attach-instruction , complex-reciprocal)
         (t/attach-instruction , complex-scale)

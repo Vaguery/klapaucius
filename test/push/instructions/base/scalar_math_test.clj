@@ -1,5 +1,6 @@
 (ns push.instructions.base.scalar_math_test
-  (:require [push.interpreter.core :as i])
+  (:require [push.interpreter.core :as i]
+            [push.type.definitions.complex :as cpx])
   (:use midje.sweet)
   (:use [push.util.test-helpers])
   (:use [push.type.item.scalar])
@@ -861,24 +862,27 @@
 
 
 (tabular
-  (fact ":scalar-sqrt the sqrt of a :scalar, or an :error if out of range"
+  (fact ":scalar-sqrt pushes the sqrt of a :scalar, whether it is real or imaginary, to :exec"
     (register-type-and-check-instruction
         ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items    ?instruction       ?get-stack   ?expected
-    :scalar     '(1)      :scalar-sqrt        :scalar      '(1)
-    :scalar     '(4/9)    :scalar-sqrt        :scalar      '(2/3)
-    :scalar     '(100)    :scalar-sqrt        :scalar      '(10)
-    :scalar     '(81)     :scalar-sqrt        :scalar      '(9)
-    :scalar     '(10000)  :scalar-sqrt        :scalar      '(100)
-    :scalar     '(0.64)   :scalar-sqrt        :scalar      '(0.8)
+    :scalar     '(1)      :scalar-sqrt        :exec        '(1)
+    :scalar     '(4/9)    :scalar-sqrt        :exec        '(2/3)
+    :scalar     '(100)    :scalar-sqrt        :exec        '(10)
+    :scalar     '(81)     :scalar-sqrt        :exec        '(9)
+    :scalar     '(10000)  :scalar-sqrt        :exec        '(100)
+    :scalar     '(0.64)   :scalar-sqrt        :exec        '(0.8)
 
 
-    :scalar     '(0)      :scalar-sqrt        :scalar      '(0)
-    :scalar     '(-27)    :scalar-sqrt        :scalar      '()
-    :scalar     '(-27)    :scalar-sqrt        :error       '({:step 0, :item ":scalar-sqrt bad argument"})
+    :scalar     '(0)      :scalar-sqrt        :exec        '(0)
+    :scalar     '(-16)    :scalar-sqrt        :exec        (list (cpx/complexify 0 4))
+    :scalar     '(-1/4)   :scalar-sqrt        :exec        (list (cpx/complexify 0 1/2))
+    :scalar     '(-100N)  :scalar-sqrt        :exec        (list (cpx/complexify 0 10N))
+    :scalar     '(-6.25M) :scalar-sqrt        :exec        (list (cpx/complexify 0 2.5M))
+    :scalar     '(-16e20) :scalar-sqrt        :exec        (list (cpx/complexify 0 4e10))
 
-    :scalar     '()       :scalar-sqrt        :scalar      '()
+    :scalar     '()       :scalar-sqrt        :exec        '()
     )
 
 
