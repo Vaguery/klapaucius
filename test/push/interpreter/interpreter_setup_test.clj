@@ -6,6 +6,7 @@
             [push.interpreter.templates.one-with-everything :as everything]
             [push.instructions.aspects :as aspects]
             [push.interpreter.templates.minimum :as m]
+            [push.interpreter.definitions :as record]
             [push.core :as push])
   (:use midje.sweet)
   (:use [push.util.type-checkers :only (boolean?)])
@@ -31,11 +32,20 @@
 (fact "a Push program can be passed as a seq if desired"
   (:program (m/basic-interpreter :program '(1 2 3))) => [1 2 3])
 
+
 ;; config defaults
 
 
 (fact "a `basic-interpreter` has its :step-limit set to 0 by default"
   (:step-limit (:config just-basic)) => 0)
+
+
+(fact "a `basic-interpreter` has its :max-collection-size set to 128k by default"
+  (:max-collection-size (:config just-basic)) => (* 128 1024))
+
+
+(fact "a core interpreter has its :max-collection-size set to 128k by default"
+  (:max-collection-size (:config (push/interpreter))) => (* 128 1024))
 
 
 
@@ -275,6 +285,12 @@
 (fact "a new Interpreter can have :config items set or overridden at creation"
   (:config (m/basic-interpreter :config {:lenient? true :foo 8})) =>
     (contains {:foo 8}))
+
+
+
+(fact "all new Interpreters should have a :max-collection-size 131072"
+  (:config (record/make-interpreter [] [] [] {} {} {} {} 0 false)) => 
+    (contains {:max-collection-size 131072}))
 
 
 ;; counter

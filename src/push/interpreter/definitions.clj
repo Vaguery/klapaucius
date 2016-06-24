@@ -22,7 +22,7 @@
     stacks
     bindings
     instructions
-    (merge {:lenient? true} config)
+    (merge {:lenient? true :max-collection-size 131072} config)
     counter
     done?))
 
