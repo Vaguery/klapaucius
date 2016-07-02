@@ -156,3 +156,8 @@
   (span-overlap? (make-span 3 4) (make-span 4 3)) => true
   (span-overlap? (make-open-span 3 4) (make-open-span 3 4)) => true
   )
+
+
+(fact "span-overlap? works when an open end overlaps another"
+  (span-overlap? (make-open-span 3 5) (make-open-span 4 6)) => true
+  )

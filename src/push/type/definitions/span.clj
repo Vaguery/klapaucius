@@ -83,20 +83,53 @@
 
 
 
+(defn contains-closed-end?
+  "Takes two spans. Returns `true` if either end of the second one is closed AND falls within the first."
+  [span1 span2]
+  (let [s2 (:start span2)
+        e2 (:end span2)]
+    (or
+      (and (span-include? span1 s2) (start-closed? span2))
+      (and (span-include? span1 e2) (end-closed? span2)))))
+
+
+(defn fully-contains-end?
+  "Takes two spans. Returns `true` if either end of the second one falls within the first, and is not identical with either endpoint of the first."
+  [span1 span2]
+  (let [s1 (:start span1)
+        e1 (:end span1)
+        s2 (:start span2)
+        e2 (:end span2)]
+    (or
+      (and (span-include? span1 s2) (not= s1 s2) (not= e1 s2))
+      (and (span-include? span1 e2) (not= s1 e2) (not= e1 e2)))))
+
+
+
+
+(defn span-surrounds?
+  "Takes two spans, and returns `true` if the first one completely surrounds the second one; that is if both ends fall strictly within the first span."
+  [span1 span2]
+  (let [s2 (:start span2)
+        e2 (:end span2)]
+    (and (span-include? span1 s2) (span-include? span1 e2))))
+
+
+
 (defn span-overlap?
-  "takes two Span records, and returns true if they strictly overlap (taking into account openness of ends)"
+  "Takes two spans, and returns `true` if they strictly overlap (taking into account openness of ends)."
   [span1 span2]
   (let [s1 (:start span1)
         e1 (:end span1)
         s2 (:start span2)
         e2 (:end span2)]
     (cond
-      (and (span-include? span1 s2) (start-closed? span2)) true
-      (and (span-include? span1 e2) (end-closed? span2)) true
-      (and (span-include? span2 s1) (start-closed? span1)) true
-      (and (span-include? span2 e1) (end-closed? span1)) true
-      (and (span-include? span1 s2) (span-include? span1 e2)) true
-      (and (span-include? span2 s1) (span-include? span2 e1)) true
+      (contains-closed-end? span1 span2) true
+      (contains-closed-end? span2 span1) true
+      (fully-contains-end? span1 span2) true
+      (fully-contains-end? span2 span1) true
+      (span-surrounds? span1 span2) true
+      (span-surrounds? span2 span1) true
       (span-coincide? span1 span2) true
       :else false
       )))
