@@ -2,6 +2,7 @@
   (:require [push.instructions.dsl :as dsl]
             [push.instructions.core :as instr]
             [push.type.core :as types]
+            [push.type.definitions.complex :as complex]
             [push.util.stack-manipulation :as u]
             [clojure.string :as s]
             )
@@ -95,11 +96,12 @@
                                      7 (random-integers 5000)
                                      8 (random-booleans)
                                      9 (random-floats 40)
-                                     10  (random-chars)
+                                     10 (random-chars)
                                      11 (random-strings)
                                      12 (random-rational)
                                      13 (bigdec (random-integer))
-                                     14 (into #{} (bunch-a-junk interpreter 8))
+                                     14 (complex/complexify (random-integer) (random-float))
+                                     15 (into #{} (bunch-a-junk interpreter 8))
 
                                      (any-instruction interpreter)))))
 
