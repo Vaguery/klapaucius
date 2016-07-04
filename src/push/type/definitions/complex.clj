@@ -9,8 +9,6 @@
 
 
 
-
-
 (defn complexify
   "If there's one argument, returns a Complex record that's {:re n :im 0}; if there are two arguments, returns {:re arg1 :im arg2}"
   ([n] (->Complex n 0))
@@ -20,9 +18,9 @@
 
 
 (defn complex?
-  "a type checker that returns true if the argument is a Complex record; note that this does not recognize 'trivially' complex numbers (reals or pure imaginary ones) "
+  "a type checker that returns true if the argument is a Complex record; note that this does not recognize 'trivially' complex numbers (reals or pure imaginary ones)"
   [item]
-  (= push.type.definitions.complex.Complex (class item)))
+  (instance? push.type.definitions.complex.Complex item))
 
 
 

@@ -4,6 +4,13 @@
   )
 
 
+(fact "span? recognizes a Span item"
+  (span? 99) => false
+  (span? (make-span 1 1)) => true
+  )
+
+
+
 (fact "make-span returns a Span record with closed bounds"
   (make-span 9 6) => (->Span 9 6 false false)
   (make-span 1 1) => (->Span 1 1 false false)
@@ -160,4 +167,17 @@
 
 (fact "span-overlap? works when an open end overlaps another"
   (span-overlap? (make-open-span 3 5) (make-open-span 4 6)) => true
+  )
+
+
+(fact "span-surrounds? works as it should"
+  (span-surrounds? (make-span 2 5) (make-span 3 4)) => true
+  (span-surrounds? (make-span 2 5) (make-open-span 3 4)) => true
+  (span-surrounds? (make-span 3 4) (make-span 3 4)) => true
+  (span-surrounds? (make-open-span 3 4) (make-span 3 4)) => false
+  (span-surrounds? (make-open-span 3 4) (make-open-span 3 4)) => true
+  (span-surrounds? (make-span 3 4 :start-open? true) (make-span 3 4)) => false
+
+  (span-surrounds? (make-span 3 4 :start-open? true) (make-open-span 3 4)) => true
+  (span-surrounds? (make-span 3 4 :end-open? true) (make-open-span 4 3)) => true
   )

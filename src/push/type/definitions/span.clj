@@ -8,6 +8,13 @@
 
 
 
+(defn span?
+  "a type checker that returns true if the argument is a Span record"
+  [item]
+  (instance? push.type.definitions.span.Span item))
+
+
+
 (defn make-span
   "Takes `:start` and `:end` scalar numeric arguments and by default returns a closed `Span` record. Optionally takes `:start-open?` and `:end-open?` boolean keyword arguments, which can create a partially or fully open span."
   [start end & {:keys [start-open? end-open?] :or {start-open? false end-open? false}}]
@@ -93,6 +100,7 @@
       (and (span-include? span1 e2) (end-closed? span2)))))
 
 
+
 (defn fully-contains-end?
   "Takes two spans. Returns `true` if either end of the second one falls within the first, and is not identical with either endpoint of the first."
   [span1 span2]
@@ -110,9 +118,11 @@
 (defn span-surrounds?
   "Takes two spans, and returns `true` if the first one completely surrounds the second one; that is if both ends fall strictly within the first span."
   [span1 span2]
-  (let [s2 (:start span2)
-        e2 (:end span2)]
-    (and (span-include? span1 s2) (span-include? span1 e2))))
+  (let [s2  (:start span2)
+        e2  (:end span2)]
+    (and (span-include? span1 s2)
+         (span-include? span1 e2)
+         )))
 
 
 
