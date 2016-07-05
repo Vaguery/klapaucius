@@ -1,9 +1,9 @@
-(ns push.instructions.base.span_test
+(ns push.instructions.base.interval_test
   (:require [push.interpreter.core :as i])
   (:use midje.sweet)
   (:use [push.util.test-helpers])
-  (:require [push.type.definitions.span :as s])
-  (:use [push.type.item.span])
+  (:require [push.type.definitions.interval :as s])
+  (:use [push.type.item.interval])
   )
 
 

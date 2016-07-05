@@ -1,9 +1,9 @@
-(ns push.type.item.span
+(ns push.type.item.interval
   (:use     [push.instructions.dsl]
             [push.type.core]
             [push.instructions.core])
   (:require [push.instructions.aspects :as aspects]
-            [push.type.definitions.span :as span]
+            [push.type.definitions.interval :as span]
             ))
 
 
@@ -106,7 +106,7 @@
 
 (def span-type
   (-> (make-type  :span
-                  :recognized-by push.type.definitions.span/span?
+                  :recognized-by push.type.definitions.interval/span?
                   :attributes #{:numeric :set})
         aspects/make-equatable
         aspects/make-movable

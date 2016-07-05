@@ -1,4 +1,4 @@
-(ns push.type.definitions.span)
+(ns push.type.definitions.interval)
 
 
 ;; Span records
@@ -11,7 +11,7 @@
 (defn span?
   "a type checker that returns true if the argument is a Span record"
   [item]
-  (instance? push.type.definitions.span.Span item))
+  (instance? push.type.definitions.interval.Span item))
 
 
 

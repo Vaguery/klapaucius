@@ -1,6 +1,6 @@
-(ns push.type.definitions.span_test
+(ns push.type.definitions.interval_test
   (:use midje.sweet)
-  (:use [push.type.definitions.span])
+  (:use [push.type.definitions.interval])
   )
 
 
