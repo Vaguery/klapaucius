@@ -90,27 +90,22 @@
 
 
 
-(defn contains-closed-end?
-  "Takes two spans. Returns `true` if either end of the second one is closed AND falls within the first."
+(defn contains-span-end?
+  "Takes two spans. Returns `true` if either end of the second one falls strictly within the first, whether or not it is open."
   [span1 span2]
-  (let [s2 (:start span2)
-        e2 (:end span2)]
+  (let [s1       (:start span1)
+        e1       (:end span1)
+        s1open   (make-open-span s1 e1)
+        s1closed (make-span s1 e1)
+        s2       (:start span2)
+        e2       (:end span2)]
     (or
-      (and (span-include? span1 s2) (start-closed? span2))
-      (and (span-include? span1 e2) (end-closed? span2)))))
-
-
-
-(defn fully-contains-end?
-  "Takes two spans. Returns `true` if either end of the second one falls within the first, and is not identical with either endpoint of the first."
-  [span1 span2]
-  (let [s1 (:start span1)
-        e1 (:end span1)
-        s2 (:start span2)
-        e2 (:end span2)]
-    (or
-      (and (span-include? span1 s2) (not= s1 s2) (not= e1 s2))
-      (and (span-include? span1 e2) (not= s1 e2) (not= e1 e2)))))
+      (if (:start-open? span2)
+        (span-include? s1open s2)
+        (span-include? span1 s2))
+      (if (:end-open? span2)
+        (span-include? s1open e2)
+        (span-include? span1 e2)))))
 
 
 
@@ -118,10 +113,15 @@
 (defn span-surrounds?
   "Takes two spans, and returns `true` if the first one completely surrounds the second one; that is if both ends fall strictly within the first span."
   [span1 span2]
-  (let [s2  (:start span2)
-        e2  (:end span2)]
-    (and (span-include? span1 s2)
-         (span-include? span1 e2)
+  (let [span1closed (make-span (:start span1) (:end span1))
+        s2   (:start span2)
+        e2   (:end span2)]
+    (and (if (:start-open? span2)
+            (span-include? span1closed s2)
+            (span-include? span1 s2))
+         (if (:end-open? span2)
+            (span-include? span1closed s2)
+            (span-include? span1 e2))
          )))
 
 
@@ -131,15 +131,16 @@
   [span1 span2]
   (let [s1 (:start span1)
         e1 (:end span1)
+        s1open (make-open-span s1 e1)
         s2 (:start span2)
-        e2 (:end span2)]
+        e2 (:end span2)
+        s2open (make-open-span s2 e2)]
     (cond
-      (contains-closed-end? span1 span2) true
-      (contains-closed-end? span2 span1) true
-      (fully-contains-end? span1 span2) true
-      (fully-contains-end? span2 span1) true
-      (span-surrounds? span1 span2) true
-      (span-surrounds? span2 span1) true
+      (span-empty? span1) false
+      (span-empty? span2) false
+      (and (span-coincide? s1open s2open)) true
+      (contains-span-end? span1 span2) true
+      (contains-span-end? span2 span1) true
       (span-coincide? span1 span2) true
       :else false
       )))

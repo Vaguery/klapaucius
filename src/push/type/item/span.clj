@@ -62,6 +62,20 @@
 
 
 
+(def span-overlap?
+  (build-instruction
+    span-overlap?
+    "`:span-overlap?` pops the top two `:span` items and pushes `true` if they overlap, even in a single point: that is, if their union is non-empty, taking into account which ends are open"
+    :tags #{:span}
+    (consume-top-of :span :as :arg2)
+    (consume-top-of :span :as :arg1)
+    (calculate [:arg1 :arg2] #(span/span-overlap? %1 %2) :as :result)
+    (push-onto :boolean :result)
+    ))
+
+
+
+
 (def span-reverse
   (build-instruction
     span-reverse
@@ -107,6 +121,7 @@
         (attach-instruction , span-direction)
         (attach-instruction , span-empty?)
         (attach-instruction , span-include?)
+        (attach-instruction , span-overlap?)
         (attach-instruction , span-reverse)
         (attach-instruction , span-surrounds?)
   ))

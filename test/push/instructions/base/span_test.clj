@@ -131,6 +131,53 @@
 
 
 
+
+(tabular
+  (fact ":span-overlap? returns the true if the top Span shares even one point with the second"
+    (register-type-and-check-instruction
+        ?set-stack ?items span-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items       ?instruction        ?get-stack     ?expected
+
+    :span    (list (s/make-span 2 3) (s/make-span 2 3))
+                             :span-overlap?     :boolean       '(true)
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :span    (list (s/make-span 2 3) (s/make-span 3 2))
+                             :span-overlap?     :boolean       '(true)
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :span    (list (s/make-span 2 3) (s/make-span 3 4))
+                             :span-overlap?     :boolean       '(true)
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :span    (list (s/make-span 2 3) (s/make-open-span 3 4))
+                             :span-overlap?     :boolean       '(false)
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :span    (list (s/make-open-span 2 3) (s/make-span 2 3))
+                             :span-overlap?     :boolean       '(true)
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :span    (list (s/make-span 2 3 :start-open? true) (s/make-span 2 3))
+                             :span-overlap?     :boolean       '(true)
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :span    (list (s/make-open-span 2 3) (s/make-open-span 2 3))
+                             :span-overlap?     :boolean       '(true)
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :span    (list (s/make-span 3 3) (s/make-span 2 3))
+                             :span-overlap?     :boolean       '(true)
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :span    (list (s/make-open-span 3 3) (s/make-span 2 3))
+                             :span-overlap?     :boolean       '(false)
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :span    (list (s/make-span 3 3 :start-open? true) (s/make-span 2 3))
+                             :span-overlap?     :boolean       '(false)
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :span    (list (s/make-open-span 2 5) (s/make-span 3 4))
+                             :span-overlap?     :boolean       '(true)
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
+
+
 (tabular
   (fact ":span-surrounds? returns the true if the top Span is surrounded by the second"
     (register-type-and-check-instruction

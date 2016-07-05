@@ -122,6 +122,7 @@
   )
 
 
+
 (fact "span-overlap? works as expected for closed spans"
   (span-overlap? (make-span 3 5) (make-span 4 6)) => true
   (span-overlap? (make-span 3 5) (make-span 2 4)) => true
