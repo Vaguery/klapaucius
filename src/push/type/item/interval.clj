@@ -3,44 +3,19 @@
             [push.type.core]
             [push.instructions.core])
   (:require [push.instructions.aspects :as aspects]
-            [push.type.definitions.interval :as span]
+            [push.type.definitions.interval :as interval]
             ))
 
 
-(def span-coincide?
+
+
+(def interval-empty?
   (build-instruction
-    span-coincide?
-    "`:span-coincide?` pops the top two `:span` items and pushes `true` if they coincide: that is, if they are equal or one is the reverse of the other (including open ends)"
-    :tags #{:span}
-    (consume-top-of :span :as :arg2)
-    (consume-top-of :span :as :arg1)
-    (calculate [:arg1 :arg2] #(span/span-coincide? %1 %2) :as :result)
-    (push-onto :boolean :result)
-    ))
-
-
-
-
-(def span-direction
-  (build-instruction
-    span-direction
-    "`:span-direction` pops the top `:span` item and pushes -1 if the :start is greater than the :end, 0 if they're identical, or 1 if the :start is less than the :end"
-    :tags #{:span}
-    (consume-top-of :span :as :arg)
-    (calculate [:arg] #(compare (:end %1) (:start %1)) :as :result)
-    (push-onto :scalar :result)
-    ))
-
-
-
-
-(def span-empty?
-  (build-instruction
-    span-empty?
-    "`:span-empty?` pops the top `:span` item and pushes `true` if it's empty: that is, if the ends are equal, AND at least one end is open"
-    :tags #{:span}
-    (consume-top-of :span :as :arg)
-    (calculate [:arg] #(span/span-empty? %1) :as :result)
+    interval-empty?
+    "`:interval-empty?` pops the top `:interval` item and pushes `true` if it's empty: that is, if the ends are equal, AND at least one end is open"
+    :tags #{:interval}
+    (consume-top-of :interval :as :arg)
+    (calculate [:arg] #(interval/interval-empty? %1) :as :result)
     (push-onto :boolean :result)
     ))
 
@@ -48,55 +23,28 @@
 
 
 
-(def span-include?
+(def interval-include?
   (build-instruction
-    span-include?
-    "`:span-include?` pops the top `:span` and top `:scalar`, and pushes `true` if the `:scalar` value falls (strictly!) within the `:span`, taking openness of the ends into account"
-    :tags #{:span}
-    (consume-top-of :span :as :span)
+    interval-include?
+    "`:interval-include?` pops the top `:interval` and top `:scalar`, and pushes `true` if the `:scalar` value falls (strictly!) within the `:interval`, taking openness of the ends into account"
+    :tags #{:interval}
+    (consume-top-of :interval :as :i)
     (consume-top-of :scalar :as :number)
-    (calculate [:span :number] #(span/span-include? %1 %2) :as :result)
+    (calculate [:i :number] #(interval/interval-include? %1 %2) :as :result)
     (push-onto :boolean :result)
     ))
 
 
 
 
-(def span-overlap?
+(def interval-overlap?
   (build-instruction
-    span-overlap?
-    "`:span-overlap?` pops the top two `:span` items and pushes `true` if they overlap, even in a single point: that is, if their union is non-empty, taking into account which ends are open"
-    :tags #{:span}
-    (consume-top-of :span :as :arg2)
-    (consume-top-of :span :as :arg1)
-    (calculate [:arg1 :arg2] #(span/span-overlap? %1 %2) :as :result)
-    (push-onto :boolean :result)
-    ))
-
-
-
-
-(def span-reverse
-  (build-instruction
-    span-reverse
-    "`:span-reverse` pops the top `:span` item and pushes its reverse, including the openness states of its endpoints"
-    :tags #{:span}
-    (consume-top-of :span :as :arg)
-    (calculate [:arg] #(span/span-reverse %1) :as :result)
-    (push-onto :span :result)
-    ))
-
-
-
-
-(def span-surrounds?
-  (build-instruction
-    span-surrounds?
-    "`:span-surrounds?` pops the top two `:span` items and pushes `true` if the first one surrounds the second one: that is, if both ends of the second one fall strictly within the first span"
-    :tags #{:span}
-    (consume-top-of :span :as :arg2)
-    (consume-top-of :span :as :arg1)
-    (calculate [:arg1 :arg2] #(span/span-surrounds? %1 %2) :as :result)
+    interval-overlap?
+    "`:interval-overlap?` pops the top two `:interval` items and pushes `true` if they overlap, even in a single point: that is, if their union is non-empty, taking into account which ends are open"
+    :tags #{:interval}
+    (consume-top-of :interval :as :arg2)
+    (consume-top-of :interval :as :arg1)
+    (calculate [:arg1 :arg2] #(interval/interval-overlap? %1 %2) :as :result)
     (push-onto :boolean :result)
     ))
 
@@ -104,9 +52,24 @@
 
 
 
-(def span-type
-  (-> (make-type  :span
-                  :recognized-by push.type.definitions.interval/span?
+(def interval-subset?
+  (build-instruction
+    interval-subset?
+    "`:interval-subset?` pops the top two `:interval` items (call them B and A, respectively) and pushes `true` if B is a subset of A. That is, if both ends of B fall strictly within A, or they are identical."
+    :tags #{:interval}
+    (consume-top-of :interval :as :arg2)
+    (consume-top-of :interval :as :arg1)
+    (calculate [:arg1 :arg2] #(interval/interval-subset? %1 %2) :as :result)
+    (push-onto :boolean :result)
+    ))
+
+
+
+
+
+(def interval-type
+  (-> (make-type  :interval
+                  :recognized-by interval/interval?
                   :attributes #{:numeric :set})
         aspects/make-equatable
         aspects/make-movable
@@ -117,12 +80,9 @@
         aspects/make-storable
         aspects/make-taggable
         aspects/make-visible 
-        (attach-instruction , span-coincide?)
-        (attach-instruction , span-direction)
-        (attach-instruction , span-empty?)
-        (attach-instruction , span-include?)
-        (attach-instruction , span-overlap?)
-        (attach-instruction , span-reverse)
-        (attach-instruction , span-surrounds?)
+        (attach-instruction , interval-empty?)
+        (attach-instruction , interval-include?)
+        (attach-instruction , interval-overlap?)
+        (attach-instruction , interval-subset?)
   ))
 
