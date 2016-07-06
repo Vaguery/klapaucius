@@ -9,6 +9,82 @@
 
 
 (tabular
+  (fact ":interval-crossover returns the FOIL crossovers of two intervals"
+    (register-type-and-check-instruction
+        ?set-stack ?items interval-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items       ?instruction        ?get-stack     ?expected
+
+    :interval    (list (s/make-interval 3 4)
+                       (s/make-interval 1 2))
+
+                             :interval-crossover 
+
+                                                :exec   
+                                                    (list
+                                                      (list (s/make-interval 1 3)
+                                                            (s/make-interval 1 4)
+                                                            (s/make-interval 2 3)
+                                                            (s/make-interval 2 4)
+                                                            ))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-open-interval 3 4)
+                       (s/make-interval 1 2))
+
+                             :interval-crossover 
+                             
+                                                :exec   
+                                                    (list
+                                                      (list (s/make-interval 1 3
+                                                               :max-open? true)
+                                                            (s/make-interval 1 4
+                                                               :max-open? true)
+                                                            (s/make-interval 2 3
+                                                               :max-open? true)
+                                                            (s/make-interval 2 4
+                                                               :max-open? true)
+                                                            ))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;    
+    :interval    (list (s/make-open-interval 33 -12 )
+                       (s/make-interval 1 2 :max-open? true))
+                       ;; [1,2) x (-12,33)
+
+                             :interval-crossover 
+                             
+                                                :exec   
+                                                    (list
+                                                      (list (s/make-interval -12 1
+                                                               :max-open? true)
+                                                            (s/make-interval 1 33
+                                                               :max-open? true)
+                                                            (s/make-open-interval -12 2)
+                                                            (s/make-open-interval 2 33)
+                                                            ))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
+    :interval    (list (s/make-interval 33 -12 :min-open? true)
+                       (s/make-interval 1 2 :max-open? true))
+                       ;; [1,2) x (-12,33]
+
+                             :interval-crossover 
+                             
+                                                :exec   
+                                                    (list
+                                                      (list (s/make-interval -12 1
+                                                              :max-open? true)
+                                                            (s/make-interval 1 33)
+                                                            (s/make-open-interval -12 2)
+                                                            (s/make-interval 2 33
+                                                              :min-open? true)
+                                                            ))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
+    )
+
+
+
+
+
+
+(tabular
   (fact ":interval-empty? returns true if the start and end are identical and at least one is open"
     (register-type-and-check-instruction
         ?set-stack ?items interval-type ?instruction ?get-stack) => ?expected)

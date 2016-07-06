@@ -7,32 +7,42 @@
             ))
 
 
-;; conversion
 
-
-(def interval-new
+(def interval-crossover
   (build-instruction
-    interval-new
-    "`:interval-new` pops the top two `:scalar` items (`B` and `A`, respectively) and creates a new `:interval` item [A,B]. Both ends are closed."
+    interval-crossover
+    "`:interval-crossover` pops the top two `:interval` items (call them `B` and `A`, respectively) and pushes a code block containing the four FOIL `:interval` items onto `:exec`. The results (in order) are `(make-interval (:min A) (:min B))`, `(make-interval (:min A) (:max B))`, `(make-interval (:max A) (:min B))` and `(make-interval (:max A) (:max B))`, and they preserve the openness of the points included the resulting intervals."
     :tags #{:interval}
-    (consume-top-of :scalar :as :arg2)
-    (consume-top-of :scalar :as :arg1)
-    (calculate [:arg1 :arg2] #(interval/make-interval %1 %2) :as :result)
-    (push-onto :interval :result)
+    (consume-top-of :interval :as :B)
+    (consume-top-of :interval :as :A)
+    (calculate [:A :B]
+      #(interval/make-interval
+        (:min %1)
+        (:min %2)
+        :min-open? (:min-open? %1)
+        :max-open? (:min-open? %2)) :as :first)
+    (calculate [:A :B]
+      #(interval/make-interval
+        (:min %1)
+        (:max %2)
+        :min-open? (:min-open? %1)
+        :max-open? (:max-open? %2)) :as :outer)
+    (calculate [:A :B]
+      #(interval/make-interval
+        (:max %1)
+        (:min %2)
+        :min-open? (:max-open? %1)
+        :max-open? (:min-open? %2)) :as :inner)
+    (calculate [:A :B]
+      #(interval/make-interval
+        (:max %1)
+        (:max %2)
+        :min-open? (:max-open? %1)
+        :max-open? (:max-open? %2)) :as :last)
+    (calculate [:first :outer :inner :last] #(list %1 %2 %3 %4) :as :foil)
+    (push-onto :exec :foil)
     ))
 
-
-
-(def interval-newopen
-  (build-instruction
-    interval-newopen
-    "`:interval-newopen` pops the top two `:scalar` items (`B` and `A`, respectively) and creates a new `:interval` item `(A,B)`. Both ends are open."
-    :tags #{:interval}
-    (consume-top-of :scalar :as :arg2)
-    (consume-top-of :scalar :as :arg1)
-    (calculate [:arg1 :arg2] #(interval/make-open-interval %1 %2) :as :result)
-    (push-onto :interval :result)
-    ))
 
 
 
@@ -80,6 +90,31 @@
     (push-onto :boolean :result)
     ))
 
+
+
+(def interval-new
+  (build-instruction
+    interval-new
+    "`:interval-new` pops the top two `:scalar` items (`B` and `A`, respectively) and creates a new `:interval` item [A,B]. Both ends are closed."
+    :tags #{:interval}
+    (consume-top-of :scalar :as :arg2)
+    (consume-top-of :scalar :as :arg1)
+    (calculate [:arg1 :arg2] #(interval/make-interval %1 %2) :as :result)
+    (push-onto :interval :result)
+    ))
+
+
+
+(def interval-newopen
+  (build-instruction
+    interval-newopen
+    "`:interval-newopen` pops the top two `:scalar` items (`B` and `A`, respectively) and creates a new `:interval` item `(A,B)`. Both ends are open."
+    :tags #{:interval}
+    (consume-top-of :scalar :as :arg2)
+    (consume-top-of :scalar :as :arg1)
+    (calculate [:arg1 :arg2] #(interval/make-open-interval %1 %2) :as :result)
+    (push-onto :interval :result)
+    ))
 
 
 
@@ -142,6 +177,7 @@
         aspects/make-storable
         aspects/make-taggable
         aspects/make-visible 
+        (attach-instruction , interval-crossover)
         (attach-instruction , interval-empty?)
         (attach-instruction , interval-hull)
         (attach-instruction , interval-include?)
