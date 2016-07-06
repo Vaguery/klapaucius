@@ -30,6 +30,68 @@
 
 
 (tabular
+  (fact ":interval-hull returns a new interval overlapping both its args"
+    (register-type-and-check-instruction
+        ?set-stack ?items interval-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items       ?instruction        ?get-stack     ?expected
+
+    :interval    (list (s/make-interval 2 3)
+                       (s/make-interval 2 3))
+                             :interval-hull    
+                                                 :interval  (list
+                                                              (s/make-interval 2 3))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-interval 2 3)
+                       (s/make-interval 1 3))
+                             :interval-hull    
+                                                 :interval  (list
+                                                              (s/make-interval 1 3))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-interval 2 3)
+                       (s/make-interval 12 13))
+                             :interval-hull    
+                                                 :interval  (list
+                                                              (s/make-interval 2 13))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-open-interval 2 3)
+                       (s/make-interval 2 3))
+                             :interval-hull    
+                                                 :interval  (list
+                                                              (s/make-interval 2 3))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-open-interval 2 3)
+                       (s/make-open-interval 2 3))
+                             :interval-hull    
+                                                 :interval  (list
+                                                              (s/make-open-interval 2 3))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-open-interval -2 -3)
+                       (s/make-open-interval 2 3))
+                             :interval-hull    
+                                                 :interval  (list
+                                                              (s/make-open-interval -3 3))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-open-interval -2 -2)
+                       (s/make-open-interval 2 3))
+                             :interval-hull    
+                                                 :interval  (list
+                                                              (s/make-open-interval -2 3))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-interval 2 3 :max-open? true)
+                       (s/make-open-interval 2 3))
+                             :interval-hull    
+                                                 :interval  (list
+                                                              (s/make-interval 2 3 :max-open? true))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+    )
+
+
+
+
+
+(tabular
   (fact ":interval-include? says whether a :scalar falls in a :interval"
     (check-instruction-with-all-kinds-of-stack-stuff
         ?new-stacks interval-type ?instruction) => (contains ?expected))
@@ -56,6 +118,75 @@
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:interval (list (s/make-open-interval 3 3))
      :scalar  '(3)}           :interval-include?            {:boolean '(false)}
+    )
+
+
+
+
+(tabular
+  (fact ":interval-new builds one out of two :scalar values"
+    (register-type-and-check-instruction
+        ?set-stack ?items interval-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items       ?instruction     ?get-stack  ?expected
+
+    :scalar    '(2 3)        :interval-new     :interval  (list (s/make-interval 2 3))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :scalar    '(3 2)        :interval-new     :interval  (list (s/make-interval 2 3))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :scalar    '(3 3)        :interval-new     :interval  (list (s/make-interval 3 3))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
+
+(tabular
+  (fact ":interval-newopen builds one out of two :scalar values"
+    (register-type-and-check-instruction
+        ?set-stack ?items interval-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items       ?instruction     ?get-stack  ?expected
+
+    :scalar    '(2 3)   :interval-newopen   :interval  (list (s/make-open-interval 2 3))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :scalar    '(3 2)   :interval-newopen   :interval  (list (s/make-open-interval 2 3))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :scalar    '(3 3)   :interval-newopen   :interval  (list (s/make-open-interval 3 3))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
+
+
+(tabular
+  (fact ":interval-rebracket resets the brackets to two boolean values"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks interval-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction             ?expected
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:interval (list (s/make-interval 2 3))
+     :boolean  '(false false)}  
+                              :interval-rebracket    {:interval
+                                                      (list (s/make-interval 2 3))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:interval (list (s/make-interval 2 3))
+     :boolean  '(false true)}  
+                              :interval-rebracket    {:interval
+                                                      (list (s/make-interval 2 3 :min-open? true))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:interval (list (s/make-interval 2 3))
+     :boolean  '(true true)}  
+                              :interval-rebracket    {:interval
+                                                      (list (s/make-open-interval 2 3 ))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:interval (list (s/make-interval 2 3))
+     :boolean  '(true false)}  
+                              :interval-rebracket    {:interval
+                                                      (list (s/make-interval 2 3 :max-open? true))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
 
 

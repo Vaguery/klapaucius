@@ -25,7 +25,7 @@
 (defn make-open-interval
   "Takes `:min` and `:max` scalar numeric arguments and returns a doubly-open `Interval` record."
   [low high]
-  (->Interval low high true true))
+  (->Interval (min low high) (max low high) true true))
 
 
 
