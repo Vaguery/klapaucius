@@ -92,6 +92,21 @@
 
 
 
+
+(def interval-intersection
+  (build-instruction
+    interval-intersection
+    "`:interval-intersection` pops the top two `:interval` items and pushes a new `:interval` whose extent is the intersection of the arguments, if it is non-empty. If there is no overlap (including a trivial empty `:interval` like `(3,3)`), no result is pushed."
+    :tags #{:interval}
+    (consume-top-of :interval :as :i2)
+    (consume-top-of :interval :as :i1)
+    (calculate [:i1 :i2] #(interval/interval-intersection %1 %2) :as :result)
+    (push-onto :interval :result)
+    ))
+
+
+
+
 (def interval-new
   (build-instruction
     interval-new
@@ -164,6 +179,20 @@
 
 
 
+(def interval-union
+  (build-instruction
+    interval-union
+    "`:interval-union` pops the top two `:interval` items and pushes a list that includes the one or two `:interval` items that are the union of the arguments. The resulting code block is pushed to `:exec`. If they overlap or are \"snug\", the result is one; if they do not overlap, the result contains both arguments."
+    :tags #{:interval}
+    (consume-top-of :interval :as :i2)
+    (consume-top-of :interval :as :i1)
+    (calculate [:i1 :i2] #(interval/interval-union %1 %2) :as :result)
+    (push-onto :exec :result)
+    ))
+
+
+
+
 (def interval-type
   (-> (make-type  :interval
                   :recognized-by interval/interval?
@@ -181,10 +210,12 @@
         (attach-instruction , interval-empty?)
         (attach-instruction , interval-hull)
         (attach-instruction , interval-include?)
+        (attach-instruction , interval-intersection)
         (attach-instruction , interval-new)
         (attach-instruction , interval-newopen)
         (attach-instruction , interval-rebracket)
         (attach-instruction , interval-overlap?)
         (attach-instruction , interval-subset?)
+        (attach-instruction , interval-union)
   ))
 

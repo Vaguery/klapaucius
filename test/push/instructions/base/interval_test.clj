@@ -198,6 +198,64 @@
 
 
 
+(tabular
+  (fact ":interval-intersection returns a new interval that is the intersection of its args, or nil"
+    (register-type-and-check-instruction
+        ?set-stack ?items interval-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items       ?instruction        ?get-stack     ?expected
+
+    :interval    (list (s/make-interval 2 3)
+                       (s/make-interval 2 3))
+                             :interval-intersection    
+                                                 :interval  (list
+                                                              (s/make-interval 2 3))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-interval 2 3)
+                       (s/make-interval 1 3))
+                             :interval-intersection    
+                                                 :interval  (list
+                                                              (s/make-interval 2 3))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-interval 2 3)
+                       (s/make-interval 12 13))
+                             :interval-intersection    
+                                                 :interval  '()
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-open-interval 2 3)
+                       (s/make-interval 2 3))
+                             :interval-intersection    
+                                                 :interval  (list
+                                                              (s/make-open-interval 2 3))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-open-interval 2 3)
+                       (s/make-open-interval 2 3))
+                             :interval-intersection    
+                                                 :interval  (list
+                                                              (s/make-open-interval 2 3))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-open-interval -2 -3)
+                       (s/make-open-interval 2 3))
+                             :interval-intersection    
+                                                 :interval  '()
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-interval 1 3)
+                       (s/make-interval 3 4))
+                             :interval-intersection    
+                                                 :interval  (list
+                                                              (s/make-interval 3 3))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-interval 2 3 :max-open? true)
+                       (s/make-open-interval 2 3))
+                             :interval-intersection    
+                                                 :interval  (list
+                                                              (s/make-open-interval 2 3))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+    )
+
+
+
 
 (tabular
   (fact ":interval-new builds one out of two :scalar values"
@@ -338,3 +396,69 @@
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
 
+
+
+
+
+
+
+(tabular
+  (fact ":interval-union returns a list containing the union of its args"
+    (register-type-and-check-instruction
+        ?set-stack ?items interval-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items       ?instruction        ?get-stack     ?expected
+
+    :interval    (list (s/make-interval 2 3)
+                       (s/make-interval 2 3))
+                             :interval-union    
+                                                 :exec  (list
+                                                          (list
+                                                            (s/make-interval 2 3)))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-interval 2 3)
+                       (s/make-interval 1 3))
+                             :interval-union    
+                                                 :exec  (list
+                                                          (list 
+                                                            (s/make-interval 1 3)))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-interval 2 3)
+                       (s/make-interval 12 13))
+                             :interval-union    
+                                                 :exec  (list
+                                                          (list
+                                                            (s/make-interval 12 13)
+                                                            (s/make-interval 2 3)))
+
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-open-interval 2 3)
+                       (s/make-interval 2 3))
+                             :interval-union    
+                                                 :exec  (list
+                                                          (list
+                                                            (s/make-interval 2 3)))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-open-interval 2 3)
+                       (s/make-open-interval 2 3))
+                             :interval-union    
+                                                 :exec  (list
+                                                          (list
+                                                            (s/make-open-interval 2 3)))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-interval 1 3)
+                       (s/make-interval 3 4))
+                             :interval-union    
+                                                 :exec  (list
+                                                          (list
+                                                            (s/make-interval 1 4)))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-interval 2 3 :max-open? true)
+                       (s/make-interval 3 4))
+                             :interval-union    
+                                                 :exec  (list
+                                                          (list
+                                                            (s/make-interval 2 4)))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+    )

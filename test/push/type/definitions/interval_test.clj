@@ -168,3 +168,151 @@
   (interval-subset?
     (make-interval 3 4 :max-open? true) (make-open-interval 4 3)) => true
   )
+
+
+
+(fact "interval-intersection returns the intersection of closed intervals"
+  (interval-intersection (make-interval 2 4)
+                         (make-interval 3 5)) => (make-interval 3 4)
+  (interval-intersection (make-interval 2 3)
+                         (make-interval 3 5)) => (make-interval 3 3)
+  (interval-intersection (make-interval 1 4)
+                         (make-interval 2 3)) => (make-interval 2 3)
+  (interval-intersection (make-interval 1 2)
+                         (make-interval 3 4)) => nil
+  )
+
+
+
+
+(fact "interval-intersection works as expected with fully open intervals"
+  (interval-intersection (make-open-interval 2 4)
+                         (make-open-interval 3 5)) => (make-open-interval 3 4)
+  (interval-intersection (make-open-interval 2 3)
+                         (make-open-interval 3 5)) => nil
+  (interval-intersection (make-open-interval 1 4)
+                         (make-open-interval 2 3)) => (make-open-interval 2 3)
+  (interval-intersection (make-open-interval 1 2)
+                         (make-open-interval 3 4)) => nil
+  )
+
+
+
+(fact "interval-intersection works as expected with partly open intervals"
+  (interval-intersection (make-interval 2 4)
+                         (make-open-interval 3 5)) => (make-interval 3 4 :min-open? true)
+  (interval-intersection (make-open-interval 2 4)
+                         (make-interval 3 5)) => (make-interval 3 4 :max-open? true)
+  (interval-intersection (make-open-interval 2 3)
+                         (make-interval 3 5)) => nil
+  (interval-intersection (make-interval 2 3)
+                         (make-open-interval 3 5)) => nil
+
+  (interval-intersection (make-interval 2 4 :max-open? true)
+                         (make-open-interval 3 5)) => (make-open-interval 3 4)
+  (interval-intersection (make-interval 2 4 :min-open? true)
+                         (make-open-interval 3 5)) => (make-interval 3 4 :min-open? true)
+  )
+
+
+
+(fact "interval-intersection works as expected with just ends overlapping"
+  (interval-intersection (make-interval 2 3)
+                         (make-interval 3 4)) => (make-interval 3 3)
+  (interval-intersection (make-open-interval 2 3)
+                         (make-interval 3 4)) => nil
+  (interval-intersection (make-interval 2 3)
+                         (make-open-interval 3 4)) => nil
+  )
+
+
+
+
+(fact "interval-intersection works as expected with overlapping arguments"
+  (interval-intersection (make-interval 2 4)  ;; [2,4]
+                         (make-interval 2 4)) => (make-interval 2 4)
+
+  (interval-intersection (make-open-interval 2 4)
+                         (make-interval 2 4)) => (make-open-interval 2 4)
+
+  (interval-intersection (make-interval 2 4)
+                         (make-open-interval 2 4)) => (make-open-interval 2 4)
+  )
+
+
+
+
+(fact "interval-union returns the union of closed intervals"
+  (interval-union (make-interval 2 4)
+                         (make-interval 3 5)) => (list (make-interval 2 5))
+  (interval-union (make-interval 2 3)
+                         (make-interval 3 5)) => (list (make-interval 2 5))
+  (interval-union (make-interval 1 4)
+                         (make-interval 2 3)) => (list (make-interval 1 4))
+  (interval-union (make-interval 1 2)
+                         (make-interval 3 4)) => (list (make-interval 1 2)
+                                                       (make-interval 3 4))
+  )
+
+
+
+
+(fact "interval-union works as expected with fully open intervals"
+  (interval-union (make-open-interval 2 4)
+                  (make-open-interval 3 5)) => (list (make-open-interval 2 5))
+  (interval-union (make-open-interval 2 3)
+                  (make-open-interval 3 5)) => (list (make-open-interval 2 3)
+                                                     (make-open-interval 3 5))
+  (interval-union (make-open-interval 1 4)
+                  (make-open-interval 2 3)) => (list (make-open-interval 1 4))
+  (interval-union (make-open-interval 1 2)
+                  (make-open-interval 3 4)) => (list (make-open-interval 1 2)
+                                                     (make-open-interval 3 4))
+  )
+
+
+
+(fact "interval-union works as expected with partly open intervals"
+  (interval-union (make-interval 2 4)
+                  (make-open-interval 3 5)) => (list (make-interval 2 5 :max-open? true))
+  (interval-union (make-open-interval 2 4)
+                  (make-interval 3 5)) => (list (make-interval 2 5 :min-open? true))
+  (interval-union (make-open-interval 2 3)
+                  (make-interval 3 5)) => (list (make-interval 2 5 :min-open? true))
+  (interval-union (make-interval 2 3)
+                  (make-open-interval 1 2)) => (list (make-interval 1 3 :min-open? true))
+
+  (interval-union (make-interval 2 4 :max-open? true)
+                  (make-open-interval 3 5)) => (list (make-interval 2 5 :max-open? true))
+  (interval-union (make-interval 2 4 :min-open? true)
+                  (make-open-interval 4 5)) => (list (make-open-interval 2 5))
+  )
+
+
+
+(fact "interval-union works as expected with just ends overlapping"
+  (interval-union (make-interval 2 3)
+                  (make-interval 3 4)) => (list (make-interval 2 4))
+  (interval-union (make-open-interval 2 3)
+                  (make-interval 3 4)) => (list (make-interval 2 4 :min-open? true))
+  (interval-union (make-interval 2 3)
+                  (make-open-interval 3 4)) => (list (make-interval 2 4 :max-open? true))
+  )
+
+
+
+
+(fact "interval-union works as expected with overlapping arguments"
+  (interval-union (make-interval 2 4) 
+                  (make-interval 2 4)) => (list (make-interval 2 4))
+
+  (interval-union (make-open-interval 2 4)
+                  (make-interval 2 4)) => (list (make-interval 2 4))
+
+  (interval-union (make-interval 2 4)
+                  (make-open-interval 2 4)) => (list (make-interval 2 4))
+
+  (interval-union (make-open-interval 2 4)
+                  (make-open-interval 2 4)) => (list (make-open-interval 2 4))
+  )
+
