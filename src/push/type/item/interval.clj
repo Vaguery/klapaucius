@@ -8,6 +8,25 @@
 
 
 
+(def interval-add
+  (build-instruction
+    interval-add
+    "`:interval-add` pops the top two `:interval` items and pushes a new `:interval` which is the sum of the two. If either `:min` (or `:max`) is open, the result `:min` (or `:max`) is also open."
+    :tags #{:interval}
+    (consume-top-of :interval :as :i2)
+    (consume-top-of :interval :as :i1)
+    (calculate [:i1 :i2]
+        #(interval/make-interval 
+            (+' (:min %1) (:min %2))
+            (+' (:max %1) (:max %2))
+            :min-open? (or (:min-open? %1) (:min-open? %2))
+            :max-open? (or (:max-open? %1) (:max-open? %2))) :as :result)
+    (push-onto :interval :result)))
+
+
+
+
+
 (def interval-crossover
   (build-instruction
     interval-crossover
@@ -178,6 +197,25 @@
 
 
 
+(def interval-subtract
+  (build-instruction
+    interval-subtract
+    "`:interval-subtract` pops the top two `:interval` items and pushes a new `:interval` which is the difference of the two. If either `:min` (or `:max`) is open, the result `:min` (or `:max`) is also open."
+    :tags #{:interval}
+    (consume-top-of :interval :as :i2)
+    (consume-top-of :interval :as :i1)
+    (calculate [:i1 :i2]
+        #(interval/make-interval 
+            (-' (:min %1) (:min %2))
+            (-' (:max %1) (:max %2))
+            :min-open? (or (:min-open? %1) (:min-open? %2))
+            :max-open? (or (:max-open? %1) (:max-open? %2))) :as :result)
+    (push-onto :interval :result)))
+
+
+
+
+
 
 (def interval-union
   (build-instruction
@@ -206,6 +244,7 @@
         aspects/make-storable
         aspects/make-taggable
         aspects/make-visible 
+        (attach-instruction , interval-add)
         (attach-instruction , interval-crossover)
         (attach-instruction , interval-empty?)
         (attach-instruction , interval-hull)
@@ -216,6 +255,7 @@
         (attach-instruction , interval-rebracket)
         (attach-instruction , interval-overlap?)
         (attach-instruction , interval-subset?)
+        (attach-instruction , interval-subtract)
         (attach-instruction , interval-union)
   ))
 
