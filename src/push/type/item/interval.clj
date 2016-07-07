@@ -206,10 +206,10 @@
     (consume-top-of :interval :as :i1)
     (calculate [:i1 :i2]
         #(interval/make-interval 
-            (-' (:min %1) (:min %2))
-            (-' (:max %1) (:max %2))
-            :min-open? (or (:min-open? %1) (:min-open? %2))
-            :max-open? (or (:max-open? %1) (:max-open? %2))) :as :result)
+            (-' (:min %1) (:max %2))
+            (-' (:max %1) (:min %2))
+            :min-open? (or (:min-open? %1) (:max-open? %2))
+            :max-open? (or (:max-open? %1) (:min-open? %2))) :as :result)
     (push-onto :interval :result)))
 
 

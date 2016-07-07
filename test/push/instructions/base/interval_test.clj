@@ -453,35 +453,47 @@
 
     ?set-stack  ?items       ?instruction        ?get-stack     ?expected
 
-    :interval    (list (s/make-interval 2 3)
-                       (s/make-interval 2 3))
+    :interval    (list (s/make-interval 2 2)
+                       (s/make-interval 2 2))
                              :interval-subtract    
                                                  :interval  (list
                                                               (s/make-interval 0 0))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval 2 3)
-                       (s/make-interval -3 -1))
+                       (s/make-interval 2 3))
                              :interval-subtract    
                                                  :interval  (list
-                                                              (s/make-interval -5 -4))
+                                                              (s/make-interval -1 1))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-interval 2 3)
+                       (s/make-interval -3 -2))
+                             :interval-subtract    
+                                                 :interval  (list
+                                                              (s/make-interval -6 -4))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-open-interval 2 3)
                        (s/make-interval 2 3))
                              :interval-subtract    
                                                  :interval  (list
-                                                              (s/make-open-interval 0 0))
+                                                              (s/make-open-interval -1 1))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-open-interval 2 3)
                        (s/make-interval -3 -2))
                              :interval-subtract    
                                                  :interval  (list
-                                                              (s/make-open-interval -5 -5))
+                                                              (s/make-open-interval -6 -4))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    :interval    (list (s/make-interval 3 3 :min-open? true)
-                       (s/make-interval 2 2 :max-open? true))
+    :interval    (list (s/make-interval 1 2 :min-open? true)
+                       (s/make-interval 2 3 :max-open? true))
                              :interval-subtract    
                                                  :interval  (list
-                                                              (s/make-open-interval -1 -1))
+                                                              (s/make-interval 0 2 :max-open? true))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-interval 1 2 :max-open? true)
+                       (s/make-interval 2 3 :min-open? true))
+                             :interval-subtract    
+                                                 :interval  (list
+                                                              (s/make-interval 0 2 :min-open? true))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
 
