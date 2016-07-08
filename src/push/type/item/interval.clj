@@ -125,6 +125,23 @@
 
 
 
+; (def interval-multiply
+;   (build-instruction
+;     interval-multiply
+;     "`:interval-multiply` pops the top two `:interval` items and pushes a new `:interval` which is the product of the two. If either `:min` (or `:max`) is open, the result `:min` (or `:max`) is also open."
+;     :tags #{:interval}
+;     (consume-top-of :interval :as :i2)
+;     (consume-top-of :interval :as :i1)
+;     (calculate [:i1 :i2]
+;         #(interval/make-interval 
+;             (-' (:min %1) (:max %2))
+;             (-' (:max %1) (:min %2))
+;             :min-open? (or (:min-open? %1) (:max-open? %2))
+;             :max-open? (or (:max-open? %1) (:min-open? %2))) :as :result)
+;     (push-onto :interval :result)))
+
+
+
 
 (def interval-new
   (build-instruction
