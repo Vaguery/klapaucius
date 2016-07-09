@@ -129,6 +129,79 @@
 
 
 
+(tabular
+  (fact ":interval-divide returns a continuation to produce the quotient of two simple intervals"
+    (register-type-and-check-instruction
+        ?set-stack ?items interval-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items       ?instruction        ?get-stack     ?expected
+
+    :interval    (list (s/make-interval 2 3)
+                       (s/make-interval 2 3))
+                             :interval-divide    
+                                                 :exec  (list
+             (list (s/make-interval 2 3) (s/make-interval 1/3 1/2) :interval-multiply))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-interval 2 3)
+                       (s/make-interval -2 -4))
+                             :interval-divide    
+                                                 :exec  (list
+             (list (s/make-interval -2 -4) (s/make-interval 1/3 1/2) :interval-multiply))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
+
+
+(tabular
+  (fact ":interval-divide works for zero-ended intervals"
+    (register-type-and-check-instruction
+        ?set-stack ?items interval-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items       ?instruction        ?get-stack     ?expected
+
+    :interval    (list (s/make-interval -2 0)
+                       (s/make-interval 2 3))
+                             :interval-divide    
+                                                 :exec  (list
+             (list (s/make-interval 2 3) (s/make-interval Double/NEGATIVE_INFINITY -1/2) :interval-multiply))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-interval 0 3)
+                       (s/make-interval -2 -4))
+                             :interval-divide    
+                                                 :exec  (list
+             (list (s/make-interval -2 -4) (s/make-interval 1/3 Double/POSITIVE_INFINITY) :interval-multiply))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
+
+(tabular
+  (fact ":interval-divide works for zero-spanning intervals"
+    (register-type-and-check-instruction
+        ?set-stack ?items interval-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items       ?instruction        ?get-stack     ?expected
+
+    :interval    (list (s/make-interval -2 3)
+                       (s/make-interval 2 3))
+                             :interval-divide    
+                                                 :exec  (list
+            (list
+              (s/make-interval 2 3)
+              (s/make-interval Double/NEGATIVE_INFINITY -1/2)
+              :interval-multiply
+              (s/make-interval 2 3)
+              (s/make-interval 1/3 Double/POSITIVE_INFINITY)
+              :interval-multiply))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
+
 
 (tabular
   (fact ":interval-empty? returns true if the start and end are identical and at least one is open"
@@ -304,6 +377,135 @@
 
 
 (tabular
+  (fact ":interval-min pushes expected result"
+    (register-type-and-check-instruction
+        ?set-stack ?items interval-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items       ?instruction        ?get-stack     ?expected
+
+    :interval    (list (s/make-interval 7 9))
+                             :interval-min    
+                                                 :scalar  '(7)
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-interval -27 9))
+                             :interval-min    
+                                                 :scalar  '(-27)
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-interval Double/NEGATIVE_INFINITY 9))
+                             :interval-min    
+                                                 :scalar  (list Double/NEGATIVE_INFINITY)
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
+
+(tabular
+  (fact ":interval-max pushes expected result"
+    (register-type-and-check-instruction
+        ?set-stack ?items interval-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items       ?instruction        ?get-stack     ?expected
+
+    :interval    (list (s/make-interval 7 9))
+                             :interval-max    
+                                                 :scalar  '(9)
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-interval -27 9))
+                             :interval-max    
+                                                 :scalar  '(9)
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-interval Double/POSITIVE_INFINITY 9))
+                             :interval-max    
+                                                 :scalar  (list Double/POSITIVE_INFINITY)
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
+
+
+
+(tabular
+  (fact ":interval-multiply returns the sum of two intervals"
+    (register-type-and-check-instruction
+        ?set-stack ?items interval-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items       ?instruction        ?get-stack     ?expected
+
+    :interval    (list (s/make-interval 2 3)
+                       (s/make-interval 2 3))
+                             :interval-multiply    
+                                                 :interval  (list
+                                                              (s/make-interval 4 9))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-interval 2 3)
+                       (s/make-interval -3 -1))
+                             :interval-multiply    
+                                                 :interval  (list
+                                                              (s/make-interval -9 -2))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-open-interval 2 3)
+                       (s/make-interval 2 3))
+                             :interval-multiply    
+                                                 :interval  (list
+                                                              (s/make-open-interval 4 9))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-open-interval 2 3)
+                       (s/make-interval -3 -2))
+                             :interval-multiply    
+                                                 :interval  (list
+                                                              (s/make-open-interval -9 -4))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-interval 1 2 :min-open? true)
+                       (s/make-interval 3 4 :max-open? true))
+                             :interval-multiply    
+                                                 :interval  (list
+                                                              (s/make-open-interval 3 8))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-interval 1 2 :max-open? true)
+                       (s/make-interval 3 4 :max-open? true))
+                             :interval-multiply    
+                                                 :interval  (list
+                                                              (s/make-interval 3 8
+                                                                :max-open? true))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-interval 1 2)
+                       (s/make-interval 3 4 :min-open? true))
+                             :interval-multiply    
+                                                 :interval  (list
+                                                              (s/make-interval 3 8
+                                                                :min-open? true))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
+(tabular
+  (future-fact ":interval-multiply makes sense with choices of bounds"
+    (register-type-and-check-instruction
+        ?set-stack ?items interval-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items       ?instruction        ?get-stack     ?expected
+
+    :interval    (list (s/make-interval 3 4)
+                       (s/make-interval 1 1 :max-open? true))
+                             :interval-multiply    
+                                                 :interval  (list
+                                                              (s/make-interval 3 4))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-interval 3 4)
+                       (s/make-interval 1 1 :min-open? true))
+                             :interval-multiply    
+                                                 :interval  (list
+                                                              (s/make-interval 3 4))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
+
+(tabular
   (fact ":interval-new builds one out of two :scalar values"
     (register-type-and-check-instruction
         ?set-stack ?items interval-type ?instruction ?get-stack) => ?expected)
@@ -412,6 +614,258 @@
     :interval    (list (s/make-open-interval 2 5) (s/make-interval 3 4))
                              :interval-overlap?     :boolean       '(true)
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
+
+(tabular
+  (fact ":interval-recenter pushes expected results for simple cases"
+    (register-type-and-check-instruction
+        ?set-stack ?items interval-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items       ?instruction        ?get-stack     ?expected
+
+    :interval    (list (s/make-interval 7 9))
+                             :interval-recenter    
+                                                 :interval  (list
+                                                          (s/make-interval -1 1))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-interval -4 -3))
+                             :interval-recenter    
+                                                 :interval  (list
+                                                          (s/make-interval -1/2 1/2))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-interval 20 20))
+                             :interval-recenter    
+                                                 :interval  (list
+                                                          (s/make-interval 0 0))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
+(tabular
+  (fact ":interval-recenter pushes expected results for open-ended cases"
+    (register-type-and-check-instruction
+        ?set-stack ?items interval-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items       ?instruction        ?get-stack     ?expected
+
+    :interval    (list (s/make-open-interval 7 9))
+                             :interval-recenter    
+                                                 :interval  (list
+                                                          (s/make-open-interval -1 1))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-interval -4 -3 :min-open? true))
+                             :interval-recenter    
+                                                 :interval  (list
+                                                          (s/make-interval -1/2 1/2
+                                                            :min-open? true))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
+
+
+(tabular
+  (fact ":interval-recenter pushes expected results for infinite cases"
+    (register-type-and-check-instruction
+        ?set-stack ?items interval-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items       ?instruction        ?get-stack     ?expected
+
+    :interval    (list (s/make-interval 7 Double/POSITIVE_INFINITY))
+                             :interval-recenter    
+                                                 :interval  (list
+                                                          (s/make-interval
+                                                            Double/NEGATIVE_INFINITY
+                                                            Double/POSITIVE_INFINITY))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
+
+
+(tabular
+  (fact ":interval-reciprocal pushes expected results for simple cases"
+    (register-type-and-check-instruction
+        ?set-stack ?items interval-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items       ?instruction        ?get-stack     ?expected
+
+    :interval    (list (s/make-interval 3 4))
+                             :interval-reciprocal    
+                                                 :exec  (list
+                                                          (s/make-interval 1/4 1/3))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-interval -4 -3))
+                             :interval-reciprocal    
+                                                 :exec  (list
+                                                          (s/make-interval -1/3 -1/4))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
+
+
+(tabular
+  (fact ":interval-reciprocal pushes expected results for open cases"
+    (register-type-and-check-instruction
+        ?set-stack ?items interval-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items       ?instruction        ?get-stack     ?expected
+
+    :interval    (list (s/make-interval 3 4 :min-open? true))
+                             :interval-reciprocal    
+                                                 :exec  (list
+                                                          (s/make-interval 1/4 1/3 :max-open? true))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-interval -4 -3 :min-open? true))
+                             :interval-reciprocal    
+                                                 :exec  (list
+                                                          (s/make-interval -1/3 -1/4 :max-open? true))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
+
+
+(tabular
+  (fact ":interval-reciprocal pushes expected results for 0-ended cases"
+    (register-type-and-check-instruction
+        ?set-stack ?items interval-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items       ?instruction        ?get-stack     ?expected
+
+    :interval    (list (s/make-interval 0 0))
+                             :interval-reciprocal    
+                                                 :exec  (list
+                                                          (s/make-interval Double/NEGATIVE_INFINITY Double/POSITIVE_INFINITY))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-interval 0 10))
+                             :interval-reciprocal    
+                                                 :exec  (list
+                                                          (s/make-interval 1/10 Double/POSITIVE_INFINITY))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
+    :interval    (list (s/make-interval 0 -10))
+                             :interval-reciprocal    
+                                                 :exec  (list
+                                                          (s/make-interval Double/NEGATIVE_INFINITY -1/10))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+    )
+
+
+
+
+(tabular
+  (fact ":interval-reciprocal pushes expected results for 0-spanning cases"
+    (register-type-and-check-instruction
+        ?set-stack ?items interval-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items       ?instruction        ?get-stack     ?expected
+
+    :interval    (list (s/make-interval -2 2))
+                             :interval-reciprocal    
+                                                 :exec  (list
+                                                          (list
+                                                          (s/make-interval
+                                                            Double/NEGATIVE_INFINITY
+                                                            -1/2)
+                                                          (s/make-interval
+                                                            1/2
+                                                            Double/POSITIVE_INFINITY)))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-interval 0 0))
+                             :interval-reciprocal    
+                                                 :exec  (list
+                                                          (s/make-interval
+                                                            Double/NEGATIVE_INFINITY
+                                                            Double/POSITIVE_INFINITY))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
+
+(tabular
+  (fact ":interval-reflect returns the arg flipped across 0.0"
+    (register-type-and-check-instruction
+        ?set-stack ?items interval-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items       ?instruction        ?get-stack     ?expected
+
+    :interval    (list (s/make-interval -2 3))
+                             :interval-reflect    
+                                                 :interval  (list
+                                                              (s/make-interval -3 2))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-interval -2 3 :max-open? true))
+                             :interval-reflect    
+                                                 :interval  (list
+                                                              (s/make-interval -3 2
+                                                                :min-open? true))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
+
+
+(tabular
+  (fact ":interval-scale multiplies the bounds by a scalar"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks interval-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction             ?expected
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:interval (list (s/make-interval 2 3))
+     :scalar  '(11)}  
+                              :interval-scale    {:interval
+                                                      (list (s/make-interval 22 33))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:interval (list (s/make-interval -2 3))
+     :scalar  '(1/2)}  
+                              :interval-scale    {:interval
+                                                      (list (s/make-interval -1 3/2))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:interval (list (s/make-interval -2 5))
+     :scalar  '(0.1)}  
+                              :interval-scale    {:interval
+                                                      (list (s/make-interval -0.2 0.5))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
+
+
+(tabular
+  (fact ":interval-shift multiplies the bounds by a scalar"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks interval-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction             ?expected
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:interval (list (s/make-interval 2 3))
+     :scalar  '(11)}  
+                              :interval-shift    {:interval
+                                                      (list (s/make-interval 13 14))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:interval (list (s/make-interval -2 3))
+     :scalar  (list 1/2)}  
+                              :interval-shift    {:interval
+                                                      (list (s/make-interval -3/2 7/2))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:interval (list (s/make-interval -2 5))
+     :scalar  '(0.25)}  
+                              :interval-shift    {:interval
+                                                      (list (s/make-interval -1.75 5.25))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
 
 

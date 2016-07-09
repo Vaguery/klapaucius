@@ -163,6 +163,35 @@
 
 
 
+(defn interval-reciprocal
+  "Takes one Interval record, and returns its reciprocal. If the argument contains 0, then two intervals are returned in a list"
+  [i]
+  (let [s      (:min i)
+        e      (:max i)
+        so     (:min-open? i)
+        eo     (:max-open? i)
+        infty  Double/POSITIVE_INFINITY
+        ninfty Double/NEGATIVE_INFINITY]
+    (cond
+      (and (zero? s) (zero? e))
+        (make-interval ninfty infty)
+      (zero? (:min i))
+        (make-interval (/ 1 (:max i)) infty
+          :min-open? (:max-open? i))
+      (zero? (:max i))
+        (make-interval ninfty (/ 1 (:min i))
+          :max-open? (:min-open? i))
+      (interval-include? i 0)
+        (list
+          (interval-reciprocal (make-interval s 0 :min-open? so))
+          (interval-reciprocal (make-interval 0 e :max-open? eo)))
+      :else
+        (make-interval (/ 1 e) (/ 1 s)
+          :min-open? eo
+          :max-open? so)
+      )))
+
+
 (defn interval-union
   "Takes two Interval records. If they are strictly discontinuous, they are returned in the order given in a list. If they have no gap between them, the list will contain one Interval that is their union."
   [i1 i2]
@@ -201,3 +230,41 @@
         (list i1 i2))))
 
 
+
+
+
+
+(defn product-of-bounds-from-pair
+  "helper function for interval-multiply, which takes two [number, open?] tuples and returns the product of the number values"
+  [t1 t2]
+  (*' (first t1) (first t2)))
+
+
+
+(defn disjunction-of-bounds-from-pair
+  "helper function for interval-multiply, which takes two [number, open?] tuples and returns the OR of the openness values"
+  [t1 t2]
+  (or (second t1) (second t2)))
+
+
+
+(defn interval-multiply
+  "Takes two Interval records, and returns their product"
+  [i1 i2]
+   (let [a     [(:min i1) (:min-open? i1)]
+         b     [(:max i1) (:max-open? i1)]
+         c     [(:min i2) (:min-open? i2)]
+         d     [(:max i2) (:max-open? i2)]
+         pairs [[a c] [a d] [b c] [b d]]
+         min-choice (apply min-key
+                      (fn [x] (apply product-of-bounds-from-pair x))
+                      pairs)
+        max-choice (apply max-key
+                      (fn [x] (apply product-of-bounds-from-pair x))
+                      pairs)]
+    (make-interval
+      (apply product-of-bounds-from-pair min-choice)
+      (apply product-of-bounds-from-pair max-choice)
+      :min-open? (apply disjunction-of-bounds-from-pair min-choice)
+      :max-open? (apply disjunction-of-bounds-from-pair max-choice))
+    ))

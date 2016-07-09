@@ -39,6 +39,13 @@
 
 
 
+(defn infinite?
+  [number]
+  (or (= number Double/NEGATIVE_INFINITY)
+      (= number Double/POSITIVE_INFINITY)))
+
+
+
 (defn downsample-bigdec
   "Takes a `bigdec` argument. If the number has no fractional part and is smaller than Long/MAX_VALUE, it returns `(long n)`; otherwise, it returns `(double n)`."
   [n]

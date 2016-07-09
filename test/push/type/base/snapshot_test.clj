@@ -14,7 +14,8 @@
     (contains
       '{:bindings {:x ((9))},
        :config {:lenient? true, :max-collection-size 131072, :step-limit 0},
-       :stacks {:boolean (), :booleans (), :char (), :chars (), :code (), :complex (), :complexes (), :error (), :exec (), :foo (33), :generator (), :log (), :print (), :quoted (), :ref (), :refs (), :return (), :scalar (), :scalars (), :set (), :snapshot (), :string (), :strings (), :tagspace (), :unknown (), :vector ()}}))
+       :stacks {:boolean (), :booleans (), :char (), :chars (), :code (), :complex (), :complexes (), :error (), :exec (), :foo (33), :generator (), :interval (), :intervals(), :log (), :print (), :quoted (), :ref (), :refs (), :return (), :scalar (), :scalars (), :set (), :snapshot (), :string (), :strings (), :tagspace (), :unknown (), :vector ()}} )
+    )
 
 
 (fact "snapshot? recognizes Snapshot records"

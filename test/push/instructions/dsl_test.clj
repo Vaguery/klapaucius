@@ -1100,7 +1100,7 @@
                                  :stacks {:foo '(1 [2 (3 4) {5 6} 7] 8)} )
         foostack (get-in skimpy [:stacks :foo])]
     (fix/count-collection-points (get-in skimpy [:stacks :foo])) => 13
-    (fix/count-collection-points (:stacks skimpy)) => 91
+    (fix/count-collection-points (:stacks skimpy)) => #(> % 91)
     (oversized-stack? skimpy foostack skimpy) => true
     (oversized-stack? skimpy foostack 1) => false
     )

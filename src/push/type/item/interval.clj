@@ -1,7 +1,8 @@
 (ns push.type.item.interval
   (:use     [push.instructions.dsl]
             [push.type.core]
-            [push.instructions.core])
+            [push.instructions.core]
+            [push.util.numerics])
   (:require [push.instructions.aspects :as aspects]
             [push.type.definitions.interval :as interval]
             ))
@@ -60,6 +61,25 @@
         :max-open? (:max-open? %2)) :as :last)
     (calculate [:first :outer :inner :last] #(list %1 %2 %3 %4) :as :foil)
     (push-onto :exec :foil)
+    ))
+
+
+
+
+(def interval-divide
+  (build-instruction
+    interval-divide
+    "`:interval-divide` pops the top two `:interval` items (call them `B` and `A`, respectively) and pushes a continuation that will calculate their quotient(s) `A÷B` onto `:exec`. If `B` strictly covers zero, then two continuations are pushed: one for the positive and one for the negative regions."
+    :tags #{:interval}
+    (consume-top-of :interval :as :divisor)
+    (consume-top-of :interval :as :dividend)
+    (calculate [:divisor] #(interval/interval-reciprocal %1) :as :inverses)
+    (calculate [:dividend :inverses]
+      #(if (seq? %2)
+        (list %1 (first %2) :interval-multiply
+              %1 (second %2) :interval-multiply)
+        (list %1 %2 :interval-multiply)) :as :results)
+    (push-onto :exec :results)
     ))
 
 
@@ -125,20 +145,58 @@
 
 
 
-; (def interval-multiply
-;   (build-instruction
-;     interval-multiply
-;     "`:interval-multiply` pops the top two `:interval` items and pushes a new `:interval` which is the product of the two. If either `:min` (or `:max`) is open, the result `:min` (or `:max`) is also open."
-;     :tags #{:interval}
-;     (consume-top-of :interval :as :i2)
-;     (consume-top-of :interval :as :i1)
-;     (calculate [:i1 :i2]
-;         #(interval/make-interval 
-;             (-' (:min %1) (:max %2))
-;             (-' (:max %1) (:min %2))
-;             :min-open? (or (:min-open? %1) (:max-open? %2))
-;             :max-open? (or (:max-open? %1) (:min-open? %2))) :as :result)
-;     (push-onto :interval :result)))
+(def interval-min
+  (build-instruction
+    interval-min
+    "`:interval-min` pops the top `:interval` item and pushes its `:min` value to `:scalar`."
+    :tags #{:interval}
+    (consume-top-of :interval :as :i)
+    (calculate [:i] #(:min %1) :as :result)
+    (push-onto :scalar :result)))
+
+
+
+
+(def interval-max
+  (build-instruction
+    interval-max
+    "`:interval-max` pops the top `:interval` item and pushes its `:max` value to `:scalar`."
+    :tags #{:interval}
+    (consume-top-of :interval :as :i)
+    (calculate [:i] #(:max %1) :as :result)
+    (push-onto :scalar :result)))
+
+
+
+
+(def interval-multiply
+  (build-instruction
+    interval-multiply
+    "`:interval-multiply` pops the top two `:interval` items and pushes a new `:interval` which is the product of the two. If either `:min` (or `:max`) is open, the result `:min` (or `:max`) is also open."
+    :tags #{:interval}
+    (consume-top-of :interval :as :i2)
+    (consume-top-of :interval :as :i1)
+    (calculate [:i1 :i2] #(interval/interval-multiply %1 %2) :as :result)
+    (push-onto :interval :result)
+    ))
+
+
+
+
+(def interval-reflect
+  (build-instruction
+    interval-reflect
+    "`:interval-reflect` pops the top `:interval` item and pushes a new one with the signs of the `:min` and `:max` reversed, and also the boundedness of the ends."
+    :tags #{:interval}
+    (consume-top-of :interval :as :i)
+    (calculate [:i] #(
+      interval/make-interval
+        (- (:max %1))
+        (- (:min %1))
+        :min-open? (:max-open? %1)
+        :max-open? (:min-open? %1)) :as :result)
+    (push-onto :interval :result)
+    ))
 
 
 
@@ -186,7 +244,7 @@
 (def interval-rebracket
   (build-instruction
     interval-rebracket
-    "`:interval-rebracket` pops the top `:scalar` item and two `:boolean` values (`B` and `A`, respectively). The `:min-open?` value is set to `A`, the `:max-open?` value is set to `B`, and the resulting `:interval` is pushed as a result."
+    "`:interval-rebracket` pops the top `:interval` item and two `:boolean` values (`B` and `A`, respectively). The `:min-open?` value is set to `A`, the `:max-open?` value is set to `B`, and the resulting `:interval` is pushed as a result."
     :tags #{:interval}
     (consume-top-of :boolean :as :max?)
     (consume-top-of :boolean :as :min?)
@@ -194,6 +252,79 @@
     (calculate [:i :min? :max?]
         #(interval/make-interval 
             (:min %1) (:max %1) :min-open? %2 :max-open? %3) :as :result)
+    (push-onto :interval :result)
+    ))
+
+
+
+
+
+
+(def interval-recenter
+  (build-instruction
+    interval-recenter
+    "`:interval-recenter` pops the top `:interval` item and pushes a new `:interval` with center at 0. If either bound of the argument is infinite, the result will be infinite in both directions."
+    :tags #{:interval}
+    (consume-top-of :interval :as :i)
+    (calculate [:i]
+        #(if (or (infinite? (:min %1)) (infinite? (:max %1)))
+            (interval/make-interval Double/NEGATIVE_INFINITY Double/POSITIVE_INFINITY)
+            (let [c (/ (-' (:max %1) (:min %1)) 2)]
+              (interval/make-interval
+                (- c)
+                c
+                :min-open? (:min-open? %1)
+                :max-open? (:max-open? %1)))) :as :result)
+    (push-onto :interval :result)))
+
+
+
+
+
+(def interval-reciprocal
+  (build-instruction
+    interval-reciprocal
+    "`:interval-reciprocal` pops the top `:interval` item and pushes its reciprocal to `:exec`. If the span strictly covers zero, then a code block containing _two_ spans is pushed."
+    :tags #{:interval}
+    (consume-top-of :interval :as :i)
+    (calculate [:i] #(interval/interval-reciprocal %1) :as :results)
+    (push-onto :exec :results)
+    ))
+
+
+
+(def interval-scale
+  (build-instruction
+    interval-scale
+    "`:interval-scale` pops the top `:interval` item and top `:scalar` item, and pushes a new `:interval` with the original `:max` and `:min` multiplied by the `:scalar`."
+    :tags #{:interval}
+    (consume-top-of :interval :as :i)
+    (consume-top-of :scalar :as :factor)
+    (calculate [:i :factor] #(
+      interval/make-interval
+        (*' %2 (:min %1))
+        (*' %2 (:max %1))
+        :min-open? (:min-open? %1)
+        :max-open? (:max-open? %1)) :as :result)
+    (push-onto :interval :result)
+    ))
+
+
+
+
+(def interval-shift
+  (build-instruction
+    interval-shift
+    "`:interval-shift` pops the top `:interval` item and top `:scalar` item, and pushes a new `:interval` with the original `:max` and `:min` added to the `:scalar`."
+    :tags #{:interval}
+    (consume-top-of :interval :as :i)
+    (consume-top-of :scalar :as :factor)
+    (calculate [:i :factor] #(
+      interval/make-interval
+        (+' %2 (:min %1))
+        (+' %2 (:max %1))
+        :min-open? (:min-open? %1)
+        :max-open? (:max-open? %1)) :as :result)
     (push-onto :interval :result)
     ))
 
@@ -263,14 +394,23 @@
         aspects/make-visible 
         (attach-instruction , interval-add)
         (attach-instruction , interval-crossover)
+        (attach-instruction , interval-divide)
         (attach-instruction , interval-empty?)
         (attach-instruction , interval-hull)
         (attach-instruction , interval-include?)
         (attach-instruction , interval-intersection)
+        (attach-instruction , interval-max)
+        (attach-instruction , interval-min)
+        (attach-instruction , interval-multiply)
         (attach-instruction , interval-new)
         (attach-instruction , interval-newopen)
-        (attach-instruction , interval-rebracket)
         (attach-instruction , interval-overlap?)
+        (attach-instruction , interval-rebracket)
+        (attach-instruction , interval-recenter)
+        (attach-instruction , interval-reciprocal)
+        (attach-instruction , interval-reflect)
+        (attach-instruction , interval-scale)
+        (attach-instruction , interval-shift)
         (attach-instruction , interval-subset?)
         (attach-instruction , interval-subtract)
         (attach-instruction , interval-union)

@@ -3,6 +3,7 @@
             [push.instructions.core :as instr]
             [push.type.core :as types]
             [push.type.definitions.complex :as complex]
+            [push.type.definitions.interval :as interval]
             [push.util.stack-manipulation :as u]
             [clojure.string :as s]
             )
@@ -68,6 +69,15 @@
   [] (str (s/join (repeatedly (inc (random-integer 20)) #(random-char)))))
 
 
+(defn random-interval
+  []
+  (interval/make-interval
+    (random-float)
+    (random-rational)
+    :min-open? (random-boolean)
+    :max-open? (random-boolean)))
+
+
 (defn random-strings
   [] (into [] (repeatedly (random-integer 10) #(random-string))))
 
@@ -101,7 +111,8 @@
                                      12 (random-rational)
                                      13 (bigdec (random-integer))
                                      14 (complex/complexify (random-integer) (random-float))
-                                     15 (into #{} (bunch-a-junk interpreter 8))
+                                     15 (random-interval)
+                                     16 (into #{} (bunch-a-junk interpreter 8))
 
                                      (any-instruction interpreter)))))
 
@@ -173,8 +184,8 @@
               (loop [s rando]
                 (if (is-done? s)
                   (println (str n
-                                "  E:"
-                                (count (get-in s [:stacks :error]))
+                                "  I:"
+                                (count (get-in s [:stacks :interval]))
                                 "  "
                                 (:counter s) 
                                 

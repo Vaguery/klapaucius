@@ -316,3 +316,28 @@
                   (make-open-interval 2 4)) => (list (make-open-interval 2 4))
   )
 
+
+
+(fact "interval-reciprocal works for non-zero closed intervals"
+  (interval-reciprocal (make-interval 2 4)) => (make-interval 1/4 1/2)
+  (interval-reciprocal (make-interval -3 -7)) => (make-interval -1/7 -1/3)
+  )
+
+
+(fact "interval-reciprocal works for non-zero open intervals"
+  (interval-reciprocal (make-open-interval 2 4)) =>
+    (make-open-interval 1/4 1/2)
+  (interval-reciprocal (make-interval -3 -7 :min-open? true)) =>
+    (make-interval -1/7 -1/3 :max-open? true)
+  )
+
+
+(fact "interval-reciprocal works for zero-containing intervals"
+  (interval-reciprocal (make-interval -2 4)) =>
+    [ (make-interval Double/NEGATIVE_INFINITY -1/2)
+      (make-interval 1/4 Double/POSITIVE_INFINITY) ]
+  (interval-reciprocal (make-interval -2 0)) =>
+    (make-interval Double/NEGATIVE_INFINITY -1/2)
+  )
+
+

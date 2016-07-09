@@ -470,7 +470,7 @@
   (is-done? unready-to-pop) => true
 
   (:stacks (step unready-to-pop)) =>
-    '{:boolean (), :booleans (), :char (), :chars (), :code (), :complex (), :complexes (), :snapshot (), :error (:error1 :error2), :exec (), :generator (),
+    '{:boolean (), :booleans (), :char (), :chars (), :code (), :complex (), :complexes (), :snapshot (), :error (:error1 :error2), :exec (), :generator (), :interval (), :intervals(), 
 
       :log (:log1 :log2),
 

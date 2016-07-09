@@ -8,6 +8,7 @@
   (:use push.type.module.code)
   (:use push.type.item.complex)
   (:use push.type.module.exec)
+  (:use push.type.item.interval)
   (:use push.type.item.scalar)
   (:use push.type.item.string)
   (:use push.type.item.ref)
@@ -34,6 +35,7 @@
     boolean-type
     char-type
     generator-type
+    interval-type
     quoted-type
     ref-type
     string-type
@@ -45,6 +47,7 @@
 
     (build-vectorized-type boolean-type)
     (build-vectorized-type char-type)
+    (build-vectorized-type interval-type)
     (build-vectorized-type ref-type)
     (build-vectorized-type string-type)
     (build-vectorized-type scalar-type)
@@ -77,6 +80,7 @@
   - snapshot-type
   - exec-module
   - generator-type
+  - interval-type
   - log-module
   - print-module
   - quoted-type
