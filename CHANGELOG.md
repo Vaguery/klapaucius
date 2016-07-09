@@ -1,5 +1,9 @@
 # Recent changes
 
+## 0.1.22
+
+- Added `:interval` type
+
 ## 0.1.21
 
 - Some minor twiddling of the way instructions are executed (in `push.instructions.dsl/consume-top-of` and `push.instructions.dsl/consume-nth-of`, plus `push.interpreter.core/apply-instruction`) means that the entire tuple of the updated interpreter and the `scratch` map built during execution of an instruction are both returned to the interpreter. This permits:

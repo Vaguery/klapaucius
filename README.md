@@ -23,7 +23,9 @@ The project is written in Clojure 1.8, and depends heavily on [Midje](https://gi
 
 ### Project status
 
-`klapaucius "0.1.21-SNAPSHOT"` includes a fully working interpreter, but is undergoing rapid expansion (thus the `SNAPSHOT` designation). While the current version is rigorously tested,  **substantial deep architectural changes** will be made leading up the 0.2 release. If you're going to work on it, please contact me during this great leap forward, and submit pull requests for small amounts of work in numerous git branches!
+Versioning _will become_ semantic after initial development is done. At the moment, basic functionality and usability are still my main concern, and I am adding types and large-scale features that are almost always "breaking" with every incremental release. As a result, the version will remain `0.1.X` for the near future, with `SNAPSHOT` releases capturing bug fixes, refactorings, documentation updates and general prep for "real" initial release.
+
+Thus: `klapaucius "0.1.22-SNAPSHOT"` includes a fully working interpreter, but is undergoing rapid expansion (thus the `SNAPSHOT` designation). While the current version is rigorously tested,  **substantial deep architectural changes** will be made leading up the 0.2 release. If you're going to work on it, please contact me during this great leap forward, and submit pull requests for small amounts of work in numerous git branches!
 
 ### Project dependencies
 
@@ -32,7 +34,7 @@ Using `leiningen`, add the following dependency to your `project.clj`
 ```clojure
 (defproject my-new-project "0.0.1-SNAPSHOT"
   :dependencies [[org.clojure/clojure "1.8.0"]
-                 [klapaucius "0.1.21-SNAPSHOT"]
+                 [klapaucius "0.1.22-SNAPSHOT"]
                  ;; ... your other dependencies here ...
                  ] 
   :profiles {:dev
