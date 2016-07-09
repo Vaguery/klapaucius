@@ -44,8 +44,8 @@
   [k]
   (throw (Exception. (str 
                         "Push DSL argument error: " 
-                        k 
-                        " is not an integer"))))
+                        (pr-str k) 
+                        " is not a valid index"))))
 
 
 (defn throw-missing-key-exception

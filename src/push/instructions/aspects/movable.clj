@@ -263,7 +263,7 @@
       `(calculate [:which :how-many]
           #(if (zero? %2)
             0
-            (max 0 (min (bigint (Math/ceil %1)) (dec %2)))) :as :index)
+            (max 0 (min (Math/ceil %1) (dec %2)))) :as :index)
       `(consume-nth-of ~typename :at :index :as :yanked-item)
       `(push-onto ~typename :yanked-item)))))
 
@@ -282,8 +282,7 @@
 
       `(consume-top-of :scalar :as :which)
       `(count-of ~typename :as :how-many)
-      `(calculate [:which :how-many]
-        #(min (max (bigint (Math/ceil %1)) 0) (dec %2)) :as :index)
+      `(calculate [:which :how-many] #(min (max (Math/ceil %1) 0) (dec %2)) :as :index)
       `(save-nth-of ~typename :at :index :as :yanked-item)
       `(push-onto ~typename :yanked-item)))))
 

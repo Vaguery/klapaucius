@@ -213,12 +213,12 @@
 
   (fact "index-from-scratch-ref throws up if the stored value isn't an integer"
     (#'push.instructions.dsl/index-from-scratch-ref :foo {:foo false}) => 
-      (throws #":foo is not an integer"))
+      (throws #"false is not a valid index"))
 
 
   (fact "index-from-scratch-ref throws up if the key is not present"
     (#'push.instructions.dsl/index-from-scratch-ref :bar {:foo 2}) => 
-      (throws #":bar is not an integer")))
+      (throws #"nil is not a valid index")))
 
 
 ;; `save-max-collection-size [as kwd]`
@@ -262,9 +262,9 @@
 
   (fact "`delete-nth-of` throws up given a scratch ref to non-integer"
     (delete-nth-of [afew {:foo false}] :scalar :at :foo) => 
-      (throws #":foo is not an integer")
+      (throws #"false is not a valid index")
     (delete-nth-of [afew {:foo 1}] :scalar :at :bar) => 
-      (throws #":bar is not an integer"))
+      (throws #"nil is not a valid index"))
 
 
   (fact "`delete-nth-of` throws up if no index is given"
@@ -428,7 +428,7 @@
 
   (fact "`save-nth-of` throws up if the keyword index doesn't point to an integer"
     (save-nth-of [afew {:foo false}] :scalar :at :foo :as :bar) =>
-      (throws #":foo is not an integer"))
+      (throws #"false is not a valid index"))
 
 
   (fact "`save-nth-of` throws up if you try to pop an empty stack"
@@ -477,7 +477,7 @@
 
   (fact "`consume-nth-of` throws up if the keyword index doesn't point to an integer"
     (consume-nth-of [afew {:foo false}] :scalar :at :foo :as :bar) =>
-      (throws #":foo is not an integer"))
+      (throws #"false is not a valid index"))
 
 
   (fact "`consume-nth-of` throws up if you try to pop an empty stack"
@@ -537,9 +537,9 @@
 
   (fact "`get-nth-of` throws up if the keyword index doesn't point to an integer"
     (#'push.instructions.dsl/get-nth-of [afew {:foo false}] :scalar :at :foo) =>
-      (throws #":foo is not an integer")
+      (throws #"false is not a valid index")
     (#'push.instructions.dsl/get-nth-of [afew {}] :scalar :at :foo) =>
-      (throws #":foo is not an integer"))
+      (throws #"nil is not a valid index"))
 
 
   (fact "`get-nth-of` throws up if you refer to an empty stack"
@@ -897,10 +897,10 @@
   (fact "`insert-as-nth-of` throws up if the scratch variable isn't an integer"
     (get-stack-from-dslblob :scalar
       (insert-as-nth-of [afew {:foo 99 :bar false}] :scalar :foo :at :bar)) =>
-        (throws #"Push DSL argument error: :bar is not an integer")
+        (throws #"Push DSL argument error: false is not a valid index")
     (get-stack-from-dslblob :scalar
       (insert-as-nth-of [afew {:foo 99}] :scalar :foo :at :bar)) =>
-        (throws #"Push DSL argument error: :bar is not an integer"))
+        (throws #"Push DSL argument error: nil is not a valid index"))
 
 
   (fact "`insert-as-nth-of` throws up if no index is given"

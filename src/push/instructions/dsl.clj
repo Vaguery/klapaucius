@@ -46,15 +46,15 @@
   (list! (concat (take idx coll) (list item) (drop idx coll))))
 
 
-(defn- index-from-scratch-ref
+(defn index-from-scratch-ref
   "Takes a keyword and a scratch hashmap. If an integer is stored
   under that key in the hashmap, it's returned. Otherwise raises an
   exception."
   [k locals]
   (let [stored (k locals)]
-    (if (integer? stored)
+    (if (number? stored)
       stored
-      (oops/throw-invalid-index-exception k))))
+      (oops/throw-invalid-index-exception (k locals)))))
 
 
 (defn- valid-DSL-index
