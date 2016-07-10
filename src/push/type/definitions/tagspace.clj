@@ -9,7 +9,7 @@
 (defn make-tagspace
   "Creates a new empty tagspace"
   ([] (->TagSpace (sorted-map)))
-  ([starting-items] (->TagSpace (with-precision 100 (into (sorted-map) starting-items)))))
+  ([starting-items] (->TagSpace (into (sorted-map) starting-items))))
 
 
 (defn tagspace?
