@@ -79,3 +79,40 @@
                              :scalars-remove            {:scalars '([])}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
+
+
+
+
+
+(tabular
+  (fact ":scalars-split keeps elements of a `:scalars` item that are within the `:interval`"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks interval-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction             ?expected
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:interval (list (s/make-interval 2 3))
+     :scalars  '([1 2 3 4 5])}
+                             :scalars-split            {:exec '(([2 3] [1 4 5]))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:interval (list (s/make-interval 2 3 :min-open? true))
+     :scalars  '([1 2 3 4 5])}
+                             :scalars-split            {:exec '(([3] [1 2 4 5]))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:interval (list (s/make-interval -2 3 :min-open? true))
+     :scalars  '([1 2 3 4 5])}
+                             :scalars-split            {:exec '(([1 2 3] [4 5]))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:interval (list (s/make-interval -2 3 :min-open? true))
+     :scalars  (list [1 ∞ 3 4 5])}
+                             :scalars-split            {:exec (list (list [1 3] [∞ 4 5]))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:interval (list (s/make-interval -2 -3))
+     :scalars  (list [1 2 3 4 5])}
+                             :scalars-split            {:exec '(([] [1 2 3 4 5]))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:interval (list (s/make-interval -∞ ∞))
+     :scalars  '([1 2 3 4 5])}
+                             :scalars-split            {:exec '(([1 2 3 4 5] []))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )

@@ -410,6 +410,24 @@
 
 
 
+(def scalars-split
+  (build-instruction
+    scalars-split
+    "`:scalars-split` pops the top `:scalars` vector and top `:interval` item, and pushes a code block containing two new `:scalars` items onto `:exec`. The first item will contain all elements falling (strictly) within the `:interval`, the second all other elements."
+    :tags #{:interval}
+    (consume-top-of :interval :as :i)
+    (consume-top-of :scalars :as :vector)
+    (calculate [:vector :i]
+        #(list
+          (into []
+            (filter (fn [n] (interval/interval-include? %2 n)) %1))
+          (into []
+            (remove (fn [n] (interval/interval-include? %2 n)) %1))) :as :result)
+    (push-onto :exec :result)
+    ))
+
+
+
 (def interval-type
   (-> (make-type  :interval
                   :recognized-by interval/interval?
@@ -447,5 +465,6 @@
         (attach-instruction , interval-union)
         (attach-instruction , scalars-filter)
         (attach-instruction , scalars-remove)
+        (attach-instruction , scalars-split)
   ))
 

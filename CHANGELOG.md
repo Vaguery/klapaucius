@@ -8,6 +8,7 @@
 - Fixed bug in `:interval-scale` results' bounds, when scaling factor is negative
 - added `:scalars-filter` and `:scalars-remove` instructions
 - removed `with-precision` wrapper on `push.type.definitions.tagspace/make-tagspace`
+- added `:scalars-split` instruction
 
 ## 0.1.21
 
