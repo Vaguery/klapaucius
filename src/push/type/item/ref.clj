@@ -187,6 +187,7 @@
         (t/attach-instruction ref-new)
         (t/attach-instruction ref-peek)
 
+        aspects/make-collectible
         aspects/make-equatable
         aspects/make-movable
         aspects/make-printable

@@ -10,28 +10,6 @@
 
 
 
-(def code->set
-  (core/build-instruction
-    code->set
-    "`:code->set` pops the top `:code` item and (if it is a list) converts it to a :set; if it's not a list, it becomes a one-element :set."
-    :tags #{:set :predicate}
-    (d/consume-top-of :code :as :arg)
-    (d/calculate [:arg]
-      #(into #{} (if (seq? %1) %1 (list %1))) :as :result)
-    (d/push-onto :set :result)))
-
-
-
-(def vector->set
-  (core/build-instruction
-    vector->set
-    "`:vector->set` pops the top `:vector` item and converts it to a :set"
-    :tags #{:set :predicate}
-    (d/consume-top-of :vector :as :arg)
-    (d/calculate [:arg] #(into #{} %1) :as :result)
-    (d/push-onto :set :result)))
-
-
 
 (def set-difference
   (t/simple-2-in-1-out-instruction
@@ -86,6 +64,7 @@
   (-> (t/make-type  :set
                     :recognized-by set?
                     :attributes #{:collection :set})
+      aspects/make-collectible
       aspects/make-cycling
       aspects/make-equatable
       aspects/make-into-tagspaces
@@ -97,8 +76,6 @@
       aspects/make-storable
       aspects/make-taggable
       aspects/make-visible 
-      (t/attach-instruction , code->set)
-      (t/attach-instruction , vector->set)
       (t/attach-instruction , set-difference)
       (t/attach-instruction , set-intersection)
       (t/attach-instruction , set-subset?)

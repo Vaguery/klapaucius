@@ -394,6 +394,7 @@
   ( ->  (t/make-type  :string
                       :recognized-by string?
                       :attributes #{:string :base})
+        aspects/make-collectible
         aspects/make-cycling
         aspects/make-equatable
         aspects/make-comparable

@@ -228,6 +228,7 @@
   (-> (t/make-type  :complex
                     :recognized-by push.type.definitions.complex/complex?
                     :attributes #{:numeric})
+        aspects/make-collectible
         aspects/make-equatable
         aspects/make-movable
         aspects/make-printable

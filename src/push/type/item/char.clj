@@ -86,6 +86,7 @@
   ( ->  (t/make-type  :char
                       :recognized-by char?
                       :attributes #{:string})
+        aspects/make-collectible
         aspects/make-comparable
         aspects/make-equatable
         aspects/make-movable

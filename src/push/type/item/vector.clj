@@ -38,6 +38,7 @@
   (-> (t/make-type  :vector
                       :recognized-by vector?
                       :attributes #{:collection :vector})
+      aspects/make-collectible
       aspects/make-cycling
       aspects/make-equatable
       aspects/make-movable

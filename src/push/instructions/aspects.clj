@@ -1,4 +1,5 @@
 (ns push.instructions.aspects
+  (:use [push.instructions.aspects.collectible])
   (:use [push.instructions.aspects.comparable])
   (:use [push.instructions.aspects.equatable])
   (:use push.instructions.aspects.movable)
@@ -12,6 +13,19 @@
   (:use push.instructions.aspects.visible)
   (:require [push.type.core :as t]
             ))
+
+
+
+(defn make-collectible
+  "takes a PushType and adds the :collectible attribute, and the associated instructions to that type"
+  [pushtype]
+  (-> pushtype
+      (t/attach-instruction (as-set-instruction pushtype))
+      (t/attach-instruction (conj-set-instruction pushtype))
+      (t/attach-instruction (toset-instruction pushtype))
+      (t/attach-instruction (intoset-instruction pushtype))
+      (assoc :attributes (conj (:attributes pushtype) :collectible))))
+
 
 
 

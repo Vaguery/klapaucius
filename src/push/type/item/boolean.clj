@@ -126,6 +126,7 @@
   ( ->  (t/make-type  :boolean
                       :recognized-by boolean?
                       :attributes #{:logical})
+        aspects/make-collectible
         aspects/make-equatable
         aspects/make-movable
         aspects/make-printable
