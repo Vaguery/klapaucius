@@ -5,6 +5,7 @@
             [push.util.numerics])
   (:require [push.instructions.aspects :as aspects]
             [push.type.definitions.interval :as interval]
+            [push.type.definitions.tagspace :as ts]
             ))
 
 
@@ -428,6 +429,25 @@
 
 
 
+(def tagspace-remove
+  (build-instruction
+    tagspace-remove
+    "`:tagspace-remove` pops the top `:tagspace` vector and top `:interval` item, and pushes a new `:tagspace` item that does not contain any keys falling (strictly) within the `:interval`; the removed keys are forgotten with their values."
+    :tags #{:interval}
+    (consume-top-of :interval :as :allowed)
+    (consume-top-of :tagspace :as :ts)
+    (calculate [:ts :allowed]
+      #(ts/make-tagspace
+        (remove
+          (fn [kv] (interval/interval-include? %2 (first kv)))
+          (seq (:contents %1)))) :as :result)
+    (push-onto :tagspace :result)
+    ))
+
+
+
+
+
 (def interval-type
   (-> (make-type  :interval
                   :recognized-by interval/interval?
@@ -466,5 +486,6 @@
         (attach-instruction , scalars-filter)
         (attach-instruction , scalars-remove)
         (attach-instruction , scalars-split)
+        (attach-instruction , tagspace-remove)
   ))
 

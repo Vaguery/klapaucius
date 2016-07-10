@@ -3,6 +3,7 @@
   (:use midje.sweet)
   (:use [push.util.test-helpers])
   (:require [push.type.definitions.interval :as s])
+  (:require [push.type.definitions.tagspace :as ts])
   (:use [push.type.item.interval])
   (:use [push.util.numerics :only [∞,-∞]])
   )
@@ -48,7 +49,7 @@
 
 
 (tabular
-  (fact ":scalars-remove keeps elements of a `:scalars` item that are within the `:interval`"
+  (fact ":scalars-remove deletes elements of a `:scalars` item that are within the `:interval`"
     (check-instruction-with-all-kinds-of-stack-stuff
         ?new-stacks interval-type ?instruction) => (contains ?expected))
 
@@ -115,4 +116,57 @@
      :scalars  '([1 2 3 4 5])}
                              :scalars-split            {:exec '(([1 2 3 4 5] []))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
+
+
+
+(tabular
+  (fact ":tagspace-remove deletes elements of a `:tagspace` item that are within the `:interval`"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks interval-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction             ?expected
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:interval (list (s/make-interval 2 3))
+     :tagspace (list (ts/make-tagspace {1 :a 2 :b 3 :c 4 :d 5 :e}))}
+                             :tagspace-remove          {:tagspace (list
+                                                         (ts/make-tagspace
+                                                          {1 :a  4 :d 5 :e}))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:interval (list (s/make-interval 2 3 :min-open? true))
+     :tagspace (list (ts/make-tagspace {1 :a 2 :b 3 :c 4 :d 5 :e}))}
+                             :tagspace-remove          {:tagspace (list
+                                                         (ts/make-tagspace
+                                                          {1 :a 2 :b 4 :d 5 :e}))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:interval (list (s/make-interval -2 3 :min-open? true))
+     :tagspace (list (ts/make-tagspace {1 :a 2 :b 3 :c 4 :d 5 :e}))}
+                             :tagspace-remove          {:tagspace (list
+                                                         (ts/make-tagspace
+                                                          {4 :d 5 :e}))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:interval (list (s/make-interval -2 3 :min-open? true))
+     :tagspace (list (ts/make-tagspace {1 :a ∞ :b 3 :c 4 :d 5 :e}))}
+                             :tagspace-remove          {:tagspace (list
+                                                         (ts/make-tagspace
+                                                          {4 :d 5 :e ∞ :b}))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:interval (list (s/make-interval -2 -3 :min-open? true))
+     :tagspace (list (ts/make-tagspace {1 :a 2 :b 3 :c 4 :d 5 :e}))}
+                             :tagspace-remove          {:tagspace (list
+                                                         (ts/make-tagspace
+                                                          {1 :a 2 :b 3 :c 4 :d 5 :e}))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:interval (list (s/make-interval -∞ ∞))
+     :tagspace (list (ts/make-tagspace {1 :a 2 :b 3 :c 4 :d 5 :e}))}
+                             :tagspace-remove          {:tagspace (list
+                                                         (ts/make-tagspace))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ; {:interval (list (s/make-interval -∞ ∞))
+    ;  :tagspace  '([1 2 3 4 5])}
+    ;                          :tagspace-remove            {:tagspace '([])}
+    ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
