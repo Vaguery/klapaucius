@@ -363,8 +363,6 @@
 
 
 
-
-
 (def interval-union
   (build-instruction
     interval-union
@@ -376,6 +374,39 @@
     (push-onto :exec :result)
     ))
 
+
+
+;;; COLLECTION FILTERS
+
+
+(def scalars-filter
+  (build-instruction
+    scalars-filter
+    "`:scalars-filter` pops the top `:scalars` vector and top `:interval` item, and pushes a new `:scalars` item that only contains values falling (strictly) within the `:interval`."
+    :tags #{:interval}
+    (consume-top-of :interval :as :allowed)
+    (consume-top-of :scalars :as :vector)
+    (calculate [:vector :allowed]
+        #(into []
+          (filter (fn [n] (interval/interval-include? %2 n)) %1)) :as :result)
+    (push-onto :scalars :result)
+    ))
+
+
+
+
+(def scalars-remove
+  (build-instruction
+    scalars-remove
+    "`:scalars-remove` pops the top `:scalars` vector and top `:interval` item, and pushes a new `:scalars` item that does not contain any values falling (strictly) within the `:interval`."
+    :tags #{:interval}
+    (consume-top-of :interval :as :allowed)
+    (consume-top-of :scalars :as :vector)
+    (calculate [:vector :allowed]
+        #(into []
+          (remove (fn [n] (interval/interval-include? %2 n)) %1)) :as :result)
+    (push-onto :scalars :result)
+    ))
 
 
 
@@ -414,5 +445,7 @@
         (attach-instruction , interval-subset?)
         (attach-instruction , interval-subtract)
         (attach-instruction , interval-union)
+        (attach-instruction , scalars-filter)
+        (attach-instruction , scalars-remove)
   ))
 

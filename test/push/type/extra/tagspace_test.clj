@@ -87,3 +87,13 @@
     (map #(find-in-tagspace xy %) [1 9]) => [11 11]
     (map #(find-in-tagspace xy %) [1 9/7]) => '(11 11)
     ))
+
+
+(fact "tagspace-forget removes an item by specific key"
+  (tagspace-forget (make-tagspace {7 :x 2 :y 1 :z}) 2) =>
+    (make-tagspace {7 :x 1 :z})
+  (tagspace-forget (make-tagspace {7 :x 2 :y 1 :z}) 7) =>
+    (make-tagspace {2 :y 1 :z})
+  (tagspace-forget (make-tagspace {7 :x 2 :y 1 :z}) 5) =>
+    (make-tagspace {7 :x 2 :y 1 :z})
+  )
