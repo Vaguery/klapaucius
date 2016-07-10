@@ -292,6 +292,39 @@
 
 
 
+
+
+(let 
+  [foo-type     (make-taggable (t/make-type :foo))]
+
+(tabular
+  (fact "`:foo-tagstack` makes a new :tagspace from the :foo stack"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks foo-type ?instruction) => (contains ?expected))
+
+    ?new-stacks              ?instruction     ?expected
+
+    {:foo '(9 9 9 9 9 9)}    :foo-tagstack   {:foo '(9 9 9 9 9 9)
+                                              :tagspace (list
+                                                (make-tagspace
+                                                  {0 9 1 9 2 9 3 9 4 9 5 9}))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foo '()}               :foo-tagstack   {:foo '()
+                                              :tagspace (list
+                                                (make-tagspace))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {}                       :foo-tagstack   {:foo '()
+                                              :tagspace (list
+                                                (make-tagspace))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ))
+
+
+
+
+
+
+
 (let 
   [foo-type     (make-taggable (t/make-type :foo))
    taggy        (make-tagspace {1M 2})]

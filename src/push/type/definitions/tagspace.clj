@@ -34,7 +34,7 @@
       (second (first keepers)))))
 
 
-(defn tagspace-forget
+(defn tagspace-dissoc
   "Takes a `TagSpace` and a numeric key. Returns the `TagSpace` with _that exact_ key forgotten, if it is present. NOTE this does not use inexact matching; no change will occur if the key is not present!"
   [ts n]
   (update-in ts [:contents] dissoc n))

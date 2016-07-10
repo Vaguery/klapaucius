@@ -77,11 +77,11 @@
   index, raising any argument exceptions it finds."
   [[interpreter scratch] stackname & {:keys [at]}]
   (let [old-stack (u/get-stack interpreter stackname)]
-    (cond (nil? old-stack) (oops/throw-unknown-stack-exception stackname)
-          (empty? old-stack) (oops/throw-empty-stack-exception stackname)
-          :else (let [idx (valid-DSL-index at scratch)
-                      which (fix/safe-mod idx (count old-stack))]
-                  [which old-stack]))))
+    (if (empty? old-stack)
+      (oops/throw-empty-stack-exception stackname)
+      (let [idx (valid-DSL-index at scratch)
+            which (fix/safe-mod idx (count old-stack))]
+        [which old-stack]))))
 
 
 (defn save-ARG
@@ -168,12 +168,11 @@
   Exceptions when:
   - the stack doesn't exist"
   [[interpreter scratch] stackname & {:keys [as]}]
-  (if-let [old-stack (u/get-stack interpreter stackname)]
+  (let [old-stack (u/get-stack interpreter stackname)]
     (if (nil? as)
       (oops/throw-missing-key-exception :as)
       [(u/clear-stack interpreter stackname)
-        (assoc scratch as old-stack)])
-    (oops/throw-unknown-stack-exception stackname)))
+        (assoc scratch as old-stack)])))
 
 
 
@@ -188,8 +187,7 @@
   [ [interpreter scratch] stackname & {:keys [as]}]
   (let [old-stack (u/get-stack interpreter stackname)
         old-args (:ARGS scratch)]
-    (cond (nil? old-stack) (oops/throw-unknown-stack-exception stackname)
-          (empty? old-stack) (oops/throw-empty-stack-exception stackname)
+    (cond (empty? old-stack) (oops/throw-empty-stack-exception stackname)
           (nil? as) (oops/throw-missing-key-exception :as)
           :else (let [top-item (first old-stack)]
                   [(u/set-stack interpreter stackname (rest old-stack))
@@ -200,19 +198,11 @@
 
 
 (defn count-of
-  "Takes an PushDSL blob, a stackname (keyword) and a scratch variable
-  (keyword) in which to store the count.
-
-    Exceptions when:
-    - the stack doesn't exist
-
-    Fails silently when:
-    - the local is not specified (no :as argument)"
+  "Takes an PushDSL blob, a stackname (keyword) and a scratch variable (keyword) in which to store the count. Fails silently when the local is not specified (no :as argument)"
   [[interpreter scratch] stackname & {:keys [as]}]
   (if-let [scratch-var as]
-    (if-let [stack (u/get-stack interpreter stackname)]
-      [interpreter (assoc scratch scratch-var (count stack))]
-      (oops/throw-unknown-stack-exception stackname))
+    (let [stack (u/get-stack interpreter stackname)]
+      [interpreter (assoc scratch scratch-var (count stack))])
     (oops/throw-missing-key-exception :as)))
 
 
@@ -264,29 +254,20 @@
 
 
 (defn delete-stack
-  "Removes an entire named stack.
+  "Removes an entire named stack."
 
-  Exceptions when:
-    - the stack doesn't exist"
   [[interpreter scratch] stackname]
-  (if-let [old-stack (u/get-stack interpreter stackname)]
-    [(u/clear-stack interpreter stackname) scratch]
-    (oops/throw-unknown-stack-exception stackname)))
+  (let [old-stack (u/get-stack interpreter stackname)]
+    [(u/clear-stack interpreter stackname) scratch]))
 
 
 (defn delete-top-of
   "Takes an PushDSL blob and a stackname (keyword); deletes the top
-  item of that stack.
-
-    Exceptions when:
-    - the stack doesn't exist
-    - the stack is empty"
+  item of that stack."
   [[interpreter scratch] stackname]
-  (let [old-stack (u/get-stack interpreter stackname)]
-    (cond (nil? old-stack) (oops/throw-unknown-stack-exception stackname)
-          (empty? old-stack) (oops/throw-empty-stack-exception stackname)
-          :else (let [top-item (first old-stack)]
-            [(u/set-stack interpreter stackname (rest old-stack)) scratch]))))
+  (let [old-stack (u/get-stack interpreter stackname)
+        top-item  (first old-stack)]
+    [(u/set-stack interpreter stackname (rest old-stack)) scratch]))
 
 
 (defn forget-binding
@@ -308,18 +289,16 @@
   occurs.
 
   Exceptions when:
-    - the stack doesn't exist
     - the stack is empty
     - no index is given
     - the index is a :keyword that doesn't point to an integer"
   [[interpreter scratch] stackname kwd & {:keys [as at]}]
-    (if-let [old-stack (u/get-stack interpreter stackname)]
+    (let [old-stack (u/get-stack interpreter stackname)]
       (let [idx (valid-DSL-index at scratch)
             which (fix/safe-mod idx (inc (count old-stack)))
             new-item (kwd scratch)
             new-stack (insert-as-nth old-stack new-item which)]
-        [(u/set-stack interpreter stackname new-stack) scratch])
-      (oops/throw-unknown-stack-exception stackname)))
+        [(u/set-stack interpreter stackname new-stack) scratch])))
 
 
 
@@ -334,13 +313,9 @@
 
 
 (defn push-onto
-  "Takes a PushDSL blob, a stackname (keyword) and a scratch key (also keyword), and puts item stored in the scratch variable on top of the named stack. If the scratch item is nil, there is no effect (and no exception); if it is a list, that is pushed _as a single item_ onto the stack (not concatenated). No type checking is used. If the total number of items in the stack and program-points in the item is more than the interpreter's `max-collection-size`, the item is not pushed and an :error is pushed to that stack instead.
-
-  Exceptions when:
-  - the stack doesn't exist
-  - (does not warn when the keyword isn't defined)"
+  "Takes a PushDSL blob, a stackname (keyword) and a scratch key (also keyword), and puts item stored in the scratch variable on top of the named stack. If the scratch item is nil, there is no effect (and no exception); if it is a list, that is pushed _as a single item_ onto the stack (not concatenated). No type checking is used. If the total number of items in the stack and program-points in the item is more than the interpreter's `max-collection-size`, the item is not pushed and an :error is pushed to that stack instead. Does not warn when the keyword isn't defined."
   [[interpreter scratch] stackname kwd]
-  (if-let [old-stack (u/get-stack interpreter stackname)]
+  (let [old-stack (u/get-stack interpreter stackname)]
     (let [new-item    (kwd scratch)
           too-big?    (oversized-stack? interpreter old-stack new-item)
           error-stack (u/get-stack interpreter :error)
@@ -355,8 +330,7 @@
             (conj error-stack 
                   {:step counter
                    :item (str "oversized push-onto attempted to " stackname)})) scratch]
-      [(u/set-stack interpreter stackname new-stack) scratch]))
-    (oops/throw-unknown-stack-exception stackname)))
+        [(u/set-stack interpreter stackname new-stack) scratch]))))
 
 
 
@@ -365,17 +339,13 @@
   keys (all keywords), and puts each item stored in the scratch
   variables onto top of the named stack, in order specified. If any of
   the stored items is nil, there is no effect (and no exception). No
-  type checking is used.
-
-  Exceptions when:
-  - the stack doesn't exist
-  - (does not warn when the keyword isn't defined)"
+  type checking is used. Does not warn when the keyword isn't defined."
   [[interpreter scratch] stackname keywords]
-  (if-let [old-stack (u/get-stack interpreter stackname)]
+  (let [old-stack (u/get-stack interpreter stackname)]
     (let [new-items (map scratch keywords)
           new-stack (into old-stack (remove nil? new-items))]
-      [(u/set-stack interpreter stackname new-stack) scratch])
-    (oops/throw-unknown-stack-exception stackname)))
+      [(u/set-stack interpreter stackname new-stack) scratch])))
+
 
 
 (defn quote-all-bindings
@@ -408,23 +378,13 @@
 
 
 (defn replace-stack
-  "Takes a PushDSL blob, a stackname (keyword) and a scratch key (also
-  keyword), and replaces the named stack with the item stored in the
-  scratch variable. If the contents are a list, the stack is replaced
-  with the entire list; if nil, the stack is emptied; if a non-list
-  item the final stack will contain only that item.
-
-  Exceptions when:
-  - the stack doesn't exist
-  - (does not warn when the keyword isn't defined)"
+  "Takes a PushDSL blob, a stackname (keyword) and a scratch key (also keyword), and replaces the named stack with the item stored in the scratch variable. If the contents are a list, the stack is replaced with the entire list; if nil, the stack is emptied; if a non-list item the final stack will contain only that item. Does not warn when the keyword isn't defined."
   [[interpreter scratch] stackname kwd]
-  (if (some? (u/get-stack interpreter stackname))
-    (let [replacement (kwd scratch)
-          new-stack (cond (nil? replacement) (list)
-                          (seq? replacement) replacement
-                          :else (list replacement))]
-      [(u/set-stack interpreter stackname new-stack) scratch])
-    (oops/throw-unknown-stack-exception stackname)))
+  (let [replacement (kwd scratch)
+        new-stack (cond (nil? replacement) (list)
+                        (seq? replacement) replacement
+                        :else (list replacement))]
+      [(u/set-stack interpreter stackname new-stack) scratch]))
 
 
 
@@ -460,14 +420,12 @@
   deleting it).
 
   Exceptions when:
-  - the stack doesn't exist
   - no :as argument is present"
   [[interpreter scratch] stackname & {:keys [as]}]
-  (if-let [old-stack (u/get-stack interpreter stackname)]
+  (let [old-stack (u/get-stack interpreter stackname)]
     (if (some? as)
       [interpreter (assoc scratch as old-stack)]
-      (oops/throw-missing-key-exception :as))
-    (oops/throw-unknown-stack-exception stackname)))
+      (oops/throw-missing-key-exception :as))))
 
 
 (defn save-nth-of
@@ -498,13 +456,11 @@
   variable (without deleting it).
 
   Exceptions when:
-  - the stack doesn't exist
   - no :as argument is present
   - the stack is empty"
   [[interpreter scratch] stackname & {:keys [as]}]
   (let [old-stack (u/get-stack interpreter stackname)]
-    (cond (nil? old-stack) (oops/throw-unknown-stack-exception stackname)
-          (empty? old-stack) (oops/throw-empty-stack-exception stackname)
+    (cond (empty? old-stack) (oops/throw-empty-stack-exception stackname)
           (nil? as) (oops/throw-missing-key-exception ":as")
           :else (let [top-item (first old-stack)]
                      [interpreter (assoc scratch as top-item)]))))

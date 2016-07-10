@@ -37,3 +37,20 @@
       ))))
 
 
+
+
+(defn tagstack-instruction
+  "returns a new x-tagstack instruction for the given type or module."
+  [pushtype]
+  (let [typename (:name pushtype)
+        instruction-name (str (name typename) "-tagstack")]
+    (eval (list
+      `build-instruction
+      instruction-name
+      (str "`:" instruction-name "` saves a _copy_ of the entire `" typename "` stack as a new `:tagspace`, using the stack order (0-based) as keys.")
+      :tags #{:tagspace :collection}
+
+      `(save-stack ~typename :as :items)
+      `(calculate [:items] #(make-tagspace (zipmap (range) %1)) :as :new-ts)
+      `(push-onto :tagspace :new-ts)
+      ))))

@@ -45,9 +45,8 @@
       (count-of [lots {}] :code :as :foo)) => 19)
 
 
-  (fact "`count-of` throws an Exception when the named stack doesn't exist"
-    (count-of [nada {}] :foo :as :badidea) =>
-      (throws #"no :foo stack"))
+  (fact "`count-of` returns 0 when the stack doesn't exist"
+    (count-of [nada {}] :foo :as :c) => [nada {:c 0}])
 
 
   (fact "`count-of` throws an Exception when no local is specified"
@@ -69,13 +68,9 @@
       (delete-top-of [afew {}] :scalar)) => '(2 3))
 
 
-  (fact "`delete-top-of` raises an Exception if the stack doesn't exist"
-    (delete-top-of [afew {}] :stupid) => (throws #"no :stupid stack"))
+  (fact "`delete-top-of` is fine if the stack doesn't exist"
+    (delete-top-of [afew {}] :stupid) =not=> (throws))
 
-
-  (fact "`delete-top-of` raises an Exception if the stack is empty"
-    (delete-top-of [nada {}] :scalar) => 
-      (throws #"stack :scalar is empty"))
 
 
   (fact "`delete-top-of` works on :boolean stacks containing false values"
@@ -176,14 +171,14 @@
       (consume-stack [afew {}] :boolean :as :foo)) => '() )
 
 
-  (fact "`consume-stack` throws an exception when the stack isn't defined"
+  (fact "`consume-stack` returns an empty list (and creates a stack) when the stack isn't defined"
     (consume-stack [afew {}] :quux :as :foo) =>
-      (throws #"no :quux stack"))
+      [(assoc-in afew [:stacks :quux] '())
+        {:foo '()}])
 
 
   (fact "`consume-stack` throws an Exception when no local is specified"
-    (consume-stack [afew {}] :scalar) =>
-      (throws #"missing key: :as")))
+    (consume-stack [afew {}] :scalar) => (throws #"missing key: :as")))
 
 
 ;; `delete-stack [stackname]`
@@ -197,9 +192,9 @@
     (second (delete-stack [afew {}] :scalar)) => {})
 
 
-  (fact "`delete-stack` raises an exception if the stack doesn't exist"
-    (delete-stack [afew {}] :quux) =>
-      (throws #"no :quux stack")))
+  (fact "`delete-stack` is fine if the stack doesn't exist"
+    (get-stack-from-dslblob :quux
+      (delete-stack [afew {}] :quux)) => '()))
 
 
 ;; `index-from-scratch-ref [key hashmap]`
@@ -298,8 +293,10 @@
       (replace-stack [afew {:foo false}] :scalar :foo)) => '(false))
 
 
-  (fact "`replace-stack` throws an Exception when the named stack doesn't exist"
-    (replace-stack [nada {:bar 1}] :foo :bar) => (throws #"no :foo stack")))
+  (fact "`replace-stack` creates an empty one when the stack doesn't exist"
+    (get-stack-from-dslblob :foo
+      (replace-stack [nada {:bar 1}] :foo :bar)) => '(1))
+  )
 
 
 ;; `push-onto [stackname local]`
@@ -312,9 +309,9 @@
       (push-onto [afew {:foo 99}] :scalar :foo)) => '(99 1 2 3))
 
 
-  (fact "`push-onto` throws up if the stack doesn't exist"
-    (push-onto [afew {:foo 99}] :grault :foo) =>
-      (throws #"no :grault stack"))
+  (fact "`push-onto` creates a new empty stack if needed"
+    (get-stack-from-dslblob :grault
+      (push-onto [afew {:foo 99}] :grault :foo)) => '(99))
 
 
   (fact "`push-onto` doesn't raise a fuss if the scratch variable isn't set"
@@ -344,9 +341,8 @@
       (save-stack [afew {:foo false}] :scalar :as :foo)) => '(1 2 3))
 
 
-  (fact "`save-stack` throws up if you ask for an undefined stack"
-    (save-stack [afew {:foo 99}] :grault :as :foo) =>
-      (throws #"no :grault"))
+  (fact "`save-stack` does not cause problems if you ask for an undefined stack"
+    (save-stack [afew {:foo 99}] :grault :as :foo) => [afew {:foo '()}])
 
 
   (fact "`save-stack` throws up if you leave out the :as argument"
@@ -371,9 +367,8 @@
       (save-top-of [afew {:foo false}] :scalar :as :foo)) => 1)
 
 
-  (fact "`save-top-of` throws up if you ask for an undefined stack"
-    (save-top-of [afew {}] :grault :as :foo) =>
-      (throws #"no :grault stack"))
+  (fact "`save-top-of` throws up if you ask for the top of an empty stack"
+    (save-top-of [afew {}] :grault :as :foo) => (throws #"stack :grault is empty"))
 
 
   (fact "`save-top-of` throws up if you try to pop an empty stack"
@@ -421,9 +416,9 @@
       (save-nth-of [afew {:foo false}] :scalar :at 1 :as :foo)) => 2)
 
 
-  (fact "`save-nth-of` throws up if you ask for an undefined stack"
+  (fact "`save-nth-of` throws up if you try save from an empty stack"
     (save-nth-of [afew {}] :grault :at 2 :as :foo) =>
-      (throws #"no :grault stack"))
+      (throws #"stack :grault is empty"))
 
 
   (fact "`save-nth-of` throws up if the keyword index doesn't point to an integer"
@@ -470,9 +465,9 @@
       (consume-nth-of [afew {:foo false}] :scalar :at 1 :as :foo)) => 2)
 
 
-  (fact "`consume-nth-of` throws up if you ask for an undefined stack"
+  (fact "`consume-nth-of` throws up if you ask for an item from an empty stack"
     (consume-nth-of [afew {}] :grault :at 2 :as :foo) =>
-      (throws #"no :grault stack"))
+      (throws #"stack :grault is empty"))
 
 
   (fact "`consume-nth-of` throws up if the keyword index doesn't point to an integer"
@@ -530,9 +525,9 @@
       [1 '(1 2 3)])
 
 
-  (fact "`get-nth-of` throws up if you ask for an undefined stack"
-    (#'push.instructions.dsl/get-nth-of [afew {}] :grault :at 2) =>
-      (throws #"no :grault stack"))
+  (fact "`get-nth-of` throws an index error if the stack is empty"
+    (#'push.instructions.dsl/get-nth-of [afew {}] :grault :at 2) => 
+      (throws #"stack :grault is empty"))
 
 
   (fact "`get-nth-of` throws up if the keyword index doesn't point to an integer"
@@ -833,9 +828,10 @@
         [:foo :bar])) => '(111 99 1 2 3))
 
 
-  (fact "`push-these-onto` throws up if the stack doesn't exist"
-    (push-these-onto [afew {:foo 99}] :grault [:foo]) =>
-      (throws #"no :grault stack"))
+  (fact "`push-these-onto` will create a stack if the named one is missing"
+    (get-stack-from-dslblob :grault
+      (push-these-onto [afew {:foo 99}] :grault [:foo])) => '(99))
+        
 
 
   (fact "`push-these-onto` doesn't raise a fuss if a scratch variable isn't set"

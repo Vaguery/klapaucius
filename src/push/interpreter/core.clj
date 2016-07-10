@@ -132,10 +132,9 @@
   "Takes an interpreter, a stack name, and a count; returns true if
   the named stack exists, and has at least that many items on it"
   [interpreter stack limit]
-  (let [that-stack (get-in interpreter [:stacks stack])]
-    (and 
-      (<= limit (count that-stack))
-      (some? that-stack))))
+    (<= 
+      limit 
+      (count (u/get-stack interpreter stack))))
 
 
 (defn recognizes-instruction?
@@ -151,7 +150,7 @@
   stacks meets or exceeds all the specified :needs for that
   instruction. Returns false if the instruction is not registered."
   [interpreter token]
-  (let [needs (get-in interpreter [:instructions token :needs])]
+  (let [needs (get-in interpreter [:instructions token :needs] )]
     (and
       (recognizes-instruction? interpreter token)
       (reduce-kv

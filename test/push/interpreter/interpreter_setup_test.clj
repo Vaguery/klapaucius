@@ -344,7 +344,7 @@
   (u/get-stack (m/basic-interpreter :stacks {:scalar '(7 6 5)}) :scalar ) => '(7 6 5)
   (u/get-stack (m/basic-interpreter :stacks {:foo '(7 6 5)}) :foo ) => '(7 6 5)
   (u/get-stack (m/basic-interpreter :stacks {:foo '(7 6 5)}) :scalar ) => '()
-  (u/get-stack just-basic :foo ) => nil)
+  (u/get-stack just-basic :foo ) => '())
 
 
 ;;;; manipulating existing interpreters
@@ -384,14 +384,9 @@
   (let [abbr #'push.interpreter.core/contains-at-least?]
   (abbr (m/basic-interpreter :stacks {:scalar '(1 2 3)}) :scalar 3) => true
   (abbr (m/basic-interpreter :stacks {:scalar '(0)}) :scalar 3) => false
+  (abbr (m/basic-interpreter :stacks {:scalar '()}) :scalar 0) => true
   (abbr (m/basic-interpreter :stacks {:scalar '(1 2 3)}) :scalar 2) => true))
 
-
-(fact "contains-at-least? returns false if the named stack isn't present"
-  (let [abbr #'push.interpreter.core/contains-at-least?]
-
-  (abbr just-basic :foo 0) => false
-  (abbr just-basic :boolean 0) => true))
 
 
 ;; ready-for-instruction?
@@ -458,8 +453,8 @@
     '(false true))
 
 
-(fact "u/get-stack will happily look up and return any named stack"
-  (u/get-stack just-basic :foo) => nil)
+(fact "u/get-stack will happily provide an empty stack if one's missing"
+  (u/get-stack just-basic :foo) => '())
 
 
 (fact "u/get-stack will return an empty list for an existing (but empty) stack"

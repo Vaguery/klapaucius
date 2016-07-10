@@ -133,6 +133,7 @@
   [pushtype]
   (-> pushtype
       (t/attach-instruction (tag-instruction pushtype))
+      (t/attach-instruction (tagstack-instruction pushtype))
       (assoc :attributes (conj (:attributes pushtype) :taggable))))
 
 

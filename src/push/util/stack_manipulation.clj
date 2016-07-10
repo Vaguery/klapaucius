@@ -3,9 +3,9 @@
 
 (defn get-stack
   "A convenience function which returns the named stack from the
-  interpreter"
+  interpreter. Returns an empty list if no key is present."
   [interpreter stack]
-  (get-in interpreter [:stacks stack]))
+  (get-in interpreter [:stacks stack] '()))
 
 
 (defn set-stack

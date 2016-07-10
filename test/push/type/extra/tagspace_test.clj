@@ -89,11 +89,11 @@
     ))
 
 
-(fact "tagspace-forget removes an item by specific key"
-  (tagspace-forget (make-tagspace {7 :x 2 :y 1 :z}) 2) =>
+(fact "tagspace-dissoc removes an item by specific key"
+  (tagspace-dissoc (make-tagspace {7 :x 2 :y 1 :z}) 2) =>
     (make-tagspace {7 :x 1 :z})
-  (tagspace-forget (make-tagspace {7 :x 2 :y 1 :z}) 7) =>
+  (tagspace-dissoc (make-tagspace {7 :x 2 :y 1 :z}) 7) =>
     (make-tagspace {2 :y 1 :z})
-  (tagspace-forget (make-tagspace {7 :x 2 :y 1 :z}) 5) =>
+  (tagspace-dissoc (make-tagspace {7 :x 2 :y 1 :z}) 5) =>
     (make-tagspace {7 :x 2 :y 1 :z})
   )
