@@ -11,6 +11,8 @@
 - added `:scalars-split` instruction
 - renamed `:tagspace-split` to `:tagspace-cutoff`
 - added `:tagspace-filter`, `:tagspace-remove` and `:tagspace-split` using `:intervals` for filtering
+- added `:X-tagstack` instruction to `taggable` aspect
+- extensive cleanup of DSL exception-handling (nonexisting stacks created on demand now)
 
 ## 0.1.21
 
