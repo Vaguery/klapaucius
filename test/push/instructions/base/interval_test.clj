@@ -4,7 +4,7 @@
   (:use [push.util.test-helpers])
   (:require [push.type.definitions.interval :as s])
   (:use [push.type.item.interval])
-  (:use [push.util.numerics])
+  (:use [push.util.numerics :only [∞,-∞]])
   )
 
 
@@ -836,6 +836,38 @@
     )
 
 
+
+(tabular
+  (fact ":interval-scale flips bounds as appropriate with negative arg"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks interval-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction             ?expected
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:interval (list (s/make-interval 2 3))
+     :scalar  '(-1)}  
+                              :interval-scale    {:interval
+                                                      (list (s/make-interval -3 -2))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:interval (list (s/make-interval 2 3 :min-open? true))
+     :scalar  '(-1)}  
+                              :interval-scale    {:interval
+                                                      (list (s/make-interval -3 -2
+                                                            :max-open? true))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:interval (list (s/make-interval 2 3 :max-open? true))
+     :scalar  '(-1)}  
+                              :interval-scale    {:interval
+                                                      (list (s/make-interval -3 -2
+                                                            :min-open? true))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:interval (list (s/make-interval ∞ 7 :min-open? true))
+     :scalar  '(-1)}  
+                              :interval-scale    {:interval
+                                                      (list (s/make-interval -∞ -7
+                                                            :max-open? true))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
 
 
 

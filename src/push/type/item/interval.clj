@@ -304,8 +304,8 @@
       interval/make-interval
         (*' %2 (:min %1))
         (*' %2 (:max %1))
-        :min-open? (:min-open? %1)
-        :max-open? (:max-open? %1)) :as :result)
+        :min-open? (if (neg? %2) (:max-open? %1) (:min-open? %1))
+        :max-open? (if (neg? %2) (:min-open? %1) (:max-open? %1))) :as :result)
     (push-onto :interval :result)
     ))
 
