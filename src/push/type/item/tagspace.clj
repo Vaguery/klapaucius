@@ -176,10 +176,10 @@
 
 
 
-(def tagspace-split
+(def tagspace-cutoff
   (core/build-instruction
-    tagspace-split
-    "`:tagspace-split` pops the top `:tagspace` item and the top `:scalar`, and pushes two new `:tagspace` items in a list to `:exec`, which contain all the items with keys _below_ the `:scalar`, and another with all the keys at or above (inclusive)."
+    tagspace-cutoff
+    "`:tagspace-cutoff` pops the top `:tagspace` item and the top `:scalar`, and pushes two new `:tagspace` items in a list to `:exec`, which contain all the items with keys _below_ the `:scalar`, and another with all the keys at or above (inclusive)."
     :tags #{:tagspace :collection}
     (d/consume-top-of :tagspace :as :arg1)
     (d/consume-top-of :scalar :as :cutoff)
@@ -250,7 +250,7 @@
       (t/attach-instruction , tagspace-normalize)
       (t/attach-instruction , tagspace-offset)
       (t/attach-instruction , tagspace-scale)
-      (t/attach-instruction , tagspace-split)
+      (t/attach-instruction , tagspace-cutoff)
       (t/attach-instruction , tagspace-tidy)
       (t/attach-instruction , tagspace-values)
       aspects/make-cycling

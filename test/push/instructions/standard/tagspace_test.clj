@@ -497,37 +497,37 @@
 (let 
   [taggy (make-tagspace {1 2 3 4 5 6})]
 (tabular
-  (fact "`:tagspace-split` pops a :scalar and a :tagspace and produces two new tagspaces (pushed to :exec)"
+  (fact "`:tagspace-cutoff` pops a :scalar and a :tagspace and produces two new tagspaces (pushed to :exec)"
     (check-instruction-with-all-kinds-of-stack-stuff
         ?new-stacks tagspace-type ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction     ?expected
     {:scalar '(3)
-     :tagspace (list taggy)}  :tagspace-split  {:scalar  '()
+     :tagspace (list taggy)}  :tagspace-cutoff  {:scalar  '()
                                                 :exec (list (list
                                                   (make-tagspace {1 2})
                                                   (make-tagspace {3 4 5 6})))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar '(4)
-     :tagspace (list taggy)}  :tagspace-split  {:scalar  '()
+     :tagspace (list taggy)}  :tagspace-cutoff  {:scalar  '()
                                                 :exec (list (list
                                                   (make-tagspace {1 2 3 4})
                                                   (make-tagspace {5 6})))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar '(5/2)
-     :tagspace (list taggy)}  :tagspace-split  {:scalar  '()
+     :tagspace (list taggy)}  :tagspace-cutoff  {:scalar  '()
                                                 :exec (list (list
                                                   (make-tagspace {1 2})
                                                   (make-tagspace {3 4 5 6})))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar '(-22)
-     :tagspace (list taggy)}  :tagspace-split  {:scalar  '()
+     :tagspace (list taggy)}  :tagspace-cutoff  {:scalar  '()
                                                 :exec (list (list
                                                   (make-tagspace {})
                                                   (make-tagspace {1 2 3 4 5 6})))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar '(77123)
-     :tagspace (list taggy)}  :tagspace-split  {:scalar  '()
+     :tagspace (list taggy)}  :tagspace-cutoff  {:scalar  '()
                                                 :exec (list (list
                                                   (make-tagspace {1 2 3 4 5 6})
                                                   (make-tagspace {})))}
@@ -541,13 +541,13 @@
 (let 
   [taggy (make-tagspace {1M 2})]
 (tabular
-  (fact "`:tagspace-split` consumes arguments but captures runtime errors if they occur"
+  (fact "`:tagspace-cutoff` consumes arguments but captures runtime errors if they occur"
     (check-instruction-with-all-kinds-of-stack-stuff
         ?new-stacks tagspace-type ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction     ?expected
     {:scalar '(1/3)
-     :tagspace (list taggy)}  :tagspace-split  {:scalar  '()
+     :tagspace (list taggy)}  :tagspace-cutoff  {:scalar  '()
                                                 :error '({:item "Non-terminating decimal expansion; no exact representable decimal result.", :step 0})}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ))

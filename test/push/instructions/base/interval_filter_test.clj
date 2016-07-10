@@ -121,6 +121,53 @@
 
 
 
+(tabular
+  (fact ":tagspace-filter deletes elements of a `:tagspace` item that are within the `:interval`"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks interval-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction             ?expected
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:interval (list (s/make-interval 2 3))
+     :tagspace (list (ts/make-tagspace {1 :a 2 :b 3 :c 4 :d 5 :e}))}
+                             :tagspace-filter          {:tagspace (list
+                                                         (ts/make-tagspace
+                                                          {2 :b 3 :c}))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:interval (list (s/make-interval 2 3 :min-open? true))
+     :tagspace (list (ts/make-tagspace {1 :a 2 :b 3 :c 4 :d 5 :e}))}
+                             :tagspace-filter          {:tagspace (list
+                                                         (ts/make-tagspace
+                                                          {3 :c}))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:interval (list (s/make-interval -2 3 :min-open? true))
+     :tagspace (list (ts/make-tagspace {1 :a 2 :b 3 :c 4 :d 5 :e}))}
+                             :tagspace-filter          {:tagspace (list
+                                                         (ts/make-tagspace
+                                                          {1 :a 2 :b 3 :c}))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:interval (list (s/make-interval -2 3 :min-open? true))
+     :tagspace (list (ts/make-tagspace {1 :a ∞ :b 3 :c 4 :d 5 :e}))}
+                             :tagspace-filter          {:tagspace (list
+                                                         (ts/make-tagspace
+                                                          {1 :a 3 :c}))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:interval (list (s/make-interval -2 -3 :min-open? true))
+     :tagspace (list (ts/make-tagspace {1 :a 2 :b 3 :c 4 :d 5 :e}))}
+                             :tagspace-filter          {:tagspace (list
+                                                         (ts/make-tagspace))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:interval (list (s/make-interval -∞ ∞))
+     :tagspace (list (ts/make-tagspace {1 :a 2 :b 3 :c 4 :d 5 :e}))}
+                             :tagspace-filter          {:tagspace (list
+                                                         (ts/make-tagspace
+                                                          {1 :a 2 :b 3 :c 4 :d 5 :e}))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
+
 
 
 (tabular
@@ -165,8 +212,62 @@
                              :tagspace-remove          {:tagspace (list
                                                          (ts/make-tagspace))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ; {:interval (list (s/make-interval -∞ ∞))
-    ;  :tagspace  '([1 2 3 4 5])}
-    ;                          :tagspace-remove            {:tagspace '([])}
-    ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
+
+(tabular
+  (fact ":tagspace-split deletes elements of a `:tagspace` item that are within the `:interval`"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks interval-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction             ?expected
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:interval (list (s/make-interval 2 3))
+     :tagspace (list (ts/make-tagspace {1 :a 2 :b 3 :c 4 :d 5 :e}))}
+                             :tagspace-split          {:exec (list (list
+                                                        (ts/make-tagspace
+                                                          {2 :b 3 :c})
+                                                        (ts/make-tagspace
+                                                          {1 :a  4 :d 5 :e})))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:interval (list (s/make-interval 2 3 :min-open? true))
+     :tagspace (list (ts/make-tagspace {1 :a 2 :b 3 :c 4 :d 5 :e}))}
+                             :tagspace-split          {:exec (list (list
+                                                        (ts/make-tagspace
+                                                          {3 :c})
+                                                        (ts/make-tagspace
+                                                          {1 :a 2 :b  4 :d 5 :e})))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:interval (list (s/make-interval -2 3 :min-open? true))
+     :tagspace (list (ts/make-tagspace {1 :a 2 :b 3 :c 4 :d 5 :e}))}
+                             :tagspace-split          {:exec (list (list
+                                                        (ts/make-tagspace
+                                                          {1 :a 2 :b 3 :c})
+                                                        (ts/make-tagspace
+                                                          { 4 :d 5 :e})))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:interval (list (s/make-interval -2 3 :min-open? true))
+     :tagspace (list (ts/make-tagspace {1 :a ∞ :b 3 :c 4 :d 5 :e}))}
+                             :tagspace-split          {:exec (list (list
+                                                        (ts/make-tagspace
+                                                          {1 :a 3 :c})
+                                                        (ts/make-tagspace
+                                                          { 4 :d 5 :e ∞ :b })))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:interval (list (s/make-interval -2 -3 :min-open? true))
+     :tagspace (list (ts/make-tagspace {1 :a 2 :b 3 :c 4 :d 5 :e}))}
+                             :tagspace-split          {:exec (list (list
+                                                        (ts/make-tagspace)
+                                                        (ts/make-tagspace
+                                                          {1 :a 2 :b 3 :c 4 :d 5 :e})))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:interval (list (s/make-interval -∞ ∞))
+     :tagspace (list (ts/make-tagspace {1 :a 2 :b 3 :c 4 :d 5 :e}))}
+                             :tagspace-split          {:exec (list (list
+                                                        (ts/make-tagspace
+                                                          {1 :a 2 :b 3 :c 4 :d 5 :e})
+                                                        (ts/make-tagspace)))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )

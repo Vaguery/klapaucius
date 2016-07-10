@@ -429,6 +429,26 @@
 
 
 
+
+
+(def tagspace-filter
+  (build-instruction
+    tagspace-filter
+    "`:tagspace-filter` pops the top `:tagspace` vector and top `:interval` item, and pushes a new `:tagspace` item that contains all keys falling (strictly) within the `:interval`; the removed keys are forgotten with their values."
+    :tags #{:interval}
+    (consume-top-of :interval :as :allowed)
+    (consume-top-of :tagspace :as :ts)
+    (calculate [:ts :allowed]
+      #(ts/make-tagspace
+        (filter
+          (fn [kv] (interval/interval-include? %2 (first kv)))
+          (seq (:contents %1)))) :as :result)
+    (push-onto :tagspace :result)
+    ))
+
+
+
+
 (def tagspace-remove
   (build-instruction
     tagspace-remove
@@ -444,6 +464,28 @@
     (push-onto :tagspace :result)
     ))
 
+
+
+
+(def tagspace-split
+  (build-instruction
+    tagspace-split
+    "`:tagspace-split` pops the top `:tagspace` vector and top `:interval` item, and pushes a new code block containing two `:tagspace` items. The first contains all items from the original with keys falling (strictly) within the `:interval`; the second contains the remaining key-value pairs."
+    :tags #{:interval}
+    (consume-top-of :interval :as :allowed)
+    (consume-top-of :tagspace :as :ts)
+    (calculate [:ts :allowed]
+      #(list
+        (ts/make-tagspace
+          (filter
+            (fn [kv] (interval/interval-include? %2 (first kv)))
+            (seq (:contents %1))))
+        (ts/make-tagspace
+          (remove
+            (fn [kv] (interval/interval-include? %2 (first kv)))
+            (seq (:contents %1))))) :as :result)
+    (push-onto :exec :result)
+    ))
 
 
 
@@ -486,6 +528,8 @@
         (attach-instruction , scalars-filter)
         (attach-instruction , scalars-remove)
         (attach-instruction , scalars-split)
+        (attach-instruction , tagspace-filter)
         (attach-instruction , tagspace-remove)
+        (attach-instruction , tagspace-split)
   ))
 

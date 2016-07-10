@@ -9,6 +9,8 @@
 - added `:scalars-filter` and `:scalars-remove` instructions
 - removed `with-precision` wrapper on `push.type.definitions.tagspace/make-tagspace`
 - added `:scalars-split` instruction
+- renamed `:tagspace-split` to `:tagspace-cutoff`
+- added `:tagspace-filter`, `:tagspace-remove` and `:tagspace-split` using `:intervals` for filtering
 
 ## 0.1.21
 
