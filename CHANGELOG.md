@@ -5,6 +5,7 @@
 - Added `:interval` type
 - Cleaned up handling of ∞/-∞ throughout
 - Added `:complex-infinite?` and `:scalar-infinite?` instructions
+- Fixed bug in `:interval-scale` results' bounds, when scaling factor is negative
 
 ## 0.1.21
 
