@@ -12,23 +12,6 @@
 ;; collectible instructions
 
 
-(fact "toset-instruction returns an Instruction with the correct stuff"
-  (let [foo-toset (toset-instruction (make-type :foo))]
-    (class foo-toset) => push.instructions.core.Instruction
-    (:needs foo-toset) => {:foo 1, :set 0}
-    (:token foo-toset) => :foo->set
-    (get-stack
-      (i/execute-instruction
-        (i/register-instruction (push/interpreter :stacks {:foo '(11)}) foo-toset)
-        :foo->set)
-      :set) => '(#{11})
-    (get-stack
-      (i/execute-instruction
-        (i/register-instruction (push/interpreter :stacks {:foo '([1 2 3])}) foo-toset)
-        :foo->set)
-      :set) => '(#{[1 2 3]})
-    ))
-
 
 
 (fact "conj-set-instruction returns an Instruction with the correct stuff"
@@ -97,6 +80,53 @@
         (i/register-instruction (push/interpreter :stacks {:foo '([1 2 3])}) foo-as-set)
         :foo-as-set)
       :set) => '(#{1 2 3})
+    ))
+
+
+(fact "toset-instruction returns an Instruction with the correct stuff"
+  (let [foo-toset (toset-instruction (make-type :foo))]
+    (class foo-toset) => push.instructions.core.Instruction
+    (:needs foo-toset) => {:foo 1, :set 0}
+    (:token foo-toset) => :foo->set
+    (get-stack
+      (i/execute-instruction
+        (i/register-instruction (push/interpreter :stacks {:foo '(11)}) foo-toset)
+        :foo->set)
+      :set) => '(#{11})
+    (get-stack
+      (i/execute-instruction
+        (i/register-instruction (push/interpreter :stacks {:foo '([1 2 3])}) foo-toset)
+        :foo->set)
+      :set) => '(#{[1 2 3]})
+    ))
+
+
+
+(fact "in-set?-instruction returns an Instruction with the correct stuff"
+  (let [foo-in-set? (in-set?-instruction (make-type :foo))]
+    (class foo-in-set?) => push.instructions.core.Instruction
+    (:needs foo-in-set?) => {:foo 1, :set 1, :boolean 0}
+    (:token foo-in-set?) => :foo-in-set?
+    (get-stack
+      (i/execute-instruction
+        (i/register-instruction (push/interpreter :stacks {:foo '(11) :set '(#{22})}) foo-in-set?)
+        :foo-in-set?)
+      :boolean) => '(false)
+    (get-stack
+      (i/execute-instruction
+        (i/register-instruction (push/interpreter :stacks {:foo '(11) :set '(#{11 22 33})}) foo-in-set?)
+        :foo-in-set?)
+      :boolean) => '(true)
+    (get-stack
+      (i/execute-instruction
+        (i/register-instruction (push/interpreter :stacks {:foo '([11]) :set '(#{[11] 22 33})}) foo-in-set?)
+        :foo-in-set?)
+      :boolean) => '(true)
+    (get-stack
+      (i/execute-instruction
+        (i/register-instruction (push/interpreter :stacks {:foo '(11) :set '(#{[11] 22 33})}) foo-in-set?)
+        :foo-in-set?)
+      :boolean) => '(false)
     ))
 
 

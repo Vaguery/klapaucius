@@ -207,6 +207,80 @@
 
 
 (tabular
+  (fact "`foos-vfilter` pushes keeps items in the top item from the second"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks foos-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                  ?instruction     ?expected
+
+    {:foos '([2 3]
+             [1 2 3 4 4 3 2 1])} :foos-vfilter     { :foos '([2 3 3 2])}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos '([]
+             [1 2 3 4 4 3 2 1])} :foos-vfilter     { :foos '([])}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos '([99 99]
+             [1 2 3 4 4 3 2 1])} :foos-vfilter     { :foos '([])}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos '([99 99]
+             [99 99 99 99])} :foos-vfilter     { :foos '([99 99 99 99])}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
+
+
+(tabular
+  (fact "`foos-vremove` pushes culls items in the top item from the second"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks foos-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                  ?instruction     ?expected
+
+    {:foos '([2 3]
+             [1 2 3 4 4 3 2 1])} :foos-vremove     { :foos '([1 4 4 1])}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos '([]
+             [1 2 3 4 4 3 2 1])} :foos-vremove     { :foos '([1 2 3 4 4 3 2 1])}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos '([99 99]
+             [1 2 3 4 4 3 2 1])} :foos-vremove     { :foos '([1 2 3 4 4 3 2 1])}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos '([99 99]
+             [99 99 99 99])} :foos-vremove         { :foos '([])}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
+
+
+(tabular
+  (fact "`foos-vsplit` pushes culls items in the top item from the second"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks foos-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                  ?instruction     ?expected
+
+    {:foos '([2 3]
+             [1 2 3 4 4 3 2 1])} :foos-vsplit     { :exec '( ([2 3 3 2] [1 4 4 1]) )}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos '([]
+             [1 2 3 4 4 3 2 1])} :foos-vsplit     { :exec '( ([] [1 2 3 4 4 3 2 1]) )}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos '([99 99]
+             [1 2 3 4 4 3 2 1])} :foos-vsplit     { :exec '( ([] [1 2 3 4 4 3 2 1]) )}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos '([99 99]
+             [99 99 99 99])} :foos-vsplit         { :exec '( ([99 99 99 99] []) )}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
+
+(tabular
   (fact "`foos-first` pushes the first item of the top :foos vector onto :foo"
     (check-instruction-with-all-kinds-of-stack-stuff
         ?new-stacks foos-type ?instruction) => (contains ?expected))

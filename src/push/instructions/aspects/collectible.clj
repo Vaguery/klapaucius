@@ -48,6 +48,25 @@
 
 
 
+(defn in-set?-instruction
+  "returns a new x-in-set? instruction for a PushType"
+  [pushtype]
+  (let [typename (:name pushtype)
+        instruction-name (str (name typename) "-in-set?")]
+    (eval (list
+      `build-instruction
+      instruction-name
+      (str "`:" instruction-name "` pops the top `" typename "` item and the top `:set` item, and pushes `true` if the item is an element of the `:set`.")
+      :tags #{:set}
+
+      `(consume-top-of ~typename :as :arg)
+      `(consume-top-of :set :as :s)
+      `(calculate [:s :arg] #(boolean (%1 %2)) :as :result)
+      `(push-onto :boolean :result)))))
+
+
+
+
 
 (defn intoset-instruction
   "returns a new x-intoset instruction for a PushType"

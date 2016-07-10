@@ -178,6 +178,9 @@
 
 
 
+
+
+
 (defn x-first-instruction
   [typename rootname]
   (let [instruction-name (str (name typename) "-first")]
@@ -464,6 +467,70 @@
 
 
 
+
+(defn filter-vector-with-vector
+  [v f]
+  (into [] (filter #((set f) %1) v)))
+
+
+
+(defn x-vfilter-instruction
+  [typename]
+  (let [instruction-name (str (name typename) "-vfilter")]
+    (eval (list
+      'push.instructions.core/build-instruction
+      instruction-name
+      (str "`" typename "-vfilter` pops the top two `" typename "` items (call them `B` and `A`, respectively) pushes a new `" typename "` that only contains items in `A` that are also in `B`.")
+      :tags #{:vector}
+      `(push.instructions.dsl/consume-top-of ~typename :as :filter)
+      `(push.instructions.dsl/consume-top-of ~typename :as :arg)
+      `(push.instructions.dsl/calculate [:arg :filter]
+          #(filter-vector-with-vector %1 %2) :as :result)
+      `(push.instructions.dsl/push-onto ~typename :result)))))
+
+
+
+(defn remove-vector-with-vector
+  [v f]
+  (into [] (remove #((set f) %1) v)))
+
+
+
+(defn x-vremove-instruction
+  [typename]
+  (let [instruction-name (str (name typename) "-vremove")]
+    (eval (list
+      'push.instructions.core/build-instruction
+      instruction-name
+      (str "`" typename "-vremove` pops the top two `" typename "` items (call them `B` and `A`, respectively) pushes a new `" typename "` that only contains items in `A` that are NOT also in `B`.")
+      :tags #{:vector}
+      `(push.instructions.dsl/consume-top-of ~typename :as :filter)
+      `(push.instructions.dsl/consume-top-of ~typename :as :arg)
+      `(push.instructions.dsl/calculate [:arg :filter]
+          #(remove-vector-with-vector %1 %2) :as :result)
+      `(push.instructions.dsl/push-onto ~typename :result)))))
+
+
+
+(defn x-vsplit-instruction
+  [typename]
+  (let [instruction-name (str (name typename) "-vsplit")]
+    (eval (list
+      'push.instructions.core/build-instruction
+      instruction-name
+      (str "`" typename "-vsplit` pops the top two `" typename "` items (call them `B` and `A`, respectively) pushes a code block to `:exec` containing two new `" typename "` items: The first only contains items in `A` that are also in `B`, and the second only contains items in `A` NOT in `B`.")
+      :tags #{:vector}
+      `(push.instructions.dsl/consume-top-of ~typename :as :filter)
+      `(push.instructions.dsl/consume-top-of ~typename :as :arg)
+      `(push.instructions.dsl/calculate [:arg :filter]
+          #(list
+            (filter-vector-with-vector %1 %2)
+            (remove-vector-with-vector %1 %2)) :as :result)
+      `(push.instructions.dsl/push-onto :exec :result)))))
+
+
+
+
 (defn build-vectorized-type
   "creates a vector [sub]type for another Push type"
   [content-type]
@@ -510,5 +577,8 @@
           (t/attach-instruction , (x-set-instruction typename rootname))
           (t/attach-instruction , (x-take-instruction typename))
           (t/attach-instruction , (x-reverse-instruction typename))
+          (t/attach-instruction , (x-vfilter-instruction typename))
+          (t/attach-instruction , (x-vremove-instruction typename))
+          (t/attach-instruction , (x-vsplit-instruction typename))
           )))
 

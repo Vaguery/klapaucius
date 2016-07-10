@@ -22,6 +22,7 @@
   (-> pushtype
       (t/attach-instruction (as-set-instruction pushtype))
       (t/attach-instruction (conj-set-instruction pushtype))
+      (t/attach-instruction (in-set?-instruction pushtype))
       (t/attach-instruction (toset-instruction pushtype))
       (t/attach-instruction (intoset-instruction pushtype))
       (assoc :attributes (conj (:attributes pushtype) :collectible))))

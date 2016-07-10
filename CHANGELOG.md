@@ -13,6 +13,8 @@
 - added `:tagspace-filter`, `:tagspace-remove` and `:tagspace-split` using `:intervals` for filtering
 - added `:X-tagstack` instruction to `taggable` aspect
 - extensive cleanup of DSL exception-handling (nonexisting stacks created on demand now)
+- added `:collectible` aspect, which adds several `:set`-related instructions to types
+- added `:x-vfilter`, `:x-vremove` and `:x-vsplit` instructions to `vectorized` aspect, which filter items of a vectorized type with another item of the same type
 
 ## 0.1.21
 
