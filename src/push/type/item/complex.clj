@@ -62,6 +62,20 @@
 
 
 
+
+(def complex-infinite?
+  (core/build-instruction
+    complex-infinite?
+    "`:complex-infinite?` pops the top `:complex` value and pushes `true` if either component is ∞ or -∞."
+    :tags #{:arithmetic :base}
+    (d/consume-top-of :complex :as :arg)
+    (d/calculate [:arg] #(complex/complex-infinite? %1) :as :result)
+    (d/push-onto :boolean :result)
+    ))
+
+
+
+
 (def complex-multiply
   (core/build-instruction
     complex-multiply
@@ -226,6 +240,7 @@
         (t/attach-instruction , complex-add)
         (t/attach-instruction , complex-conjugate)
         (t/attach-instruction , complex-divide)
+        (t/attach-instruction , complex-infinite?)
         (t/attach-instruction , complex-multiply)
         (t/attach-instruction , complex-norm)
         (t/attach-instruction , complex-parts)

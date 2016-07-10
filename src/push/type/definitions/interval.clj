@@ -1,4 +1,5 @@
-(ns push.type.definitions.interval)
+(ns push.type.definitions.interval
+  (:use [push.util.numerics]))
 
 
 ;; Interval records
@@ -169,17 +170,15 @@
   (let [s      (:min i)
         e      (:max i)
         so     (:min-open? i)
-        eo     (:max-open? i)
-        infty  Double/POSITIVE_INFINITY
-        ninfty Double/NEGATIVE_INFINITY]
+        eo     (:max-open? i)]
     (cond
       (and (zero? s) (zero? e))
-        (make-interval ninfty infty)
+        (make-interval -∞ ∞)
       (zero? (:min i))
-        (make-interval (/ 1 (:max i)) infty
+        (make-interval (/ 1 (:max i)) ∞
           :min-open? (:max-open? i))
       (zero? (:max i))
-        (make-interval ninfty (/ 1 (:min i))
+        (make-interval -∞ (/ 1 (:min i))
           :max-open? (:min-open? i))
       (interval-include? i 0)
         (list

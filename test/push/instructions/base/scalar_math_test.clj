@@ -4,14 +4,13 @@
   (:use midje.sweet)
   (:use [push.util.test-helpers])
   (:use [push.type.item.scalar])
+  (:use [push.util.numerics :only [∞,-∞]])
   )
 
 
 ;; fixtures
 
-(def cljInf  Double/POSITIVE_INFINITY)
-(def cljNinf Double/NEGATIVE_INFINITY)
-(def cljNaN  (Math/sin Double/POSITIVE_INFINITY))
+(def cljNaN  (Math/sin ∞))
 
 
 
@@ -34,10 +33,8 @@
     :scalar     '(9/2)          :scalar-abs           :scalar        '(9/2)
     :scalar     '(-9/2)         :scalar-abs           :scalar        '(9/2)
 
-    :scalar     (list cljInf)
-                                :scalar-abs           :scalar        (list cljInf)
-    :scalar     (list cljNinf)
-                                :scalar-abs           :scalar        (list cljInf)
+    :scalar     (list ∞)        :scalar-abs           :scalar        (list ∞)
+    :scalar     (list -∞)       :scalar-abs           :scalar        (list ∞)
     :scalar     '()             :scalar-abs           :scalar        '()
     )
 
@@ -61,12 +58,9 @@
     :scalar     '(-2/9 2.0)     :scalar-add        :scalar      '(1.7777777777777777)
 
 
-    :scalar     (list cljInf 1)
-                                :scalar-add        :scalar      (list cljInf)
-    :scalar     (list cljNinf 1)
-                                :scalar-add        :scalar      (list cljNinf)
-    :scalar     '(1e9999M 1e99)
-                                :scalar-add        :scalar      (list cljInf)
+    :scalar     (list ∞ 1)      :scalar-add        :scalar      (list ∞)
+    :scalar     (list -∞ 1)     :scalar-add        :scalar      (list -∞)
+    :scalar     '(1e9999M 1e99) :scalar-add        :scalar      (list ∞)
     :scalar     '()             :scalar-add        :scalar      '()
     )
 
@@ -93,10 +87,8 @@
         ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction      ?get-stack     ?expected
-    :scalar     (list cljInf cljNinf)
-                                :scalar-add        :scalar        '()
-    :scalar     (list cljInf cljNinf)
-                                :scalar-add        :error         '({:step 0, :item ":scalar-add produced NaN"}))
+    :scalar     (list ∞ -∞)     :scalar-add        :scalar        '()
+    :scalar     (list ∞ -∞)     :scalar-add        :error         '({:step 0, :item ":scalar-add produced NaN"}))
 
 
 
@@ -123,10 +115,8 @@
     :scalar     '(-2)     :scalar-arccosine   :error       (list {:step 0, 
                                                                   :item ":scalar-arccosine bad argument"})
 
-    :scalar     (list cljInf)
-                          :scalar-arccosine   :scalar      '()
-    :scalar     (list cljInf)
-                          :scalar-arccosine   :error       (list {:step 0,
+    :scalar     (list ∞)  :scalar-arccosine   :scalar      '()
+    :scalar     (list ∞)  :scalar-arccosine   :error       (list {:step 0,
                                                                   :item ":scalar-arccosine bad argument"})
     :scalar     '()       :scalar-arccosine   :scalar      '()
     )
@@ -154,10 +144,8 @@
     :scalar     '(-2)     :scalar-arcsine     :error       (list {:step 0, 
                                                                   :item ":scalar-arcsine bad argument"})
 
-    :scalar     (list cljInf)
-                          :scalar-arcsine     :scalar      '()
-    :scalar     (list cljInf)
-                          :scalar-arcsine     :error       (list {:step 0,
+    :scalar     (list ∞)  :scalar-arcsine     :scalar      '()
+    :scalar     (list ∞)  :scalar-arcsine     :error       (list {:step 0,
                                                                   :item ":scalar-arcsine bad argument"})
     :scalar     '()       :scalar-arcsine     :scalar      '()
     )
@@ -209,10 +197,8 @@
     
     :scalar     '(1.7e837M)
                            :scalar-ceiling     :scalar    (list (bigint 1.7e837M))
-    :scalar     (list cljInf)
-                           :scalar-ceiling     :scalar    (list cljInf)
-    :scalar     (list cljNinf)
-                           :scalar-ceiling     :scalar    (list cljNinf)
+    :scalar     (list ∞)   :scalar-ceiling     :scalar    (list ∞)
+    :scalar     (list -∞)  :scalar-ceiling     :scalar    (list -∞)
     :scalar     '()        :scalar-ceiling     :scalar    '()
     )
 
@@ -259,10 +245,8 @@
     :scalar     '(-9/2)     :scalar-dec           :scalar        '(-11/2)
 
 
-    :scalar     (list cljInf)
-                            :scalar-dec           :scalar        (list cljInf)
-    :scalar     (list cljNinf)
-                            :scalar-dec           :scalar        (list cljNinf)
+    :scalar     (list ∞)    :scalar-dec           :scalar        (list ∞)
+    :scalar     (list -∞)   :scalar-dec           :scalar        (list -∞)
     :scalar     '()         :scalar-dec           :scalar        '()
     )
 
@@ -310,12 +294,10 @@
 
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:scalar   (list cljInf 3M)}
-                               :scalar-divide     {:scalar '(0.0)
+    {:scalar   (list ∞ 3M)}    :scalar-divide     {:scalar '(0.0)
                                                    :error '()} 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:scalar   (list 3M cljInf)}
-                               :scalar-divide     {:scalar (list cljInf)
+    {:scalar   (list 3M ∞)}    :scalar-divide     {:scalar (list ∞)
                                                    :error '()}
 )
 
@@ -341,10 +323,8 @@
         ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction      ?get-stack     ?expected
-    :scalar     (list cljInf cljInf)
-                                :scalar-divide        :scalar        '()
-    :scalar     (list cljInf cljInf)
-                                :scalar-divide        :error         '({:step 0, :item ":scalar-divide produced NaN"}))
+    :scalar     (list ∞ ∞)      :scalar-divide        :scalar        '()
+    :scalar     (list ∞ ∞)      :scalar-divide        :error         '({:step 0, :item ":scalar-divide produced NaN"}))
 
 
 
@@ -378,11 +358,9 @@
     :scalar     (list (+ 0.1M (bigint 1.7e837M)))
                            :scalar-floor     :scalar    (list (bigint 1.7e837M))
     :scalar     (list (+ 0.1 (bigint 1.7e837M)))
-                           :scalar-floor     :scalar    (list cljInf)
-    :scalar     (list cljInf)
-                           :scalar-floor     :scalar    (list cljInf)
-    :scalar     (list cljNinf)
-                           :scalar-floor     :scalar    (list cljNinf)
+                           :scalar-floor     :scalar    (list ∞)
+    :scalar     (list ∞)   :scalar-floor     :scalar    (list ∞)
+    :scalar     (list -∞)  :scalar-floor     :scalar    (list -∞)
     :scalar     '()        :scalar-floor     :scalar    '()
     )
 
@@ -437,8 +415,8 @@
 
 
 
-    :scalar     (list cljInf)         
-                            :scalar-inc           :scalar        (list cljInf)
+    :scalar     (list ∞)    :scalar-inc           :scalar        (list ∞)
+    :scalar     (list -∞)   :scalar-inc           :scalar        (list -∞)
     :scalar     '()         :scalar-inc           :scalar        '()
     )
 
@@ -509,10 +487,8 @@
         ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction      ?get-stack     ?expected
-    :scalar     (list cljInf cljInf)
-                                :scalar-modulo        :scalar        '()
-    :scalar     (list cljInf cljInf)
-                                :scalar-modulo        :error         '({:item "Infinite or NaN", :step 0}))
+    :scalar     (list ∞ ∞)      :scalar-modulo        :scalar        '()
+    :scalar     (list ∞ ∞)      :scalar-modulo        :error         '({:item "Infinite or NaN", :step 0}))
 
 
 
@@ -644,10 +620,8 @@
         ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction      ?get-stack     ?expected
-    :scalar     (list 0 cljInf)
-                                :scalar-multiply        :scalar        '()
-    :scalar     (list 0 cljInf)
-                                :scalar-multiply        :error         '({:step 0, :item ":scalar-multiply produced NaN"}))
+    :scalar     (list 0 ∞)      :scalar-multiply        :scalar        '()
+    :scalar     (list 0 ∞)      :scalar-multiply        :error         '({:step 0, :item ":scalar-multiply produced NaN"}))
 
 
 
@@ -719,10 +693,8 @@
                            :scalar-round     :scalar    (list (bigint 1.7e837M))
     :scalar     (list (+ 0.1 (bigint 1.7e837M)))
                            :scalar-round     :scalar    '(9223372036854775807)
-    :scalar     (list cljInf)
-                           :scalar-round     :scalar    '(9223372036854775807)
-    :scalar     (list cljNinf)
-                           :scalar-round     :scalar    '(-9223372036854775808)
+    :scalar     (list ∞)   :scalar-round     :scalar    '(9223372036854775807)
+    :scalar     (list -∞)  :scalar-round     :scalar    '(-9223372036854775808)
     :scalar     '()        :scalar-round     :scalar    '()
     )
 
@@ -818,10 +790,8 @@
         ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction      ?get-stack     ?expected
-    :scalar     (list cljInf cljInf)
-                                :scalar-subtract        :scalar        '()
-    :scalar     (list cljInf cljInf)
-                                :scalar-subtract        :error         '({:step 0, :item ":scalar-subtract produced NaN"}))
+    :scalar     (list ∞ ∞)      :scalar-subtract        :scalar        '()
+    :scalar     (list ∞ ∞)      :scalar-subtract        :error         '({:step 0, :item ":scalar-subtract produced NaN"}))
 
 
 
@@ -898,10 +868,8 @@
     :scalar     '(0)      :scalar-tangent     :scalar      '(0.0)
     
 
-    :scalar     (list cljInf)
-                          :scalar-tangent     :scalar      '()
-    :scalar     (list cljInf)
-                          :scalar-tangent     :error       '({:step 0, :item ":scalar-tangent bad argument"})
+    :scalar     (list ∞)  :scalar-tangent     :scalar      '()
+    :scalar     (list ∞)  :scalar-tangent     :error       '({:step 0, :item ":scalar-tangent bad argument"})
 
     :scalar     '()       :scalar-tangent     :scalar      '()
     )
@@ -925,4 +893,18 @@
                             :integer-totalistic3   :scalar       '(473960)
     :scalar     '(-123456788161617.826317623) 
                             :integer-totalistic3   :scalar       '(-692581375838490)
+    )
+
+
+
+
+(tabular
+  (fact ":integer-infinite? checks for positive or negative infinite values"
+    (register-type-and-check-instruction
+        ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items    ?instruction          ?get-stack     ?expected
+    :scalar     '(1182)   :scalar-infinite?      :boolean       '(false)
+    :scalar     (list ∞)  :scalar-infinite?      :boolean       '(true)
+    :scalar     (list -∞) :scalar-infinite?      :boolean       '(true)
     )

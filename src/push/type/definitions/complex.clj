@@ -38,6 +38,14 @@
 
 
 
+(defn complex-infinite?
+  "predicate returns true if either part of a Complex is ∞ or -∞"
+  [c]
+  (or (math/infinite? (:re c))
+      (math/infinite? (:im c))))
+
+
+
 (defn conjugate
   "takes a Complex record and returns its complex conjugate"
   [c]

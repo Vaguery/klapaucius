@@ -81,3 +81,27 @@
   (downsample-bigdec -9000000000000000000000000000000000000000000000.0M) => -9.0E45
   )
 
+
+
+(fact "infinite?"
+  (infinite? 88) => false
+  (infinite? ∞) => true
+  (infinite? -∞) => true
+  )
+
+
+(fact "infty?"
+  (infty? 88) => false
+  (infty? ∞) => true
+  (infty? -∞) => false
+  (infty? (/ 1.0 0.0)) => true
+  )
+
+
+(fact "ninfty?"
+  (ninfty? 88) => false
+  (ninfty? ∞) => false
+  (ninfty? -∞) => true
+  (ninfty? (/ -1.0 0.0)) => true
+  )
+

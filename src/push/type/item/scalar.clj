@@ -123,6 +123,19 @@
 
 
 
+
+(def scalar-infinite?
+  (core/build-instruction
+    scalar-infinite?
+    "`:scalar-infinite?` pops the top `:scalar` and pushes `true` or `false` depending on whether it is (positive or negative) infinite."
+    :tags #{:arithmetic :base}
+    (d/consume-top-of :scalar :as :arg)
+    (d/calculate [:arg] #(math/infinite? %1) :as :result)
+    (d/push-onto :boolean :result)))
+
+
+
+
 (def scalar-floor (t/simple-1-in-1-out-instruction
   "`:scalar-floor` pops the top `:scalar` value, and pushes the next-smaller integer value"
   :scalar "floor" 'nt/floor))
@@ -545,6 +558,7 @@
         (t/attach-instruction , scalar-floor)
         (t/attach-instruction , scalar-fractional)
         (t/attach-instruction , scalar-inc)
+        (t/attach-instruction , scalar-infinite?)
         (t/attach-instruction , scalar-integer?)
         (t/attach-instruction , scalar-ln)
         (t/attach-instruction , scalar-ln1p)
@@ -569,4 +583,5 @@
         (t/attach-instruction , boolean->integer)
         (t/attach-instruction , boolean->signedint)
         ))
+
 

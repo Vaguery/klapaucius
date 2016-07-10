@@ -39,10 +39,17 @@
 
 
 
+(def ∞ Double/POSITIVE_INFINITY)
+(def -∞ Double/NEGATIVE_INFINITY)
+
+
 (defn infinite?
   [number]
-  (or (= number Double/NEGATIVE_INFINITY)
-      (= number Double/POSITIVE_INFINITY)))
+  (or (= number ∞)
+      (= number -∞)))
+
+(defn infty? [number] (= number ∞))
+(defn ninfty? [number] (= number -∞))
 
 
 

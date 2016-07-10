@@ -3,13 +3,13 @@
   (:use midje.sweet)
   (:use [push.util.test-helpers])
   (:use [push.type.item.scalar])
+  (:use [push.util.numerics :only [∞,-∞]])
   )
 
 ;; fixtures
 
-(def cljInf  Double/POSITIVE_INFINITY)
-(def cljNinf Double/NEGATIVE_INFINITY)
-(def cljNaN  (Math/sin Double/POSITIVE_INFINITY))
+(def cljNaN  (Math/sin ∞))
+(def maxDouble  (Double/MAX_VALUE))
 
 
 
@@ -91,13 +91,24 @@
                              :scalar-lots    :scalar       '(1N)
     )
 
-  ;; problematic
 
-    ; :scalar     (list cljInf)
-    ;                          :scalar-lots    :scalar       '(7772M)
-    ; :scalar     (list cljNinf)
-    ;                          :scalar-lots    :scalar       '(7777.77772M)
 
+
+(tabular
+  (fact ":scalar-lots creates `:error` results with big or infinite arguments"
+    (register-type-and-check-instruction
+      ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack   ?items      ?instruction    ?get-stack   ?expected
+    :scalar     (list maxDouble)
+                             :scalar-lots    :scalar       '(0.0)
+    :scalar     (list ∞)     :scalar-lots    :scalar       '()
+    :scalar     (list ∞)     :scalar-lots    :error        '({:item "Infinite or NaN",
+                                                              :step 0})
+    :scalar     (list -∞)    :scalar-lots    :scalar       '()
+    :scalar     (list -∞)    :scalar-lots    :error        '({:item "Infinite or NaN",
+                                                              :step 0})
+    )
 
 
 
@@ -137,8 +148,35 @@
                              :scalar-many    :scalar       '(1N)
     )
 
-;;     :scalar     (list Double/MAX_VALUE)
-                             ; :scalar-many    :scalar       '(0.0)
+
+
+
+(tabular
+  (fact ":scalar-many creates appropriate results with infinite arguments"
+    (register-type-and-check-instruction
+      ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack   ?items      ?instruction    ?get-stack   ?expected
+    :scalar     (list ∞)     :scalar-many    :scalar       '()
+    :scalar     (list ∞)     :scalar-many    :error        '({:item "Infinite or NaN",
+                                                              :step 0})
+    :scalar     (list -∞)    :scalar-many    :scalar       '()
+    :scalar     (list -∞)    :scalar-many    :error        '({:item "Infinite or NaN",
+                                                              :step 0})
+    )
+
+
+
+(tabular
+  (future-fact ":scalar-many is not susceptible to the Clojure modulo bug"
+    (register-type-and-check-instruction
+      ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack   ?items      ?instruction    ?get-stack   ?expected
+    :scalar     (list maxDouble)
+                             :scalar-many    :scalar       (:literally-I-don't-know)
+  )
+
 
 
 

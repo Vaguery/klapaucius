@@ -268,7 +268,7 @@
     (consume-top-of :interval :as :i)
     (calculate [:i]
         #(if (or (infinite? (:min %1)) (infinite? (:max %1)))
-            (interval/make-interval Double/NEGATIVE_INFINITY Double/POSITIVE_INFINITY)
+            (interval/make-interval -∞ ∞)
             (let [c (/ (-' (:max %1) (:min %1)) 2)]
               (interval/make-interval
                 (- c)

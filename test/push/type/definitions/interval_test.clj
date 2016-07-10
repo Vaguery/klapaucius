@@ -1,6 +1,7 @@
 (ns push.type.definitions.interval_test
   (:use midje.sweet)
   (:use [push.type.definitions.interval])
+  (:use [push.util.numerics :only [∞,-∞]])
   )
 
 
@@ -334,10 +335,8 @@
 
 (fact "interval-reciprocal works for zero-containing intervals"
   (interval-reciprocal (make-interval -2 4)) =>
-    [ (make-interval Double/NEGATIVE_INFINITY -1/2)
-      (make-interval 1/4 Double/POSITIVE_INFINITY) ]
-  (interval-reciprocal (make-interval -2 0)) =>
-    (make-interval Double/NEGATIVE_INFINITY -1/2)
+    [ (make-interval -∞ -1/2) (make-interval 1/4 ∞) ]
+  (interval-reciprocal (make-interval -2 0)) => (make-interval -∞ -1/2)
   )
 
 

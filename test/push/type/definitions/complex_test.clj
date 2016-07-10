@@ -1,6 +1,7 @@
 (ns push.type.definitions.complex_test
   (:use midje.sweet)
   (:use [push.type.definitions.complex])
+  (:use [push.util.numerics :only [∞,-∞]])
   )
 
 
@@ -19,7 +20,6 @@
 (fact "conjugate returns the conjugate of a Complex record"
   (conjugate (->Complex 1/3 0.4)) => (->Complex 1/3 -0.4)
   )
-
 
 
 
@@ -71,3 +71,14 @@
 (fact "complex-quotient does stuff when dividing by 0"
   (complex-quotient (->Complex 3 2) (->Complex 0 0)) => (throws #"Divide by zero")
 )
+
+
+
+(fact "complex-infinite? returns true if either real or imaginary part is positive or negative infinity"
+  (complex-infinite? (->Complex ∞ 9)) => true
+  (complex-infinite? (->Complex 2 2)) => false
+  (complex-infinite? (->Complex 3 ∞)) => true
+  (complex-infinite? (->Complex -∞ ∞)) => true
+  )
+
+

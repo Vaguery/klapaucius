@@ -4,6 +4,7 @@
   (:use [push.util.test-helpers])
   (:require [push.type.definitions.interval :as s])
   (:use [push.type.item.interval])
+  (:use [push.util.numerics])
   )
 
 
@@ -165,13 +166,13 @@
                        (s/make-interval 2 3))
                              :interval-divide    
                                                  :exec  (list
-             (list (s/make-interval 2 3) (s/make-interval Double/NEGATIVE_INFINITY -1/2) :interval-multiply))
+             (list (s/make-interval 2 3) (s/make-interval -∞ -1/2) :interval-multiply))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval 0 3)
                        (s/make-interval -2 -4))
                              :interval-divide    
                                                  :exec  (list
-             (list (s/make-interval -2 -4) (s/make-interval 1/3 Double/POSITIVE_INFINITY) :interval-multiply))
+             (list (s/make-interval -2 -4) (s/make-interval 1/3 ∞) :interval-multiply))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
 
@@ -191,10 +192,10 @@
                                                  :exec  (list
             (list
               (s/make-interval 2 3)
-              (s/make-interval Double/NEGATIVE_INFINITY -1/2)
+              (s/make-interval -∞ -1/2)
               :interval-multiply
               (s/make-interval 2 3)
-              (s/make-interval 1/3 Double/POSITIVE_INFINITY)
+              (s/make-interval 1/3 ∞)
               :interval-multiply))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
@@ -391,9 +392,9 @@
                              :interval-min    
                                                  :scalar  '(-27)
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    :interval    (list (s/make-interval Double/NEGATIVE_INFINITY 9))
+    :interval    (list (s/make-interval -∞ 9))
                              :interval-min    
-                                                 :scalar  (list Double/NEGATIVE_INFINITY)
+                                                 :scalar  (list -∞)
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
 
@@ -415,9 +416,9 @@
                              :interval-max    
                                                  :scalar  '(9)
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    :interval    (list (s/make-interval Double/POSITIVE_INFINITY 9))
+    :interval    (list (s/make-interval ∞ 9))
                              :interval-max    
-                                                 :scalar  (list Double/POSITIVE_INFINITY)
+                                                 :scalar  (list ∞)
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
 
@@ -676,12 +677,12 @@
 
     ?set-stack  ?items       ?instruction        ?get-stack     ?expected
 
-    :interval    (list (s/make-interval 7 Double/POSITIVE_INFINITY))
+    :interval    (list (s/make-interval 7 ∞))
                              :interval-recenter    
                                                  :interval  (list
                                                           (s/make-interval
-                                                            Double/NEGATIVE_INFINITY
-                                                            Double/POSITIVE_INFINITY))
+                                                            -∞
+                                                            ∞))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
 
@@ -745,17 +746,17 @@
     :interval    (list (s/make-interval 0 0))
                              :interval-reciprocal    
                                                  :exec  (list
-                                                          (s/make-interval Double/NEGATIVE_INFINITY Double/POSITIVE_INFINITY))
+                                                          (s/make-interval -∞ ∞))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval 0 10))
                              :interval-reciprocal    
                                                  :exec  (list
-                                                          (s/make-interval 1/10 Double/POSITIVE_INFINITY))
+                                                          (s/make-interval 1/10 ∞))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
     :interval    (list (s/make-interval 0 -10))
                              :interval-reciprocal    
                                                  :exec  (list
-                                                          (s/make-interval Double/NEGATIVE_INFINITY -1/10))
+                                                          (s/make-interval -∞ -1/10))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
     )
 
@@ -773,19 +774,13 @@
                              :interval-reciprocal    
                                                  :exec  (list
                                                           (list
-                                                          (s/make-interval
-                                                            Double/NEGATIVE_INFINITY
-                                                            -1/2)
-                                                          (s/make-interval
-                                                            1/2
-                                                            Double/POSITIVE_INFINITY)))
+                                                          (s/make-interval -∞ -1/2)
+                                                          (s/make-interval 1/2 ∞)))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval 0 0))
                              :interval-reciprocal    
                                                  :exec  (list
-                                                          (s/make-interval
-                                                            Double/NEGATIVE_INFINITY
-                                                            Double/POSITIVE_INFINITY))
+                                                          (s/make-interval -∞ ∞))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
 
