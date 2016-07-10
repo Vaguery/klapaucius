@@ -3,6 +3,8 @@
 ## 0.1.22
 
 - Added `:interval` type
+- Cleaned up handling of ∞/-∞ throughout
+- Added `:complex-infinite?` and `:scalar-infinite?` instructions
 
 ## 0.1.21
 
