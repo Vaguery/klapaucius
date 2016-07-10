@@ -7,6 +7,7 @@
 - Added `:complex-infinite?` and `:scalar-infinite?` instructions
 - Fixed bug in `:interval-scale` results' bounds, when scaling factor is negative
 - added `:scalars-filter` and `:scalars-remove` instructions
+- removed `with-precision` wrapper on `push.type.definitions.tagspace/make-tagspace`
 
 ## 0.1.21
 
