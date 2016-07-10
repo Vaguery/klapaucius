@@ -6,6 +6,7 @@
 - Cleaned up handling of ∞/-∞ throughout
 - Added `:complex-infinite?` and `:scalar-infinite?` instructions
 - Fixed bug in `:interval-scale` results' bounds, when scaling factor is negative
+- added `:scalars-filter` and `:scalars-remove` instructions
 
 ## 0.1.21
 
