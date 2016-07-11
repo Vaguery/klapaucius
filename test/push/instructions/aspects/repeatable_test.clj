@@ -29,7 +29,7 @@
 
     (class foo-echo) => push.instructions.core.Instruction
     
-    (:needs foo-echo) => {:foo 1, :generator 0}
+    (:needs foo-echo) => {:foo 1}
     (:products foo-echo) => {:generator 1}
 
     (:token foo-echo) => :foo-echo
@@ -60,7 +60,7 @@
 
     (class foo-echoall) => push.instructions.core.Instruction
     
-    (:needs foo-echoall) => {:foo 0, :generator 0}
+    (:needs foo-echoall) => {}
     (:products foo-echoall) => {:generator 1}
 
     (:token foo-echoall) => :foo-echoall
@@ -92,7 +92,7 @@
 
     (class foo-rerunall) => push.instructions.core.Instruction
     
-    (:needs foo-rerunall) => {:foo 0, :generator 0}
+    (:needs foo-rerunall) => {}
     (:products foo-rerunall) => {:generator 1}
 
     (:token foo-rerunall) => :foo-rerunall

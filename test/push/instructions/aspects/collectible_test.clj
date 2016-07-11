@@ -68,7 +68,7 @@
 (fact "as-set-instruction returns an Instruction with the correct stuff"
   (let [foo-as-set (as-set-instruction (make-type :foo))]
     (class foo-as-set) => push.instructions.core.Instruction
-    (:needs foo-as-set) => {:foo 1, :set 0}
+    (:needs foo-as-set) => {:foo 1}
     (:token foo-as-set) => :foo-as-set
     (get-stack
       (i/execute-instruction
@@ -86,7 +86,7 @@
 (fact "toset-instruction returns an Instruction with the correct stuff"
   (let [foo-toset (toset-instruction (make-type :foo))]
     (class foo-toset) => push.instructions.core.Instruction
-    (:needs foo-toset) => {:foo 1, :set 0}
+    (:needs foo-toset) => {:foo 1}
     (:token foo-toset) => :foo->set
     (get-stack
       (i/execute-instruction
@@ -105,7 +105,7 @@
 (fact "in-set?-instruction returns an Instruction with the correct stuff"
   (let [foo-in-set? (in-set?-instruction (make-type :foo))]
     (class foo-in-set?) => push.instructions.core.Instruction
-    (:needs foo-in-set?) => {:foo 1, :set 1, :boolean 0}
+    (:needs foo-in-set?) => {:foo 1, :set 1}
     (:token foo-in-set?) => :foo-in-set?
     (get-stack
       (i/execute-instruction

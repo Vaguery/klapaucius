@@ -57,7 +57,7 @@
   (let [foo-flush (flush-instruction (make-type :foo))]
     (class foo-flush) => push.instructions.core.Instruction
     (:tags foo-flush) => #{:combinator}
-    (:needs foo-flush) => {:foo 0}
+    (:needs foo-flush) => {}
     (:token foo-flush) => :foo-flush
     (get-stack
       (i/execute-instruction
@@ -75,7 +75,7 @@
   (let [foo-pop (pop-instruction (make-type :foo))]
     (class foo-pop) => push.instructions.core.Instruction
     (:tags foo-pop) => #{:combinator}
-    (:needs foo-pop) => {:foo 1}
+    (:needs foo-pop) => {}
     (:token foo-pop) => :foo-pop
     (get-stack
       (i/execute-instruction

@@ -20,7 +20,7 @@
 (fact "return-instruction produces an Instruction with the correct stuff"
   (let [foo-return (return-instruction (make-type :foo))]
     (class foo-return) => push.instructions.core.Instruction
-    (:needs foo-return) => {:foo 1, :return 0}
+    (:needs foo-return) => {:foo 1}
     (:token foo-return) => :foo-return
     (get-stack
       (i/execute-instruction
@@ -37,7 +37,7 @@
 (fact "return-pop-instruction produces an Instruction with the correct stuff"
   (let [foo-return-pop (return-pop-instruction (make-type :foo))]
     (class foo-return-pop) => push.instructions.core.Instruction
-    (:needs foo-return-pop) => {:return 0}
+    (:needs foo-return-pop) => {}
     (:token foo-return-pop) => :foo-return-pop
     (get-stack
       (i/execute-instruction

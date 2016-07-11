@@ -66,7 +66,7 @@
   (:needs
     (build-instruction foobar
       (d/consume-top-of :foo :as :in)
-      (d/push-onto :bar :in))) => {:bar 0 :foo 1})
+      (d/push-onto :bar :in))) => {:foo 1})
 
 
 (fact "build-instruction creates a new Instruction a transaction that's a function"

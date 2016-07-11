@@ -19,7 +19,7 @@
 (fact "stackdepth-instruction returns an Instruction with the correct stuff"
   (let [foo-depth (stackdepth-instruction (make-type :foo))]
     (class foo-depth) => push.instructions.core.Instruction
-    (:needs foo-depth) => {:foo 0, :scalar 0}
+    (:needs foo-depth) => {}
     (:token foo-depth) => :foo-stackdepth
     (get-stack
       (i/execute-instruction
@@ -36,7 +36,7 @@
 (fact "empty?-instruction returns an Instruction with the correct stuff"
   (let [foo-none? (empty?-instruction (make-type :foo))]
     (class foo-none?) => push.instructions.core.Instruction
-    (:needs foo-none?) => {:boolean 0, :foo 0}
+    (:needs foo-none?) => {}
     (:token foo-none?) => :foo-empty?
     (get-stack
       (i/execute-instruction

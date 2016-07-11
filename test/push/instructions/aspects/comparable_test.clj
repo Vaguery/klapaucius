@@ -16,7 +16,7 @@
   (let [foo-lessthan (lessthan?-instruction (make-type :foo))]
     (class foo-lessthan) => push.instructions.core.Instruction
     (:tags foo-lessthan) => #{:comparison}
-    (:needs foo-lessthan) => {:foo 2, :boolean 0}
+    (:needs foo-lessthan) => {:foo 2}
     (:token foo-lessthan) => :foo<?
     (get-stack
       (i/execute-instruction
@@ -58,7 +58,7 @@
   (let [foo-lte (lessthanorequal?-instruction (make-type :foo))]
     (class foo-lte) => push.instructions.core.Instruction
     (:tags foo-lte) => #{:comparison}
-    (:needs foo-lte) => {:foo 2, :boolean 0}
+    (:needs foo-lte) => {:foo 2}
     (:token foo-lte) => :foo≤?
     (get-stack
       (i/execute-instruction
@@ -99,7 +99,7 @@
   (let [foo-gte (greaterthanorequal?-instruction (make-type :foo))]
     (class foo-gte) => push.instructions.core.Instruction
     (:tags foo-gte) => #{:comparison}
-    (:needs foo-gte) => {:foo 2, :boolean 0}
+    (:needs foo-gte) => {:foo 2}
     (:token foo-gte) => :foo≥?
     (get-stack
       (i/execute-instruction
@@ -142,7 +142,7 @@
   (let [foo-gt (greaterthan?-instruction (make-type :foo))]
     (class foo-gt) => push.instructions.core.Instruction
     (:tags foo-gt) => #{:comparison}
-    (:needs foo-gt) => {:foo 2, :boolean 0}
+    (:needs foo-gt) => {:foo 2}
     (:token foo-gt) => :foo>?
     (get-stack
       (i/execute-instruction

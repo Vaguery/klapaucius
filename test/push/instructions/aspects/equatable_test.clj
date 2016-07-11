@@ -15,7 +15,7 @@
 (fact "equal?-instruction returns an Instruction with the correct stuff"
   (let [foo-equal (equal?-instruction (make-type :foo))]
     (class foo-equal) => push.instructions.core.Instruction
-    (:needs foo-equal) => {:foo 2, :boolean 0}
+    (:needs foo-equal) => {:foo 2}
     (:token foo-equal) => :foo-equal?
     (get-stack
       (i/execute-instruction
@@ -33,7 +33,7 @@
 (fact "notequal?-instruction returns an Instruction with the correct stuff"
   (let [foo-notequal (notequal?-instruction (make-type :foo))]
     (class foo-notequal) => push.instructions.core.Instruction
-    (:needs foo-notequal) => {:foo 2, :boolean 0}
+    (:needs foo-notequal) => {:foo 2}
     (:token foo-notequal) => :foo-notequal?
     (get-stack
       (i/execute-instruction

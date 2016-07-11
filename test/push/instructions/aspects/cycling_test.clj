@@ -29,7 +29,7 @@
 
     (class foo-comprehension) => push.instructions.core.Instruction
     
-    (:needs foo-comprehension) => {:foo 1, :generator 0}
+    (:needs foo-comprehension) => {:foo 1}
     (:products foo-comprehension) => {:generator 1}
 
     (:token foo-comprehension) => :foo-comprehension
@@ -73,7 +73,7 @@
 
     (class foo-cycler) => push.instructions.core.Instruction
     
-    (:needs foo-cycler) => {:foo 1, :generator 0}
+    (:needs foo-cycler) => {:foo 1}
     (:products foo-cycler) => {:generator 1}
 
     (:token foo-cycler) => :foo-cycler
@@ -128,7 +128,7 @@
 
     (class foo-sampler) => push.instructions.core.Instruction
     
-    (:needs foo-sampler) => {:foo 1, :generator 0}
+    (:needs foo-sampler) => {:foo 1}
     (:products foo-sampler) => {:generator 1}
 
     (:token foo-sampler) => :foo-sampler

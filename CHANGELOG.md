@@ -26,6 +26,7 @@
 - `:ref-cyclevector` constructs vector of N items by cycling through :ref stack, using a second scalar to determine relative size of N (few, some, many, lots)
 - added new `:vectorized` instructions to `:vector` as appropriate
 - changed `:x-print` instruction to return the string result of `pr-str`
+- modified PushDSL `:needs` and `:products` table to remove 0 values; since it was originally written, stacks are created on demand
 
 ## 0.1.21
 

@@ -13,22 +13,21 @@
   (let [cmd (first step)
         resolved (resolve cmd)]
     (condp = resolved
-      #'save-snapshot {:snapshot 0}
       #'bind-item {}
       #'calculate {}
       #'clear-binding {}
       #'consume-nth-of {(second step) 1}
-      #'consume-stack {(second step) 0}
+      #'consume-stack {}
       #'consume-top-of {(second step) 1}
-      #'count-of {(second step) 0}
+      #'count-of {}
       #'delete-nth-of {(second step) 1}
-      #'delete-stack {(second step) 0}
-      #'delete-top-of {(second step) 1}
+      #'delete-stack {}
+      #'delete-top-of {}
       #'forget-binding {}
-      #'insert-as-nth-of {(second step) 0}
-      #'replace-stack {(second step) 0}
-      #'push-onto {(second step) 0}
-      #'push-these-onto {(second step) 0}
+      #'insert-as-nth-of {}
+      #'replace-stack {}
+      #'push-onto {}
+      #'push-these-onto {}
       #'quote-all-bindings {}
       #'quote-no-bindings {}
       #'record-an-error {}
@@ -40,7 +39,8 @@
       #'save-instructions {}
       #'save-max-collection-size {}
       #'save-nth-of {(second step) 1}
-      #'save-stack {(second step) 0}
+      #'save-snapshot {}
+      #'save-stack {}
       #'save-top-of {(second step) 1}
       #'save-top-of-binding {}
       #'start-storing-arguments {}
@@ -59,7 +59,6 @@
   (let [cmd (first step)
         resolved (resolve cmd)]
     (condp = resolved
-      #'save-snapshot {}
       #'bind-item {}
       #'calculate {}
       #'clear-binding {}
@@ -72,7 +71,7 @@
       #'delete-top-of {}
       #'forget-binding {}
       #'insert-as-nth-of {(second step) 1}
-      #'replace-stack {(second step) 0}
+      #'replace-stack {}
       #'push-onto {(second step) 1}
       #'push-these-onto {(second step) (count (last step))}
       #'quote-all-bindings {}
@@ -86,6 +85,7 @@
       #'save-instructions {}
       #'save-max-collection-size {}
       #'save-nth-of {}
+      #'save-snapshot {}
       #'save-stack {}
       #'save-top-of {}
       #'save-top-of-binding {}

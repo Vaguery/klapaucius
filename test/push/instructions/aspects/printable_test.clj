@@ -21,7 +21,7 @@
 (fact "print-instruction produces an Instruction with the correct stuff"
   (let [foo-print (print-instruction (make-type :foo))]
     (class foo-print) => push.instructions.core.Instruction
-    (:needs foo-print) => {:foo 1, :print 0}
+    (:needs foo-print) => {:foo 1}
     (:token foo-print) => :foo-print
     (get-stack
       (i/execute-instruction

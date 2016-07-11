@@ -671,23 +671,23 @@
   (inst/needs-of-dsl-step
     '(save-top-of :scalar :as :bar))  => {:scalar 1}
   (inst/needs-of-dsl-step
-    '(save-stack :scalar :as :bar))  => {:scalar 0}
+    '(save-stack :scalar :as :bar))  => {}
   (inst/needs-of-dsl-step
-    '(push-onto :scalar :foo))  => {:scalar 0}
+    '(push-onto :scalar :foo))  => {}
   (inst/needs-of-dsl-step
-    '(replace-stack :scalar :foo))  => {:scalar 0}
+    '(replace-stack :scalar :foo))  => {}
   (inst/needs-of-dsl-step
     '(delete-nth-of :scalar :at 1))  => {:scalar 1}
   (inst/needs-of-dsl-step
-    '(delete-stack :scalar))  => {:scalar 0}
+    '(delete-stack :scalar))  => {}
   (inst/needs-of-dsl-step
-    '(consume-stack :scalar :as :foo))  => {:scalar 0}
+    '(consume-stack :scalar :as :foo))  => {}
   (inst/needs-of-dsl-step
     '(consume-top-of :scalar :as :foo)) => {:scalar 1}
   (inst/needs-of-dsl-step
-    '(delete-top-of :scalar)) => {:scalar 1}
+    '(delete-top-of :scalar)) => {}
   (inst/needs-of-dsl-step
-    '(count-of :scalar :as :foo)) => {:scalar 0})
+    '(count-of :scalar :as :foo)) => {})
 
 
 (fact "`inst/needs-of-dsl-step` throws an exception for unknown DSL instructions"
@@ -742,7 +742,7 @@
   (inst/products-of-dsl-step
     '(push-these-onto :scalar [:foo :bar :baz]))  => {:scalar 3}
   (inst/products-of-dsl-step
-    '(replace-stack :scalar :foo))  => {:scalar 0}
+    '(replace-stack :scalar :foo))  => {}
   (inst/products-of-dsl-step
     '(insert-as-nth-of :scalar :foo :at 0))  => {:scalar 1}
   (inst/products-of-dsl-step

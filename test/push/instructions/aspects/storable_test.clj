@@ -53,7 +53,7 @@
     
     (class foo-ss) => push.instructions.core.Instruction
     
-    (:needs foo-ss) => {:foo 0 :ref 1}
+    (:needs foo-ss) => {:ref 1}
     
     (:token foo-ss) => :foo-savestack
 
@@ -81,7 +81,7 @@
     
     (class foo-ss) => push.instructions.core.Instruction
     
-    (:needs foo-ss) => {:foo 0}
+    (:needs foo-ss) => {}
     
     (:token foo-ss) => :foo-storestack
 
