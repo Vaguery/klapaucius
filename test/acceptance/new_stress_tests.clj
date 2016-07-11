@@ -1,6 +1,7 @@
 (ns acceptance.new-stress-tests
   (:require [push.core :as push]
             [push.type.definitions.quoted :as qc]
+            [push.type.definitions.interval :as iv]
             [com.climate.claypoole :as cp]
             )
   (:use midje.sweet))
@@ -61,6 +62,12 @@
 (declare some-codeblock)
 
 
+(defn some-interval
+  [i]
+  (iv/make-interval (some-long 100) (some-double 100)))
+
+
+
 (def all-the-letters (map keyword (map str (map char (range 97 123)))))
 
 
@@ -79,6 +86,7 @@
       (some-bigdec 10000000)
       (some-ascii 1)
       (some-string 10)
+      (some-interval 100)
       (vector-of-stuff some-long 100 i)
       (vector-of-stuff some-double 100 i)
       (rand-nth all-the-letters)
@@ -118,11 +126,12 @@
    :errors (count (push/get-stack i :error))
    :items (frequencies (map :item (push/get-stack i :error)))
    :scalar (push/get-stack i :scalar)
+   :bindings (:bindings i)
   })
 
 
 (def many-programs
-  (take 100 (repeatedly #(some-program 100 10))))
+  (take 10 (repeatedly #(some-program 1000 10))))
 
 
 (def sample-bindings
