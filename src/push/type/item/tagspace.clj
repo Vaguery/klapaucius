@@ -38,6 +38,18 @@
 
 
 
+(def tagspace-keyset
+  (core/build-instruction
+    tagspace-keyset
+    "`:tagspace-keyset` pops the top `:tagspace` item and pushes a `:set` containing all of its keys and the tagspace itself onto the `:exec` stack."
+    :tags #{:tagspace :collection}
+    (d/consume-top-of :tagspace :as :arg)
+    (d/calculate [:arg]
+      #(list (into #{} (or (keys (:contents %1)) (list))) %1) :as :keyset)
+    (d/push-onto :exec :keyset)))
+
+
+
 (def tagspace-lookup
   (core/build-instruction
     tagspace-lookup
@@ -228,6 +240,19 @@
 
 
 
+
+(def tagspace-valueset
+  (core/build-instruction
+    tagspace-valueset
+    "`:tagspace-valueset` pops the top `:tagspace` item and pushes a list containing all of its stored values (as a set) and the tagspace itself onto the `:exec` stack."
+    :tags #{:tagspace :collection}
+    (d/consume-top-of :tagspace :as :arg)
+    (d/calculate [:arg]
+      #(list (into #{} (or (vals (:contents %1)) (list))) %1) :as :valSet)
+    (d/push-onto :exec :valSet)))
+
+
+
 (def tagspace-type
   "builds the `:tagspace` collection type, which can hold arbitrary and mixed contents and uses numeric indices"
   (let [typename :tagspace]
@@ -236,6 +261,7 @@
                     :attributes #{:collection :tagspace})
       (t/attach-instruction , tagspace-count)
       (t/attach-instruction , tagspace-keys)
+      (t/attach-instruction , tagspace-keyset)
       (t/attach-instruction , tagspace-lookup)
       (t/attach-instruction , tagspace-lookupscalars)
       (t/attach-instruction , tagspace-lookupvector)
@@ -249,6 +275,7 @@
       (t/attach-instruction , tagspace-cutoff)
       (t/attach-instruction , tagspace-tidy)
       (t/attach-instruction , tagspace-values)
+      (t/attach-instruction , tagspace-valueset)
       aspects/make-cycling
       aspects/make-equatable
       aspects/make-movable
