@@ -206,3 +206,104 @@
     (push.core/get-stack
       (i/execute-instruction hasref :ref-peek) :ref) => '(:x :y)
     ))
+
+
+
+
+
+
+(fact ":ref->vector gets the entire stack of the top :ref and pushes that as a vector to :exec"
+  (let [hasref 
+    (assoc
+      (push.interpreter.templates.one-with-everything/make-everything-interpreter
+        :stacks {:ref '(:x :y)})
+      :bindings {:x '(1 2 3 4 5 6 7) :y '(false)})]
+    (push.core/get-stack hasref :ref) => '(:x :y)
+
+    (push.core/get-stack
+      (i/execute-instruction hasref :ref->vector) :exec) => '([1 2 3 4 5 6 7])
+    (push.core/get-stack
+      (i/execute-instruction hasref :ref->vector) :ref) => '(:y)
+    (get-in
+      (i/execute-instruction hasref :ref->vector)
+      [:bindings :x]) => '(1 2 3 4 5 6 7)
+    ))
+
+
+
+
+
+
+(fact ":ref-fillvector makes a scaled vector of copies of the top item in the ref"
+  (let [hasref 
+    (assoc
+      (push.interpreter.templates.one-with-everything/make-everything-interpreter
+        :stacks {:ref '(:x :y) :scalar '(3 5)})
+      :bindings {:x '(1 2 3 4 5 6 7) :y '(false)})]
+    (push.core/get-stack hasref :ref) => '(:x :y)
+
+    (push.core/get-stack
+      (i/execute-instruction hasref :ref-fillvector) :exec) => '([1 1 1 1 1])
+    (push.core/get-stack
+      (i/execute-instruction hasref :ref-fillvector) :ref) => '(:y)
+    (get-in
+      (i/execute-instruction hasref :ref-fillvector)
+      [:bindings :x]) => '(1 2 3 4 5 6 7)
+    ))
+
+
+(fact ":ref-fillvector is OK if the :ref is empty"
+  (let [hasref 
+    (assoc
+      (push.interpreter.templates.one-with-everything/make-everything-interpreter
+        :stacks {:ref '(:x :y) :scalar '(3 5)})
+      :bindings {:x '() :y '(false)})]
+    (push.core/get-stack hasref :ref) => '(:x :y)
+
+    (push.core/get-stack
+      (i/execute-instruction hasref :ref-fillvector) :exec) => '([])
+    (push.core/get-stack
+      (i/execute-instruction hasref :ref-fillvector) :ref) => '(:y)
+    (get-in
+      (i/execute-instruction hasref :ref-fillvector)
+      [:bindings :x]) => '()
+    ))
+
+
+
+
+(fact ":ref-cyclevector makes a scaled vector of copies by cycling over its entire stack"
+  (let [hasref 
+    (assoc
+      (push.interpreter.templates.one-with-everything/make-everything-interpreter
+        :stacks {:ref '(:x :y) :scalar '(3 5)})
+      :bindings {:x '(1 2 3) :y '(false)})]
+    (push.core/get-stack hasref :ref) => '(:x :y)
+
+    (push.core/get-stack
+      (i/execute-instruction hasref :ref-cyclevector) :exec) => '([1 2 3 1 2])
+    (push.core/get-stack
+      (i/execute-instruction hasref :ref-cyclevector) :ref) => '(:y)
+    (get-in
+      (i/execute-instruction hasref :ref-cyclevector)
+      [:bindings :x]) => '(1 2 3)
+    ))
+
+
+
+(fact ":ref-cyclevector is OK if the :ref is empty"
+  (let [hasref 
+    (assoc
+      (push.interpreter.templates.one-with-everything/make-everything-interpreter
+        :stacks {:ref '(:x :y) :scalar '(3 5)})
+      :bindings {:x '() :y '(false)})]
+    (push.core/get-stack hasref :ref) => '(:x :y)
+
+    (push.core/get-stack
+      (i/execute-instruction hasref :ref-cyclevector) :exec) => '([])
+    (push.core/get-stack
+      (i/execute-instruction hasref :ref-cyclevector) :ref) => '(:y)
+    (get-in
+      (i/execute-instruction hasref :ref-cyclevector)
+      [:bindings :x]) => '()
+    ))

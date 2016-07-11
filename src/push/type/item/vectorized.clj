@@ -141,6 +141,31 @@
 
 
 
+
+(defn x-cyclevector-instruction
+  [typename rootname]
+  (let [instruction-name (str (name typename) "-cyclevector")]
+    (eval (list
+      'push.instructions.core/build-instruction
+      instruction-name
+      (str "`" typename "-cyclevector` saves a copy of the `" rootname "` stack and pops two `:scalar` items (call them `scale` and `raw-count`, respectively). The `scale` value is used to determine whether to convert `raw-count` into a :few, :some, :many or :lots value. Items from the `" rootname "` stack are included, cycling to fill if needed, and the result is pushed to `" typename"`. If the `" rootname "` stack is empty, an empty vector is the result.")
+      :tags #{:vector}
+      `(push.instructions.dsl/save-stack ~rootname :as :stack)
+      `(push.instructions.dsl/consume-top-of :scalar :as :scale)
+      `(push.instructions.dsl/consume-top-of :scalar :as :raw-count)
+      `(push.instructions.dsl/calculate [:scale]
+          #(nth [10 100 1000 10000] (num/scalar-to-index %1 4)) :as :relative)
+      `(push.instructions.dsl/calculate [:raw-count :relative]
+          #(num/scalar-to-index %1 %2) :as :size)
+      `(push.instructions.dsl/calculate [:size :stack]
+          #(into [] (take %1 (cycle %2))) :as :result)
+      `(push.instructions.dsl/push-onto ~typename :result)
+      ))))
+
+
+
+
+
 (defn x-distinct-instruction
   [typename]
   (let [instruction-name (str (name typename) "-distinct")]
@@ -191,6 +216,28 @@
       '(push.instructions.dsl/calculate [:arg1] #(boolean (empty? %1)) :as :empty)
       '(push.instructions.dsl/push-onto :boolean :empty)))))
 
+
+
+
+(defn x-fillvector-instruction
+  [typename rootname]
+  (let [instruction-name (str (name typename) "-fillvector")]
+    (eval (list
+      'push.instructions.core/build-instruction
+      instruction-name
+      (str "`" typename "-fillvector` pops the top `" rootname "` item and two `:scalar` items (call them `scale` and `raw-count`, respectively). The `scale` value is used to determine whether to convert `raw-count` into a :few, :some, :many or :lots value, and then the appropriate number of copies of the " rootname "` are made into a single `" typename "` and pushed there.")
+      :tags #{:vector}
+      `(push.instructions.dsl/consume-top-of ~rootname :as :item)
+      `(push.instructions.dsl/consume-top-of :scalar :as :scale)
+      `(push.instructions.dsl/consume-top-of :scalar :as :raw-count)
+      `(push.instructions.dsl/calculate [:scale]
+          #(nth [10 100 1000 10000] (num/scalar-to-index %1 4)) :as :relative)
+      `(push.instructions.dsl/calculate [:raw-count :relative]
+          #(num/scalar-to-index %1 %2) :as :size)
+      `(push.instructions.dsl/calculate [:item :size]
+          #(into [] (take %2 (repeat %1))) :as :result)
+      `(push.instructions.dsl/push-onto ~typename :result)
+      ))))
 
 
 
@@ -252,6 +299,20 @@
       '(push.instructions.dsl/calculate [:arg1 :arg2]
           #(.indexOf %1 %2) :as :where)
       `(push.instructions.dsl/push-onto :scalar :where)))))
+
+
+
+(defn x-items-instruction
+  [typename]
+  (let [instruction-name (str (name typename) "-items")]
+    (eval (list
+      'push.instructions.core/build-instruction
+      instruction-name
+      (str "`" typename "-items` pops the top `" typename "` item, and pushes its contents onto `:exec` as a code block.")
+      :tags #{:vector}
+      `(push.instructions.dsl/consume-top-of ~typename :as :arg)
+      `(push.instructions.dsl/calculate [:arg] #(seq %1) :as :items)
+      `(push.instructions.dsl/push-onto :exec :items)))))
 
 
 
@@ -602,13 +663,16 @@
           (t/attach-instruction , (x-concat-instruction typename))
           (t/attach-instruction , (x-conj-instruction typename rootname))
           (t/attach-instruction , (x-contains?-instruction typename rootname))
+          (t/attach-instruction , (x-cyclevector-instruction typename rootname))
           (t/attach-instruction , (x-distinct-instruction typename))
           (t/attach-instruction , (x-do*each-instruction typename))
           (t/attach-instruction , (x-emptyitem?-instruction typename))
+          (t/attach-instruction , (x-fillvector-instruction typename rootname))
           (t/attach-instruction , (x-first-instruction typename rootname))
           (t/attach-instruction , (x-generalize-instruction typename))
           (t/attach-instruction , (x-generalizeall-instruction typename))
           (t/attach-instruction , (x-indexof-instruction typename rootname))
+          (t/attach-instruction , (x-items-instruction typename))
           (t/attach-instruction , (x-last-instruction typename rootname))
           (t/attach-instruction , (x-length-instruction typename))
           (t/attach-instruction , (x-new-instruction typename))

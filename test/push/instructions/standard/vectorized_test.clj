@@ -847,3 +847,103 @@
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
     )
+
+
+
+(tabular
+  (fact "`foos-items` dumps a list of contents onto :exec"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks foos-type ?instruction) => (contains ?expected))
+
+    ?new-stacks             ?instruction         ?expected
+
+    {:foos   '([1 2 3 4 5 6])}      
+                             :foos-items       {:exec '( (1 2 3 4 5 6) )}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos   '([])}      
+                             :foos-items       {:exec '(  )} ;; because `(seq '())` = nil
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
+(tabular
+  (fact "`foos-fillvector` makes a new vector of N copies of the top :foo, using the two-scalar trick for sizing"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks foos-type ?instruction) => (contains ?expected))
+
+    ?new-stacks             ?instruction         ?expected
+
+    {:foos   '()
+     :foo    '(0)
+     :scalar '(3 6)}      
+                             :foos-fillvector       {:foos '( [0 0 0 0 0 0] )
+                                                     :foo  '()
+                                                     :scalar '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos   '()
+     :foo    '(0)
+     :scalar '(0 603)}      
+                             :foos-fillvector       {:foos '( [0 0 0] )
+                                                     :foo  '()
+                                                     :scalar '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos   '()
+     :foo    '(0)
+     :scalar '(1 603)}      
+                             :foos-fillvector       {:foos '( [0 0 0] )
+                                                     :foo  '()
+                                                     :scalar '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos   '()
+     :foo    '(0)
+     :scalar '(-7/2 111)}      
+                             :foos-fillvector       {:foos '( [0 0 0 0 0 0 0 0 0 0 0] )
+                                                     :foo  '()
+                                                     :scalar '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos   '()
+     :foo    '(0)
+     :scalar '(-11/2 111)}      
+                             :foos-fillvector       {:foos (list
+                                                       (into [] (take 111 (repeat 0))))
+                                                     :foo  '()
+                                                     :scalar '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+    )
+
+
+
+
+(tabular
+  (fact "`foos-cyclevector` makes a new vector of N copies of the top :foo, using the two-scalar trick for sizing"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks foos-type ?instruction) => (contains ?expected))
+
+    ?new-stacks             ?instruction         ?expected
+
+    {:foos   '()
+     :foo    '(1/2 3.4)
+     :scalar '(3 5)}      
+                             :foos-cyclevector       {:foos '( [1/2 3.4 1/2 3.4 1/2] )
+                                                     :foo  '(1/2 3.4)
+                                                     :scalar '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos   '()
+     :foo    '(1/2 3.4)
+     :scalar '(0 603)}      
+                             :foos-cyclevector       {:foos '( [1/2 3.4 1/2] )
+                                                     :foo  '(1/2 3.4)
+                                                     :scalar '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos   '()
+     :foo    '(1/2 3.4)
+     :scalar '(-11/2 111)}      
+                             :foos-cyclevector       {:foos (list
+                                                       (into [] (take 111 (cycle [1/2 3.4]))))
+                                                     :foo  '(1/2 3.4)
+                                                     :scalar '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+    )

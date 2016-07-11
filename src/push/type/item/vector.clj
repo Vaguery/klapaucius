@@ -52,16 +52,20 @@
       aspects/make-visible 
       (t/attach-instruction , vector-refilter)
       (t/attach-instruction , vector-refilterall)
+      (t/attach-instruction , (v/x-build-instruction typename componentname))
       (t/attach-instruction , (v/x-butlast-instruction typename))
       (t/attach-instruction , (v/x-byexample-instruction typename componentname))
       (t/attach-instruction , (v/x-concat-instruction typename))
       (t/attach-instruction , (v/x-conj-instruction typename componentname))
       (t/attach-instruction , (v/x-contains?-instruction typename componentname))
+      (t/attach-instruction , (v/x-cyclevector-instruction typename componentname))
       (t/attach-instruction , (v/x-distinct-instruction typename))
       (t/attach-instruction , (v/x-do*each-instruction typename))
       (t/attach-instruction , (v/x-emptyitem?-instruction typename))
+      (t/attach-instruction , (v/x-fillvector-instruction typename componentname))
       (t/attach-instruction , (v/x-first-instruction typename componentname))
       (t/attach-instruction , (v/x-indexof-instruction typename componentname))
+      (t/attach-instruction , (v/x-items-instruction typename))
       (t/attach-instruction , (v/x-last-instruction typename componentname))
       (t/attach-instruction , (v/x-length-instruction typename))
       (t/attach-instruction , (v/x-new-instruction typename))
@@ -81,5 +85,3 @@
       (t/attach-instruction , (v/x-vremove-instruction typename))
       (t/attach-instruction , (v/x-vsplit-instruction typename))
       )))
-
-

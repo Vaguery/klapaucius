@@ -18,6 +18,13 @@
 - added several `:tagspace` instructions for emitting keys and values as `:set` or `:vector` items
 - added several `:tagspace` instructions for filter/remove/splitting with a `:set` acting on the _values_ (not the keys); a sort of reverse-lookup
 - added `:x-pt-crossover` and `:x-distinct` functions to `:vectorized`
+- `:x-items` (in `:vectorized`) recycles items onto :exec
+- `:x-fillvector` (in `:vectorized`) constructs vector of N copies of top root item, using a second scalar to determine relative size of N (few, some, many, lots)
+- `:x-cyclevector` (in `:vectorized`) constructs vector of N items by cycling through root stack, using a second scalar to determine relative size of N (few, some, many, lots)
+- `:ref->vector` copy :ref stack to a :vector
+- `:ref-fillvector` constructs vector of N copies of top :ref item, using a second scalar to determine relative size of N (few, some, many, lots)
+- `:ref-cyclevector` constructs vector of N items by cycling through :ref stack, using a second scalar to determine relative size of N (few, some, many, lots)
+- added new `:vectorized` instructions to `:vector` as appropriate
 
 ## 0.1.21
 
