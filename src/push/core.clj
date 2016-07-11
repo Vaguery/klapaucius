@@ -11,11 +11,7 @@
 ;; then-run function (load new code, run that)
 ;; interrogate interpreter state
 ;; define new interpreter template
-
-;; instructions:
-;; write new instruction
-;; register instruction in interpreter instance
-;; remove instructions from interpreter instance
+;; trace interpreter
 
 ;; types:
 ;; define new type
@@ -39,16 +35,37 @@
            config {}
            counter 0
            done? false}}]
-    (merge-stacks 
-      (i/reset-interpreter
-        (owe/make-everything-interpreter
+    (-> (owe/make-everything-interpreter
           :program program
           :stacks stacks
           :bindings bindings
           :config config
           :counter counter
-          :done? done?))
-      stacks))
+          :done? done?)
+        i/reset-interpreter
+        (merge-stacks , stacks)
+      ))
+
+
+(defn forget-instructions
+  "Given an interpreter and a collection of instruction names, returns the identical interpreter with the instructions _erased_. They are removed entirely."
+  [interpreter inst-names]
+  (reduce
+    (fn [i inst] (update-in i [:instructions] dissoc inst))
+    interpreter
+    inst-names))
+
+
+
+(defn register-instructions
+  "Given an interpreter and a collection of instruction records (each must refer to a defined `var` containing an instruction), returns the identical interpreter with the instructions registered. Any old instructions bound to the same keys are overwritten."
+  [interpreter instructions]
+  (reduce
+    (fn [i inst] (push.interpreter.core/add-instruction i inst))
+    interpreter
+    instructions))
+
+
 
 
 (defn known-instructions

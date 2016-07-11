@@ -74,7 +74,62 @@
           :bindings {:b -99}) :scalar) => '(-99 198)))
 
 
-(future-fact "I can turn off individual instructions with the :disable key in the :config hash"
-  ;; but I don't know how just yet
-  )
+(fact "I can turn off individual instructions with the forget-instructions function"
+  (keys
+    (:instructions
+      (p/forget-instructions (p/interpreter) [:scalar-add]))) =not=>
+        (contains :scalar-add)
+  (keys (:instructions (p/interpreter))) => (contains :scalar-add))
+
+
+
+(fact "I can turn off multiple instructions with the forget-instructions function"
+  (count
+    (keys
+      (:instructions
+        (p/forget-instructions (p/interpreter) [:scalar-add :scalar-subtract])))) =>
+     (- (count
+      (keys
+        (:instructions (p/interpreter)))) 2))
+
+
+
+(fact "I can turn off unknown instructions with no trouble"
+  (keys
+    (:instructions
+      (p/forget-instructions (p/interpreter) [:foo-bar :baz-quux]))) =>
+  (keys
+    (:instructions (p/interpreter))))
+
+
+;; a fixture
+
+(def foo-pop
+  (push.instructions.core/build-instruction
+    foo-pop
+    (push.instructions.dsl/consume-top-of :foo :as :gone)))
+
+
+
+(fact "about :foo-pop"
+  (:token foo-pop) => :foo-pop
+  (:needs foo-pop) => {:foo 1})
+
+
+
+(fact "I can add a new instruction with register-instructions"
+  (keys
+    (:instructions
+      (p/register-instructions (p/interpreter) [foo-pop]))) => (contains :foo-pop))
+
+
+
+(fact "I can overwrite an old instruction with register-instructions"
+  (:docstring
+    (:scalar-add
+      (:instructions
+        (p/register-instructions
+          (p/interpreter)
+          [(assoc foo-pop :token :scalar-add)])))) => (:docstring foo-pop))
+
 
