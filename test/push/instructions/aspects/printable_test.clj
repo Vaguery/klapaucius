@@ -7,6 +7,7 @@
   (:use push.instructions.aspects)
   (:use push.type.module.print)
   (:use push.instructions.aspects.printable)
+  (:use push.type.definitions.complex)
   )
 
 
@@ -26,10 +27,15 @@
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(2)}) foo-print)
         :foo-print)
-      :print) => '(2)
+      :print) => '("2")
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(2)}) foo-print)
         :foo-print)
       :foo) => '()
+    (get-stack
+      (i/execute-instruction
+        (i/register-instruction (m/basic-interpreter :stacks {:foo (list (complexify 9 -3.1))}) foo-print)
+        :foo-print)
+      :print) => '("#push.type.definitions.complex.Complex{:re 9, :im -3.1}")
 ))

@@ -12,9 +12,10 @@
     (eval (list
       `build-instruction
       instruction-name
-      (str "`:" instruction-name "` pops the top `" typename "` item and pushes it to the `:print` stack.")
+      (str "`:" instruction-name "` pops the top `" typename "` item and pushes a string (made via `pr-str`) to the `:print` stack.")
       :tags #{:io}
       
-      `(consume-top-of ~typename :as :arg1)
-      `(push-onto :print :arg1)))))
+      `(consume-top-of ~typename :as :arg)
+      `(calculate [:arg] #(pr-str %1) :as :output)
+      `(push-onto :print :output)))))
 
