@@ -1,43 +1,48 @@
 (ns push.type.item.vector
-  (:require [push.instructions.core :as core]
-            [push.type.core :as t]
-            [push.instructions.dsl :as d]
-            [push.instructions.aspects :as aspects]
-            [push.type.item.vectorized :as v]
+  (:use     [push.instructions.core :only [build-instruction]]
+            [push.type.core :only [attach-instruction, make-type]]
+            [push.instructions.dsl]
+            [push.type.item.vectorized]
+            )
+  (:require [push.instructions.aspects :as aspects]
+            
             ))
 
 
 
 (def vector-refilter
-  (core/build-instruction
+  (build-instruction
     vector-refilter
     "`:vector-refilter` pops the top `:vector` value, and sends it to the `:exec` stack"
     :tags #{:conversion :vector}
-    (d/consume-top-of :vector :as :arg)
-    (d/push-onto :exec :arg)))
+
+    (consume-top-of :vector :as :arg)
+    (push-onto :exec :arg)
+    ))
 
 
 
 (def vector-refilterall
-  (core/build-instruction
+  (build-instruction
     vector-refilterall
     "`:vector-refilterall` puts the entire `:vector` stack on top of the `:exec` stack"
     :tags #{:conversion :vector}
-    (d/consume-stack :vector :as :stack)
-    (d/consume-stack :exec :as :old-exec)
-    (d/calculate [:stack :old-exec]
-        #(into '() (reverse (concat %1 %2))) :as :new-exec)
-    (d/replace-stack :exec :new-exec)))
+
+    (consume-stack :vector :as :stack)
+    (consume-stack :exec :as :old-exec)
+    (calculate [:stack :old-exec] #(into '() (reverse (concat %1 %2))) :as :new-exec)
+    (replace-stack :exec :new-exec)
+    ))
 
 
 
 (def standard-vector-type
   "builds the basic `:vector` type, which can hold arbitrary and mixed contents"
-  (let [typename :vector
+  (let [typename      :vector
         componentname :code]
-  (-> (t/make-type  :vector
-                      :recognized-by vector?
-                      :attributes #{:collection :vector})
+  (-> (make-type  :vector
+                  :recognized-by vector?
+                  :attributes #{:collection :vector})
       aspects/make-collectible
       aspects/make-cycling
       aspects/make-equatable
@@ -50,38 +55,38 @@
       aspects/make-storable
       aspects/make-taggable
       aspects/make-visible 
-      (t/attach-instruction , vector-refilter)
-      (t/attach-instruction , vector-refilterall)
-      (t/attach-instruction , (v/x-build-instruction typename componentname))
-      (t/attach-instruction , (v/x-butlast-instruction typename))
-      (t/attach-instruction , (v/x-byexample-instruction typename componentname))
-      (t/attach-instruction , (v/x-concat-instruction typename))
-      (t/attach-instruction , (v/x-conj-instruction typename componentname))
-      (t/attach-instruction , (v/x-contains?-instruction typename componentname))
-      (t/attach-instruction , (v/x-cyclevector-instruction typename componentname))
-      (t/attach-instruction , (v/x-distinct-instruction typename))
-      (t/attach-instruction , (v/x-do*each-instruction typename))
-      (t/attach-instruction , (v/x-emptyitem?-instruction typename))
-      (t/attach-instruction , (v/x-fillvector-instruction typename componentname))
-      (t/attach-instruction , (v/x-first-instruction typename componentname))
-      (t/attach-instruction , (v/x-indexof-instruction typename componentname))
-      (t/attach-instruction , (v/x-items-instruction typename))
-      (t/attach-instruction , (v/x-last-instruction typename componentname))
-      (t/attach-instruction , (v/x-length-instruction typename))
-      (t/attach-instruction , (v/x-new-instruction typename))
-      (t/attach-instruction , (v/x-nth-instruction typename componentname))
-      (t/attach-instruction , (v/x-occurrencesof-instruction typename componentname))
-      (t/attach-instruction , (v/x-portion-instruction typename))
-      (t/attach-instruction , (v/x-pt-crossover-instruction typename))
-      (t/attach-instruction , (v/x-shatter-instruction typename componentname))
-      (t/attach-instruction , (v/x-remove-instruction typename componentname))
-      (t/attach-instruction , (v/x-replace-instruction typename componentname))
-      (t/attach-instruction , (v/x-replacefirst-instruction typename componentname))
-      (t/attach-instruction , (v/x-rest-instruction typename))
-      (t/attach-instruction , (v/x-set-instruction typename componentname))
-      (t/attach-instruction , (v/x-take-instruction typename))
-      (t/attach-instruction , (v/x-reverse-instruction typename))
-      (t/attach-instruction , (v/x-vfilter-instruction typename))
-      (t/attach-instruction , (v/x-vremove-instruction typename))
-      (t/attach-instruction , (v/x-vsplit-instruction typename))
+      (attach-instruction , vector-refilter)
+      (attach-instruction , vector-refilterall)
+      (attach-instruction , (x-build-instruction typename componentname))
+      (attach-instruction , (x-butlast-instruction typename))
+      (attach-instruction , (x-byexample-instruction typename componentname))
+      (attach-instruction , (x-concat-instruction typename))
+      (attach-instruction , (x-conj-instruction typename componentname))
+      (attach-instruction , (x-contains?-instruction typename componentname))
+      (attach-instruction , (x-cyclevector-instruction typename componentname))
+      (attach-instruction , (x-distinct-instruction typename))
+      (attach-instruction , (x-do*each-instruction typename))
+      (attach-instruction , (x-emptyitem?-instruction typename))
+      (attach-instruction , (x-fillvector-instruction typename componentname))
+      (attach-instruction , (x-first-instruction typename componentname))
+      (attach-instruction , (x-indexof-instruction typename componentname))
+      (attach-instruction , (x-items-instruction typename))
+      (attach-instruction , (x-last-instruction typename componentname))
+      (attach-instruction , (x-length-instruction typename))
+      (attach-instruction , (x-new-instruction typename))
+      (attach-instruction , (x-nth-instruction typename componentname))
+      (attach-instruction , (x-occurrencesof-instruction typename componentname))
+      (attach-instruction , (x-portion-instruction typename))
+      (attach-instruction , (x-pt-crossover-instruction typename))
+      (attach-instruction , (x-shatter-instruction typename componentname))
+      (attach-instruction , (x-remove-instruction typename componentname))
+      (attach-instruction , (x-replace-instruction typename componentname))
+      (attach-instruction , (x-replacefirst-instruction typename componentname))
+      (attach-instruction , (x-rest-instruction typename))
+      (attach-instruction , (x-set-instruction typename componentname))
+      (attach-instruction , (x-take-instruction typename))
+      (attach-instruction , (x-reverse-instruction typename))
+      (attach-instruction , (x-vfilter-instruction typename))
+      (attach-instruction , (x-vremove-instruction typename))
+      (attach-instruction , (x-vsplit-instruction typename))
       )))
