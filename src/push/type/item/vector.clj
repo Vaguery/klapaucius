@@ -41,6 +41,7 @@
       aspects/make-collectible
       aspects/make-cycling
       aspects/make-equatable
+      aspects/make-into-tagspaces
       aspects/make-movable
       aspects/make-printable
       aspects/make-quotable
