@@ -50,6 +50,19 @@
 
 
 
+(def tagspace-keyvector
+  (core/build-instruction
+    tagspace-keyvector
+    "`:tagspace-keyvector` pops the top `:tagspace` item and pushes a code block containing all of its keys (as a `:vector`) and the tagspace itself onto the `:exec` stack."
+    :tags #{:tagspace :collection}
+    (d/consume-top-of :tagspace :as :arg)
+    (d/calculate [:arg]
+      #(list (into [] (or (keys (:contents %1)) (list))) %1) :as :keyvec)
+    (d/push-onto :exec :keyvec)))
+
+
+
+
 (def tagspace-lookup
   (core/build-instruction
     tagspace-lookup
@@ -209,6 +222,10 @@
 
 
 
+
+
+
+
 (def tagspace-tidy
   (core/build-instruction
     tagspace-tidy
@@ -229,6 +246,59 @@
 
 
 
+(def tagspace-valuefilter
+  (core/build-instruction
+    tagspace-valuefilter
+    "`:tagspace-valuefilter` pops the top `:set` item and the top `:tagspace`, and pushes a new `:tagspace` only containing the _values_ present in the `:set`."
+    :tags #{:set}
+    (d/consume-top-of :set :as :allowed)
+    (d/consume-top-of :tagspace :as :ts)
+    (d/calculate [:ts :allowed]
+      #(make-tagspace
+        (filter
+          (fn [kv] (boolean (%2 (second kv))))
+          (seq (:contents %1)))) :as :result)
+    (d/push-onto :tagspace :result)))
+
+
+
+(def tagspace-valueremove
+  (core/build-instruction
+    tagspace-valueremove
+    "`:tagspace-valueremove` pops the top `:set` item and the top `:tagspace`, and pushes a new `:tagspace` only containing the _values_ NOT present in the `:set`."
+    :tags #{:set}
+    (d/consume-top-of :set :as :allowed)
+    (d/consume-top-of :tagspace :as :ts)
+    (d/calculate [:ts :allowed]
+      #(make-tagspace
+        (remove
+          (fn [kv] (boolean (%2 (second kv))))
+          (seq (:contents %1)))) :as :result)
+    (d/push-onto :tagspace :result)))
+
+
+
+(def tagspace-valuesplit
+  (core/build-instruction
+    tagspace-valuesplit
+    "`:tagspace-valuesplit` pops the top `:set` item and the top `:tagspace`, and pushes a list containing two new `:tagspace` items: the first has items the _values_ present in the `:set`, the second all the items NOT present."
+    :tags #{:set}
+    (d/consume-top-of :set :as :allowed)
+    (d/consume-top-of :tagspace :as :ts)
+    (d/calculate [:ts :allowed]
+      #(list
+        (make-tagspace
+          (filter
+            (fn [kv] (boolean (%2 (second kv))))
+            (seq (:contents %1))))
+        (make-tagspace
+          (remove
+            (fn [kv] (boolean (%2 (second kv))))
+            (seq (:contents %1))))) :as :result)
+    (d/push-onto :exec :result)))
+
+
+
 (def tagspace-values
   (core/build-instruction
     tagspace-values
@@ -237,7 +307,6 @@
     (d/consume-top-of :tagspace :as :arg)
     (d/calculate [:arg] #(list (or (vals (:contents %1)) (list)) %1) :as :valList)
     (d/push-onto :exec :valList)))
-
 
 
 
@@ -253,6 +322,20 @@
 
 
 
+(def tagspace-valuevector
+  (core/build-instruction
+    tagspace-valuevector
+    "`:tagspace-valuevector` pops the top `:tagspace` item and pushes a list containing all of its stored values (as a vector) and the tagspace itself onto the `:exec` stack."
+    :tags #{:tagspace :collection}
+    (d/consume-top-of :tagspace :as :arg)
+    (d/calculate [:arg]
+      #(list (into [] (or (vals (:contents %1)) (list))) %1) :as :valSet)
+    (d/push-onto :exec :valSet)))
+
+
+
+
+
 (def tagspace-type
   "builds the `:tagspace` collection type, which can hold arbitrary and mixed contents and uses numeric indices"
   (let [typename :tagspace]
@@ -262,6 +345,7 @@
       (t/attach-instruction , tagspace-count)
       (t/attach-instruction , tagspace-keys)
       (t/attach-instruction , tagspace-keyset)
+      (t/attach-instruction , tagspace-keyvector)
       (t/attach-instruction , tagspace-lookup)
       (t/attach-instruction , tagspace-lookupscalars)
       (t/attach-instruction , tagspace-lookupvector)
@@ -274,8 +358,12 @@
       (t/attach-instruction , tagspace-scale)
       (t/attach-instruction , tagspace-cutoff)
       (t/attach-instruction , tagspace-tidy)
+      (t/attach-instruction , tagspace-valuefilter)
+      (t/attach-instruction , tagspace-valueremove)
       (t/attach-instruction , tagspace-values)
       (t/attach-instruction , tagspace-valueset)
+      (t/attach-instruction , tagspace-valuesplit)
+      (t/attach-instruction , tagspace-valuevector)
       aspects/make-cycling
       aspects/make-equatable
       aspects/make-movable

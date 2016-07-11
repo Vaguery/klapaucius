@@ -86,6 +86,124 @@
 
 
 
+(let 
+  [taggy (make-tagspace {6 5 -4 3 2 1})]
+(tabular
+  (fact "`:tagspace-keyvector` pushes the keys (as a vector) and tagspace to exec"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks tagspace-type ?instruction) => (contains ?expected))
+
+    ?new-stacks         ?instruction       ?expected
+    {:tagspace
+      (list taggy)}     :tagspace-keyvector     {:exec  (list (list [-4 2 6] taggy))
+                                            :tagspace '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:tagspace (list (make-tagspace))}   
+                        :tagspace-keyvector     {:exec  (list (list [] (make-tagspace)))
+                                            :tagspace '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ))
+
+
+
+
+
+(let 
+  [taggy (make-tagspace {8 1 6 5 -4 3 2 1})]
+(tabular
+  (fact "`:tagspace-valuefilter` retains values present in a set"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks tagspace-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction           ?expected
+
+    {:tagspace (list taggy)
+     :set '(#{1 5})}          :tagspace-valuefilter 
+                                                       {:tagspace
+                                                        (list
+                                                          (make-tagspace {2 1, 6 5, 8 1}))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:tagspace (list taggy)
+     :set '(#{:a :b})}        :tagspace-valuefilter 
+                                                       {:tagspace
+                                                        (list
+                                                          (make-tagspace))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:tagspace (list taggy)
+     :set '(#{})}             :tagspace-valuefilter 
+                                                       {:tagspace
+                                                        (list
+                                                          (make-tagspace))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ))
+
+
+
+
+
+
+(let 
+  [taggy (make-tagspace {8 1 6 5 -4 3 2 1})]
+(tabular
+  (fact "`:tagspace-valueremove` removes values present in a set"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks tagspace-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction           ?expected
+
+    {:tagspace (list taggy)
+     :set '(#{2 3 4})}          :tagspace-valueremove 
+                                                       {:tagspace
+                                                        (list
+                                                          (make-tagspace {2 1,6 5,8 1}))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:tagspace (list taggy)
+     :set '(#{:a})}          :tagspace-valueremove 
+                                                       {:tagspace
+                                                        (list taggy)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:tagspace (list taggy)
+     :set '(#{1})}          :tagspace-valueremove 
+                                                       {:tagspace
+                                                        (list 
+                                                          (make-tagspace {-4 3, 6 5}))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ))
+
+
+
+
+(let 
+  [taggy (make-tagspace {8 1 6 5 -4 3 2 1})]
+(tabular
+  (fact "`:tagspace-valuesplit` returns two :tagspaces"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks tagspace-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction           ?expected
+
+    {:tagspace (list taggy)
+     :set '(#{2 3 4})}      :tagspace-valuesplit 
+                                                      {:exec (list (list
+                                                        (make-tagspace {-4 3})
+                                                        (make-tagspace {2 1,6 5,8 1})))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:tagspace (list taggy)
+     :set '(#{1})}          :tagspace-valuesplit 
+                                                      {:exec (list (list
+                                                        (make-tagspace {8 1,2 1})
+                                                        (make-tagspace {6 5,-4 3})))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:tagspace (list taggy)
+     :set '(#{:foo})}          :tagspace-valuesplit 
+                                                      {:exec (list (list
+                                                        (make-tagspace)
+                                                        taggy))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ))
+
+
+
 
 (let 
   [taggy (make-tagspace {6 5 -4 3 2 1})]
@@ -123,6 +241,27 @@
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:tagspace (list (make-tagspace))}   
                               :tagspace-valueset   {:exec (list (list #{}
+                                                          (make-tagspace)))
+                                                  :tagspace '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ))
+
+
+
+(let 
+  [taggy (make-tagspace {6 5 -4 3 2 1})]
+(tabular
+  (fact "`:tagspace-valuevector` pushes the values and tagspace to exec"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks tagspace-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction      ?expected
+
+    {:tagspace (list taggy)}  :tagspace-valuevector   {:exec (list (list [3 1 5] taggy))
+                                                  :tagspace '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:tagspace (list (make-tagspace))}   
+                              :tagspace-valuevector   {:exec (list (list []
                                                           (make-tagspace)))
                                                   :tagspace '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
