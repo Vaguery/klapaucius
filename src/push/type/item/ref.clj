@@ -104,6 +104,21 @@
 
 
 
+(def ref-dump-tagspace
+  (core/build-instruction
+    ref-dump-tagspace
+    "`:ref-dump-tagspace` pops the top `:ref` keyword and pushes the entire current contents of that binding's stack as a `:vector` item`, then pushes a continuation block to `:exec` that will subsequently convert the `:vector` to a `:tagspace`"
+    :tags #{:binding}
+    (d/consume-top-of :ref :as :ref)
+    (d/save-binding-stack :ref :as :contents)
+    (d/calculate [:contents] #(into [] %1) :as :vec)
+    (d/calculate [] #((constantly :vector->tagspace)) :as :continuation)
+    (d/push-onto :vector :vec)
+    (d/push-onto :exec :continuation)
+    ))
+
+
+
 (def ref-exchange
   (core/build-instruction
     ref-exchange
@@ -238,6 +253,7 @@
         (t/attach-instruction ref-clear)
         (t/attach-instruction ref-cyclevector)
         (t/attach-instruction ref-dump)
+        (t/attach-instruction ref-dump-tagspace)
         (t/attach-instruction ref-exchange)
         (t/attach-instruction ref-fillvector)
         (t/attach-instruction ref-forget)

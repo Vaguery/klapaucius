@@ -654,3 +654,8 @@
                                                    :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
+
+
+
+(fact "vector-type knows `:vector->tagspace` instruction (a bug fix)"
+    (keys (:instructions standard-vector-type)) => (contains :vector->tagspace))

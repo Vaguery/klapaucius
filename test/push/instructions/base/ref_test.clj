@@ -307,3 +307,23 @@
       (i/execute-instruction hasref :ref-cyclevector)
       [:bindings :x]) => '()
     ))
+
+
+
+
+(fact ":ref-dump-tagspace"
+  (let [hasref 
+    (assoc
+      (push.interpreter.templates.one-with-everything/make-everything-interpreter
+        :stacks {:ref '(:x) :vector '()})
+      :bindings {:x '(1 2 3 4)})]
+    (push.core/get-stack hasref :ref) => '(:x)
+
+    (push.core/get-stack
+      (i/execute-instruction hasref :ref-dump-tagspace) :exec) => '(:vector->tagspace)
+    (push.core/get-stack
+      (i/execute-instruction hasref :ref-dump-tagspace) :ref) => '()
+    (push.core/get-stack
+      (i/execute-instruction hasref :ref-dump-tagspace) :vector) => '([1 2 3 4])
+    ))
+

@@ -29,6 +29,7 @@
 - modified PushDSL `:needs` and `:products` table to remove 0 values; since it was originally written, stacks are created on demand
 - cleaned up `push.type.item.vector` and `push.type.item.vectorized` call structures for legibility
 - added `forget-instructions` and `register-instructions` functions to `push.core`
+- `ref-dump-tagspace` instruction
 
 ## 0.1.21
 

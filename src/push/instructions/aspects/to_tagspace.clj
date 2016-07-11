@@ -13,7 +13,7 @@
     (eval (list
       `build-instruction
       instruction-name
-      (str "`:" instruction-name "` pops the top `" typename "` item and two `:scalar` items (call them `end` and `start`, respectively). The contents of the collection are stored in a new `:tagspace` with the first item at index `start`, the last at index `end`, and the rest as evenly distributed as possible between the two. The indices are all coerced to be `:scalar` values, so some may overlap. If `end` is smaller than `start`, then that's the way things will work.")
+      (str "`:" instruction-name "` pops the top `" typename "` item and two `:scalar` items (call them `end` and `start`, respectively). The contents of the collection are stored in a new `:tagspace` with the first item at index `start`, the last at index `end`, and the rest as evenly distributed as possible between the two. The indices are all coerced to be `:scalar` values, so some may overlap. If `end` is smaller than `start`, then that's the way things will work. The elements of the original `" typename "` are stored in the `:tagspace` in whatever order they appear, which may have unexpected consequences when converting unordered collections like `:set` items.")
       :tags #{:tagspace :collection}
 
       `(consume-top-of ~typename :as :arg)
