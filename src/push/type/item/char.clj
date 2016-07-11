@@ -46,7 +46,7 @@
 (def scalar->asciichar
   (core/build-instruction
     scalar->asciichar
-    "`:scalar->asciichar` pops the top `:sclar` value, reduces it modulo 128, and pushes the `:char` that is represented by that ASCII value"
+    "`:scalar->asciichar` pops the top `:scalar` value, reduces it modulo 128, and pushes the `:char` that is represented by that ASCII value"
     :tags #{:string :conversion :base}
     (d/consume-top-of :scalar :as :arg)
     (d/calculate [:arg] 
