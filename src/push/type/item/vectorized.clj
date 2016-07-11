@@ -141,6 +141,21 @@
 
 
 
+(defn x-distinct-instruction
+  [typename]
+  (let [instruction-name (str (name typename) "-distinct")]
+    (eval (list
+      'push.instructions.core/build-instruction
+      instruction-name
+      (str "`" typename "-distinct` pops the top `" typename "` item, then pushes a new `" typename "` item containing only the first copy of each item in the original.")
+      :tags #{:vector}
+      `(push.instructions.dsl/consume-top-of ~typename :as :arg)
+      `(push.instructions.dsl/calculate [:arg] #(into [] (distinct %1)) :as :result)
+      `(push.instructions.dsl/push-onto ~typename :result)))))
+
+
+
+
 (defn x-do*each-instruction
   [typename]
   (let [instruction-name (str (name typename) "-do*each")]
@@ -315,6 +330,32 @@
 
 
 
+(defn x-pt-crossover-instruction
+  [typename]
+  (let [instruction-name (str (name typename) "-pt-crossover")]
+    (eval (list
+      'push.instructions.core/build-instruction
+      instruction-name
+      (str "`" typename "-pt-crossover` pops the top `" typename "` two items (call them `B` and `A` respectively) and the the top two `:scalar` values. It converts the `:scalar` values into indices (modulo each vector's length), then pushes two new vectors to the `" typename "` stack. The first contains the front of `A` and the back of `B`, and the other vice versa, using the two indices as cutpoints")
+      :tags #{:vector}
+      `(push.instructions.dsl/consume-top-of ~typename :as :B)
+      `(push.instructions.dsl/consume-top-of ~typename :as :A)
+      `(push.instructions.dsl/consume-top-of :scalar :as :idxB)
+      `(push.instructions.dsl/consume-top-of :scalar :as :idxA)
+      `(push.instructions.dsl/calculate [:A :idxA]
+        #(if (empty? %1) 0 (num/scalar-to-index %2 (count %1))) :as :cutA)
+      `(push.instructions.dsl/calculate [:B :idxB]
+        #(if (empty? %1) 0 (num/scalar-to-index %2 (count %1))) :as :cutB)
+      `(push.instructions.dsl/calculate [:A  :B :cutA :cutB]
+        #(into [] (concat (take %3 %1) (drop %4 %2))) :as :resultA)
+      `(push.instructions.dsl/calculate [:A  :B :cutA :cutB]
+        #(into [] (concat (take %4 %2) (drop %3 %1))) :as :resultB)
+      `(push.instructions.dsl/push-onto ~typename :resultA)
+      `(push.instructions.dsl/push-onto ~typename :resultB)
+      ))))
+
+
+
 (defn x-portion-instruction
   [typename]
   (let [instruction-name (str (name typename) "-portion")]
@@ -468,6 +509,10 @@
 
 
 
+
+
+
+
 (defn filter-vector-with-vector
   [v f]
   (into [] (filter #((set f) %1) v)))
@@ -557,6 +602,7 @@
           (t/attach-instruction , (x-concat-instruction typename))
           (t/attach-instruction , (x-conj-instruction typename rootname))
           (t/attach-instruction , (x-contains?-instruction typename rootname))
+          (t/attach-instruction , (x-distinct-instruction typename))
           (t/attach-instruction , (x-do*each-instruction typename))
           (t/attach-instruction , (x-emptyitem?-instruction typename))
           (t/attach-instruction , (x-first-instruction typename rootname))
@@ -569,6 +615,7 @@
           (t/attach-instruction , (x-nth-instruction typename rootname))
           (t/attach-instruction , (x-occurrencesof-instruction typename rootname))
           (t/attach-instruction , (x-portion-instruction typename))
+          (t/attach-instruction , (x-pt-crossover-instruction typename))
           (t/attach-instruction , (x-shatter-instruction typename rootname))
           (t/attach-instruction , (x-remove-instruction typename rootname))
           (t/attach-instruction , (x-replace-instruction typename rootname))

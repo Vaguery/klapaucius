@@ -159,6 +159,24 @@
     )
 
 
+
+(tabular
+  (fact "`foos-distinct` removes duplicate items from the :foos vector"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks foos-type ?instruction) => (contains ?expected))
+
+    ?new-stacks              ?instruction     ?expected
+
+    {:foos '([3 1 1 2 3 1 2 2])}        
+                             :foos-distinct       
+                                              {:foos '([3 1 2])}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos '([1 2 3])}       :foos-distinct   {:foos '([1 2 3])}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
 (tabular
   (fact "`foos-do*each` constructs a complex continuation (see below)"
     (check-instruction-with-all-kinds-of-stack-stuff
@@ -792,4 +810,40 @@
      :scalar   '(-12)}           :foos-take        {:foos    '([])
                                                    :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
+(tabular
+  (fact "`foos-pt-crossover` does crossover"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks foos-type ?instruction) => (contains ?expected))
+
+    ?new-stacks             ?instruction         ?expected
+
+    {:foos   '([1 2 3 4 5 6]
+               [99 88 77 66])
+     :scalar '(3 1)}      
+                           :foos-pt-crossover       {:foos '([1 2 3 88 77 66]
+                                                             [99 4 5 6])}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos   '([1 2 3 4 5 6]
+               [99 88 77 66])
+     :scalar '(3/2 -11.7)}      
+                           :foos-pt-crossover       {:foos '([1 2 88 77 66]
+                                                             [99 3 4 5 6])}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos   '([1 2 3 4 5 6]
+               [])
+     :scalar '(3/2 -11.7)}      
+                           :foos-pt-crossover       {:foos '([1 2]
+                                                             [3 4 5 6])}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos   '([]
+               [99 88 77 66])
+     :scalar '(3/2 -11.7)}      
+                           :foos-pt-crossover       {:foos '([88 77 66]
+                                                             [99])}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
     )
