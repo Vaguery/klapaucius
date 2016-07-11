@@ -15,6 +15,8 @@
 - extensive cleanup of DSL exception-handling (nonexisting stacks created on demand now)
 - added `:collectible` aspect, which adds several `:set`-related instructions to types
 - added `:x-vfilter`, `:x-vremove` and `:x-vsplit` instructions to `vectorized` aspect, which filter items of a vectorized type with another item of the same type
+- added several `:tagspace` instructions for emitting keys and values as `:set` or `:vector` items
+- added several `:tagspace` instructions for filter/remove/splitting with a `:set` acting on the _values_ (not the keys); a sort of reverse-lookup
 
 ## 0.1.21
 
