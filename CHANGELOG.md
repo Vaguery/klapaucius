@@ -31,6 +31,7 @@
 - added `forget-instructions` and `register-instructions` functions to `push.core`
 - `ref-dump-tagspace` instruction
 - renamed `collectible` aspect to `set-able` throughout
+- imposed a restriction on `:scalar-power`: produces an `:error` when `(abs (*' base (Math/log expt)))` is larger than 65535 (that magic number could change after stress testing), to avoid time-out errors in random programs generating huuuuuuuuuge results blithely
 
 ## 0.1.21
 
