@@ -191,8 +191,10 @@
     (d/consume-top-of :code :as :c)
     (d/consume-top-of :scalar :as :i)
     (d/calculate [:c] #(u/count-code-points %1) :as :size)
-    (d/calculate [:size :i] #(n/scalar-to-index %2 %1) :as :idx)
-    (d/calculate [:c :idx] #(u/nth-code-point %1 %2) :as :result)
+    (d/calculate [:size :i]
+      #(n/scalar-to-index %2 %1) :as :idx)
+    (d/calculate [:c :idx]
+      #(u/nth-code-point %1 %2) :as :result)
     (d/push-onto :code :result)))
 
 

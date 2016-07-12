@@ -615,7 +615,7 @@
       `(calculate [:arg :which]
           #(if (empty? %1) 0 (num/scalar-to-index %2 (count %1))) :as :idx)
       `(calculate [:arg :idx :subst]
-          #(if (empty? %1) %1 (into [] (assoc %1 %2 %3))) :as :result)
+          #(if (empty? %1) %1 (into [] (assoc %1 (long %2) %3))) :as :result)
       `(push-onto ~typename :result)
       ))))
 

@@ -56,7 +56,7 @@
   [code idx]
   (loop [loc (zip/seq-zip code)
          counter 0]
-    (if (= counter idx)
+    (if (>= counter idx)
       (zip/node loc)
       (recur (zip/next loc)                                   
              (inc counter)))))
@@ -99,11 +99,11 @@
 
 
 (defn replace-nth-in-code
-  "Takes two Push :code items and an integer, and replaces the node (counted in depth-first order) of the first code with the second code item."
+  "Takes two Push :code items and a number, and replaces the node (counted in depth-first order) of the first code with the second code item."
   [code1 code2 idx]
   (loop [loc (zip/seq-zip code1)
          counter 0]
-    (if (= counter idx)
+    (if (>= counter idx)
         (zip/root (zip/replace loc code2))
       (recur (zip/next loc)                                   
              (inc counter)))))

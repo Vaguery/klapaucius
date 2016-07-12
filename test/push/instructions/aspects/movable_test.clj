@@ -23,6 +23,8 @@
   (scalar-to-index 77777777777777777777777777777777777777777N 8) => 1N
   (scalar-to-index 76652.3333e871M 17) => 9N
   (scalar-to-index -76652.3333e871M 17) => 8N
+  (scalar-to-index ∞ 17) => 0
+  (scalar-to-index -∞ 17) => 0
   )
 
 

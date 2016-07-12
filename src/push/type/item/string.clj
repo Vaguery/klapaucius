@@ -315,7 +315,7 @@
     (d/consume-top-of :char :as :c)
     (d/consume-top-of :scalar :as :where)
     (d/calculate [:s :where]
-      #(if (empty? %1) 0 (num/scalar-to-index %2 (count %1))) :as :idx)
+      #(if (empty? %1) 0 (num/scalar-to-index (long %2) (count %1))) :as :idx)
     (d/calculate [:s :idx :c] #(strings/join (assoc (vec %1) %2 %3)) :as :result)
     (d/push-onto :string :result)))
 
