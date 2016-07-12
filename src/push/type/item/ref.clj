@@ -264,7 +264,7 @@
         (t/attach-instruction ref-peek)
         (t/attach-instruction ref->vector)
 
-        aspects/make-collectible
+        aspects/make-set-able
         aspects/make-equatable
         aspects/make-movable
         aspects/make-printable

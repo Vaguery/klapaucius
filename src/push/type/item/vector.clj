@@ -43,7 +43,7 @@
   (-> (make-type  :vector
                   :recognized-by vector?
                   :attributes #{:collection :vector})
-      aspects/make-collectible
+      aspects/make-set-able
       aspects/make-cycling
       aspects/make-equatable
       aspects/make-into-tagspaces

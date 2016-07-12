@@ -66,7 +66,7 @@
   (-> (t/make-type  :set
                     :recognized-by set?
                     :attributes #{:collection :set})
-      aspects/make-collectible
+      aspects/make-set-able
       aspects/make-cycling
       aspects/make-equatable
       aspects/make-into-tagspaces

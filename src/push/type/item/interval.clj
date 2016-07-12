@@ -494,7 +494,7 @@
   (-> (make-type  :interval
                   :recognized-by interval/interval?
                   :attributes #{:numeric :set})
-        aspects/make-collectible
+        aspects/make-set-able
         aspects/make-equatable
         aspects/make-movable
         aspects/make-printable

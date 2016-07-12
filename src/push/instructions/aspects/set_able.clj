@@ -1,4 +1,4 @@
-(ns push.instructions.aspects.collectible
+(ns push.instructions.aspects.set-able
   (:use [push.instructions.core :only (build-instruction)]
         [push.instructions.dsl]))
 

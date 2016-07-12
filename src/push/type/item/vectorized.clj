@@ -736,7 +736,7 @@
     ( ->  (make-type  typename
                         :recognized-by #(vector-of-type? % content-type)
                         :attributes #{:vector})
-          aspects/make-collectible
+          aspects/make-set-able
           aspects/make-cycling
           aspects/make-equatable
           aspects/make-into-tagspaces

@@ -440,7 +440,7 @@
 (def code-module
   ( ->  (t/make-module  :code
                         :attributes #{:complex :base})
-        aspects/make-collectible
+        aspects/make-set-able
         aspects/make-cycling
         aspects/make-equatable
         aspects/make-movable

@@ -1,15 +1,15 @@
-(ns push.instructions.aspects.collectible-test
+(ns push.instructions.aspects.set-able-test
   (:require [push.interpreter.core :as i])
   (:require [push.core :as push])
   (:use midje.sweet)
   (:use push.util.stack-manipulation)
   (:use push.type.core)
   (:use push.instructions.aspects)
-  (:use push.instructions.aspects.collectible)
+  (:use push.instructions.aspects.set-able)
   )
 
 
-;; collectible instructions
+;; set-able instructions
 
 
 
@@ -132,11 +132,11 @@
 
 
 
-(fact "`make-collectible` takes adds the :collectible attribute to a PushType record"
-  (:attributes (make-collectible (make-type :foo))) => #{:collectible})
+(fact "`make-set-able` takes adds the :set-able attribute to a PushType record"
+  (:attributes (make-set-able (make-type :foo))) => #{:set-able})
 
 
-(fact "`make-collectible` takes adds appropriate instructions to a PushType record"
+(fact "`make-set-able` takes adds appropriate instructions to a PushType record"
   (keys (:instructions
-    (make-collectible (make-type :foo)))) => (contains [:foo->set :foo-as-set] :in-any-order :gaps-ok))
+    (make-set-able (make-type :foo)))) => (contains [:foo->set :foo-as-set] :in-any-order :gaps-ok))
 
