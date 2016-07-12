@@ -35,6 +35,7 @@
 - minor change to `:scalar-power`, which will produce an `:error` if the result is `∞` or `-∞` (unlike most other instructions)
 - fixed problematic issue (not a bug, but causative of one) converting `:scalar` values to indices of collections; removed all unnecessary references to `long` type in codebase (used only for converting `char` values to numbers now)
 - removed unnecessary references to `bigint` and `bigdec` as well
+- fixed several subtle reversions (bugs) caused by change to non-integer indexing
 
 ## 0.1.21
 
