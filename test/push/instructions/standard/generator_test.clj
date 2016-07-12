@@ -147,7 +147,7 @@
                   (push.core/get-stack 
                     (i/execute-instruction g :generator-jumpsome) 
                     :generator))]
-        (:state result) => -4  ;; note the jump was (mod 712.7 100) = 12N steps
+        (:state result) => -4  ;; note the jump was (floor (mod 712.7 100)) = 12.0 steps
         (:origin result) => 351
         ))
 

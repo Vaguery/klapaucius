@@ -12,8 +12,10 @@
 (defn scalar-to-index
   "Takes an arbitrary :scalar value and the size of a collection, and returns an index falling in the range of the collection's size; assumes the count is 1 or larger"
   [value howmany]
-  (let [idx (long (Math/ceil (mod value howmany)))]
-    (if (= idx howmany) 0 idx)))
+  (if (zero? howmany)
+    (throw (Exception. "scalar-to-index requires a strictly positive argument"))
+    (let [idx (nt/floor (mod value howmany))]
+      (if (= idx howmany) 0 idx))))
 
 
 
@@ -50,20 +52,6 @@
 
 (defn infty? [number] (= number ∞))
 (defn ninfty? [number] (= number -∞))
-
-
-
-(defn downsample-bigdec
-  "Takes a `bigdec` argument. If the number has no fractional part and is smaller than Long/MAX_VALUE, it returns `(long n)`; otherwise, it returns `(double n)`."
-  [n]
-  (if (bigdecimal? n)
-    (if (and
-          (<= (nt/abs n) Long/MAX_VALUE)
-          (integerish? n))
-      (long n)
-      (double n))
-    (throw (Exception. "cannot downsample a non-BigDecimal value"))))
-
 
 
 (defn index-maker

@@ -4,6 +4,7 @@
             [push.instructions.dsl :as d]
             [push.instructions.aspects :as aspects]
             [push.util.exotics :as exotics]
+            [clojure.math.numeric-tower :as nt]
             [push.util.numerics :as n]
             )
   (:use [push.type.definitions.generator])
@@ -45,7 +46,7 @@
     (d/consume-top-of :scalar :as :steps)
     (d/calculate [:arg :steps]
       #(first 
-        (drop (mod (bigint %2) 100)
+        (drop (nt/floor (mod %2 100))
           (iterate (fn [g] (if (nil? g) nil (step-generator g))) %1))) :as :result)
     (d/push-onto :generator :result)))
 

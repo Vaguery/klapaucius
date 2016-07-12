@@ -33,6 +33,8 @@
 - renamed `collectible` aspect to `set-able` throughout
 - imposed a restriction on `:scalar-power`: produces an `:error` when `(abs (*' base (Math/log expt)))` is larger than 65535 (that magic number could change after stress testing), to avoid time-out errors in random programs generating huuuuuuuuuge results blithely
 - minor change to `:scalar-power`, which will produce an `:error` if the result is `∞` or `-∞` (unlike most other instructions)
+- fixed problematic issue (not a bug, but causative of one) converting `:scalar` values to indices of collections; removed all unnecessary references to `long` type in codebase (used only for converting `char` values to numbers now)
+- removed unnecessary references to `bigint` and `bigdec` as well
 
 ## 0.1.21
 
@@ -44,7 +46,6 @@
   - `:push-discardARGS` unsets the interpreter's `:store-args?` value
   - `:ref-peek`, which looks up a `:ref` and pushes its current value to `:exec` but also replaces the `:ref` on that stack
 - also various bug fixes, noticed along the way
-
 
 
 ## 0.1.20
