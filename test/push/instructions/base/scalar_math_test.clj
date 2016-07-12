@@ -676,14 +676,25 @@
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar '(2 8)}       :scalar-power     {:scalar '(64)
                                               :error '()} 
-    {:scalar '(33334 111121213M)}     :scalar-power     {:scalar '()
+    {:scalar '(33334 111121213M)}
+                           :scalar-power     {:scalar '()
                                               :error '({:item ":scalar-power out of bounds", :step 0})}
     {:scalar '(33334 0.0000000000111121213M)}
-                                     :scalar-power     {:scalar '()
+                           :scalar-power     {:scalar '()
                                               :error '({:item ":scalar-power out of bounds", :step 0})}
-    {:scalar '(-3333 111121213M)}     :scalar-power     {:scalar '()
+    {:scalar (list 33334 ∞)}
+                           :scalar-power     {:scalar '()
+                                              :error '({:item ":scalar-power out of bounds", :step 0})}
+    {:scalar (list ∞ ∞)}
+                           :scalar-power     {:scalar '()
+                                              :error '({:item ":scalar-power out of bounds", :step 0})}
+    {:scalar (list ∞ 0.0000000000111121213M)}
+                           :scalar-power     {:scalar '(0.0)
+                                              :error '()}
+    {:scalar '(-3333 111121213M)}
+                           :scalar-power     {:scalar '()
                                               :error '({:item ":scalar-power out of bounds", :step 0} {:item "Non-terminating decimal expansion; no exact representable decimal result.", :step 0})}
-)
+    )
 
 
 
