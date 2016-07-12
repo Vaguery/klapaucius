@@ -261,17 +261,25 @@
 (def scalar-power
   (core/build-instruction
     scalar-power
-    "`:scalar-power` pops the top two `:scalar` values (call them `exponent` and `base` respectively). It calculates `(numeric-tower/expt base exponent)`."
+    "`:scalar-power` pops the top two `:scalar` values (call them `exponent` and `base` respectively). It calculates `(numeric-tower/expt base exponent)`. If the absolute value of the product of the exponent and `(Math/log base)` is more than 2^16, no result is returned; instead, an `:error` is pushed."
     :tags #{:arithmetic :base :dangerous}
 
     (d/consume-top-of :scalar :as :exp)
     (d/consume-top-of :scalar :as :base)
-    (d/calculate [:base :exp] #(nt/expt %1 %2) :as :prelim)
+    (d/calculate [:base :exp]
+      #(if (zero? %1)
+        false
+        (> (nt/abs (*' %2 (Math/log (nt/abs %1)))) 
+           65535)) :as :oversized?)
+    (d/calculate [:base :exp :oversized?]
+      #(if %3 nil (nt/expt %1 %2)) :as :prelim)
     (d/calculate [:prelim]
-      #(or (Double/isNaN %1) (Double/isInfinite %1)) :as :bad-result)
-    (d/calculate [:bad-result :prelim] #(if %1 nil %2) :as :result)
+      #(or (nil? %1)
+           (Double/isNaN %1)) :as :bad-result)
+    (d/calculate [:bad-result :prelim]
+      #(if %1 nil %2) :as :result)
     (d/calculate [:bad-result]
-      #(if %1 ":scalar-power did not produce a :scalar result") :as :warning)
+      #(if %1 ":scalar-power out of bounds") :as :warning)
     (d/push-onto :scalar :result)
     (d/record-an-error :from :warning)
   ))
@@ -569,7 +577,7 @@
         (t/attach-instruction , scalar-modulo)
         (t/attach-instruction , scalar-multiply)
         (t/attach-instruction , scalar-π)
-        ; (t/attach-instruction , scalar-power)
+        (t/attach-instruction , scalar-power)
         (t/attach-instruction , scalar-ratio?)
         (t/attach-instruction , scalar-reciprocal)
         (t/attach-instruction , scalar-round)

@@ -626,7 +626,7 @@
 
 
 (tabular
-  (future-fact ":scalar-power produces the result of raising the second :scalar to the power of the first, or an :error if the result is not a scalar"
+  (fact ":scalar-power produces the result of raising the second :scalar to the power of the first, or an :error if the result is not a scalar"
     (check-instruction-with-all-kinds-of-stack-stuff
         ?new-stacks scalar-type ?instruction) => (contains ?expected))
 
@@ -650,18 +650,39 @@
                                               :error '()} 
     {:scalar '(-2 100)}    :scalar-power     {:scalar '(1/10000)
                                               :error '()} 
-    {:scalar '(-1e13 1e13)} :scalar-power    {:scalar '(0.0)
-                                              :error '()}
 
 
+
+    {:scalar '(-1e13 1e13)} :scalar-power    {:scalar '()
+                                              :error '({:item ":scalar-power out of bounds", :step 0})}
     {:scalar '(0.5 -10.0)} :scalar-power     {:scalar '()
-                                              :error '({:item ":scalar-power did not produce a :scalar result", :step 0})}
+                                              :error '({:item ":scalar-power out of bounds", :step 0})}
     {:scalar '(1/13 -10)}  :scalar-power     {:scalar '()
-                                              :error '({:item ":scalar-power did not produce a :scalar result", :step 0})}
+                                              :error '({:item ":scalar-power out of bounds", :step 0})}
     {:scalar '(1e13 1e13)}  :scalar-power    {:scalar '()
-                                              :error '({:item ":scalar-power did not produce a :scalar result", :step 0})}
+                                              :error '({:item ":scalar-power out of bounds", :step 0})}
     {:scalar '(1e13 -1e13)} :scalar-power    {:scalar '()
-                                              :error '({:item ":scalar-power did not produce a :scalar result", :step 0})}
+                                              :error '({:item ":scalar-power out of bounds", :step 0})}
+)
+
+
+
+(tabular
+  (fact ":scalar-power overflows when the scale cutoff is exceeded"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks scalar-type ?instruction) => (contains ?expected))
+
+    ?new-stacks           ?instruction     ?expected
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:scalar '(2 8)}       :scalar-power     {:scalar '(64)
+                                              :error '()} 
+    {:scalar '(33334 111121213M)}     :scalar-power     {:scalar '()
+                                              :error '({:item ":scalar-power out of bounds", :step 0})}
+    {:scalar '(33334 0.0000000000111121213M)}
+                                     :scalar-power     {:scalar '()
+                                              :error '({:item ":scalar-power out of bounds", :step 0})}
+    {:scalar '(-3333 111121213M)}     :scalar-power     {:scalar '()
+                                              :error '({:item ":scalar-power out of bounds", :step 0} {:item "Non-terminating decimal expansion; no exact representable decimal result.", :step 0})}
 )
 
 
