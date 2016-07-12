@@ -30,6 +30,7 @@
 - cleaned up `push.type.item.vector` and `push.type.item.vectorized` call structures for legibility
 - added `forget-instructions` and `register-instructions` functions to `push.core`
 - `ref-dump-tagspace` instruction
+- renamed `collectible` aspect to `set-able` throughout
 
 ## 0.1.21
 
