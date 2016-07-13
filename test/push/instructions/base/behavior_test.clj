@@ -57,6 +57,5 @@
 (fact ":push-cycleARGS turns on the interpreter's :cycle-args? flag"
   (let [no (push/interpreter :config {:cycle-args? false})]
     (get-in no [:config :cycle-args?]) => false
-    (get-in
-      (i/execute-instruction no :push-cycleARGS)
+    (get-in (i/execute-instruction no :push-cycleARGS)
       [:config :cycle-args?]) => true))

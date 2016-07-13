@@ -182,7 +182,8 @@
   (let [cycle?   (get-in interpreter [:config :cycle-args?] false)
         old-exec (u/get-stack interpreter :exec)]
     (if cycle?
-      (u/set-stack interpreter :exec (concat old-exec (list item)))
+      (u/set-stack interpreter :exec 
+        (reverse (into (reverse old-exec) (list item))))
       interpreter)))
 
 
