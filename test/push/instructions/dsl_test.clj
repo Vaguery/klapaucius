@@ -1147,3 +1147,42 @@
     (save-snapshot [skimpy {}])) => '({:step 0, :item "Push runtime error: snapshot is over size limit"})
   )
 
+
+
+;; argument retention
+
+
+(fact "`start-storing-arguments` sets the :store-args? flag to true"
+  (let [turned-off (m/basic-interpreter :config {:store-args? false})]
+    (get-in turned-off [:config :store-args?]) => 
+      false
+    (get-in (start-storing-arguments [turned-off {}]) [0 :config :store-args?]) => 
+      true
+      ))
+
+
+(fact "`stop-storing-arguments` sets the :store-args? flag to false"
+  (let [turned-on (m/basic-interpreter :config {:store-args? true})]
+    (get-in turned-on [:config :store-args?]) => 
+      true
+    (get-in (stop-storing-arguments [turned-on {}]) [0 :config :store-args?]) =>
+      false
+    ))
+
+
+(fact "`start-cycling-arguments` sets the :cycle-args? flag to true"
+  (let [turned-off (m/basic-interpreter :config {:cycle-args? false})]
+    (get-in turned-off [:config :cycle-args?]) =>
+      false
+    (get-in (start-cycling-arguments [turned-off {}]) [0 :config :cycle-args?]) =>
+      true
+      ))
+
+
+(fact "`stop-cycling-arguments` sets the :cycle-args? flag to false"
+  (let [turned-on (m/basic-interpreter :config {:cycle-args? true})]
+    (get-in turned-on [:config :cycle-args?]) => 
+      true
+    (get-in (stop-cycling-arguments [turned-on {}]) [0 :config :cycle-args?]) =>
+      false
+      ))

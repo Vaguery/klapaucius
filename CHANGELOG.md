@@ -7,6 +7,13 @@
 - added `:x-make` instruction in the `buildable` aspect, which pops the requisite parts (in the correct order) and makes a new `:x` item
 - added `:x-parts` instruction in the `buildable` aspect, which pops an `:x` and decomposes it into a code block of its component parts (in the correct order), which is pushed to `:exec`
 - fixed a bug in `make-tagspace` which threw an exception when storing a non-terminating rational and a `bigdec` in the same `TagSpace` (added a `dire` handler that applies `(with-precision 1000 ...)`)
+- moved `:push-quoterefs`, `:push-unquoterefs`, `:push-discardARGS` and `:push-storeARGS` instructions to new `push.type.module.behavior`
+- modified `push.interpreter.core/apply-instruction` to recognize and respond to `:cycle-args?` state in `:config`
+- refactored `push.interpreter.core/apply-instruction` for clarity and extensibility
+- tested `push.interpreter.core/apply-instruction`
+- added DSL instructions `start-cycling-arguments` and `stop-cycling-arguments`, and added tests for those plus older `start-storing-arguments`, `stop-storing-arguments`
+- renamed `push-discardARGS` to `:push-nostoreARGS`
+- added instructions `:push-cycleARGS` and `:push-nocycleARGS` to `push.type.module.behavior`
 
 ## 0.1.22
 

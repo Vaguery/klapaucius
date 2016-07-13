@@ -166,6 +166,26 @@
 
 
 
+(defn store-item-in-ARGS
+  "Takes an Interpreter an a Push item. If the Interpreter's :store-args? :config state is `true`, it will bind the item passed in as the new [top] value in the :binding called `:ARGS`. Otherwise it has no effect."
+  [interpreter item]
+  (let [store?  (get-in interpreter [:config :store-args?] false)]
+    (if store?
+      (bind-value interpreter :ARGS item)
+      interpreter)))
+
+
+
+(defn append-item-to-exec
+  "Takes an Interpreter an a Push item. If the Interpreter's :cycle-args? :config state is `true`, it will append the item passed in to the `:exec` stack. Otherwise it has no effect."
+  [interpreter item]
+  (let [cycle?   (get-in interpreter [:config :cycle-args?] false)
+        old-exec (u/get-stack interpreter :exec)]
+    (if cycle?
+      (u/set-stack interpreter :exec (concat old-exec (list item)))
+      interpreter)))
+
+
 
 (defn apply-instruction
   "Takes an interpreter and a token. Returns the interpreter. If the `:store-args?` value is `true` in the interpreter's `:config`, the arguments will be saved onto the `:ARGS` binding. If the `:cycle-args?` value is `true` in the interpreter's `:config`, the arguments will (also) be appended to the tail of `:exec`. NOTE: returns ONLY the interpreter, not the state tuple."
@@ -175,13 +195,11 @@
                 ;; of [interpreter scratch]
         updated (first applied)            
                 ;; just the modified interpreter resulting from the instruction
-        store?  (get-in updated [:config :store-args?] false)
-        cycle?  (get-in updated [:config :cycle-args?] false)
         args    (:ARGS (second applied))
         ]
-    (-> (if store?
-          (bind-value updated :ARGS args)
-          updated)
+    (-> updated
+        (store-item-in-ARGS , args)
+        (append-item-to-exec , args)
     )))
       
 

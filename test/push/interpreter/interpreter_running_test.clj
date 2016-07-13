@@ -209,11 +209,39 @@
 ;; argument retention
 
 
+(fact "store-item-in-ARGS does what it sounds like, but only if :store-args? is true"
+  (let [i (push/interpreter :config {:store-args? true})]
+    (:bindings i) => {}
+    (:bindings (store-item-in-ARGS i 9999)) => '{:ARGS (9999)}))
+
+
+
+(fact "store-item-in-ARGS does what it sounds like, but not if :store-args? is false"
+  (let [i (push/interpreter :config {:store-args? false})]
+    (:bindings i) => {}
+    (:bindings (store-item-in-ARGS i 9999)) => '{}))
+
+
+
+(fact "append-item-to-exec does what it sounds like, but only if :cycle-args? is true"
+  (let [i (push/interpreter :config {:cycle-args? true})]
+    (u/get-stack i :exec) => '()
+    (u/get-stack (append-item-to-exec i '(9999)) :exec) => '((9999))))
+
+
+
+(fact "append-item-to-exec does what it sounds like, but not if :cycle-args? is false"
+  (let [i (push/interpreter :config {:cycle-args? false})]
+    (u/get-stack i :exec) => '()
+    (u/get-stack (append-item-to-exec i '(9999)) :exec) => '()))
+
+
+
 (fact "`apply-instruction`"
   (let [i (push/interpreter
             :stacks {:scalar '(1 2 3)}
             :config {:store-args? true})]
-    ; (keys (apply-instruction i :scalar-add)) => 99
+    (:bindings (apply-instruction i :scalar-add)) => {:ARGS '((2 1))}
     ))
 
 
@@ -234,7 +262,18 @@
             :stacks {:scalar '(1 2 3) :exec '()}
             :config {:cycle-args? true})]
     (:config (handle-item i :scalar-add)) => (contains {:cycle-args? true})
-    (u/get-stack (handle-item i :scalar-add) :exec) => '((1 2))
+    (u/get-stack (handle-item i :scalar-add) :exec) => '((2 1))
+    ))
+
+
+
+(fact "when both :store-args? and :cycle-args? are true (in :config), the arguments consumed by instructions are saved in both locations"
+  (let [i (push/interpreter
+            :stacks {:scalar '(1 2 3) :exec '()}
+            :config {:store-args? true :cycle-args? true})]
+    (:config (handle-item i :scalar-add)) => (contains {:cycle-args? true})
+    (:bindings (handle-item i :scalar-add)) => (contains '{:ARGS ((2 1))})
+    (u/get-stack (handle-item i :scalar-add) :exec) => '((2 1))
     ))
 
 

@@ -7,41 +7,6 @@
             ))
 
 
-;; interpreter state toggles
-
-(def quote-refs
-  (core/build-instruction
-    push-quoterefs
-    "`:push-quoterefs` toggles the interpreter state so that all known binding keywords are pushed automatically to the :ref stack without being resolved"
-    :tags #{:binding}
-    (d/quote-all-bindings)))
-
-
-
-(def unquote-refs
-  (core/build-instruction
-    push-unquoterefs
-    "`:push-unquoterefs` toggles the interpreter state so that all known binding keywords are resolved immediately, not pushed to the :ref stack"
-    :tags #{:binding}
-    (d/quote-no-bindings)))
-
-
-
-(def push-storeARGS
-  (core/build-instruction
-    push-storeARGS
-    "`:push-storeARGS` sets the `:store-args?` value of the interpreter's `:config`. While it is `true`, the interpreter will save arguments consumed by instructions into the `binding` named `:ARGS`."
-    :tags #{:binding}
-    (d/start-storing-arguments)))
-
-
-
-(def push-discardARGS
-  (core/build-instruction
-    push-discardARGS
-    "`:push-discardARGS` unsets the `:store-args?` value of the interpreter's `:config`. While it is `false`, the interpreter will not save the arguments consumed by instructions into the `:ARGS` binding."
-    :tags #{:binding}
-    (d/stop-storing-arguments)))
 
 
 
@@ -244,10 +209,6 @@
                         :recognized-by keyword?
                         :attributes #{:base})
 
-        (t/attach-instruction quote-refs)
-        (t/attach-instruction unquote-refs)
-        (t/attach-instruction push-discardARGS)
-        (t/attach-instruction push-storeARGS)
 
         (t/attach-instruction ref-ARGS)
         (t/attach-instruction ref-clear)

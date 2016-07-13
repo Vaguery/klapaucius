@@ -501,10 +501,24 @@
 
 
 
+(defn start-cycling-arguments
+  "Sets the Interpreter's `:cycle-args?` flag to `true`. (Many) arguments consumed by instructions executed will be pushed (as code blocks) onto the tail of `:exec` when it's true."
+  [[interpreter scratch]]
+  [(assoc-in interpreter [:config :cycle-args?] true) scratch])
+
+
+
 (defn stop-storing-arguments
   "Sets the Interpreter's `:store-args?` flag to `false`. Arguments will be consumed by instructions."
   [[interpreter scratch]]
-  [(assoc-in interpreter [:config :store-args?] true) scratch])
+  [(assoc-in interpreter [:config :store-args?] false) scratch])
+
+
+
+(defn stop-cycling-arguments
+  "Sets the Interpreter's `:cycle-args?` flag to `false`. Arguments will not be sent to the tail of `:exec`."
+  [[interpreter scratch]]
+  [(assoc-in interpreter [:config :cycle-args?] false) scratch])
 
 
 

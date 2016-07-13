@@ -3,6 +3,7 @@
             [push.interpreter.templates.minimum :as m]
             [push.util.exceptions :as oops]
             [push.interpreter.definitions :as defs])
+  (:use push.type.module.behavior)
   (:use push.type.item.boolean)
   (:use push.type.item.char)
   (:use push.type.module.code)
@@ -64,6 +65,7 @@
     error-module
     code-module
     print-module
+    behavior-module
     
     standard-introspection-module
     random-scalars-module])

@@ -26,26 +26,7 @@
     :ref        '()         :ref-new       :ref        #(re-seq #":ref\!\d+" (str (first %))))
 
 
-(fact ":push-quoterefs turns on the interpreter's :quote-refs? flag"
-  (let [no (push.interpreter.templates.one-with-everything/make-everything-interpreter)]
-    (get-in no [:config :quote-refs?]) => nil
-    (get-in
-      (i/execute-instruction no :push-quoterefs)
-      [:config :quote-refs?]) => true))
 
-
-
-(fact ":push-unquoterefs turns off the interpreter's :quote-refs? flag"
-  (let [no 
-    (assoc-in
-      (push.interpreter.templates.one-with-everything/make-everything-interpreter)
-      [:config :quote-refs?]
-      true)]
-    (get-in no [:config :quote-refs?]) => true
-    (get-in
-      (i/execute-instruction no :push-unquoterefs)
-      [:config :quote-refs?]) => false
-    ))
 
 
 
