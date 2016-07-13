@@ -185,12 +185,17 @@
     true)
 
 
-(fact "handle-item will execute a registered instruction"
- (let [foo (instr/make-instruction :foo :transaction (fn [a] [761]))
-       registry {:foo foo}
-       he-knows-foo (m/basic-interpreter :instructions registry)]
-   (handle-item he-knows-foo :foo) => 761))
-    ;; an intentionally surprising result
+
+
+(fact "handle-item will not execute an unregistered instruction if :lenient is false"
+ (let [foo-noop (instr/make-instruction :foo-noop)
+       registry {:foo-noop foo-noop}
+       he-knows-foo (m/basic-interpreter 
+                      :instructions registry 
+                      :config {:lenient? true})]
+   (handle-item he-knows-foo :foo-noop) => he-knows-foo))
+
+
 
 
 (fact "handle-item will not execute an unregistered instruction if :lenient is false"
@@ -204,6 +209,15 @@
 ;; argument retention
 
 
+(fact "`apply-instruction`"
+  (let [i (push/interpreter
+            :stacks {:scalar '(1 2 3)}
+            :config {:store-args? true})]
+    ; (keys (apply-instruction i :scalar-add)) => 99
+    ))
+
+
+
 (fact "when :store-args? is true (in :config), the arguments consumed by instructions are saved as a seq onto the :ARGS ref"
   (let [i (push/interpreter
             :stacks {:scalar '(1 2 3)}
@@ -211,6 +225,16 @@
     (:config (handle-item i :scalar-add)) => (contains {:store-args? true})
     (:bindings (handle-item i :scalar-add)) => (contains '{:ARGS ((2 1))})
     (u/get-stack (handle-item i :scalar-add) :scalar) => '(3 3)
+    ))
+
+
+
+(fact "when :cycle-args? is true (in :config), the arguments consumed by instructions are saved as a code block at the end of the `:exec` stack"
+  (let [i (push/interpreter
+            :stacks {:scalar '(1 2 3) :exec '()}
+            :config {:cycle-args? true})]
+    (:config (handle-item i :scalar-add)) => (contains {:cycle-args? true})
+    (u/get-stack (handle-item i :scalar-add) :exec) => '((1 2))
     ))
 
 

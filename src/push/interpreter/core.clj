@@ -168,15 +168,21 @@
 
 
 (defn apply-instruction
-  "takes an interpreter and a token; returns a TUPLE containing the interpreter and the `:scratch` variables (in that order). If the `:store-args?` value is `true` in the interpreter's `:config`, the arguments will be saved into the `:ARGS` binding."
+  "Takes an interpreter and a token. Returns the interpreter. If the `:store-args?` value is `true` in the interpreter's `:config`, the arguments will be saved onto the `:ARGS` binding. If the `:cycle-args?` value is `true` in the interpreter's `:config`, the arguments will (also) be appended to the tail of `:exec`. NOTE: returns ONLY the interpreter, not the state tuple."
   [interpreter token]
-  (let [tuple   ((:transaction (get-instruction interpreter token)) interpreter)
-        updated (first tuple)
-        args    (:ARGS (second tuple))
-        keep?   (get-in updated [:config :store-args?] false)]
-    (if keep?
-      (bind-value updated :ARGS args) ;; save args in :ARGS binding
-      updated  )))                    ;; the interpreter itself
+  (let [applied ((:transaction (get-instruction interpreter token)) interpreter)
+                ;; ^^ this executes the instruction on the interpreter, returns tuple
+                ;; of [interpreter scratch]
+        updated (first applied)            
+                ;; just the modified interpreter resulting from the instruction
+        store?  (get-in updated [:config :store-args?] false)
+        cycle?  (get-in updated [:config :cycle-args?] false)
+        args    (:ARGS (second applied))
+        ]
+    (-> (if store?
+          (bind-value updated :ARGS args)
+          updated)
+    )))
       
 
 

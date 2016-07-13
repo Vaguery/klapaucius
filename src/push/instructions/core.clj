@@ -121,8 +121,14 @@
           tags #{}
           needs {}
           products {}
-          transaction identity }}]
-  (with-meta (->Instruction token docstring tags needs products transaction) {:doc docstring}))
+          transaction #(vector % {}) }}]
+  (with-meta (->Instruction 
+                  token
+                  docstring
+                  tags
+                  needs
+                  products
+                  transaction) {:doc docstring}))
 
 
 (defmacro build-instruction

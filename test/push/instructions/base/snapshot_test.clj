@@ -14,7 +14,7 @@
 (def has-bindings (push/interpreter :bindings {:x '(1 2)}))
 (def has-stacks   (push/interpreter :stacks   {:exec '(10101) :foo '(99 88)}))
 (def has-config   (push/interpreter :config   {:bar :nope!}))
-(def has-it-all   (push/interpreter :bindings {:x '(1 2)}
+(def has-it-all   (push/interpreter :bindings {:ARGS '() :x '(1 2)}
                                     :stacks   {:exec   '(10101 20202)
                                                :return '(99 88)
                                                :print  '(:OLD)
