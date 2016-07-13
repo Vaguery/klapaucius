@@ -1,6 +1,7 @@
 (ns push.type.definitions.tagspace
-  (:require [push.util.numerics :as n])
-  )
+  (:require [push.util.numerics :as n]
+            [dire.core :refer [with-handler!]]
+            ))
 
 
 (defrecord TagSpace [contents])
@@ -10,6 +11,15 @@
   "Creates a new empty tagspace"
   ([] (->TagSpace (sorted-map)))
   ([starting-items] (->TagSpace (into (sorted-map) starting-items))))
+
+
+
+(with-handler! #'make-tagspace
+  "Handles bigdec vs rational unterminated expansion errors in `make-tagspace` by applying a `with-precision` wrapper and trying again."
+  java.lang.Exception
+  (fn [e & args]
+    (with-precision 1000 (make-tagspace args))))
+
 
 
 (defn tagspace?

@@ -6,6 +6,7 @@
 - added `:parts` and `:builder` keys to PushType `record` and `make-type` function; `:parts` is a manifest of the stacks from which components are to be taken; `:builder` is the function used to compose them into an item of this type
 - added `:x-make` instruction in the `buildable` aspect, which pops the requisite parts (in the correct order) and makes a new `:x` item
 - added `:x-parts` instruction in the `buildable` aspect, which pops an `:x` and decomposes it into a code block of its component parts (in the correct order), which is pushed to `:exec`
+- fixed a bug in `make-tagspace` which threw an exception when storing a non-terminating rational and a `bigdec` in the same `TagSpace` (added a `dire` handler that applies `(with-precision 1000 ...)`)
 
 ## 0.1.22
 
