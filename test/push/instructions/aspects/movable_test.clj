@@ -25,6 +25,7 @@
   (scalar-to-index -76652.3333e871M 17) => 8N
   (scalar-to-index ∞ 17) => 0
   (scalar-to-index -∞ 17) => 0
+  (scalar-to-index -1.2246467991473532E-16 4) => 0
   )
 
 

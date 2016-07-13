@@ -917,7 +917,7 @@
 
 
 (tabular
-  (fact "`foos-cyclevector` makes a new vector of N copies of the top :foo, using the two-scalar trick for sizing"
+  (fact "`foos-cyclevector` makes a new vector of N copies of the whole :foo stack, using the two-scalar trick for sizing"
     (check-instruction-with-all-kinds-of-stack-stuff
         ?new-stacks foos-type ?instruction) => (contains ?expected))
 
@@ -945,5 +945,15 @@
                                                      :foo  '(1/2 3.4)
                                                      :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos   '()
+     :foo    '()
+     :scalar '(-1.2246467991473532E-16 1356)}      
+                             :foos-cyclevector       {:foos '([])
+                                                     :foo  '()
+                                                     :scalar '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
     )
+
+
+

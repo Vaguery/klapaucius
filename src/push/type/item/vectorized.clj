@@ -184,12 +184,9 @@
       `(save-stack ~rootname :as :stack)
       `(consume-top-of :scalar :as :scale)
       `(consume-top-of :scalar :as :raw-count)
-      `(calculate [:scale]
-          #(nth [10 100 1000 10000] (num/scalar-to-index %1 4)) :as :relative)
-      `(calculate [:raw-count :relative]
-          #(num/scalar-to-index %1 %2) :as :size)
-      `(calculate [:size :stack]
-          #(into [] (take %1 (cycle %2))) :as :result)
+      `(calculate [:scale] #(nth [10 100 1000 10000] (num/scalar-to-index %1 4)) :as :relative)
+      `(calculate [:raw-count :relative] #(num/scalar-to-index %1 %2) :as :size)
+      `(calculate [:size :stack] #(into [] (take %1 (cycle %2))) :as :result)
       `(push-onto ~typename :result)
       ))))
 
@@ -615,7 +612,9 @@
       `(calculate [:arg :which]
           #(if (empty? %1) 0 (num/scalar-to-index %2 (count %1))) :as :idx)
       `(calculate [:arg :idx :subst]
-          #(if (empty? %1) %1 (into [] (assoc %1 (long %2) %3))) :as :result)
+          #(if (empty? %1)
+            %1 
+            (into [] (assoc %1 (long %2) %3))) :as :result)
       `(push-onto ~typename :result)
       ))))
 
@@ -783,4 +782,3 @@
           (attach-instruction , (x-vremove-instruction typename))
           (attach-instruction , (x-vsplit-instruction typename))
           )))
-

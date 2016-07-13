@@ -19,10 +19,10 @@
   (scalar-to-index 9 2) => 1
   (scalar-to-index 9.1 2) => 1.0
   (scalar-to-index 9.9 2) => 1.0
-  (scalar-to-index 10.9 2) => 0.0
+  (scalar-to-index 10.9 2) => 0
 
   (scalar-to-index -9 2) => 1
-  (scalar-to-index -9.1 2) => 0.0
+  (scalar-to-index -9.1 2) => 0
   (scalar-to-index -10.9 2) => 1.0
 
   (scalar-to-index 0 99) => 0
