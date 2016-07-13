@@ -493,7 +493,13 @@
 (def interval-type
   (-> (make-type  :interval
                   :recognized-by interval/interval?
-                  :attributes #{:numeric :set})
+                  :attributes #{:numeric :set}
+                  :parts {:min :scalar
+                          :max :scalar
+                          :min-open? :boolean
+                          :max-open? :boolean}
+                  :builder interval/make-interval
+                )
         aspects/make-set-able
         aspects/make-equatable
         aspects/make-movable

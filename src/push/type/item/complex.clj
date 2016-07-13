@@ -226,8 +226,12 @@
 
 (def complex-type
   (-> (t/make-type  :complex
-                    :recognized-by push.type.definitions.complex/complex?
-                    :attributes #{:numeric})
+                    :recognized-by complex/complex?
+                    :attributes #{:numeric}
+                    :parts {:re :scalar
+                            :im :scalar}
+                    :builder complex/complexify
+                    )
         aspects/make-set-able
         aspects/make-equatable
         aspects/make-movable
