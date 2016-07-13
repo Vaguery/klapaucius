@@ -18,15 +18,15 @@
 
 
 (def foo-type
-  (make-type :foo :parts {:A   :scalar
-                          :B   :image
-                          :C   :rgb
-                          :D  :scalar}
+  (make-type :foo :manifest {:A   :scalar
+                             :B   :image
+                             :C   :rgb
+                             :D  :scalar}
                   :builder #(hash-map :A %1 :B %2 :C %3 :D %4)
                   ))
 
 (def simple-type
-  (make-type :simple :parts {:x :something}
+  (make-type :simple :manifest {:x :something}
                      :builder #(conj [] %1)
                      ))
 
@@ -75,7 +75,7 @@
   (keys foo-make-test) => '(:token :docstring :tags :needs :products :transaction)
 
   (:token foo-make-test) => :foo-make
-  (:docstring foo-make-test) => "`:foo-make` constructs a new `:foo` item from its component parts, {:scalar 2, :image 1, :rgb 1}."
+  (:docstring foo-make-test) => "`:foo-make` constructs a new `:foo` item from its components, {:scalar 2, :image 1, :rgb 1}."
   (:needs foo-make-test) => {:image 1, :rgb 1, :scalar 2}
   (:products foo-make-test) => {:foo 1}
   )
@@ -91,7 +91,7 @@
   (keys simple-make-test) => '(:token :docstring :tags :needs :products :transaction)
 
   (:token simple-make-test) => :simple-make
-  (:docstring simple-make-test) => "`:simple-make` constructs a new `:simple` item from its component parts, {:something 1}."
+  (:docstring simple-make-test) => "`:simple-make` constructs a new `:simple` item from its components, {:something 1}."
   (:needs simple-make-test) => {:something 1}
   (:products simple-make-test) => {:simple 1}
   )
@@ -148,7 +148,7 @@
 )
 
 
-;;;; parts
+;;;; manifest
 
 
 (def foo-parts-test
@@ -191,7 +191,7 @@
 ;; validation
 
 
-(fact "make-instruction raises an exception if there is no :parts or :builder value for a given type"
+(fact "make-instruction raises an exception if there is no :manifest or :builder value for a given type"
   (make-instruction push.type.module.print/print-module) =>
     (throws #"cannot be constructed")
   (parts-instruction push.type.module.print/print-module) =>

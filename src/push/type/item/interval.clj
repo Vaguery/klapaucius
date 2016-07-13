@@ -495,10 +495,10 @@
   (-> (make-type  :interval
                   :recognized-by interval/interval?
                   :attributes #{:numeric :set}
-                  :parts {:min       :scalar
-                          :max       :scalar
-                          :min-open? :boolean
-                          :max-open? :boolean}
+                  :manifest {:min       :scalar
+                             :max       :scalar
+                             :min-open? :boolean
+                             :max-open? :boolean}
                   :builder #(interval/make-interval %1 %2 :min-open? %3 :max-open? %4)
                 )
         aspects/make-buildable

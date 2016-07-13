@@ -204,8 +204,8 @@
   (-> (t/make-type  :complex
                     :recognized-by complex/complex?
                     :attributes #{:numeric}
-                    :parts {:re :scalar
-                            :im :scalar}
+                    :manifest {:re :scalar
+                               :im :scalar}
                     :builder complex/complexify
                     )
         aspects/make-buildable

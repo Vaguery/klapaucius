@@ -16,20 +16,20 @@
     })
 
 
-(defrecord PushType [name router attributes instructions parts builder])
+(defrecord PushType [name router attributes instructions manifest builder])
 
 
 (defn make-type
   "Create a PushType record from a name (keyword) and a router (PushRouter record), with optional :attributes and :instructions"
   [name & {
-    :keys [recognized-by router attributes instructions parts builder] 
+    :keys [recognized-by router attributes instructions manifest builder] 
     :or {recognized-by (constantly false)
          router (router/make-router name :recognizer recognized-by)
          attributes #{}
          instructions {}
-         parts {}
+         manifest {}
          builder nil}}]
-  (->PushType name router attributes instructions parts builder))
+  (->PushType name router attributes instructions manifest builder))
 
 
 (defn recognize?
