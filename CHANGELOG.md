@@ -14,6 +14,7 @@
 - added DSL instructions `start-cycling-arguments` and `stop-cycling-arguments`, and added tests for those plus older `start-storing-arguments`, `stop-storing-arguments`
 - renamed `push-discardARGS` to `:push-nostoreARGS`
 - added instructions `:push-cycleARGS` and `:push-nocycleARGS` to `push.type.module.behavior`
+- modified `:scalar-power` overflow heuristic: now it (1) counts the characters in a rational base, and (2) cuts off when `(* exponent (log base))` is larger than 32768.
 
 ## 0.1.22
 

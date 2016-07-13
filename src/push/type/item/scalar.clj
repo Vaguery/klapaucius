@@ -258,6 +258,13 @@
 
 
 
+(defn oversized-for-scalar-power?
+  "Takes two numeric arguments (`base` and `exponent`), and calculates `(*' exponent (log base))`. If `base` is a rational, it uses `(*' exponent (count (str base)))` instead. If the result is over 2^15, it returns `true`."
+  [base exponent]
+  (let [base-size (if (rational? base) (count (str base)) (Math/log base))]
+    (> (nt/abs (*' exponent base-size)) 32768)))
+
+
 (def scalar-power
   (core/build-instruction
     scalar-power
@@ -270,7 +277,7 @@
       #(cond (zero? %1) false
              (math/infinite? %1) false
              (math/infinite? %2) false
-             (> (nt/abs (*' %2 (Math/log (nt/abs %1)))) 65535) true
+             (oversized-for-scalar-power? %1 %2) true
              :else false) :as :oversized?)
     (d/calculate [:base :exp :oversized?]
       #(if %3 nil (nt/expt %1 %2)) :as :prelim)
