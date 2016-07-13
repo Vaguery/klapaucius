@@ -133,12 +133,23 @@
  (apply make-everything-interpreter args))
 
 
+
+(def all-the-letters (map keyword (map str (map char (range 97 123)))))
+
+
+(defn some-bindings
+  [i]
+  (zipmap
+      (take i all-the-letters)
+      (repeatedly #(bunch-a-junk (overloaded-interpreter) 10))
+      ))
+
+
 (defn random-program-interpreter
   [i len]
-  (let [some-junk (into [] (remove nil? (bunch-a-junk (make-everything-interpreter) i)))
-        interpreter (overloaded-interpreter 
+  (let [interpreter (overloaded-interpreter 
                       :config {:step-limit 50000 :lenient? true}
-                      :bindings some-junk)]
+                      :bindings (merge (some-bindings 10) {:OUTPUT nil}))]
     (assoc interpreter :program (into [] (bunch-a-junk interpreter len)))))
 
 
@@ -175,7 +186,7 @@
 (fact "I can create and step through 10000 random programs without an exception"
   :slow :acceptance
   (do (println "creating and running 10000 random programs")
-      (dotimes [n 10000] 
+      (dotimes [n 100000] 
         (let [rando (assoc-in (reset-interpreter (random-program-interpreter 10 200))
                       [:config :step-limit] 3000)] 
           (try
@@ -184,8 +195,8 @@
               (loop [s rando]
                 (if (is-done? s)
                   (println (str n
-                                "  I:"
-                                (count (get-in s [:stacks :interval]))
+                                "  O:"
+                                (get-in s [:bindings :OUTPUT])
                                 "  "
                                 (:counter s) 
                                 
