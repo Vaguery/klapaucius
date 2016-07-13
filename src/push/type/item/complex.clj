@@ -108,17 +108,6 @@
 
 
 
-(def complex-parts
-  (core/build-instruction
-    complex-parts
-    "`:complex-parts` pops the top `:complex` value and pushes a code block containing its real and imaginary parts (in that order) onto `:exec`"
-    :tags #{:complex}
-    (d/consume-top-of :complex :as :arg)
-    (d/calculate [:arg] #(vals %1) :as :parts)
-    (d/push-onto :exec :parts)
-    ))
-
-
 
 (def complex-reciprocal
   (core/build-instruction
@@ -135,7 +124,6 @@
     (d/push-onto :complex :product)
     (d/record-an-error :from :warning)
     ))
-
 
 
 
@@ -198,18 +186,6 @@
 
 
 
-(def scalar->complex
-  (core/build-instruction
-    scalar->complex
-    "`:scalar->complex` pops the top two `:scalar` values (call them IM and RE, respectively) and pushes a new `:complex` item with those components."
-    :tags #{:complex}
-    (d/consume-top-of :scalar :as :im)
-    (d/consume-top-of :scalar :as :re)
-    (d/calculate [:re :im] #(complex/complexify %1 %2) :as :new)
-    (d/push-onto :complex :new)
-    ))
-
-
 
 (def scalar-complexify
   (core/build-instruction
@@ -232,13 +208,14 @@
                             :im :scalar}
                     :builder complex/complexify
                     )
-        aspects/make-set-able
+        aspects/make-buildable
         aspects/make-equatable
         aspects/make-movable
         aspects/make-printable
         aspects/make-quotable
         aspects/make-repeatable
         aspects/make-returnable
+        aspects/make-set-able
         aspects/make-storable
         aspects/make-taggable
         aspects/make-visible 
@@ -248,14 +225,12 @@
         (t/attach-instruction , complex-infinite?)
         (t/attach-instruction , complex-multiply)
         (t/attach-instruction , complex-norm)
-        (t/attach-instruction , complex-parts)
         (t/attach-instruction , complex-reciprocal)
         (t/attach-instruction , complex-scale)
         (t/attach-instruction , complex-shift)
         (t/attach-instruction , complex-subtract)
         (t/attach-instruction , complex-zero)
         (t/attach-instruction , scalar-complexify)
-        (t/attach-instruction , scalar->complex)
 
   ))
 

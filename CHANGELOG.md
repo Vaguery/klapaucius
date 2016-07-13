@@ -1,5 +1,12 @@
 # Recent changes
 
+## 0.1.23 
+
+- added `buildable` aspect
+- added `:parts` and `:builder` keys to PushType `record` and `make-type` function; `:parts` is a manifest of the stacks from which components are to be taken; `:builder` is the function used to compose them into an item of this type
+- added `:x-make` instruction in the `buildable` aspect, which pops the requisite parts (in the correct order) and makes a new `:x` item
+- added `:x-parts` instruction in the `buildable` aspect, which pops an `:x` and decomposes it into a code block of its component parts (in the correct order), which is pushed to `:exec`
+
 ## 0.1.22
 
 - Added `:interval` type
@@ -36,6 +43,7 @@
 - fixed problematic issue (not a bug, but causative of one) converting `:scalar` values to indices of collections; removed all unnecessary references to `long` type in codebase (used only for converting `char` values to numbers now)
 - removed unnecessary references to `bigint` and `bigdec` as well
 - fixed several subtle reversions (bugs) caused by change to non-integer indexing
+
 
 ## 0.1.21
 

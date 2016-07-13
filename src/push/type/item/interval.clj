@@ -215,6 +215,7 @@
 
 
 
+
 (def interval-newopen
   (build-instruction
     interval-newopen
@@ -494,19 +495,20 @@
   (-> (make-type  :interval
                   :recognized-by interval/interval?
                   :attributes #{:numeric :set}
-                  :parts {:min :scalar
-                          :max :scalar
+                  :parts {:min       :scalar
+                          :max       :scalar
                           :min-open? :boolean
                           :max-open? :boolean}
-                  :builder interval/make-interval
+                  :builder #(interval/make-interval %1 %2 :min-open? %3 :max-open? %4)
                 )
-        aspects/make-set-able
+        aspects/make-buildable
         aspects/make-equatable
         aspects/make-movable
         aspects/make-printable
         aspects/make-quotable
         aspects/make-repeatable
         aspects/make-returnable
+        aspects/make-set-able
         aspects/make-storable
         aspects/make-taggable
         aspects/make-visible 

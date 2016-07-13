@@ -1043,3 +1043,41 @@
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
     )
+
+
+
+
+
+
+
+(tabular
+  (fact ":interval-make is created by the buildable aspect"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks interval-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction             ?expected
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:scalar   '(8 2)
+     :boolean  '(true false)}  
+                              :interval-make      {:interval
+                                                      (list 
+                                                        (s/make-interval 2 8
+                                                          :max-open? true))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
+
+
+(tabular
+  (fact ":interval-parts is created by the buildable aspect"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks interval-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction             ?expected
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:interval (list (s/make-interval 13 14 :min-open? true))} 
+                              :interval-parts      {:exec '((false true 14 13))}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )

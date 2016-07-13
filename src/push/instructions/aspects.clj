@@ -1,5 +1,5 @@
 (ns push.instructions.aspects
-  (:use [push.instructions.aspects.set-able])
+  (:use [push.instructions.aspects.buildable])
   (:use [push.instructions.aspects.comparable])
   (:use [push.instructions.aspects.equatable])
   (:use push.instructions.aspects.movable)
@@ -7,12 +7,23 @@
   (:use push.instructions.aspects.quotable)
   (:use push.instructions.aspects.repeatable-and-cycling)
   (:use push.instructions.aspects.returnable)
+  (:use [push.instructions.aspects.set-able])
   (:use push.instructions.aspects.storable)
   (:use push.instructions.aspects.taggable)
   (:use push.instructions.aspects.to-tagspace)
   (:use push.instructions.aspects.visible)
   (:require [push.type.core :as t]
             ))
+
+
+
+(defn make-buildable
+  "takes a PushType and adds the :buildable attribute, and the associated instructions, to that type"
+  [pushtype]
+  (-> pushtype
+      (t/attach-instruction (make-instruction pushtype))
+      (t/attach-instruction (parts-instruction pushtype))
+      (assoc :attributes (conj (:attributes pushtype) :buildable))))
 
 
 

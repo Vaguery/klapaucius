@@ -179,23 +179,6 @@
 
 
 
-
-(tabular
-  (fact ":complex-parts returns a code block containing the parts (to :exec)"
-    (register-type-and-check-instruction
-        ?set-stack ?items complex-type ?instruction ?get-stack) => ?expected)
-
-    ?set-stack  ?items       ?instruction        ?get-stack     ?expected
-
-    :complex    (list (->Complex 1M 2/3))
-                             :complex-parts        :exec        '((1M 2/3))
-    :complex    (list (->Complex -1 -2))
-                             :complex-parts        :exec        '((-1 -2))
-    )
-
-
-
-
 (tabular
   (fact ":complex-scale multiplies a :scalar by a :complex"
     (check-instruction-with-all-kinds-of-stack-stuff
@@ -296,18 +279,6 @@
 
 
 
-(tabular
-  (fact ":scalar->complex returns a new :complex from :scalar items"
-    (register-type-and-check-instruction
-        ?set-stack ?items complex-type ?instruction ?get-stack) => ?expected)
-
-    ?set-stack  ?items       ?instruction     ?get-stack     ?expected
-    :scalar     '(1 2)      :scalar->complex   :complex   (list (->Complex 2 1))
-    :scalar     '(0 0)      :scalar->complex   :complex   (list (->Complex 0 0))
-    :scalar     '(0  )      :scalar->complex   :complex   (list )
-   )
-
-
 
 (tabular
   (fact ":scalar-complexify returns a new :complex"
@@ -398,3 +369,28 @@
     :complex    (list (->Complex -∞ ∞))
                     :complex-infinite?    :boolean          '(true)
 )
+
+
+
+(tabular
+  (fact ":complex-parts is generated from the buildable aspect"
+    (register-type-and-check-instruction
+        ?set-stack ?items complex-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items    ?instruction     ?get-stack     ?expected
+    :complex    (list (->Complex 2 3))
+                        :complex-parts          :exec      '((3 2))
+    )
+
+
+
+
+(tabular
+  (fact ":complex-make is generated from the buildable aspect"
+    (register-type-and-check-instruction
+        ?set-stack ?items complex-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items    ?instruction     ?get-stack     ?expected
+    :scalar    '(9 12)
+                         :complex-make      :complex       (list (complexify 12 9))
+    )
