@@ -15,6 +15,7 @@
 - renamed `push-discardARGS` to `:push-nostoreARGS`
 - added instructions `:push-cycleARGS` and `:push-nocycleARGS` to `push.type.module.behavior`
 - modified `:scalar-power` overflow heuristic: now it (1) counts the characters in a rational base, and (2) cuts off when `(* exponent (log base))` is larger than 32768.
+- fixed a time-out problem caused by `:x-fillvector` (and related instructions) building huge vectors from huge components; added a size limit, and also reduced the scaling factors to max 1000. Also in `:ref-fillvector` and `:ref-cyclevector` (though no oversize check for that yet)
 
 ## 0.1.22
 

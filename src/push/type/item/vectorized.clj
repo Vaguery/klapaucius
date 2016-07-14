@@ -184,7 +184,7 @@
       `(save-stack ~rootname :as :stack)
       `(consume-top-of :scalar :as :scale)
       `(consume-top-of :scalar :as :raw-count)
-      `(calculate [:scale] #(nth [10 100 1000 10000] (num/scalar-to-index %1 4)) :as :relative)
+      `(calculate [:scale] #(nth [10 100 1000] (num/scalar-to-index %1 3)) :as :relative)
       `(calculate [:raw-count :relative] #(num/scalar-to-index %1 %2) :as :size)
       `(calculate [:size :stack] #(into [] (take %1 (cycle %2))) :as :result)
       `(push-onto ~typename :result)
@@ -261,19 +261,25 @@
     (eval (list
       `build-instruction
       instruction-name
-      (str "`" typename "-fillvector` pops the top `" rootname "` item and two `:scalar` items (call them `scale` and `raw-count`, respectively). The `scale` value is used to determine whether to convert `raw-count` into a :few, :some, :many or :lots value, and then the appropriate number of copies of the " rootname "` are made into a single `" typename "` and pushed there.")
+      (str "`" typename "-fillvector` pops the top `" rootname "` item and two `:scalar` items (call them `scale` and `raw-count`, respectively). The `scale` value is used to determine whether to convert `raw-count` into a :few, :some, :many or :lots value, and then the appropriate number of copies of the " rootname "` are made into a single `" typename "` and pushed there. If the expected size of the resulting item (length of vector times number of code points in item) exceeds the `max-collection-size`, an error is pushed instead.")
       :tags #{:vector}
 
       `(consume-top-of ~rootname :as :item)
       `(consume-top-of :scalar :as :scale)
       `(consume-top-of :scalar :as :raw-count)
+      `(save-max-collection-size :as :limit)
       `(calculate [:scale]
-          #(nth [10 100 1000 10000] (num/scalar-to-index %1 4)) :as :relative)
+          #(nth [10 100 1000] (num/scalar-to-index %1 3)) :as :relative)
       `(calculate [:raw-count :relative]
-          #(num/scalar-to-index %1 %2) :as :size)
-      `(calculate [:item :size]
-          #(into [] (take %2 (repeat %1))) :as :result)
+          #(num/scalar-to-index %1 %2) :as :vector-length)
+      `(calculate [:item :vector-length :limit]
+          #(> (*' (fix/count-collection-points %1) %2) %3) :as :oversized?)
+      `(calculate [:oversized?]
+          #(if %1 (str ~instruction-name " produced oversized result") nil) :as :warning)
+      `(calculate [:oversized? :item :vector-length]
+          #(if %1 nil (into [] (take %3 (repeat %2)))) :as :result)
       `(push-onto ~typename :result)
+      `(push-onto :error :warning)
       ))))
 
 

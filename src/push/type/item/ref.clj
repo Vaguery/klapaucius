@@ -47,7 +47,7 @@
     (d/consume-top-of :scalar :as :scale)
     (d/consume-top-of :scalar :as :raw-count)
     (d/calculate [:scale]
-      #(nth [10 100 1000 10000] (num/scalar-to-index %1 4)) :as :relative)
+      #(nth [10 100 1000] (num/scalar-to-index %1 3)) :as :relative)
     (d/calculate [:raw-count :relative]
       #(num/scalar-to-index %1 %2) :as :size)
     (d/calculate [:contents :size]
@@ -109,7 +109,7 @@
     (d/consume-top-of :scalar :as :scale)
     (d/consume-top-of :scalar :as :raw-count)
     (d/calculate [:scale]
-      #(nth [10 100 1000 10000] (num/scalar-to-index %1 4)) :as :relative)
+      #(nth [10 100 1000] (num/scalar-to-index %1 3)) :as :relative)
     (d/calculate [:raw-count :relative]
       #(num/scalar-to-index %1 %2) :as :size)
     (d/calculate [:item :size]

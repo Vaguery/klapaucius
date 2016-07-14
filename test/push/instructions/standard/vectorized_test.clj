@@ -898,21 +898,38 @@
     {:foos   '()
      :foo    '(0)
      :scalar '(-7/2 111)}      
-                             :foos-fillvector       {:foos '( [0] )
+                             :foos-fillvector       {:foos (list
+                                                      (into [] (take 111 (repeat 0))))
                                                      :foo  '()
                                                      :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos   '()
      :foo    '(0)
      :scalar '(-11/2 111)}      
-                             :foos-fillvector       {:foos (list
-                                                       (into [] (take 111 (repeat 0))))
+                             :foos-fillvector       {:foos '([0])
                                                      :foo  '()
                                                      :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
     )
 
+
+
+(tabular
+  (fact "`foos-fillvector` has a size limit"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks foos-type ?instruction) => (contains ?expected))
+
+    ?new-stacks             ?instruction         ?expected
+
+    {:foos   '()
+     :foo    (list (take 10000 (range)))
+     :scalar '(2 999)}      
+                             :foos-fillvector       {:foos '()
+                                                     :foo  '()
+                                                     :error '("foos-fillvector produced oversized result")}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+)
 
 
 
@@ -939,7 +956,7 @@
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos   '()
      :foo    '(1/2 3.4)
-     :scalar '(-11/2 111)}      
+     :scalar '(-7/2 111)}      
                              :foos-cyclevector       {:foos (list
                                                        (into [] (take 111 (cycle [1/2 3.4]))))
                                                      :foo  '(1/2 3.4)
@@ -954,6 +971,4 @@
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
     )
-
-
 
