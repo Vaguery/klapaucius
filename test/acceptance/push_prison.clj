@@ -30,14 +30,14 @@
           (if (is-done? s)
             (println "DONE")
             (recur (do 
-              (println (str "\n>>> " (:counter s)
-                            "\n items on :exec " (u/get-stack s :exec)
-                            "\n>>> ATTEMPTING " (first (u/get-stack s :exec)) 
-                            "\n items on :OUTPUT " (get-in s [:bindings :OUTPUT] '())
+              (println (str ;;"\n>>> " (:counter s)
+                            ; "\n items on :exec " (u/get-stack s :exec)
+                            ; "\n>>> ATTEMPTING " (pr-str (first (u/get-stack s :exec)))
+                            ; "\n items on :OUTPUT " (get-in s [:bindings :OUTPUT] '())
                             "\n items on :scalar " (u/get-stack s :scalar)
-                            "\n items on :complexes " (mapv count (u/get-stack s :complexes))
-                            "\n\n"
-                            (pr-str (u/peek-at-stack s :log))
+                            ; "\n items on :return " (u/get-stack s :return)
+                            ; "\n\n"
+                            ; (pr-str (u/peek-at-stack s :log))
                             
                               ))
               (step s))))))
