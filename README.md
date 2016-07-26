@@ -13,7 +13,7 @@
 
 This library includes a clean, fully tested, extensible and maintainable Push language interpreter. Push is a simple and robust programming language designed to be _evolved_ rather than hand-composed by human programmers, which originated in the [Hampshire College Computational Intelligence Lab](http://sites.hampshire.edu/ci-lab/). You may have run across it by way of [Lee Spector's Clojush](https://github.com/lspector/Clojush) project.
 
-This is however _only a Push interpreter_. It does not "do genetic programming"; you still have to do that part yourself. But it does give you stable, extensible access to a _very large_ vocabulary of Push types and instructions. 
+This is however _only a Push interpreter_. It does not "do genetic programming"; you still have to do that part yourself. But it does give you stable, extensible access to a _very large_ vocabulary of Push types and instructions.
 
 ## Requirements
 
@@ -23,9 +23,15 @@ The project is written in Clojure 1.8, and depends heavily on [Midje](https://gi
 
 ### Project status
 
-Versioning _will become_ semantic after initial development is done. At the moment, basic functionality and usability are still my main concern, and I am adding types and large-scale features that are almost always "breaking" with every incremental release. As a result, the version will remain `0.1.X` for the near future, with `SNAPSHOT` releases capturing bug fixes, refactorings, documentation updates and general prep for "real" initial release.
+Initial feature implementation is almost done. The interpreter handles 100% of the Clojush Push dialect, plus nearly a dozen additional types and hundreds of additional instructions.
+
+Versioning is currently arbitrary and very low-valued, but _will become_ semantic after the initial features set is done. At the moment, basic functionality and usability are still my main concern, and I am adding types and large-scale features that are almost always "breaking" with every incremental release. As a result, the version will remain `0.1.X` for the near future, with `SNAPSHOT` releases capturing bug fixes, refactorings, documentation updates and general prep for "real" initial release.
 
 Thus: `klapaucius "0.1.23-SNAPSHOT"` includes a fully working interpreter, but is undergoing rapid expansion (thus the `SNAPSHOT` designation). While the current version is rigorously tested,  **substantial deep architectural changes** will be made leading up the 0.2 release. If you're going to work on it, please contact me during this great leap forward, and submit pull requests for small amounts of work in numerous git branches!
+
+## Support
+
+This project is open source and extremely complex, and I would like to be able to expand and support it. Please consider [donating via PayPal.me](https://www.paypal.me/BillTozier), or [supporting my work via Patreon](https://www.patreon.com/vaguery) if you find it useful or interesting!
 
 ### Project dependencies
 
