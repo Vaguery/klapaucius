@@ -164,8 +164,8 @@
         (println
           (str "caught exception: "
              (.getMessage e)
-             " running "
-             (pr-str (:program interpreter)) "\n" (pr-str (:bindings interpreter))))
+             " running \n\n"
+             (pr-str {:program (:program interpreter) :bindings (:bindings interpreter)})))
           (throw (Exception. (.getMessage e)))))))
 
 
@@ -187,44 +187,50 @@
   :slow :acceptance
   (do (println "creating and running 10000 random programs")
       (dotimes [n 100000]
-        (let [rando (assoc-in (reset-interpreter (random-program-interpreter 10 1000))
-                      [:config :step-limit] 20000)]
+        (let [rando (-> (reset-interpreter (random-program-interpreter 10 1000))
+                      (assoc-in , [:config :step-limit] 20000)
+                      (assoc-in , [:config :max-collection-size] 138072)
+                      )]
           (try
-            (timeout 120000 #(do
+            (timeout 300000 #(do
               ; (println (str "\n\n" n " : " (pr-str (:program rando)) "\n" (pr-str (:bindings rando))))
               (loop [s rando]
                 (if (is-done? s)
-                  (println (str n
+                  (println (str (:counter s)
+                                "\n"
+                                n
                                 "  O:"
                                 (get-in s [:bindings :OUTPUT])
                                 "  "
                                 "  R:"
                                 (into [] (get-in s [:stacks :return]))
-                                "  "
-                                (:counter s)
-
-                                (reduce-kv
-                                  (fn [line k v]
-                                    (str line "," (count (get-in s [:stacks k]))))
-                                  ""
-                                  (:stacks s))
-                                (reduce-kv
-                                  (fn [line k v]
-                                    (str line "," (count (get-in s [:bindings k]))))
-                                  "**"
-                                  (:bindings s))
+                                "\n"
+                                ; (reduce-kv
+                                ;   (fn [line k v]
+                                ;     (str line "," (count (get-in s [:stacks k]))))
+                                ;   ""
+                                ;   (:stacks s))
+                                ; (reduce-kv
+                                ;   (fn [line k v]
+                                ;     (str line "," (count (get-in s [:bindings k]))))
+                                ;   " **\n"
+                                ;   (:bindings s))
                                 ; "\n   " (get-in s [:bindings :ARGS])
 
                             ))
-                  (recur (do
-                    ; (println (u/peek-at-stack s :log))
-                    (step s)))))))
+                  (recur
+                    (do
+                      (when (zero? (mod (:counter s) 1000))
+                        (println (str n " " (:counter s))))
+                      (step s)))))))
               (catch Exception e (do
                                     (println
                                       (str "caught exception: "
                                          (.getMessage e)
-                                         " running "
-                                         (pr-str (:program rando)) "\n" (pr-str (:bindings rando))))
+                                         " running \n\n"
+                                         (pr-str {:error (.getMessage e)
+                                                  :program (:program rando)
+                                                  :bindings (:bindings rando)})))
                                       (throw (Exception. (.getMessage e))))))))) =not=> (throws))
 
 
