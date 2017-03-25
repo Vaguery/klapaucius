@@ -9,7 +9,8 @@
             [clojure.java.io :as io]
           )
   (:use [push.type.definitions.complex]
-        [push.type.definitions.interval])
+        [push.type.definitions.interval]
+        [push.type.definitions.quoted])
   (:use midje.sweet)
   (:use [push.interpreter.core])
   (:use [push.interpreter.templates.one-with-everything])
@@ -58,11 +59,12 @@
 (def edn-readers
   {'push.type.definitions.interval.Interval map->Interval
    'push.type.definitions.complex.Complex map->Complex
+   'push.type.definitions.quoted.QuotedCode map->QuotedCode
     })
 
 (def prisoners
   [
-    (edn/read-string {:readers edn-readers} (slurp "test/acceptance/prisoners/20170325-5.txt"))
+    (edn/read-string {:readers edn-readers} (slurp "test/acceptance/prisoners/20170325-6.txt"))
   ])
 
 

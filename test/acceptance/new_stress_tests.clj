@@ -85,7 +85,7 @@
       (some-rational 100000)
       (some-bigint 10000000)
       (some-bigdec 10000000)
-      (complex/complexify (some-long 100) (some-long 100))
+      (complex/complexify (some-long 100) (some-rational 100))
       (some-ascii 1)
       (some-string 10)
       (some-interval 100)
@@ -119,7 +119,12 @@
 
 (defn run-program
   [program bindings]
-  (push/run my-interpreter program 10000 :bindings bindings))
+  (push/run
+    my-interpreter
+    program
+    20000
+    :bindings bindings
+    :config {:step-limit 20000 :lenient true :max-collection-size 138072}))
 
 
 (defn interpreter-details
@@ -128,15 +133,15 @@
    :errors (count (push/get-stack i :error))
    :argument-errors (count (filter #(.contains (:item %) "missing arguments") (push/get-stack i :error)))
   ;  :items (frequencies (map :item (push/get-stack i :error)))
-   :scalar (push/get-stack i :scalar)
+  ;  :scalar (push/get-stack i :scalar)
   ;  :complex (push/get-stack i :complex)
-   :bindings (:bindings i)
-   :program (:program i)
+  ;  :bindings (:bindings i)
+  ;  :program (:program i)
   })
 
 
 (def many-programs
-  (take 10 (repeatedly #(some-program 100 10))))
+  (take 500 (repeatedly #(some-program 1000 10))))
 
 
 (def sample-bindings
@@ -148,13 +153,24 @@
   [the-programs]
   (do
     (doall
-      (cp/pmap 32
-        #(time
-          (println
-            (str "\n\n"
-              (interpreter-details
-                (run-program % sample-bindings)))))
-        the-programs))
+      (cp/upmap 32
+        #(try
+          (time
+            (println
+              (str "\n\n"
+                (interpreter-details
+                  (run-program % sample-bindings)))))
+        (catch Exception e
+          (do
+            (println
+              (str "caught exception: "
+                    (.getMessage e)
+                     " running \n"
+                     {:error (.getMessage e)
+                      :program %
+                      :bindings sample-bindings}))
+            (throw (Exception. (.getMessage e))))))
+          the-programs))
     (println :done)))
 
 
