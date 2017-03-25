@@ -3,6 +3,7 @@
             [push.type.definitions.quoted :as qc]
             [push.type.definitions.interval :as iv]
             [com.climate.claypoole :as cp]
+            [push.type.definitions.complex :as complex]
             )
   (:use midje.sweet))
 
@@ -84,6 +85,7 @@
       (some-rational 100000)
       (some-bigint 10000000)
       (some-bigdec 10000000)
+      (complex/complexify (some-long 100) (some-long 100))
       (some-ascii 1)
       (some-string 10)
       (some-interval 100)
@@ -117,21 +119,24 @@
 
 (defn run-program
   [program bindings]
-  (push/run my-interpreter program 3000 :bindings bindings))
+  (push/run my-interpreter program 10000 :bindings bindings))
 
 
 (defn interpreter-details
   [i]
   {:steps (:counter i)
    :errors (count (push/get-stack i :error))
-   :items (frequencies (map :item (push/get-stack i :error)))
+   :argument-errors (count (filter #(.contains (:item %) "missing arguments") (push/get-stack i :error)))
+  ;  :items (frequencies (map :item (push/get-stack i :error)))
    :scalar (push/get-stack i :scalar)
+  ;  :complex (push/get-stack i :complex)
    :bindings (:bindings i)
+   :program (:program i)
   })
 
 
 (def many-programs
-  (take 10 (repeatedly #(some-program 1000 10))))
+  (take 10 (repeatedly #(some-program 100 10))))
 
 
 (def sample-bindings
@@ -140,8 +145,8 @@
 
 
 (defn launch-some-workers
-  []
-  (do 
+  [the-programs]
+  (do
     (doall
       (cp/pmap 32
         #(time
@@ -149,9 +154,18 @@
             (str "\n\n"
               (interpreter-details
                 (run-program % sample-bindings)))))
-        many-programs))
+        the-programs))
     (println :done)))
 
 
 (fact :danger "run some workers in parallel"
-  (launch-some-workers) =not=> (throws))
+  (launch-some-workers many-programs) =not=> (throws))
+
+
+
+; (fact :danger "run one permuted program many times"
+;   (let [base-program (first many-programs)
+;         shuffled-programs (take 50 (repeatedly #(shuffle base-program)))]
+;   (println (str ":program " base-program))
+;   (println (str ":bindings " sample-bindings))
+;   (launch-some-workers shuffled-programs) =not=> (throws)))

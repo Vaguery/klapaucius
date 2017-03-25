@@ -58,7 +58,7 @@
 
 
 (defn random-char
-  [] (char (+ 32 (random-integer 200))))
+  [] (char (+ 32 (random-integer 100))))
 
 
 (defn random-chars
@@ -147,8 +147,8 @@
 
 (defn random-program-interpreter
   [i len]
-  (let [interpreter (overloaded-interpreter 
-                      :config {:step-limit 50000 :lenient? true}
+  (let [interpreter (overloaded-interpreter
+                      :config {:step-limit 50000 :lenient? true :max-collection-size 138072}
                       :bindings (merge (some-bindings 10) {:OUTPUT nil}))]
     (assoc interpreter :program (into [] (bunch-a-junk interpreter len)))))
 
@@ -159,10 +159,10 @@
   (try
     (do
       (println (str (:counter (run-n interpreter 10000)))))
-    (catch Exception e 
-      (do 
+    (catch Exception e
+      (do
         (println
-          (str "caught exception: " 
+          (str "caught exception: "
              (.getMessage e)
              " running "
              (pr-str (:program interpreter)) "\n" (pr-str (:bindings interpreter))))
@@ -172,9 +172,9 @@
 ;; actual tests; they will run hot!
 
 (future-fact "I can create 10000 random programs without an exception"
-  :slow :acceptance 
+  :slow :acceptance
   (do (println "creating and discarding 10000 random programs")
-      (count (repeatedly 10000 #(random-program-interpreter 10 100)))) => 10000)
+      (count (repeatedly 10000 #(random-program-interpreter 10 1000)))) => 10000)
 
 
 ;; the following monstrosity is an "acceptance test" for hand-running, at the moment.
@@ -186,9 +186,9 @@
 (fact "I can create and step through 10000 random programs without an exception"
   :slow :acceptance
   (do (println "creating and running 10000 random programs")
-      (dotimes [n 100000] 
-        (let [rando (assoc-in (reset-interpreter (random-program-interpreter 10 200))
-                      [:config :step-limit] 3000)] 
+      (dotimes [n 100000]
+        (let [rando (assoc-in (reset-interpreter (random-program-interpreter 10 1000))
+                      [:config :step-limit] 20000)]
           (try
             (timeout 120000 #(do
               ; (println (str "\n\n" n " : " (pr-str (:program rando)) "\n" (pr-str (:bindings rando))))
@@ -198,8 +198,11 @@
                                 "  O:"
                                 (get-in s [:bindings :OUTPUT])
                                 "  "
-                                (:counter s) 
-                                
+                                "  R:"
+                                (into [] (get-in s [:stacks :return]))
+                                "  "
+                                (:counter s)
+
                                 (reduce-kv
                                   (fn [line k v]
                                     (str line "," (count (get-in s [:stacks k]))))
@@ -213,12 +216,12 @@
                                 ; "\n   " (get-in s [:bindings :ARGS])
 
                             ))
-                  (recur (do 
-                    ; (println (u/peek-at-stack s :log)) 
+                  (recur (do
+                    ; (println (u/peek-at-stack s :log))
                     (step s)))))))
-              (catch Exception e (do 
-                                    (println 
-                                      (str "caught exception: " 
+              (catch Exception e (do
+                                    (println
+                                      (str "caught exception: "
                                          (.getMessage e)
                                          " running "
                                          (pr-str (:program rando)) "\n" (pr-str (:bindings rando))))
@@ -236,7 +239,7 @@
 (future-fact "I can create & run 10000 large random programs for up to 5000 steps each without an exception"
   :slow :acceptance
   (do (println "creating and running 10000 interpreters in parallel")
-    (let [my-interpreters 
+    (let [my-interpreters
       (repeatedly 10000 #(reset-interpreter (random-program-interpreter 10 1000))) ]
         (doall (pmap run-with-wordy-try-block my-interpreters))
       )) =not=> (throws))
