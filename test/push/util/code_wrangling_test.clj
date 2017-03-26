@@ -4,6 +4,48 @@
   (:use push.util.code-wrangling)
   )
 
+;; utilities for counting nested collection items
+
+(defrecord Foo [a b])
+
+(fact "`branch?` recognizes anything that can contain 'code points'"
+  (branch? '(1 2 3)) => true
+  (branch? [1 2 3]) => true
+  (branch? {:a 7 :b 8}) => true
+  (branch? #{1 2 3}) => true
+  (branch? (->Foo 1 2)) => true
+  (branch? []) => true
+  (branch? (sort [1 2 3])) => true
+  (branch? (lazy-seq)) => true
+  (branch? "foo") => true
+  )
+
+(fact "`branch?` returns `false` for non-traversable items"
+  (branch? \w) => false
+  (branch? 123.4) => false
+  (branch? false) => false
+  (branch? nil) => false
+  )
+
+(fact "`children` returns the children of containers we want to search"
+  (children '(1 2 3)) => (seq [1 2 3])
+  (children [1 2 3]) => (seq [1 2 3])
+  (children {:a 1 :b 2}) => [[:a 1] [:b 2]]
+  (children #{1 2}) => (seq [1 2])
+  (children (->Foo [1 2] "bar")) => [[:a [1 2]] [:b "bar"]]
+  (children "bar") => [\b \a \r]
+  )
+
+
+; (fact "new-count"
+;   (new-count [1 2 3]) => 4
+;   (new-count 88) => 1
+;   (new-count []) => 1
+;   (new-count "foo") => 4
+;   (new-count [1 [2 [3 4]]]) => 7
+;   (new-count {:a 1 :b [2 3]}) => 9
+;   (new-count (->Foo "bar" '(1 [2 3]))) => 14
+;   )
 
 ;; count-collection-points
 
@@ -37,7 +79,7 @@
 
 (fact "`count-collection-points` counts map keys and values"
   (count-collection-points {:a 7}) => 4 ;; map, tuple, key, value
-  (count-collection-points {:a 7 :b 11}) => 7 
+  (count-collection-points {:a 7 :b 11}) => 7
   (count-collection-points {[1 2] {:a 7 :b 11} [3 [5 [7]]] {[1 2] :c}}) => 25)
 
 
@@ -54,10 +96,10 @@
   (vec (->Foo 1 2 3 4)) => [[:a 1] [:b 2] [:c 3] [:d 4]]
   (count-collection-points (->Foo 1 2 3 4)) => 13
   (count-collection-points (->Foo '(1 2 3) 2 3 4)) => 16
-  (count-collection-points (->Foo 
-                             (->Foo 1 2 3 4) 
-                             (->Foo 1 2 3 4) 
-                             (->Foo 1 2 3 4) 
+  (count-collection-points (->Foo
+                             (->Foo 1 2 3 4)
+                             (->Foo 1 2 3 4)
+                             (->Foo 1 2 3 4)
                              (->Foo 1 2 3 4))) => 61)
 
 
@@ -81,7 +123,7 @@
 
 (fact "`count-code-points` counts items as 1"
   (count-code-points '()) => 1
-  (count-code-points nil) => 1
+  (count-code-points nil) => 0
   (count-code-points false) => 1
   (count-code-points 'integer?) => 1
   (count-code-points '+) => 1
@@ -93,7 +135,7 @@
 
 (fact "`count-code-points` skips over map contents"
   (count-code-points {:a 7}) => 1
-  (count-code-points {:a 7 :b 11}) => 1 
+  (count-code-points {:a 7 :b 11}) => 1
   (count-code-points {[1 2] {:a 7 :b 11} [3 [5 [7]]] {[1 2] :c}}) => 1
 
   (count-code-points '(1 2 {:a 7})) => 4)
@@ -106,8 +148,8 @@
   (count-code-points '( 1 2 #{1 2 #{3 4 5}})) => 4)
 
 
-(fact "`count-code-points` is OK with nil"
-  (count-code-points nil) => 1)
+(fact "`count-code-points` is OK with nil (but doesn't count it)"
+  (count-code-points nil) => 0)
 
 ;; nth-code-point
 
@@ -203,16 +245,16 @@
 
 
 (fact "`replace-in-code` doesn't stumble over recursions"
-  (replace-in-code '(1 (2 3) (4 (1 2) 3) 4) 3 '(3 3 3)) => 
+  (replace-in-code '(1 (2 3) (4 (1 2) 3) 4) 3 '(3 3 3)) =>
     '(1 (2 (3 3 3)) (4 (1 2) (3 3 3)) 4))
 
 
 (fact "`replace-in-code` doesn't get mixed up and replace content of vectors"
-  (replace-in-code '(1 [1] [1 (1)]) 1 99) => 
+  (replace-in-code '(1 [1] [1 (1)]) 1 99) =>
     '(99 [1] [1 (1)])
-  (replace-in-code '(1 [1] [1 (1)]) '(1) 99) => 
+  (replace-in-code '(1 [1] [1 (1)]) '(1) 99) =>
     '(1 [1] [1 (1)])
-  (replace-in-code '(1 (2 [1 2] 3) (4 (1 2) 3) 4) '(1 2) 99) => 
+  (replace-in-code '(1 (2 [1 2] 3) (4 (1 2) 3) 4) '(1 2) 99) =>
     '(1 (2 [1 2] 3) (4 99 3) 4)
     )
 

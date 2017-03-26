@@ -3,34 +3,53 @@
   )
 
 
+(defn branch?
+  "predicate for walking nested code; returns `true` if the item can contain children we want to traverse, even if it doesn't have children now. This includes strings."
+  [node]
+  (cond
+    (coll? node) true
+    (record? node) true
+    (string? node) true
+    :else false
+    ))
+
+
+(defn children
+  [node]
+  (seq node))
+
+
 (defn count-collection-points
   "Takes a nested list (or any other nested collection or item) and counts the total number of collections and items in those collections. Literal 'nil' is 1; an empty list '() or #{} or {} is 1; each hash-map is itself 1 and each key value pair it holds is another 3 (read as a tuple, plus its two items). A vector is 1+count, a matrix is 1 + count(rows) + count(items), and so on. COUNT ALL THE THINGS."
-  [item & {:keys [counter] :or {counter 0}}]
-  (cond
-    (map? item)
-      (reduce #(+ %1 (count-collection-points %2)) (inc counter) (vec item))
-    (coll? item)
-      (reduce #(+ %1 (count-collection-points %2)) (inc counter) item)
-    :else
-      (inc counter)))
+  [item]
+  (loop [loc (zip/zipper branch? children (fn [_ c] c) item)
+         counter 0]
+    (if (zip/end? loc)
+      counter
+      (recur (zip/next loc)
+             (inc counter)))))
 
 
 
 (defn count-code-points
   "Takes a nested list and counts the total number of seqs and non-seq items in those collections. Literal 'nil' is 1; an empty list '() or #{} or {} is 1. In other words, it only counts lists and things inside lists, not vectors, maps, or other kinds of collection (and is thus different from `count-collection-points`)."
-  [item & {:keys [counter] :or {counter 0}}]
-  (cond
-    (seq? item)
-      (reduce #(+ %1 (count-code-points %2)) (inc counter) item)
-    :else
-      (inc counter)))
+  [item]
+  (loop [loc (zip/seq-zip item)
+         counter 0]
+    (if (zip/end? loc)
+      counter
+      (recur  (zip/next loc)
+              (if (nil? (zip/node loc))
+                counter
+                (inc counter))))))
+
 
 
 
 (defn contains-anywhere?
   "Takes an item that is probably a nested collection, and returns true if the second argument appears 'in' it: are they equal? does the first contain the 2nd? does any of the items in the first contain the second? and so on recursively. Does not check sub-sequences for matches; it will look for a string as a whole, a vector only as a whole; but it will find an item as a key or value in a map."
   [item target & found]
-  (cond 
+  (cond
     (= item target) true
     (coll? item)
       (reduce #(or %1 (contains-anywhere? %2 target found)) false item)
@@ -58,7 +77,7 @@
          counter 0]
     (if (>= counter idx)
       (zip/node loc)
-      (recur (zip/next loc)                                   
+      (recur (zip/next loc)
              (inc counter)))))
 
 
@@ -105,7 +124,7 @@
          counter 0]
     (if (>= counter idx)
         (zip/root (zip/replace loc code2))
-      (recur (zip/next loc)                                   
+      (recur (zip/next loc)
              (inc counter)))))
 
 
@@ -116,4 +135,3 @@
   (if (zero? b)
       0
       (mod a b)))
-
