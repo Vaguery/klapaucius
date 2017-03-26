@@ -12,7 +12,7 @@
 ;;;; setup
 
 (def my-interpreter (push/interpreter))
-(def cohort-size 100)
+(def cohort-size 10000)
 (def program-size 1000)
 (def erc-scale 10)
 (def erc-prob 3/5)
@@ -48,14 +48,14 @@
       (reduce-kv
         (fn [counts key value]
           (assoc counts key
-            (str (count value) " (" (fix/count-collection-points value) ")")))
+            (str (count value) ))) ;" (" (fix/count-collection-points value) ")"
         {}
         (:stacks i))
     :binding-points
       (reduce-kv
         (fn [counts key value]
           (assoc counts key
-            (str (count value) " (" (fix/count-collection-points value) ")")))
+            (str (count value) ))) ;" (" (fix/count-collection-points value) ")"
         {}
         (:bindings i))
 
@@ -103,19 +103,17 @@
   [interpreter bindings numbered-programs]
   (doall
     (lazy/upmap 32
-      #(do
+      #(try
         (.write *out*
           (str "\n\n"
             (first %) ": "
-              (try
-                (interpreter-details
-                  (run-program interpreter (second %) bindings))
-              (catch Exception e
-                (do
-                  (.write *out* (str "failure at " (first %)))
-                  (spit-prisoner-file (second %) bindings (.getMessage e))
-                  (throw (Exception. (.getMessage e)))
-                  ))))))
+            (interpreter-details
+              (run-program interpreter (second %) bindings))))
+        (catch Exception e
+          (.write *out* (str "failure at " (first %)))
+          (spit-prisoner-file (second %) bindings (.getMessage e))
+          ;(throw (Exception. (.getMessage e))))))
+          ))
       numbered-programs)
       ))
 
