@@ -77,17 +77,17 @@
    'push.type.definitions.quoted.QuotedCode map->QuotedCode
     })
 
-; (def prisoners
-;   [
-;     (edn/read-string {:readers edn-readers}
-;                      (slurp "test/acceptance/prisoners/20170325-2.txt"))
-;   ])
+(def prisoners
+  [
+    (edn/read-string {:readers edn-readers}
+                     (slurp "test/acceptance/prisoners/e445321c-22bf-45b2-acce-3aac6acffe61.txt"))
+  ])
 
 
-; (fact "no exceptions are raised when I step through any of these problematic programs"
-;   :debug :acceptance
-;   (map step-through-prisoner prisoners) =not=> (throws))
-;
-; (fact "no exceptions are raised when I run (lazily) any of these problematic programs"
-;   :debug :acceptance
-;   (map run-prisoner-lazily prisoners) =not=> (throws))
+(fact "no exceptions are raised when I step through any of these problematic programs"
+  :debug :acceptance
+  (map step-through-prisoner prisoners) =not=> (throws))
+
+(fact "no exceptions are raised when I run (lazily) any of these problematic programs"
+  :debug :acceptance
+  (map run-prisoner-lazily prisoners) =not=> (throws))
