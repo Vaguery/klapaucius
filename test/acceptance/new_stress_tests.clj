@@ -1,6 +1,7 @@
 (ns acceptance.new-stress-tests
   (:require [push.core :as push]
             [com.climate.claypoole :as cp]
+            [com.climate.claypoole.lazy :as lazy]
             [acceptance.util :as util]
             [push.util.code-wrangling :as fix]
             )
@@ -11,7 +12,7 @@
 ;;;; setup
 
 (def my-interpreter (push/interpreter))
-(def cohort-size 1000)
+(def cohort-size 100)
 (def program-size 1000)
 (def erc-scale 10)
 (def erc-prob 3/5)
@@ -31,7 +32,11 @@
 
 (defn interpreter-details
   [i]
-  { :steps (:counter i)
+  { :program-size
+      (str
+        (count (:program i))
+        " (" (fix/count-collection-points (:program i)) ")")
+    :steps (:counter i)
     :errors (count (push/get-stack i :error))
     :argument-errors
       (count
@@ -41,18 +46,19 @@
                       (push/get-stack i :error)))
     :stack-points
       (reduce-kv
-        (fn [counts stackname stack]
-          (assoc counts stackname
-            (str (count stack) "(" (fix/count-collection-points stack) " pts)")))
+        (fn [counts key value]
+          (assoc counts key
+            (str (count value) " (" (fix/count-collection-points value) ")")))
         {}
         (:stacks i))
     :binding-points
       (reduce-kv
-        (fn [counts bindingname b]
-          (assoc counts bindingname
-            (str (count bindingname) " (" (fix/count-collection-points b) " pts)")))
+        (fn [counts key value]
+          (assoc counts key
+            (str (count value) " (" (fix/count-collection-points value) ")")))
         {}
         (:bindings i))
+
   })
 
 
@@ -96,22 +102,22 @@
 (defn launch-some-workers
   [interpreter bindings numbered-programs]
   (doall
-    (cp/upmap 8
-      #(try
-        (println
+    (lazy/upmap 32
+      #(do
+        (.write *out*
           (str "\n\n"
             (first %) ": "
-            (interpreter-details
-              (run-program interpreter (second %) bindings))))
-      (catch Exception e
-        (do
-          (println (str "failure at " (first %)))
-          (spit-prisoner-file "foo" (second %) bindings (.getMessage e))
-          ; (throw (Exception. (.getMessage e)))
-          )))
-  numbered-programs))
-  (println :done)
-  )
+              (try
+                (interpreter-details
+                  (run-program interpreter (second %) bindings))
+              (catch Exception e
+                (do
+                  (.write *out* (str "failure at " (first %)))
+                  (spit-prisoner-file (second %) bindings (.getMessage e))
+                  (throw (Exception. (.getMessage e)))
+                  ))))))
+      numbered-programs)
+      ))
 
 
 (fact "run some workers in parallel"
