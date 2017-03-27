@@ -8,6 +8,7 @@
             [clojure.edn :as edn]
             [clojure.java.io :as io]
             [push.core :as push]
+            [acceptance.new-stress-tests :as stress]
           )
   (:use [push.type.definitions.complex]
         [push.type.definitions.interval]
@@ -29,13 +30,13 @@
       reset-interpreter))
 
 
-(defn run-prisoner-lazily
+(defn standard-run
   [prisoner]
-  (push/run
-    (overloaded-interpreter prisoner)
+  (println (str "\n\nrunning: " (:program prisoner)))
+  (stress/run-program-in-standardized-interpreter
+    (push/interpreter)
     (:program prisoner)
-    20000
-    :bindings (:bindings prisoner)
+    (:bindings prisoner)
     ))
 
 
@@ -101,10 +102,10 @@
       ))
 
 
-(fact "no exceptions are raised when I step through any of these problematic programs"
-  :debug :acceptance
-  (map step-through-prisoner prisoners) =not=> (throws))
+; (fact "no exceptions are raised when I step through any of these problematic programs"
+;   :debug :acceptance
+;   (map step-through-prisoner prisoners) =not=> (throws))
 
 (fact "no exceptions are raised when I run (lazily) any of these problematic programs"
   :debug :acceptance
-  (map run-prisoner-lazily prisoners) =not=> (throws))
+  (map standard-run prisoners) =not=> (throws))

@@ -20,14 +20,30 @@
 
 ;;;;
 
-(defn run-program
+(defn run-program-in-standardized-interpreter
   [interpreter program bindings]
-  (push/run
-    interpreter
-    program
-    20000
-    :bindings bindings
-    :config {:step-limit 20000 :lenient true :max-collection-size 138072}))
+  (try
+    (push/run
+      interpreter
+      program
+      20000
+      :bindings bindings
+      :config {:step-limit 20000 :lenient true :max-collection-size 138072}) ;138072
+    (catch StackOverflowError e
+      (println
+        (str "\n:exec stack: " (push/get-stack interpreter :exec)
+             "\n:log stack:  " (push/get-stack interpreter :log)
+             "\n:counter:    " (:steps interpreter)
+        :stack-overflow
+        )))
+    (catch Exception e
+      (println (str e))
+      :other-exception
+      )
+    ; (finally
+    ;   (println (str "\n\n running: " program)))
+      ))
+
 
 
 (defn interpreter-details
@@ -102,17 +118,20 @@
 (defn launch-some-workers
   [interpreter bindings numbered-programs]
   (doall
-    (lazy/upmap 12
+    (map
       #(try
         (.write *out*
           (str "\n\n"
             (first %) ": "
             (interpreter-details
-              (run-program interpreter (second %) bindings))))
+              (run-program-in-standardized-interpreter
+                interpreter
+                (second %)
+                bindings))))
         (catch Exception e
           (.write *out* (str "failure at " (first %)))
           (spit-prisoner-file (second %) bindings (.getMessage e))
-          ;(throw (Exception. (.getMessage e))))))
+          (throw (Exception. (.getMessage e)))
           ))
       numbered-programs)
       ))
