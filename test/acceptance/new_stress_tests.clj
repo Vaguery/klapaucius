@@ -102,7 +102,7 @@
 (defn launch-some-workers
   [interpreter bindings numbered-programs]
   (doall
-    (lazy/upmap 32
+    (lazy/upmap 12
       #(try
         (.write *out*
           (str "\n\n"
