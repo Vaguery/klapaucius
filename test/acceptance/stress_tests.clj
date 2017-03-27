@@ -177,6 +177,9 @@
       (count (repeatedly 10000 #(random-program-interpreter 10 1000)))) => 10000)
 
 
+
+
+
 ;; the following monstrosity is an "acceptance test" for hand-running, at the moment.
 ;; it's intended to give a bit more info about the inevitable bugs that
 ;; only appear when random programs are executed by an interpreter, in a

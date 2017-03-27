@@ -88,8 +88,10 @@
 
 (def prisoners
   [
+    ; (edn/read-string {:readers edn-readers}
+    ;                  (slurp "test/acceptance/prisoners/20170326-1.txt"))
     (edn/read-string {:readers edn-readers}
-                     (slurp "test/acceptance/prisoners/e445321c-22bf-45b2-acce-3aac6acffe61.txt"))
+                     (slurp "test/acceptance/prisoners/dffa864b-2c93-4d48-b249-63327f624246.txt"))
   ])
 
 
