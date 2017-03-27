@@ -4,12 +4,12 @@
 
 
 (defn branch?
-  "predicate for walking nested code; returns `true` if the item can contain children we want to traverse, even if it doesn't have children now. This includes strings."
+  "predicate for walking nested code; returns `true` if the item can contain children we want to traverse, even if it doesn't have children now. This counts strings only as single items, not collections of chars."
   [node]
   (cond
+    (string? node) false
     (coll? node) true
     (record? node) true
-    (string? node) true
     :else false
     ))
 
@@ -20,7 +20,7 @@
 
 
 (defn count-collection-points
-  "Takes a nested list (or any other nested collection or item) and counts the total number of collections and items in those collections. Literal 'nil' is 1; an empty list '() or #{} or {} is 1; each hash-map is itself 1 and each key value pair it holds is another 3 (read as a tuple, plus its two items). A vector is 1+count, a matrix is 1 + count(rows) + count(items), and so on. COUNT ALL THE THINGS."
+  "Takes a nested list (or any other nested collection or item) and counts the total number of collections and items in those collections. Literal 'nil' is 1; an empty list '() or #{} or {} is 1; each hash-map is itself 1 and each key value pair it holds is another 3 (read as a tuple, plus its two items). A vector is 1+count, a matrix is 1 + count(rows) + count(items), and so on. COUNT ALL THE THINGS. Except that strings count as single items."
   [item]
   (loop [loc (zip/zipper branch? children (fn [_ c] c) item)
          counter 0]

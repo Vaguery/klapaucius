@@ -20,9 +20,12 @@
 
 (defn overloaded-interpreter
   [prisoner]
-  (-> (make-everything-interpreter :config {:step-limit 20000 :lenient true }
-                                   :bindings (:bindings prisoner)
-                                   :program (:program prisoner))
+  (-> (make-everything-interpreter
+        :config {:step-limit 20000
+                 :lenient true
+                 :max-collection-size 32768}
+        :bindings (:bindings prisoner)
+        :program (:program prisoner))
       reset-interpreter))
 
 
@@ -52,6 +55,12 @@
               (println (str "\n>>> " (:counter s)
                             "\nstacks (pts): " (fix/count-collection-points (:stacks s))
                             "\nbindings (pts): " (fix/count-collection-points (:bindings s))
+                            "\nall items in :log (sum of chars): "
+                            (apply (juxt max +')
+                              (into '(0)
+                                (map
+                                  #(count (str (:item %)))
+                                  (u/get-stack s :log))))
                             ; "\n items on :exec " (u/get-stack s :exec)
                             ; "\n>>> ATTEMPTING " (pr-str (first (u/get-stack s :exec)))
                             ; "\n items on :OUTPUT " (get-in s [:bindings :OUTPUT] '())

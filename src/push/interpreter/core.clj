@@ -132,8 +132,8 @@
   "Takes an interpreter, a stack name, and a count; returns true if
   the named stack exists, and has at least that many items on it"
   [interpreter stack limit]
-    (<= 
-      limit 
+    (<=
+      limit
       (count (u/get-stack interpreter stack))))
 
 
@@ -182,7 +182,7 @@
   (let [cycle?   (get-in interpreter [:config :cycle-args?] false)
         old-exec (u/get-stack interpreter :exec)]
     (if cycle?
-      (u/set-stack interpreter :exec 
+      (u/set-stack interpreter :exec
         (reverse (into (reverse old-exec) (list item))))
       interpreter)))
 
@@ -194,7 +194,7 @@
   (let [applied ((:transaction (get-instruction interpreter token)) interpreter)
                 ;; ^^ this executes the instruction on the interpreter, returns tuple
                 ;; of [interpreter scratch]
-        updated (first applied)            
+        updated (first applied)
                 ;; just the modified interpreter resulting from the instruction
         args    (:ARGS (second applied))
         ]
@@ -202,7 +202,7 @@
         (store-item-in-ARGS , args)
         (append-item-to-exec , args)
     )))
-      
+
 
 
 
@@ -229,9 +229,9 @@
   (cond
     unrecognized (oops/throw-unknown-instruction-error token)
     ready (apply-instruction interpreter token)
-    :else (push-item 
-            interpreter 
-            :error 
+    :else (push-item
+            interpreter
+            :error
             (missing-args-message interpreter token)))))
 
 
@@ -267,8 +267,8 @@
         preprocessor (:preprocessor active-router)
         preprocessed-item (preprocessor item)
         target-stack (:target-stack active-router)]
-    (push-item 
-      interpreter 
+    (push-item
+      interpreter
       target-stack
       preprocessed-item)))
 
@@ -383,12 +383,23 @@
   (assoc interpreter :done? (is-done? interpreter)))
 
 
+(defn- truncated-string
+  [item length]
+  (let [as-string (str item)]
+    (if (< (count as-string) length)
+      (subs as-string 0 (count as-string))
+      (str (subs as-string 0 length) "…"))))
+
+
 (defn log-routed-item
   "Takes an Interpreter and any item, and pushes a 'time-stamped' map
   of that item on the Interpreter's :log stack. The 'time-stamp' is the
   counter of the Interpreter when called."
   [interpreter item]
-  (push-item interpreter :log {:step (:counter interpreter) :item item}))
+  (push-item
+    interpreter
+    :log
+    {:step (:counter interpreter) :item (truncated-string item 32)}))
 
 
 (defn soft-snapshot-ending
@@ -468,5 +479,3 @@
   [interpreter]
   (let [start (reset-interpreter interpreter)]
     (first (filter is-done? (iterate step start)))))
-
-

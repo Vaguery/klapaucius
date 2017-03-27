@@ -17,10 +17,10 @@
   (branch? []) => true
   (branch? (sort [1 2 3])) => true
   (branch? (lazy-seq)) => true
-  (branch? "foo") => true
   )
 
 (fact "`branch?` returns `false` for non-traversable items"
+  (branch? "foo") => false
   (branch? \w) => false
   (branch? 123.4) => false
   (branch? false) => false
@@ -36,16 +36,6 @@
   (children "bar") => [\b \a \r]
   )
 
-
-; (fact "new-count"
-;   (new-count [1 2 3]) => 4
-;   (new-count 88) => 1
-;   (new-count []) => 1
-;   (new-count "foo") => 4
-;   (new-count [1 [2 [3 4]]]) => 7
-;   (new-count {:a 1 :b [2 3]}) => 9
-;   (new-count (->Foo "bar" '(1 [2 3]))) => 14
-;   )
 
 ;; count-collection-points
 
@@ -74,7 +64,9 @@
   (count-collection-points []) => 1
   (count-collection-points {}) => 1
   (count-collection-points #{}) => 1
-  (count-collection-points :yup) => 1)
+  (count-collection-points :yup) => 1
+  (count-collection-points "foo") => 1
+  )
 
 
 (fact "`count-collection-points` counts map keys and values"
@@ -101,7 +93,6 @@
                              (->Foo 1 2 3 4)
                              (->Foo 1 2 3 4)
                              (->Foo 1 2 3 4))) => 61)
-
 
 ;; count-code-points
 

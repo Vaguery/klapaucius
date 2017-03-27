@@ -22,14 +22,14 @@
 (fact "`handle-item` pushes an item to the :unknown stack if unrecognized when :config :lenient? is true"
   (let [junk {:x 1 :y 2}]
     (u/get-stack
-      (handle-item 
+      (handle-item
         (push/interpreter :config {:lenient? true})
         junk)
       :unknown) => '({:x 1, :y 2})))
 
 
 (fact "`handle-item` throws an exception on unrecognized items when :config :lenient? is not true (or unset)"
-  (handle-item 
+  (handle-item
     (push/interpreter :config {:lenient? false})
     (push/interpreter)) =>  (throws #"Push Parsing Error: "))
 
@@ -86,7 +86,7 @@
 
 
 
-(def foo-type 
+(def foo-type
   (-> (types/make-type :foo :recognized-by integer?)
       aspects/make-visible
       aspects/make-comparable
@@ -175,13 +175,13 @@
 
 
 (fact "the :exec stack stays a list when a list is unwrapped onto it"
-  (list? (u/get-stack (handle-item supreme '(1 2 3)) :exec)) => 
+  (list? (u/get-stack (handle-item supreme '(1 2 3)) :exec)) =>
     true
-  (list? (u/get-stack (handle-item supreme '(1 (2) (3))) :exec)) => 
+  (list? (u/get-stack (handle-item supreme '(1 (2) (3))) :exec)) =>
     true
-  (list? (u/get-stack (handle-item supreme '(1 () ())) :exec)) => 
+  (list? (u/get-stack (handle-item supreme '(1 () ())) :exec)) =>
     true
-  (list? (u/get-stack (handle-item supreme '()) :exec)) => 
+  (list? (u/get-stack (handle-item supreme '()) :exec)) =>
     true)
 
 
@@ -190,8 +190,8 @@
 (fact "handle-item will not execute an unregistered instruction if :lenient is false"
  (let [foo-noop (instr/make-instruction :foo-noop)
        registry {:foo-noop foo-noop}
-       he-knows-foo (m/basic-interpreter 
-                      :instructions registry 
+       he-knows-foo (m/basic-interpreter
+                      :instructions registry
                       :config {:lenient? true})]
    (handle-item he-knows-foo :foo-noop) => he-knows-foo))
 
@@ -290,7 +290,7 @@
 
 (def knows-some-things
   (register-instruction
-    (m/basic-interpreter 
+    (m/basic-interpreter
       :program [1.1 2.2 :intProductToFloat]
       :counter 22
       :stacks {:scalar '(1 2 3)
@@ -317,7 +317,7 @@
 
 (fact "calling `reset-interpreter` clears the other stacks"
   (u/get-stack knows-some-things :scalar) => '(1 2 3)
-  (:stacks (reset-interpreter knows-some-things)) => 
+  (:stacks (reset-interpreter knows-some-things)) =>
     (merge m/minimal-stacks {:exec '(1.1 2.2 :intProductToFloat)}))
 
 
@@ -369,15 +369,15 @@
 
 (fact "`is-done?` returns true when :exec and :snapshot are empty, but not when :exec is empty and :snapshot has at least one item"
   (is-done? (m/basic-interpreter :stacks {:exec '()}  :config {:step-limit 99})) => true
-  (is-done? (m/basic-interpreter 
+  (is-done? (m/basic-interpreter
               :stacks {:exec '() :snapshot '({:scalar '(9)})}
               :config {:step-limit 99})) => false)
 
 ;; logging
 
 (fact "calling `log-routed-item` adds an item to the `:log` stack with a 'timestamp'"
-  (u/get-stack (log-routed-item knows-some-things :exec-foo) :log) => 
-    '({:item :exec-foo, :step 22})
+  (u/get-stack (log-routed-item knows-some-things :exec-foo) :log) =>
+    '({:item ":exec-foo", :step 22})
   )
 
 ;; step
@@ -414,13 +414,13 @@
 
 
 (fact "calling `step` (usually) writes to the :log stack"
-  (u/get-stack (step knows-some-things) :log) => 
-    '({:item :intProductToFloat, :step 23}))
+  (u/get-stack (step knows-some-things) :log) =>
+    '({:item ":intProductToFloat", :step 23}))
 
 
 (fact "calling `step` doesn't log anything if no step was taken"
   (u/get-stack (step (step knows-some-things)) :log) =>
-    '({:item :intProductToFloat, :step 23}))
+    '({:item ":intProductToFloat", :step 23}))
 
 
 ;; merging old snapshots
@@ -444,35 +444,35 @@
 
 
 (fact "`merge-snapshot` keeps :unknown stack"
-  (:stacks (u/merge-snapshot 
+  (:stacks (u/merge-snapshot
             (assoc-in just-basic [:stacks :unknown] '(7 77 777))
             (assoc-in s [:stacks :unknown] '(1 2 3)))) =>
     (contains {:unknown '(7 77 777)}))
 
 
 (fact "`merge-snapshot` keeps :error stack"
-  (:stacks (u/merge-snapshot 
+  (:stacks (u/merge-snapshot
             (assoc-in just-basic [:stacks :error] '(7 77 777))
             (assoc-in s [:stacks :error] '(1 2 3)))) =>
     (contains {:error '(7 77 777)}))
 
 
 (fact "`merge-snapshot` keeps :log stack"
-  (:stacks (u/merge-snapshot 
+  (:stacks (u/merge-snapshot
             (assoc-in just-basic [:stacks :log] '(7 77 777))
             (assoc-in s [:stacks :log] '(1 2 3)))) =>
     (contains {:log '(7 77 777)}))
 
 
 (fact "`merge-snapshot` keeps :print stack"
-  (:stacks (u/merge-snapshot 
+  (:stacks (u/merge-snapshot
             (assoc-in just-basic [:stacks :print] '(7 77 777))
             (assoc-in s [:stacks :print] '(1 2 3)))) =>
     (contains {:print '(7 77 777)}))
 
 
 (fact "`merge-snapshot` DOES NOT keep :exec stack"
-  (:stacks (u/merge-snapshot 
+  (:stacks (u/merge-snapshot
             (assoc-in just-basic [:stacks :exec] '(7 77 777))
             (assoc-in s [:stacks :exec] '(1 2 3)))) =>
     (contains {:exec '(1 2 3)}))
@@ -481,15 +481,15 @@
 
 ;; popping saved :snapshots
 
-(def s (snap/snapshot 
+(def s (snap/snapshot
         (assoc-in knows-some-things [:stacks :exec] '(888 777))))
 
 
-(def ready-to-pop 
-  (push/interpreter 
+(def ready-to-pop
+  (push/interpreter
     :config {:step-limit 1000}
-    :stacks {:exec '() 
-             :snapshot (list s) 
+    :stacks {:exec '()
+             :snapshot (list s)
              :log '(:log1 :log2)
              :error '(:error1 :error2)
              :return '(:return1 :return2)
@@ -498,10 +498,10 @@
              }))
 
 
-(def unready-to-pop 
-  (push/interpreter 
+(def unready-to-pop
+  (push/interpreter
     :config {:step-limit 1000}
-    :stacks {:exec '() 
+    :stacks {:exec '()
              :snapshot '()
              :log '(:log1 :log2)
              :error '(:error1 :error2)
@@ -517,11 +517,11 @@
 
   (:stacks (step ready-to-pop)) => (contains
     '{ :error (:error1 :error2),
-       :exec (:return2 :return1), 
+       :exec (:return2 :return1),
        :log ({:item "SNAPSHOT STACK POPPED", :step 1} :log1 :log2),
-       :print (), 
+       :print (),
        :scalar (1 2 3),
-       :snapshot (), 
+       :snapshot (),
        :unknown (:nope :no-idea)}))
 
 
@@ -533,7 +533,7 @@
   (is-done? unready-to-pop) => true
 
   (:stacks (step unready-to-pop)) =>
-    '{:boolean (), :booleans (), :char (), :chars (), :code (), :complex (), :complexes (), :snapshot (), :error (:error1 :error2), :exec (), :generator (), :interval (), :intervals(), 
+    '{:boolean (), :booleans (), :char (), :chars (), :code (), :complex (), :complexes (), :snapshot (), :error (:error1 :error2), :exec (), :generator (), :interval (), :intervals(),
 
       :log (:log1 :log2),
 
@@ -557,89 +557,89 @@
 ;; a fixture or two
 
 
-(def simple-things (push/interpreter 
+(def simple-things (push/interpreter
                       :program [1 2 false :scalar-add true :boolean-or]
                       :config {:step-limit 1000}))
 
 
 (fact "calling `run-n` with an Interpreter and a step argument returns the Interpreter at that step"
   (:stacks (run-n simple-things 0)) => (contains
-                              {:boolean '(), 
-                               :char    '(), 
-                               :code    '(), 
-                               :error   '(), 
-                               :exec    '(1 2 false :scalar-add true :boolean-or), 
+                              {:boolean '(),
+                               :char    '(),
+                               :code    '(),
+                               :error   '(),
+                               :exec    '(1 2 false :scalar-add true :boolean-or),
                                :scalar '(),
-                               :print   '(), 
-                               :string  '(), 
+                               :print   '(),
+                               :string  '(),
                                :unknown '()})
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (:stacks (run-n simple-things 1)) => (contains
-                              {:boolean '(), 
-                               :char    '(), 
-                               :code    '(), 
-                               :error   '(), 
-                               :exec    '(2 false :scalar-add true :boolean-or), 
-                               :scalar  '(1), 
-                               :print   '(), 
-                               :string  '(), 
+                              {:boolean '(),
+                               :char    '(),
+                               :code    '(),
+                               :error   '(),
+                               :exec    '(2 false :scalar-add true :boolean-or),
+                               :scalar  '(1),
+                               :print   '(),
+                               :string  '(),
                                :unknown '()})
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (:stacks (run-n simple-things 5)) => (contains
-                              {:boolean '(true false), 
-                               :char    '(), 
-                               :code    '(), 
-                               :error   '(), 
-                               :exec    '(:boolean-or), 
-                               :scalar  '(3), 
-                               :print   '(), 
-                               :string  '(), 
+                              {:boolean '(true false),
+                               :char    '(),
+                               :code    '(),
+                               :error   '(),
+                               :exec    '(:boolean-or),
+                               :scalar  '(3),
+                               :print   '(),
+                               :string  '(),
                                :unknown '()}))
 
 ;; checking for program typography for Lee et al
 
 (fact "I can run a program that is passed in as a seq"
   (:stacks (run-n
-            (push/interpreter 
+            (push/interpreter
               :program '(1 2 ((false :scalar-add) (true)) :boolean-or)
               :config {:step-limit 1000}) 1000)) => (contains
-                              {:boolean '(true), 
-                               :char    '(), 
-                               :code    '(), 
-                               :error   '(), 
-                               :exec    '(), 
+                              {:boolean '(true),
+                               :char    '(),
+                               :code    '(),
+                               :error   '(),
+                               :exec    '(),
                                :scalar '(3),
-                               :print   '(), 
-                               :string  '(), 
+                               :print   '(),
+                               :string  '(),
                                :unknown '()}))
 
 
 (def forever-8
-  (push/interpreter :program [:exec-laterloop 1 2 3 4 5 6 7 8] 
+  (push/interpreter :program [:exec-laterloop 1 2 3 4 5 6 7 8]
                     :config {:step-limit 6}))
 
 
 (fact "`run-n` doesn't care about halting conditions"
   (:stacks (run-n forever-8 0)) => (contains
-                              {:boolean '(), 
-                               :char    '(), 
-                               :code    '(), 
-                               :error   '(), 
-                               :exec    '(:exec-laterloop 1 2 3 4 5 6 7 8), 
-                               :scalar  '(), 
-                               :print   '(), 
-                               :string  '(), 
+                              {:boolean '(),
+                               :char    '(),
+                               :code    '(),
+                               :error   '(),
+                               :exec    '(:exec-laterloop 1 2 3 4 5 6 7 8),
+                               :scalar  '(),
+                               :print   '(),
+                               :string  '(),
                                :unknown '()})
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (:stacks (run-n forever-8 6)) => (contains
-                              {:boolean '(), 
-                               :char    '(), 
-                               :code    '(), 
-                               :error   '(), 
-                               :exec    '(7 8 (1 :exec-laterloop 1)), 
-                               :scalar  '(6 5 4 3 2), 
-                               :print   '(), 
-                               :string  '(), 
+                              {:boolean '(),
+                               :char    '(),
+                               :code    '(),
+                               :error   '(),
+                               :exec    '(7 8 (1 :exec-laterloop 1)),
+                               :scalar  '(6 5 4 3 2),
+                               :print   '(),
+                               :string  '(),
                                :unknown '()})
 
   (:done? (run-n simple-things 0)) =>           false
@@ -653,12 +653,12 @@
 
 
 (fact "`run-n` produces a log"
-    (u/get-stack (run-n simple-things 177) :log) => '({:item :boolean-or, :step 6}
-                                                    {:item true, :step 5} 
-                                                    {:item :scalar-add, :step 4} 
-                                                    {:item false, :step 3} 
-                                                    {:item 2, :step 2} 
-                                                    {:item 1, :step 1}))
+    (u/get-stack (run-n simple-things 177) :log) => '({:item ":boolean-or", :step 6}
+                                                    {:item "true", :step 5}
+                                                    {:item ":scalar-add", :step 4}
+                                                    {:item "false", :step 3}
+                                                    {:item "2", :step 2}
+                                                    {:item "1", :step 1}))
 
 
 ;; entire-run
@@ -712,7 +712,7 @@
   (u/get-stack (reset-interpreter knows-some-things) :code) => '()
 
   (:config knows-some-things) => {:lenient? true, :max-collection-size 131072, :step-limit 23}
-  
+
   (:config
     (reset-interpreter
       (reconfigure knows-some-things {:preload-code? true}))) =>
