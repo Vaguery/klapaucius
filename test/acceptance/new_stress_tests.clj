@@ -89,7 +89,7 @@
   (println "caught exception: ")
   (println (str exception-message))
   (spit
-    (str "test/acceptance/prisoners/"
+    (str "test/acceptance/prisoners/prisoner-"
          (.toString (java.util.UUID/randomUUID))
          ".txt")
     (pr-str

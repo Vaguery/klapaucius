@@ -61,13 +61,8 @@
                             ;     (map
                             ;       #(count (str (:item %)))
                             ;       (u/get-stack s :log))))
-                            ; "\n items on :exec " (u/get-stack s :exec)
                             ; "\n>>> ATTEMPTING " (pr-str (first (u/get-stack s :exec)))
-                            ; "\n items on :OUTPUT " (get-in s [:bindings :OUTPUT] '())
-                            ; "\n items on :scalar " (u/get-stack s :scalar)
-                            ; "\n items on :return " (u/get-stack s :return)
-                            ; "\n"
-                            ; (pr-str (u/peek-at-stack s :log))
+                            (pr-str (u/peek-at-stack s :log))
                             ))
               (step s))))))
       (catch Exception e (do
@@ -86,17 +81,25 @@
    'push.type.definitions.quoted.QuotedCode map->QuotedCode
     })
 
-(def prisoner-names
-  (file-seq (clojure.java.io/file "test/acceptance/prisoners")))
 
+(defn slurp-prisoner
+  [filename]
+  (edn/read-string {:readers edn-readers}
+                   (slurp filename)))
 
 (def prisoners
-  [
-    ; (edn/read-string {:readers edn-readers}
-    ;                  (slurp "test/acceptance/prisoners/20170326-1.txt"))
-    (edn/read-string {:readers edn-readers}
-                     (slurp "test/acceptance/prisoners/dffa864b-2c93-4d48-b249-63327f624246.txt"))
-  ])
+  "This reads all files in the glob 'test/acceptance/prisoners/prisoner-*' into a vector of `prisoner` maps."
+  (let [prison "test/acceptance/prisoners"
+        files (file-seq (clojure.java.io/file prison))]
+    (reduce
+      (fn [dudes f]
+        (if (re-find #"prisoner-" (. f getName))
+          (conj dudes (slurp-prisoner (str prison "/" (. f getName))))
+          dudes))
+      []
+      files)
+      ))
+
 
 (fact "no exceptions are raised when I step through any of these problematic programs"
   :debug :acceptance
