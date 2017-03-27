@@ -20,6 +20,22 @@
 
 ;;;;
 
+(defn spit-prisoner-file
+  [program bindings exception-message]
+  (println "caught exception: ")
+  (println (str exception-message))
+  (spit
+    (str "test/acceptance/prisoners/prisoner-"
+         (.toString (java.util.UUID/randomUUID))
+         ".txt")
+    (pr-str
+      { :error exception-message
+        :program program
+        :bindings bindings}
+        )))
+
+
+
 (defn run-program-in-standardized-interpreter
   [interpreter program bindings]
   (try
@@ -31,11 +47,13 @@
       :config {:step-limit 20000 :lenient true :max-collection-size 138072}) ;138072
     (catch StackOverflowError e
       (println
-        (str "\n:exec stack: " (push/get-stack interpreter :exec)
+        (str "\n\nSTACK OVERFLOW >>>>>>> "
+             "\n:exec stack: " (push/get-stack interpreter :exec)
              "\n:log stack:  " (push/get-stack interpreter :log)
-             "\n:counter:    " (:steps interpreter)
-        :stack-overflow
-        )))
+             "\n:counter:    " (:steps interpreter)))
+      (spit-prisoner-file program bindings (.getMessage e))
+      ;(throw (Exception. (.getMessage e)))
+      )
     (catch Exception e
       (println (str e))
       :other-exception
@@ -99,47 +117,32 @@
     :OUTPUT nil))
 
 
-
-(defn spit-prisoner-file
-  [program bindings exception-message]
-  (println "caught exception: ")
-  (println (str exception-message))
-  (spit
-    (str "test/acceptance/prisoners/prisoner-"
-         (.toString (java.util.UUID/randomUUID))
-         ".txt")
-    (pr-str
-      { :error exception-message
-        :program program
-        :bindings bindings}
-        )))
-
-
 (defn launch-some-workers
   [interpreter bindings numbered-programs]
   (doall
     (map
-      #(try
-        (.write *out*
-          (str "\n\n"
-            (first %) ": "
-            (interpreter-details
-              (run-program-in-standardized-interpreter
-                interpreter
-                (second %)
-                bindings))))
-        (catch Exception e
-          (.write *out* (str "failure at " (first %)))
-          (spit-prisoner-file (second %) bindings (.getMessage e))
-          (throw (Exception. (.getMessage e)))
-          ))
+      #(.write *out*
+        (str "\n\n"
+          (first %) ": "
+          (interpreter-details
+            (run-program-in-standardized-interpreter
+              interpreter
+              (second %)
+              bindings))))
       numbered-programs)
       ))
 
 
-(fact "run some workers in parallel"
+(future-fact "run some workers in parallel"
   :danger :parallel
   (launch-some-workers
     my-interpreter
     sample-bindings
     sample-programs) =not=> (throws))
+
+
+;;;RISKY
+    ; (launch-some-workers
+    ;   my-interpreter
+    ;   sample-bindings
+    ;   sample-programs)

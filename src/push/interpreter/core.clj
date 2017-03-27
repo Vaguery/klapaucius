@@ -451,6 +451,25 @@
     (nth (iterate step start) tick)))
 
 
+(defn run-n-forgetfully
+  "Takes an Interpreter, calls `reset` on it, and calls `step`
+  on that reset state for `tick` iterations. Returns the Interpreter
+  state at the end. Drops the head of the lazy recursion.
+
+  Can be called for any non-negative integer `tick` value, regardless
+  of halting state."
+  [interpreter deadline]
+  (loop
+    [state (assoc-in (reset-interpreter interpreter) [:config :step-limit] deadline)
+     time  0]
+    (if (> time deadline)
+      state
+      (recur (step state)
+             (inc time))
+             )))
+
+
+
 (defn entire-run
   "Takes an Interpreter, calls `reset` on it, and returns a (lazy) seq containing all of the steps from the start to the specified end point."
   [interpreter tick]

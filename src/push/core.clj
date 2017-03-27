@@ -95,7 +95,7 @@
 (defn run
   "Creates a new Push interpreter, using that to run the specified program for the specified number of steps. Uses :one-with-everything as a default template; :bindings can be specified (only in map format) using the optional :binding keyword argument."
   [interpreter program steps & {:keys [bindings] :or {bindings {}}}]
-  (i/run-n
+  (i/run-n-forgetfully
     (-> interpreter
       (assoc :program program)
       (assoc :config (merge (:config interpreter) {:step-limit steps}))
@@ -107,6 +107,3 @@
   "returns a named stack from a given interpreter"
   [interpreter stackname]
   (get-in interpreter [:stacks stackname] '()))
-
-
-
