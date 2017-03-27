@@ -4,6 +4,7 @@
             [com.climate.claypoole.lazy :as lazy]
             [acceptance.util :as util]
             [push.util.code-wrangling :as fix]
+            [dire.core :refer [with-handler!]]
             )
   (:use midje.sweet)
   )
@@ -12,13 +13,25 @@
 ;;;; setup
 
 (def my-interpreter (push/interpreter))
-(def cohort-size 10000)
+(def cohort-size 100)
 (def program-size 1000)
 (def erc-scale 10)
 (def erc-prob 3/5)
 
 
 ;;;;
+
+(defn run-program-in-standardized-interpreter
+  [interpreter program bindings]
+    (push/run
+      interpreter
+      program
+      20000
+      :bindings bindings
+      :config {:step-limit 20000
+               :lenient true
+               :max-collection-size 138072} ;138072
+               ))
 
 (defn spit-prisoner-file
   [program bindings exception-message]
@@ -34,34 +47,37 @@
         :bindings bindings}
         )))
 
+         ; (try
+         ;   (catch StackOverflowError e
+         ;     (println
+         ;       (str "\n\nSTACK OVERFLOW >>>>>>> "
+         ;            "\n:exec stack: " (push/get-stack interpreter :exec)
+         ;            "\n:log stack:  " (push/get-stack interpreter :log)
+         ;            "\n:counter:    " (:steps interpreter)))
+         ;     (spit-prisoner-file program bindings (.getMessage e))
+         ;     ;(throw (Exception. (.getMessage e)))
+         ;     )
+         ;   (catch Exception e
+         ;     (println (str e))
+         ;     :other-exception
+         ;     )
+         ;   ; (finally
+         ;   ;   (println (str "\n\n running: " program)))
+         ;     ))
 
-
-(defn run-program-in-standardized-interpreter
-  [interpreter program bindings]
-  (try
-    (push/run
-      interpreter
-      program
-      20000
-      :bindings bindings
-      :config {:step-limit 20000 :lenient true :max-collection-size 138072}) ;138072
-    (catch StackOverflowError e
+(with-handler! #'run-program-in-standardized-interpreter
+  "If an interpreter raises an exception, dump a new prisoner file."
+  [java.lang.StackOverflowError, java.lang.NullPointerException]
+  (fn [e & args]
+    (do
       (println
-        (str "\n\nSTACK OVERFLOW >>>>>>> "
-             "\n:exec stack: " (push/get-stack interpreter :exec)
-             "\n:log stack:  " (push/get-stack interpreter :log)
-             "\n:counter:    " (:steps interpreter)))
-      (spit-prisoner-file program bindings (.getMessage e))
-      ;(throw (Exception. (.getMessage e)))
-      )
-    (catch Exception e
-      (println (str e))
-      :other-exception
-      )
-    ; (finally
-    ;   (println (str "\n\n running: " program)))
-      ))
-
+        (str "\n\nSTACK OVERFLOW >>>>>>> " args))
+      (println "\n\n saving prisoner: ")
+      (spit-prisoner-file
+        (first args)
+        (second args)
+        (.getMessage e)))
+        ))
 
 
 (defn interpreter-details
@@ -120,7 +136,7 @@
 (defn launch-some-workers
   [interpreter bindings numbered-programs]
   (doall
-    (map
+    (cp/upmap 2
       #(.write *out*
         (str "\n\n"
           (first %) ": "
@@ -133,16 +149,9 @@
       ))
 
 
-(future-fact "run some workers in parallel"
+(fact "run some workers in parallel"
   :danger :parallel
   (launch-some-workers
     my-interpreter
     sample-bindings
     sample-programs) =not=> (throws))
-
-
-;;;RISKY
-    ; (launch-some-workers
-    ;   my-interpreter
-    ;   sample-bindings
-    ;   sample-programs)
