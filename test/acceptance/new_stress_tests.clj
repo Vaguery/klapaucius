@@ -13,7 +13,6 @@
 ;;;; setup
 
 (def my-interpreter (push/interpreter))
-(def cohort-size 100)
 (def program-size 1000)
 (def erc-scale 10)
 (def erc-prob 3/5)
@@ -51,14 +50,14 @@
 (with-handler! #'run-program-in-standardized-interpreter
   "If an interpreter raises an exception, dump a new prisoner file."
   [java.lang.StackOverflowError, java.lang.NullPointerException]
-  (fn [e & args]
+  (fn [e interpreter program bindings]
     (do
       (println
-        (str "\n\nSTACK OVERFLOW >>>>>>> " args))
+        (str "\n\nWRITING FILE >>>>>>> " (str e)))
       (println "\n\n saving prisoner: ")
       (spit-prisoner-file
-        (first args)
-        (second args)
+        program
+        bindings
         (.getMessage e)))
         ))
 
@@ -115,7 +114,7 @@
 
 (defn launch-some-workers
   [interpreter bindings how-many]
-  (cp/with-shutdown! [net-pool (cp/threadpool 100)]
+  (cp/with-shutdown! [net-pool (cp/threadpool 16)]
     (doall
       (lazy/upmap net-pool
         #(.write *out*
