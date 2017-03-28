@@ -1,5 +1,7 @@
 (ns push.util.code-wrangling-test
-  (:require [push.util.stack-manipulation :as fix])
+  (:require [push.util.stack-manipulation :as fix]
+            [push.util.numerics :as num]
+            [clojure.math.numeric-tower :as nt])
   (:use midje.sweet)
   (:use push.util.code-wrangling)
   )
@@ -276,4 +278,29 @@
 (fact "`replace-nth-in-code` can handle non-lists?"
   (replace-nth-in-code 99 '(77) 0) => '(77)
   (replace-nth-in-code 99 88 0) => 88
+  )
+
+
+;;; safe-mod
+(fact "`safe-mod` provides a non-crashing modulo by return 0 when necessary"
+  (safe-mod 9 8) => 1
+  (safe-mod 9 9) => 0
+  (safe-mod 9 0) => 0
+  )
+
+(fact "`safe-mod` handles infinite argument values"
+  (safe-mod 8 num/∞) => 0
+  (safe-mod 8 num/-∞) => 0
+  (safe-mod 8 num/-∞) => 0
+  (safe-mod num/∞ 8) => num/∞
+  (safe-mod num/-∞ 8) => num/-∞
+  (safe-mod num/-∞ -8) => num/∞
+  (safe-mod num/∞ -8) => num/-∞
+  )
+
+(fact "`safe-mod` handles NaN argument values by returning 0"
+  (safe-mod (nt/sqrt -2) 8) => 0
+  (safe-mod (nt/sqrt -2) 0) => 0
+  (safe-mod (nt/sqrt -2) (nt/sqrt -3)) => 0
+  (safe-mod 8 (nt/sqrt -3)) => 0
   )

@@ -1,6 +1,7 @@
 (ns push.util.code-wrangling
-  (:require [clojure.zip :as zip])
-  )
+  (:require [clojure.zip :as zip]
+            [push.util.numerics :as num]
+            ))
 
 
 (defn branch?
@@ -130,8 +131,13 @@
 
 
 (defn safe-mod
-  "Takes two integers, and returns 0 if the second is 0, otherwise (mod A B)"
+  "Takes two integers, and returns 0 if the second is 0, otherwise (mod A B). Handles infinite arguments. Returns 0 if either argument is NaN."
   [a b]
-  (if (zero? b)
-      0
-      (mod a b)))
+  (cond
+    (Double/isNaN a) 0
+    (Double/isNaN b) 0
+    (zero? b) 0
+    (num/infinite? b) 0
+    (num/infinite? a)
+      (if (pos? (* a b)) num/∞ num/-∞)
+    :else (mod a b)))
