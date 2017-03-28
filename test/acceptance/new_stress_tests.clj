@@ -47,23 +47,6 @@
         :bindings bindings}
         )))
 
-         ; (try
-         ;   (catch StackOverflowError e
-         ;     (println
-         ;       (str "\n\nSTACK OVERFLOW >>>>>>> "
-         ;            "\n:exec stack: " (push/get-stack interpreter :exec)
-         ;            "\n:log stack:  " (push/get-stack interpreter :log)
-         ;            "\n:counter:    " (:steps interpreter)))
-         ;     (spit-prisoner-file program bindings (.getMessage e))
-         ;     ;(throw (Exception. (.getMessage e)))
-         ;     )
-         ;   (catch Exception e
-         ;     (println (str e))
-         ;     :other-exception
-         ;     )
-         ;   ; (finally
-         ;   ;   (println (str "\n\n running: " program)))
-         ;     ))
 
 (with-handler! #'run-program-in-standardized-interpreter
   "If an interpreter raises an exception, dump a new prisoner file."
@@ -114,17 +97,14 @@
 
 ;; setup for stress test
 
-(def sample-programs
-  (map-indexed
-    (fn [idx p] [idx p])
-    (take
-      cohort-size
-      (repeatedly
-        #(util/some-program
-          program-size
-          erc-scale
-          erc-prob
-          my-interpreter)))))
+(defn sample-program
+  [i]
+  [i (util/some-program
+      program-size
+      erc-scale
+      erc-prob
+      my-interpreter)])
+
 
 
 (def sample-bindings
@@ -134,19 +114,20 @@
 
 
 (defn launch-some-workers
-  [interpreter bindings numbered-programs]
-  (doall
-    (cp/upmap 2
-      #(.write *out*
-        (str "\n\n"
-          (first %) ": "
-          (interpreter-details
-            (run-program-in-standardized-interpreter
-              interpreter
-              (second %)
-              bindings))))
-      numbered-programs)
-      ))
+  [interpreter bindings how-many]
+  (cp/with-shutdown! [net-pool (cp/threadpool 100)]
+    (doall
+      (lazy/upmap net-pool
+        #(.write *out*
+          (str "\n\n"
+            (first %) ": "
+            (interpreter-details
+              (run-program-in-standardized-interpreter
+                interpreter
+                (second %)
+                bindings))))
+        (map sample-program (range how-many))
+        ))))
 
 
 (fact "run some workers in parallel"
@@ -154,4 +135,4 @@
   (launch-some-workers
     my-interpreter
     sample-bindings
-    sample-programs) =not=> (throws))
+    100) =not=> (throws))
