@@ -398,6 +398,7 @@
     [(u/merge-snapshot interpreter (using scratch)) scratch]))
 
 
+
 (defn save-top-of-binding
   "Takes a PushDSL blob, a scratch keyword, and a second :as scratch keyword; looks up the top item in the binding keyed by the first argument, and stores that value (which may be nil) in the second scratch variable. Exception if there is no :as argument. Fine if the result is nil."
   [[interpreter scratch] which & {:keys [as]}]
