@@ -141,3 +141,28 @@
     (num/infinite? a)
       (if (pos? (* a b)) num/∞ num/-∞)
     :else (mod a b)))
+
+
+(defn list!
+  "Forces the collection to become a list (in the same order)."
+  [collection]
+  (into '() (reverse collection)))
+
+
+(defn delete-nth
+  "Removes an indexed item from a seq; raises an Exception if the seq
+  is empty."
+  [coll idx]
+  {:pre  [(seq coll)
+          (not (neg? idx))
+          (< idx (count coll))]}
+  (list! (concat (take idx coll) (drop 1 (drop idx coll)))))
+
+
+(defn insert-as-nth
+  "Inserts the item so it is in the indicated position of the result. Note bounds of possible range are [0,length] (it can be placed last)."
+  [coll item idx]
+  {:pre  [(seq? coll)
+          (not (neg? idx))
+          (<= idx (count coll))]}
+  (list! (concat (take idx coll) (list item) (drop idx coll))))

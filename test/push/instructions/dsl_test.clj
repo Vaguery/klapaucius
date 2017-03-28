@@ -111,49 +111,6 @@
     (second (consume-top-of [afew {:foo \f}] :scalar :as :foo)) => {:foo 1 :ARGS [1]}
     )
 
-
-;; delete-nth
-
-(facts "about `delete-nth`"
-
-  (fact "`delete-nth` returns a collection with the nth item removed"
-    (#'push.instructions.dsl/delete-nth '(0 1 2 3 4 5) 3) => '(0 1 2 4 5)
-    (#'push.instructions.dsl/delete-nth '(0 1 2 3 4 5) 0) => '(1 2 3 4 5)
-    (#'push.instructions.dsl/delete-nth '(0 1 2 3 4 5) 5) => '(0 1 2 3 4))
-
-
-  (fact "`delete-nth` throws an Exception when the list is empty"
-    (#'push.instructions.dsl/delete-nth '() 3) => (throws #"Assert"))
-
-
-  (fact "`delete-nth` throws an Exception when the index is out of range"
-    (#'push.instructions.dsl/delete-nth '(0 1 2 3 4 5) -99) => (throws #"Assert")
-    (#'push.instructions.dsl/delete-nth '(0 1 2 3 4 5) 99) => (throws #"Assert")))
-
-
-
-
-;; insert-as-nth
-
-
-(facts "about `insert-as-nth`"
-
-  (fact "`insert-as-nth` returns a collection with the item inserted at position n"
-    (#'push.instructions.dsl/insert-as-nth '(0 1 2 3 4 5) \X 3) => '(0 1 2 \X 3 4 5)
-    (#'push.instructions.dsl/insert-as-nth '(0 1 2 3 4 5) \X 0) => '(\X 0 1 2 3 4 5)
-    (#'push.instructions.dsl/insert-as-nth '(0 1 2 3 4 5) \X 6) => '(0 1 2 3 4 5 \X))
-
-
-  (fact "`insert-as-nth` DOES NOT throw an Exception when the list is empty"
-    (#'push.instructions.dsl/insert-as-nth '() \X 0) =not=> (throws)
-    (#'push.instructions.dsl/insert-as-nth '() \X 0) =not=> (throws))
-
-
-  (fact "`insert-as-nth` throws an Exception when the index is out of range"
-    (#'push.instructions.dsl/insert-as-nth '(0 1 2 3 4 5) \X -99) => (throws #"Assert")
-    (#'push.instructions.dsl/insert-as-nth '(0 1 2 3 4 5) \X 99) => (throws #"Assert")))
-
-
 ;; `consume-stack [stackname :as local]`
 
 
@@ -207,12 +164,12 @@
 
 
   (fact "index-from-scratch-ref throws up if the stored value isn't an integer"
-    (#'push.instructions.dsl/index-from-scratch-ref :foo {:foo false}) => 
+    (#'push.instructions.dsl/index-from-scratch-ref :foo {:foo false}) =>
       (throws #"false is not a valid index"))
 
 
   (fact "index-from-scratch-ref throws up if the key is not present"
-    (#'push.instructions.dsl/index-from-scratch-ref :bar {:foo 2}) => 
+    (#'push.instructions.dsl/index-from-scratch-ref :bar {:foo 2}) =>
       (throws #"nil is not a valid index")))
 
 
@@ -223,7 +180,7 @@
 
   (fact "save-max-collection-size stores the max-collection-size"
     (get-local-from-dslblob :max
-      (#'push.instructions.dsl/save-max-collection-size 
+      (#'push.instructions.dsl/save-max-collection-size
         [afew {}] :as :max)) =>
     (:max-collection-size m/interpreter-default-config))
 )
@@ -256,20 +213,20 @@
 
 
   (fact "`delete-nth-of` throws up given a scratch ref to non-integer"
-    (delete-nth-of [afew {:foo false}] :scalar :at :foo) => 
+    (delete-nth-of [afew {:foo false}] :scalar :at :foo) =>
       (throws #"false is not a valid index")
-    (delete-nth-of [afew {:foo 1}] :scalar :at :bar) => 
+    (delete-nth-of [afew {:foo 1}] :scalar :at :bar) =>
       (throws #"nil is not a valid index"))
 
 
   (fact "`delete-nth-of` throws up if no index is given"
-    (delete-nth-of [afew {:foo false}] :scalar) => 
+    (delete-nth-of [afew {:foo false}] :scalar) =>
       (throws #"missing key: :at"))
 
 
   (fact "`delete-nth-of` throws up if the stack is empty"
-    (delete-nth-of [afew {}] :boolean :at 7) => 
-      (throws #"stack :boolean is empty"))) 
+    (delete-nth-of [afew {}] :boolean :at 7) =>
+      (throws #"stack :boolean is empty")))
 
 
 ;; `replace-stack [stackname local]`
@@ -526,7 +483,7 @@
 
 
   (fact "`get-nth-of` throws an index error if the stack is empty"
-    (#'push.instructions.dsl/get-nth-of [afew {}] :grault :at 2) => 
+    (#'push.instructions.dsl/get-nth-of [afew {}] :grault :at 2) =>
       (throws #"stack :grault is empty"))
 
 
@@ -629,9 +586,9 @@
     (get-local-from-dslblob :min
       (calculate [afew {:a 8 :b 2}] [:a :b] #(min %1 %2) :as :min)) => 2
     (get-local-from-dslblob :choice
-      (calculate [afew {:a 8 :b 2 :c true}] 
+      (calculate [afew {:a 8 :b 2 :c true}]
                        [:c :a :b]
-                       #(if %1 %2 %3) 
+                       #(if %1 %2 %3)
                        :as :choice)) => 8)
 
 
@@ -662,9 +619,9 @@
 
 
 (fact "`needs-of-dsl-step` returns a hashmap containing the needs for every DSL instruction"
-  (inst/needs-of-dsl-step 
+  (inst/needs-of-dsl-step
     '(calculate [:a :b] #(+ %1 %2) :as :sum)) => {}
-  (inst/needs-of-dsl-step 
+  (inst/needs-of-dsl-step
     '(consume-nth-of :scalar :at 1 :as :bar)) => {:scalar 1}
   (inst/needs-of-dsl-step
     '(save-nth-of :scalar :at 11 :as :foo))  => {:scalar 1}
@@ -699,25 +656,25 @@
 
 
 (fact "`inst/total-needs` takes a whole transaction and sums up all the needs of each item"
-  (inst/total-needs 
+  (inst/total-needs
     ['(consume-nth-of :scalar :at 1 :as :bar)]) => {:scalar 1}
 
-  (inst/total-needs 
+  (inst/total-needs
     ['(consume-top-of :scalar :as :bar)
      '(consume-nth-of :scalar :at 1 :as :bar)]) => {:scalar 2}
 
-  (inst/total-needs 
+  (inst/total-needs
     ['(delete-nth-of :scalar :at 1)
      '(consume-top-of :scalar :as :arg1)
      '(consume-top-of :scalar :as :arg2)
      '(consume-top-of :boolean :as :b1)
      '(consume-top-of :foo :as :foo1)]) => {:boolean 1, :foo 1, :scalar 3}
 
-  (inst/total-needs 
+  (inst/total-needs
     ['(calculate [] #(33) :as :tt)]) => {}
 
 
-  (inst/total-needs 
+  (inst/total-needs
     ['(consume-top-of :scalar :as :arg1)
      '(consume-top-of :scalar :as :arg2)
      '(calculate [:arg1 :arg2] #(mod %1 %2) :as :m)
@@ -725,7 +682,7 @@
 
 
 (fact "`inst/total-needs` throws up when it sees bad DSL code"
-  (inst/total-needs 
+  (inst/total-needs
     ['(consume-top-of :scalar :as :arg1)
      '(consume-top-of :scalar :as :arg2)
      '(calculate [:arg1 :arg2] #(mod %1 %2) :as :m)
@@ -758,17 +715,17 @@
 
 
 (fact "`inst/total-products` takes a whole transaction and sums up all the products of each item"
-  (inst/total-products 
+  (inst/total-products
     ['(push-onto :scalar :bar)]) => {:scalar 1}
 
 
-  (inst/total-products 
+  (inst/total-products
     ['(push-onto :scalar :foo)
      '(replace-stack :scalar :foo)
      '(insert-as-nth-of :scalar :foo :at 0)]) => {:scalar 2}
 
 
-  (inst/total-products 
+  (inst/total-products
     ['(push-onto :scalar :foo)
      '(push-onto :scalar :foo2)
      '(push-these-onto :float [:foo :bar :baz :qux])
@@ -777,7 +734,7 @@
 
 
 (fact "`inst/total-products` throws up when it sees bad DSL code"
-  (inst/total-products 
+  (inst/total-products
     ['(consume-top-of :scalar :as :arg1)
      '(consume-top-of :scalar :as :arg2)
      '(calculate [:arg1 :arg2] #(mod %1 %2) :as :m)
@@ -789,16 +746,16 @@
 
 
 (fact "`inst/def-function-from-dsl` produces a function from zero or more DSL commands"
-  (fn? (macroexpand-1 (inst/def-function-from-dsl 
+  (fn? (macroexpand-1 (inst/def-function-from-dsl
     (consume-top-of :scalar :as :bar) ))) => true
   (fn? (macroexpand-1 (inst/def-function-from-dsl ))) => true
-  (fn? (macroexpand-1 (inst/def-function-from-dsl 
+  (fn? (macroexpand-1 (inst/def-function-from-dsl
     (consume-top-of :scalar :as :bar)
     (consume-top-of :scalar :as :bar) ))) => true)
 
 
 (fact "applying that function to an Interpreter produces an Interpreter result"
-  (let [int-add (inst/def-function-from-dsl 
+  (let [int-add (inst/def-function-from-dsl
                   (consume-top-of :scalar :as :arg1)
                   (consume-top-of :scalar :as :arg2)
                   (calculate [:arg1 :arg2] #(+ %1 %2) :as :sum)
@@ -807,7 +764,7 @@
 
 
 (fact "applying the function does the things it's supposed to"
-  (let [int-add (inst/def-function-from-dsl 
+  (let [int-add (inst/def-function-from-dsl
                   (consume-top-of :scalar :as :arg1)
                   (consume-top-of :scalar :as :arg2)
                   (calculate [:arg1 :arg2] #(+ %1 %2) :as :sum)
@@ -831,14 +788,14 @@
   (fact "`push-these-onto` will create a stack if the named one is missing"
     (get-stack-from-dslblob :grault
       (push-these-onto [afew {:foo 99}] :grault [:foo])) => '(99))
-        
+
 
 
   (fact "`push-these-onto` doesn't raise a fuss if a scratch variable isn't set"
     (get-stack-from-dslblob :scalar
       (push-these-onto [afew {}] :scalar [:foo])) => '(1 2 3)
         (get-stack-from-dslblob :scalar
-      (push-these-onto [afew {:foo 99 :bar 111}] :scalar [:foo :qux])) => 
+      (push-these-onto [afew {:foo 99 :bar 111}] :scalar [:foo :qux])) =>
         '(99 1 2 3))
 
 
@@ -915,7 +872,7 @@
 
 (fact "`save-snapshot` creates a single new :snapshot item from the current interpreter's :stacks, :bindings and :config"
   (first (get-stack-from-dslblob :snapshot
-      (save-snapshot [afew {}]))) => 
+      (save-snapshot [afew {}]))) =>
       (snap/->Snapshot (:stacks afew)
                        (:bindings afew)
                        (:config afew)
@@ -951,7 +908,7 @@
                                        :unknown '(:NEW)
                                        :foo     '(:FOO)})  ]
 
-    (:stacks 
+    (:stacks
       (first (retrieve-snapshot-state [r {:foo s}] :using :foo))) =>
         (contains {:exec    '(1 2 3)
                    :print   '(:NEW)
@@ -968,13 +925,13 @@
   ;                   [afew {:foo (snap/snapshot (push/interpreter))}]
   ;                   :using :foo))) =>
   ;   (contains
-  ;     '{:scalar (9 99 999), :error (), 
+  ;     '{:scalar (9 99 999), :error (),
   ;       :log (), :print (), :unknown ()})
 
-  ; (:stacks 
-  ;   (first 
+  ; (:stacks
+  ;   (first
   ;     (retrieve-snapshot-state
-  ;       [(m/basic-interpreter :stacks {:print '(33) 
+  ;       [(m/basic-interpreter :stacks {:print '(33)
   ;                                      :error '(:oops)
   ;                                      :scalar '(0 00)
   ;                                      :unknown '(88)})
@@ -982,7 +939,7 @@
   ;         {:foo {:scalar '(9 99 999)}}]
   ;       :using :foo))) =>
   ;   (contains
-  ;     '{:error (:oops), :scalar (9 99 999), 
+  ;     '{:error (:oops), :scalar (9 99 999),
   ;       :log (), :print (33), :unknown (88)}))
 
 
@@ -1022,12 +979,12 @@
 
   (fact "`bind-item` saves the item stored in the first arg into the ref stored in the :into arg"
     (:bindings
-      (first 
+      (first
         (bind-item [afew {:foo 9 :bar :baz}] :foo :into :bar))) => {:baz '(9)})
 
 
   (fact "`bind-item` saves the item into a new ref if none is named in :into"
-    (let [b (:bindings (first 
+    (let [b (:bindings (first
               (bind-item [afew {:foo 9 :bar :baz}] :foo)))]
       (vals b) => '((:foo))
       (str (first (keys b))) => #":ref!\d+"))
@@ -1035,14 +992,14 @@
 
   (fact "`bind-item` throws an exception if the :into arg is not bound to a keyword"
     (:bindings
-      (first 
+      (first
         (bind-item [afew {:foo 9 :bar "oops!"}] :foo :into :bar))) =>
           (throws #"as a :bindings key"))
 
 
   (fact "`bind-item` has no effect if the item argument is nil (and does not push nil!)"
     (:bindings
-      (first 
+      (first
         (bind-item [afew {:foo nil :bar :baz}] :foo :into :bar))) => {:baz '()}))
 
 
@@ -1111,12 +1068,12 @@
 
     (get-stack-from-dslblob
       :error
-      (push-onto [skimpy {:bar skimpy}] :foo :bar)) => 
+      (push-onto [skimpy {:bar skimpy}] :foo :bar)) =>
         '({:item "oversized push-onto attempted to :foo", :step 0})
 
     (get-stack-from-dslblob
       :foo
-      (push-onto [skimpy {:bar skimpy}] :foo :bar)) => 
+      (push-onto [skimpy {:bar skimpy}] :foo :bar)) =>
         '(1 [2 (3 4) {5 6} 7] 8)
     )
   )
@@ -1154,16 +1111,16 @@
 
 (fact "`start-storing-arguments` sets the :store-args? flag to true"
   (let [turned-off (m/basic-interpreter :config {:store-args? false})]
-    (get-in turned-off [:config :store-args?]) => 
+    (get-in turned-off [:config :store-args?]) =>
       false
-    (get-in (start-storing-arguments [turned-off {}]) [0 :config :store-args?]) => 
+    (get-in (start-storing-arguments [turned-off {}]) [0 :config :store-args?]) =>
       true
       ))
 
 
 (fact "`stop-storing-arguments` sets the :store-args? flag to false"
   (let [turned-on (m/basic-interpreter :config {:store-args? true})]
-    (get-in turned-on [:config :store-args?]) => 
+    (get-in turned-on [:config :store-args?]) =>
       true
     (get-in (stop-storing-arguments [turned-on {}]) [0 :config :store-args?]) =>
       false
@@ -1181,7 +1138,7 @@
 
 (fact "`stop-cycling-arguments` sets the :cycle-args? flag to false"
   (let [turned-on (m/basic-interpreter :config {:cycle-args? true})]
-    (get-in turned-on [:config :cycle-args?]) => 
+    (get-in turned-on [:config :cycle-args?]) =>
       true
     (get-in (stop-cycling-arguments [turned-on {}]) [0 :config :cycle-args?]) =>
       false

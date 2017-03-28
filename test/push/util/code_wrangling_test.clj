@@ -304,3 +304,43 @@
   (safe-mod (nt/sqrt -2) (nt/sqrt -3)) => 0
   (safe-mod 8 (nt/sqrt -3)) => 0
   )
+
+;; delete-nth
+
+(facts "about `delete-nth`"
+  (fact "`delete-nth` returns a collection with the nth item removed"
+    (delete-nth '(0 1 2 3 4 5) 3) => '(0 1 2 4 5)
+    (delete-nth '(0 1 2 3 4 5) 0) => '(1 2 3 4 5)
+    (delete-nth '(0 1 2 3 4 5) 5) => '(0 1 2 3 4))
+
+
+  (fact "`delete-nth` throws an Exception when the list is empty"
+    (delete-nth '() 3) => (throws #"Assert"))
+
+
+  (fact "`delete-nth` throws an Exception when the index is out of range"
+    (delete-nth '(0 1 2 3 4 5) -99) => (throws #"Assert")
+    (delete-nth '(0 1 2 3 4 5) 99) => (throws #"Assert")))
+
+
+
+
+;; insert-as-nth
+
+
+(facts "about `insert-as-nth`"
+
+  (fact "`insert-as-nth` returns a collection with the item inserted at position n"
+    (insert-as-nth '(0 1 2 3 4 5) \X 3) => '(0 1 2 \X 3 4 5)
+    (insert-as-nth '(0 1 2 3 4 5) \X 0) => '(\X 0 1 2 3 4 5)
+    (insert-as-nth '(0 1 2 3 4 5) \X 6) => '(0 1 2 3 4 5 \X))
+
+
+  (fact "`insert-as-nth` DOES NOT throw an Exception when the list is empty"
+    (insert-as-nth '() \X 0) =not=> (throws)
+    (insert-as-nth '() \X 0) =not=> (throws))
+
+
+  (fact "`insert-as-nth` throws an Exception when the index is out of range"
+    (insert-as-nth '(0 1 2 3 4 5) \X -99) => (throws #"Assert")
+    (insert-as-nth '(0 1 2 3 4 5) \X 99) => (throws #"Assert")))

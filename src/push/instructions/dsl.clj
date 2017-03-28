@@ -9,8 +9,6 @@
 
 
 ;;;; a "PushDSL blob" is just a vector containing an interpreter and a hashmap
-
-
 ;; utilities
 
 
@@ -18,32 +16,6 @@
   "returns the current :max-collection-size setting from the Interpreter"
   [interpreter]
   (get-in interpreter [:config :max-collection-size]))
-
-
-(defn- list!
-  "Jams the argument into a list."
-  [collection]
-  (into '() (reverse collection)))
-
-
-(defn- delete-nth
-  "Removes an indexed item from a seq; raises an Exception if the seq
-  is empty."
-  [coll idx]
-  {:pre  [(seq coll)
-          (not (neg? idx))
-          (< idx (count coll))]}
-  (list! (concat (take idx coll) (drop 1 (drop idx coll)))))
-
-
-(defn- insert-as-nth
-  "Inserts the item so it is in the indicated position of the result. Note bounds
-  of possible range are [0,length] (it can be placed last)."
-  [coll item idx]
-  {:pre  [(seq? coll)
-          (not (neg? idx))
-          (<= idx (count coll))]}
-  (list! (concat (take idx coll) (list item) (drop idx coll))))
 
 
 (defn index-from-scratch-ref
@@ -194,7 +166,7 @@
                    (-> scratch
                        (save-ARG , top-item)
                        (assoc , as top-item)) ]))))
-      
+
 
 
 (defn count-of
@@ -225,7 +197,7 @@
           (get-nth-of [interpreter scratch] stackname :at at)]
     (if (nil? as)
       (oops/throw-missing-key-exception :as)
-      (let [new-stack (delete-nth old-stack idx)
+      (let [new-stack (fix/delete-nth old-stack idx)
             saved-item (nth old-stack idx)]
         [(u/set-stack interpreter stackname new-stack)
          (-> scratch
@@ -236,7 +208,7 @@
 (defn delete-nth-of
   "Usage: `delete-nth-of [stackname :at where]`
 
-  Removes item at index `where` from stack `stackname`. If `where` is 
+  Removes item at index `where` from stack `stackname`. If `where` is
   an integer, the index deleted is `(mod where (count stackname))`; if
   it is a scratch reference, the numerical value is looked up. If the
   item stored under key `where` is not an integer, an error occurs.
@@ -249,7 +221,7 @@
   [[interpreter scratch] stackname & {:keys [as at]}]
   (let [[idx old-stack]
           (get-nth-of [interpreter scratch] stackname :at at)]
-    (let [new-stack (delete-nth old-stack idx)]
+    (let [new-stack (fix/delete-nth old-stack idx)]
       [(u/set-stack interpreter stackname new-stack) scratch])))
 
 
@@ -282,7 +254,7 @@
   "Usage: `insert-of-nth-of [stackname local :at where]`
 
   Place item stored in scratch variable `local` into the named stack
-  so it becomes the new item in the `where` position. If `where` is 
+  so it becomes the new item in the `where` position. If `where` is
   an integer, the index deleted is `(mod where (count stackname))`; if
   it is a scratch reference, the numerical value is looked up. If the
   item stored under key `where` in scratch is not an integer, an error
@@ -297,7 +269,7 @@
       (let [idx (valid-DSL-index at scratch)
             which (fix/safe-mod idx (inc (count old-stack)))
             new-item (kwd scratch)
-            new-stack (insert-as-nth old-stack new-item which)]
+            new-stack (fix/insert-as-nth old-stack new-item which)]
         [(u/set-stack interpreter stackname new-stack) scratch])))
 
 
@@ -327,7 +299,7 @@
         [(u/set-stack
             interpreter
             :error
-            (conj error-stack 
+            (conj error-stack
                   {:step counter
                    :item (str "oversized push-onto attempted to " stackname)})) scratch]
         [(u/set-stack interpreter stackname new-stack) scratch]))))
@@ -369,7 +341,7 @@
       (not (keyword? where))
         (oops/throw-invalid-binding-key where)
       (nil? new-item)
-        [(assoc-in interpreter [:bindings where] '()) scratch] ;; basically clear it        
+        [(assoc-in interpreter [:bindings where] '()) scratch] ;; basically clear it
       (seq? new-item)
         [(assoc-in interpreter [:bindings where] new-item) scratch]
       :else
@@ -598,8 +570,3 @@
       [(add-error-message! interpreter (.getMessage e))
        (assoc scratch as nil)]
     ))
-
-
-
-
-

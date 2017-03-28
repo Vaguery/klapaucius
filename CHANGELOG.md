@@ -1,6 +1,15 @@
 # Recent changes
 
-## 0.1.23 
+## current work
+
+- moved `push.instructions.dsl/insert-as-nth` to `push.util.code-wrangling/insert-as-nth`
+- moved `push.instructions.dsl/delete-nth` to `push.util.code-wrangling/delete-nth`
+- moved `push.instructions.dsl/list!` to `push.util.code-wrangling/list!`
+- fixed several bugs involving infinite and `NaN` `:scalar` value arguments in various functions
+- refactoring and rewriting "stress test" functions to work with Claypoole threading
+
+
+## 0.1.23
 
 - added `buildable` aspect
 - added `:parts` and `:builder` keys to PushType `record` and `make-type` function; `:parts` is a manifest of the stacks from which components are to be taken; `:builder` is the function used to compose them into an item of this type
@@ -139,4 +148,3 @@
 ## 0.1.5
 
 - `core.clj` exposes basic `interpreter` creation functions for use as a library
-
