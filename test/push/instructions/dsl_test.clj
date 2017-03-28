@@ -22,8 +22,12 @@
 
 
 (def nada (m/basic-interpreter))
-(def afew (m/basic-interpreter :stacks {:scalar '(1 2 3)}))
-(def lots (m/basic-interpreter :stacks {:code (range 1 20)}))
+(def afew
+  (m/basic-interpreter
+    :stacks {:scalar '(1 2 3)}))
+(def lots
+  (m/basic-interpreter
+    :stacks {:code (range 1 20)}))
 
 
 ;; max-collection-size
@@ -867,6 +871,21 @@
         '(99)))
 
 
+(fact "`insert-as-nth-of` creates an error if the stack item pushes us over the size limit"
+  (let [wee (m/basic-interpreter :stacks {:scalar '(1 2 3)} :config {:max-collection-size 5})]
+    (get-stack-from-dslblob :scalar
+      (insert-as-nth-of [wee {:foo [1 2 3 4 5 6]}] :scalar :foo :at 1)) => '(1 2 3)
+    (get-stack-from-dslblob :error
+      (insert-as-nth-of [wee {:foo [1 2 3 4 5 6]}] :scalar :foo :at 1)) =>
+      '({:item "Push runtime error: stack :scalar is over size limit", :step 0})
+    (get-stack-from-dslblob :scalar
+      (insert-as-nth-of [wee {:foo [1]}] :scalar :foo :at 1)) => '(1 [1] 2 3)
+    (get-stack-from-dslblob :error
+      (insert-as-nth-of [wee {:foo [1]}] :scalar :foo :at 1)) =>
+      '()
+      ))
+
+
 ;; `save-snapshot`
 
 
@@ -1118,7 +1137,7 @@
     (get-stack-from-dslblob
       :error
       (push-onto [skimpy {:bar skimpy}] :foo :bar)) =>
-        '({:item "oversized push-onto attempted to :foo", :step 0})
+        '({:item "Push runtime error: stack :foo is over size limit", :step 0})
 
     (get-stack-from-dslblob
       :foo

@@ -84,6 +84,14 @@
   (throw (Exception. "Push runtime error: snapshot is over size limit")))
 
 
+
 (defn throw-binding-oversize-exception
   []
   (throw (Exception. "Push runtime error: binding is over size limit")))
+
+
+
+(defn throw-stack-oversize-exception
+  [stackname]
+  (throw (Exception. (str "Push runtime error: stack "
+                          stackname " is over size limit"))))
