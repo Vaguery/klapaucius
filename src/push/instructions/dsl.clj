@@ -344,18 +344,26 @@
 
 
 (defn push-these-onto
-  "Takes a PushDSL blob, a stackname (keyword) and a vector of scratch
-  keys (all keywords), and puts each item stored in the scratch
-  variables onto top of the named stack, in order specified. If any of
-  the stored items is nil, there is no effect (and no exception). No
-  type checking is used. Does not warn when the keyword isn't defined."
+  "Takes a PushDSL blob, a stackname (keyword) and a vector of scratch keys (all keywords), and puts each item stored in the scratch variables onto top of the named stack, in order specified. If any (or all) of the stored items is nil, there is no effect (and no exception); those items are just skipped. No type checking is used. If the stack doesn't exist, it is created. However if the _sum_ of the sizes of the items pushed is larger than the interpreter's size limit, an `:error` is pushed instead and they are all erased."
   [[interpreter scratch] stackname keywords]
   (let [old-stack (u/get-stack interpreter stackname)]
     (let [new-items (map scratch keywords)
-          new-stack (into old-stack (remove nil? new-items))]
-      [(u/set-stack interpreter stackname new-stack) scratch])))
+          too-big?  (oversized-stack? interpreter old-stack new-items)
+          new-stack (if (or (nil? new-items) too-big?)
+                      old-stack
+                      (fix/list! (into old-stack (remove nil? new-items))))]
+      (if too-big?
+        (oops/throw-stack-oversize-exception stackname)
+        [(u/set-stack interpreter stackname new-stack) scratch]))))
 
-;;; ADD SIZE CHECKS HERE
+(with-handler! #'push-these-onto
+  "Handles attempts to add an over-large collections of items to a stack"
+  #(re-find #"stack .+ is over size limit" (.getMessage %))
+  (fn
+    [e [interpreter scratch] stackname kwd & {:keys [as at]}]
+      [(add-error-message! interpreter (.getMessage e))
+       scratch]
+    ))
 
 
 (defn quote-all-bindings

@@ -808,10 +808,36 @@
       (push-these-onto [afew {:foo 99 :bar 111}] :scalar [])) => '(1 2 3))
 
 
-  (fact "`push-onto` doesn't care if a scratch variable is a list"
+  (fact "`push-these-onto` doesn't care if a scratch variable is a list"
     (get-stack-from-dslblob :scalar
       (push-these-onto [afew {:foo '(4 5 6)}] :scalar [:foo])) =>
         '((4 5 6) 1 2 3)))
+
+(fact "push-these-onto balks when the items (taken together) oversized"
+  (let [skimpy (push/interpreter :config {:max-collection-size 9}
+                                 :stacks {:foo '(1 2 3 4 5)} )]
+    (get-stack-from-dslblob
+      :error
+      (push-these-onto [skimpy {:bar [1 2]}] :foo [:bar])) =>
+        '()
+
+    (get-stack-from-dslblob
+      :foo
+      (push-these-onto [skimpy {:bar [1 2]}] :foo [:bar])) =>
+        '([1 2] 1 2 3 4 5)
+
+    (get-stack-from-dslblob
+      :error
+      (push-these-onto [skimpy {:bar [1 2]}] :foo [:bar :bar :bar])) =>
+        '({:item "Push runtime error: stack :foo is over size limit", :step 0})
+
+    (get-stack-from-dslblob
+      :foo
+      (push-these-onto [skimpy {:bar [1 2]}] :foo [:bar :bar :bar])) =>
+        '(1 2 3 4 5)
+    )
+  )
+
 
 
 
