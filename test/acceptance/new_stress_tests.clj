@@ -135,4 +135,4 @@
   (launch-some-workers
     my-interpreter
     sample-bindings
-    100) =not=> (throws))
+    10000) =not=> (throws))
