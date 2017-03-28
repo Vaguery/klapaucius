@@ -6,26 +6,26 @@
 
 (defn throw-redefined-instruction-error
   [token]
-  (throw (Exception. (str 
+  (throw (Exception. (str
                         "Push Instruction Redefined:'" token "'"))))
 
 
 (defn throw-unknown-instruction-error
   [token]
-  (throw (Exception. (str 
+  (throw (Exception. (str
                         "Unknown Push instruction:'" token "'"))))
 
 
 (defn throw-invalid-binding-key
   [item]
-  (throw (Exception. (str 
+  (throw (Exception. (str
     "Push Runtime Error: Cannot use '" item "' as a :bindings key."))))
 
 
 
 (defn throw-unknown-push-item-error
   [item]
-  (throw (Exception. (str 
+  (throw (Exception. (str
     "Push Parsing Error: Cannot interpret '" item "' as a Push item."))))
 
 
@@ -34,7 +34,7 @@
 
 (defn throw-empty-stack-exception
   [stackname]
-  (throw (Exception. (str 
+  (throw (Exception. (str
                         "Push DSL runtime error: stack "
                         stackname
                         " is empty."))))
@@ -42,22 +42,22 @@
 
 (defn throw-invalid-index-exception
   [k]
-  (throw (Exception. (str 
-                        "Push DSL argument error: " 
-                        (pr-str k) 
+  (throw (Exception. (str
+                        "Push DSL argument error: "
+                        (pr-str k)
                         " is not a valid index"))))
 
 
 (defn throw-missing-key-exception
   [k]
-  (throw  (Exception. (str 
-                         "Push DSL argument error: missing key: " 
+  (throw  (Exception. (str
+                         "Push DSL argument error: missing key: "
                          k))))
 
 
 (defn throw-unknown-stack-exception
   [stackname]
-  (throw (Exception. (str 
+  (throw (Exception. (str
                         "Push DSL argument error: no "
                         stackname
                         " stackname registered."))))
@@ -65,7 +65,7 @@
 
 (defn throw-function-argument-exception
   [args]
-  (throw (Exception. (str 
+  (throw (Exception. (str
                         "Push DSL argument error: '"
                         args
                         "' can't be parsed as vector."))))
@@ -73,7 +73,7 @@
 
 (defn throw-unknown-DSL-exception
   [instruction]
-  (throw (Exception. (str 
+  (throw (Exception. (str
                         "Push DSL parse error: '"
                         instruction
                         "' is not a known instruction."))))
@@ -84,3 +84,6 @@
   (throw (Exception. "Push runtime error: snapshot is over size limit")))
 
 
+(defn throw-binding-oversize-exception
+  []
+  (throw (Exception. "Push runtime error: binding is over size limit")))

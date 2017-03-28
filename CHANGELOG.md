@@ -2,6 +2,10 @@
 
 ## current work
 
+- added size limits for `push.instructions.dsl/bind-item` based on stack size limits: if the sum of the count-collection-points(item) and count(binding stack) is too large, it balks and adds an `:error` item to that stack
+- fixed a bug in `push.instructions.dsl/bind-item` that saved the scratch ref, not the value stored in it
+- added size-checking (using `:max-collection-size` as a limit) to bind-value
+- fixed a concern (maybe a bug?) in `push.interpreter.core/bind-value` by type-casting binding "stacks" to lists
 - moved `push.instructions.dsl/insert-as-nth` to `push.util.code-wrangling/insert-as-nth`
 - moved `push.instructions.dsl/delete-nth` to `push.util.code-wrangling/delete-nth`
 - moved `push.instructions.dsl/list!` to `push.util.code-wrangling/list!`

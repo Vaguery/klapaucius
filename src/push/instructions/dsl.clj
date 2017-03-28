@@ -109,17 +109,45 @@
     ))
 
 
+(defn oversized-binding?
+  "Returns `true` if adding the item to the binding's stack would push it over the interpreter's max-collection-size limit, or false if it would be OK. NOTE: Counts the items in the stack and the _program points_ in the item."
+  [interpreter binding-name new-item]
+  (let [item-size (fix/count-collection-points new-item)
+        binding-size (count (get-in interpreter [:bindings binding-name] '()))
+        limit (get-max-collection-size interpreter)]
+    (< limit (+' item-size binding-size))))
 
 
 (defn bind-item
-  "Binds the item stored in the second scratch variable under a keyword stored in the first scratch variable argument. If the :into argument is `nil`, a new binding name is generated automatically. If the item to be sotred is a keyword (referring to a scratch variable) an exception is thrown."
+  "Binds the item stored in the second scratch variable under a keyword stored in the first scratch variable argument. If the :into argument is `nil`, a new binding name is generated automatically. If the item to be stored is a keyword (referring to a scratch variable) an exception is thrown. If the item is oversized, it is not stored and an `:error` is added instead."
   [[interpreter scratch] item & {:keys [into]}]
-  (if (nil? into)
-    [(i/bind-value interpreter (keyword (gensym "ref!")) item) scratch]
-    (if-not (keyword? (into scratch))
-      (oops/throw-invalid-binding-key into)
-      [(i/bind-value interpreter (into scratch) (item scratch)) scratch])))
 
+  (let [size-limit   (get-max-collection-size interpreter)
+        item-pts     (fix/count-collection-points (item scratch))]
+    (if (< size-limit item-pts)
+      (oops/throw-binding-oversize-exception)
+      (if (nil? into)
+        [(i/bind-value
+            interpreter
+            (keyword (gensym "ref!"))
+            (item scratch)) scratch]
+        (if (keyword? (into scratch))
+          (if (oversized-binding? interpreter (into scratch) item)
+            (oops/throw-binding-oversize-exception)
+            [(i/bind-value
+                interpreter
+                (into scratch)
+                (item scratch)) scratch])
+          (oops/throw-invalid-binding-key into)
+          )))))
+
+
+(with-handler! #'bind-item
+  "Handles oversize errors in `bind-item`"
+  #(re-find #"binding is over size limit" (.getMessage %))
+  (fn [e [interpreter scratch] item & {:keys [into]} ]
+    [(add-error-message! interpreter (.getMessage e)) scratch]
+    ))
 
 
 (defn clear-binding
@@ -275,12 +303,14 @@
 
 
 (defn oversized-stack?
-  "Returns `true` if adding the item to the stack would push it over the interpreter's max-collection-size limit, or false if it would be OK. Counts the items in the stack and the _program points_ in the item."
+  "Returns `true` if adding the item to the stack would push it over the interpreter's max-collection-size limit, or false if it would be OK. NOTE: Counts the items in the stack and the _program points_ in the item."
   [interpreter stack item]
   (let [item-size (fix/count-collection-points item)
         stack-size (count stack)
         limit (get-max-collection-size interpreter)]
     (< limit (+' item-size stack-size))))
+
+
 
 
 

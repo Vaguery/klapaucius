@@ -975,37 +975,86 @@
 
 ;; `bind-item item :into kwd`
 
-(facts "about `bind-item`"
+;;; oversized-binding?
 
-  (fact "`bind-item` saves the item stored in the first arg into the ref stored in the :into arg"
-    (:bindings
-      (first
-        (bind-item [afew {:foo 9 :bar :baz}] :foo :into :bar))) => {:baz '(9)})
-
-
-  (fact "`bind-item` saves the item into a new ref if none is named in :into"
-    (let [b (:bindings (first
-              (bind-item [afew {:foo 9 :bar :baz}] :foo)))]
-      (vals b) => '((:foo))
-      (str (first (keys b))) => #":ref!\d+"))
-
-
-  (fact "`bind-item` throws an exception if the :into arg is not bound to a keyword"
-    (:bindings
-      (first
-        (bind-item [afew {:foo 9 :bar "oops!"}] :foo :into :bar))) =>
-          (throws #"as a :bindings key"))
+(fact "oversized-binding? returns true if the combined size of the item and the indicated binding stack is larger than the interpreter's max-collection-size"
+  (let [skimpy (push/interpreter :config {:max-collection-size 3})
+        small-thing 99.99
+        big-thing [1 2 3 4 5]]
+    (fix/count-collection-points small-thing) => 1
+    (fix/count-collection-points big-thing) => 6
+    (oversized-binding? skimpy :foo nil) => false
+    (oversized-binding? skimpy :foo small-thing) => false
+    (oversized-binding? skimpy :foo big-thing) => true
+    ))
 
 
-  (fact "`bind-item` has no effect if the item argument is nil (and does not push nil!)"
-    (:bindings
-      (first
-        (bind-item [afew {:foo nil :bar :baz}] :foo :into :bar))) => {:baz '()}))
+(fact "`bind-item` saves the item stored in the first arg into the ref stored in the :into arg"
+  (:bindings
+    (first
+      (bind-item [afew {:foo 9 :bar :baz}] :foo :into :bar))) => {:baz '(9)})
 
+
+(fact "`bind-item` saves the item into a new ref if none is named in :into"
+  (let [b (:bindings (first
+            (bind-item [afew {:foo 9 :bar :baz}] :foo)))]
+    (first (vals b)) => '(9)
+    (str (first (keys b))) => #":ref!\d+"))
+
+
+(fact "`bind-item` throws an exception if the :into arg is not bound to a keyword"
+  (:bindings
+    (first
+      (bind-item [afew {:foo 9 :bar "oops!"}] :foo :into :bar))) =>
+        (throws #"as a :bindings key"))
+
+
+(fact "`bind-item` has no effect if the item argument is nil (and does not push nil!)"
+  (:bindings
+    (first
+      (bind-item [afew {:foo nil :bar :baz}] :foo :into :bar))) =>
+      {:baz '()})
+
+
+(fact "bind-item balks when the item is oversized or would be if added to the count if items in that binding"
+  (let [skimpy (push/interpreter :config {:max-collection-size 4}
+                                 :bindings {:foo 999})]
+    (:bindings (first
+      (bind-item
+        [skimpy {:bar 99 :where :foo}]
+        :bar
+        :into :where))) => {:foo '(99 999)}
+    (:bindings (first
+      (bind-item
+        [skimpy {:bar [1 2] :where :foo}]
+        :bar
+        :into :where))) => {:foo '([1 2] 999)}
+    (:bindings (first
+      (bind-item
+        [skimpy {:bar [1 2 3 4] :where :foo}]
+        :bar
+        :into :where))) => {:foo '(999)}
+    (get-stack-from-dslblob
+      :error
+      (bind-item [skimpy {:bar [1 2 3 4 5] :where :foo}]
+        :bar
+        :into :where)) =>
+          '({:item "Push runtime error: binding is over size limit", :step 0})
+    (:bindings (first
+      (bind-item
+        [skimpy {:bar [1 2 3 4 5]}]
+        :bar ;; no named target stack
+        ))) => {:foo '(999)}
+    (get-stack-from-dslblob
+      :error
+      (bind-item [skimpy {:bar [1 2 3 4 5]}]
+        :bar  ;; no named target stack
+        )) =>
+          '({:item "Push runtime error: binding is over size limit", :step 0})
+    ))
 
 
 (facts "about `replace-binding`"
-
   (fact "`replace-binding` creates a new binding if no `:into` is given"
     (:bindings (first (replace-binding
                         [afew {:foo 9}] :foo))) => {:xxx '(9)}
@@ -1077,6 +1126,7 @@
         '(1 [2 (3 4) {5 6} 7] 8)
     )
   )
+
 
 
 
