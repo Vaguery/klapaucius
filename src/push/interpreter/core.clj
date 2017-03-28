@@ -1,56 +1,89 @@
 (ns push.interpreter.core
   (:require [push.util.stack-manipulation :as u]
             [push.util.exceptions :as oops]
-            [push.router.core :as router])
+            [push.router.core :as router]
+            [push.util.code-wrangling :as fix]
+            )
   (:use [push.interpreter.definitions])
   (:use [push.util.type-checkers])
   )
 
 
+(defn append-to-record
+  "Appends the new thing to the collection stored under the indicated key, in the interpreter passed in"
+  [interpreter key new-thing]
+  (assoc
+    interpreter
+    key
+    (conj
+      (key interpreter)
+      new-thing
+      )))
+
+
+(defn merge-into-record
+  "Merges the new map with the map stored under the indicated key, in the interpreter passed in"
+  [interpreter keyname new-map]
+  (assoc
+    interpreter
+    keyname
+    (merge
+      new-map
+      (keyname interpreter)
+      )))
+
+
 (defn register-type
   "Takes an Interpreter record, and a PushType record, and adds the PushType to the :types collection in the Interpeter; adds the type's :name as a new stack (if not already present); appends the type's :router to the Interpreter's :routers vector; adds the type's internally defined instructions to the Interpreter's registry automatically."
   [interpreter type]
-  (let [old-types (:types interpreter)
-        old-stacks (:stacks interpreter)
-        old-routers (:routers interpreter)
-        old-instructions (:instructions interpreter)]
-        (-> interpreter
-            (assoc :types (conj old-types type))
-            (assoc :routers
-              (conj old-routers (:router type)))
-            (assoc :stacks (merge {(:name type) '()}  old-stacks))
-            (assoc :instructions (merge old-instructions (:instructions type))))))
+  (-> interpreter
+      (append-to-record  , :types type)
+      (append-to-record  , :routers (:router type))
+      (merge-into-record , :stacks {(:name type) '()})
+      (merge-into-record , :instructions (:instructions type))
+      ))
 
 
 (defn register-module
   "Takes an Interpreter record, and a module; adds the module's internally defined instructions to the Interpreter's registry automatically."
   [interpreter module]
-  (let [old-types (:types interpreter)
-        old-instructions (:instructions interpreter)]
-    (-> interpreter
-      (assoc :types (conj old-types module))
-      (assoc :instructions (merge old-instructions (:instructions module))))))
+  (-> interpreter
+      (append-to-record  , :types module)
+      (merge-into-record , :instructions (:instructions module))
+      ))
 
 
 (defn register-types
   "Takes an Interpreter record, and a list of PushType records. Calls `register-type` on each of the types in turn."
   [interpreter types]
-  (reduce #(register-type %1 %2) interpreter types))
+  (reduce
+    #(register-type %1 %2)
+    interpreter
+    types
+    ))
 
 
 (defn register-modules
   "Takes an Interpreter record, and a list of modules. Calls `register-module` on each of those in turn."
   [interpreter modules]
-  (reduce #(register-module %1 %2) interpreter modules))
+  (reduce
+    #(register-module %1 %2)
+    interpreter
+    modules
+    ))
 
 
 (defn bind-value
-  "Takes an interpreter, a keyword, and any item. If the keyword is already registered in the interpreter's :bindings hashmap, the item is pushed to that; otherwise, a new binding is made first. If the item is nil, the binding is created (if necessary) but nothing is pushed to the stack."
+  "Takes an interpreter, a keyword, and any item. If the keyword is already registered in the interpreter's :bindings hashmap, the item is pushed to that; otherwise, a new binding is made first. If the item is `nil`, the binding is created (if necessary) but nothing is pushed to the stack."
   [interpreter kwd item]
-  (let [current-stack (get-in interpreter [:bindings kwd] '())]
-    (if (nil? item)
-      (assoc-in interpreter [:bindings kwd] current-stack)
-      (assoc-in interpreter [:bindings kwd] (conj current-stack item)))))
+  (let [old-stack (get-in interpreter [:bindings kwd] '())]
+    (assoc-in
+      interpreter
+      [:bindings kwd]
+      (if (nil? item)
+        old-stack
+        (fix/list! (conj old-stack item))
+        ))))
 
 
 (defn peek-at-binding
