@@ -1,7 +1,9 @@
 (ns push.instructions.standard.generator-test
   (:require [push.interpreter.core :as i]
             [push.type.core :as t]
-            [push.core :as push])
+            [push.core :as push]
+            [push.util.numerics :as num]
+            [push.interpreter.templates.one-with-everything :as owe])
   (:use midje.sweet)
   (:use [push.util.test-helpers])
   (:use [push.type.definitions.generator])
@@ -11,12 +13,13 @@
 
 
 
+
 (fact ":generator-again creates a list of the current state and the unchanged generator, pushed to :exec"
-  (let [gstep (push.interpreter.templates.one-with-everything/make-everything-interpreter
+  (let [gstep (owe/make-everything-interpreter
         :stacks {:generator (list (make-generator 8 dec))})
-        result  (first 
-                  (push.core/get-stack 
-                    (i/execute-instruction gstep :generator-again) 
+        result  (first
+                  (push.core/get-stack
+                    (i/execute-instruction gstep :generator-again)
                     :exec))]
         (first result) => 8
         (second result) => generator?
@@ -36,16 +39,16 @@
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar    '(17)
-     :generator '()}           
-                            :generator-counter       
+     :generator '()}
+                            :generator-counter
                                                   {:scalar   '()
-                                                   :generator (list (make-generator 17 inc'))} 
+                                                   :generator (list (make-generator 17 inc'))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar    '()
-     :generator '()}           
-                            :generator-counter       
+     :generator '()}
+                            :generator-counter
                                                   {:scalar   '()
-                                                   :generator '()} 
+                                                   :generator '()}
                                                    )
 
 
@@ -55,9 +58,9 @@
                   :generator-again         ;; pushes state = 142857N
                   :generator-next          ;; increment totalistic3 = 745032
                   :generator-next          ;; 698523 ...
-                  :generator-next          
+                  :generator-next
                   :generator-next ] ]
-    (push/get-stack (push/run (push/interpreter) program 1000) :scalar) => 
+    (push/get-stack (push/run (push/interpreter) program 1000) :scalar) =>
       '(76923 325018 698523 745032 142857N)
   ))
 
@@ -71,42 +74,42 @@
                   :generator-next          ;; -1001232
                   :generator-next          ;; -1136763 ...
                   :generator-next ] ]
-    (push/get-stack (push/run (push/interpreter) program 1000) :scalar) => 
+    (push/get-stack (push/run (push/interpreter) program 1000) :scalar) =>
       '(-5069605 -1136763 -1001232 -1000011 -1000000N)
   ))
 
 
 
 (fact ":generator-stepper creates a new generator that jumps by increments"
-  (let [gstep (push.interpreter.templates.one-with-everything/make-everything-interpreter
+  (let [gstep (owe/make-everything-interpreter
         :stacks {:scalar '(3 -8)})]
 
     (push.core/get-stack (i/execute-instruction gstep :generator-stepper) :scalar) => '()
-    (:state 
-      (first 
-        (push.core/get-stack 
-          (i/execute-instruction gstep :generator-stepper) 
+    (:state
+      (first
+        (push.core/get-stack
+          (i/execute-instruction gstep :generator-stepper)
           :generator))) => -8
-    (:origin 
-      (first 
-        (push.core/get-stack 
-          (i/execute-instruction gstep :generator-stepper) 
-          :generator))) => -8    
-    (:state 
+    (:origin
+      (first
+        (push.core/get-stack
+          (i/execute-instruction gstep :generator-stepper)
+          :generator))) => -8
+    (:state
       (step-generator
-        (first 
-          (push.core/get-stack 
-            (i/execute-instruction gstep :generator-stepper) 
+        (first
+          (push.core/get-stack
+            (i/execute-instruction gstep :generator-stepper)
             :generator)))) => -5))
 
 
 
 (fact ":generator-next creates a list of the next state and the updated generator, pushed to :exec"
-  (let [gstep (push.interpreter.templates.one-with-everything/make-everything-interpreter
+  (let [gstep (owe/make-everything-interpreter
         :stacks {:generator (list (make-generator 8 dec))})
-        result  (first 
-                  (push.core/get-stack 
-                    (i/execute-instruction gstep :generator-next) 
+        result  (first
+                  (push.core/get-stack
+                    (i/execute-instruction gstep :generator-next)
                     :exec))]
         (first result) => 7
         (second result) => generator?
@@ -116,11 +119,11 @@
 
 
 (fact ":generator-next will return `nil` if the generator disappears during update"
-  (let [gstep (push.interpreter.templates.one-with-everything/make-everything-interpreter
+  (let [gstep (owe/make-everything-interpreter
         :stacks {:generator (list (make-generator 8 (constantly nil)))})
-        result  (first 
-                  (push.core/get-stack 
-                    (i/execute-instruction gstep :generator-next) 
+        result  (first
+                  (push.core/get-stack
+                    (i/execute-instruction gstep :generator-next)
                     :exec))]
         result => nil
         ))
@@ -128,11 +131,11 @@
 
 
 (fact ":generator-reset resets a :generator to its :origin"
-  (let [g (push.interpreter.templates.one-with-everything/make-everything-interpreter
+  (let [g (owe/make-everything-interpreter
         :stacks {:generator (list (make-generator 8 dec 351))})
-        result  (first 
-                  (push.core/get-stack 
-                    (i/execute-instruction g :generator-reset) 
+        result  (first
+                  (push.core/get-stack
+                    (i/execute-instruction g :generator-reset)
                     :generator))]
         (:state result) => 351
         (:origin result) => 351
@@ -141,11 +144,12 @@
 
 
 (fact ":generator-jumpsome jumps ahead N steps, where N is the scalar mod 100"
-  (let [g (push.interpreter.templates.one-with-everything/make-everything-interpreter
-        :stacks {:scalar '(712.7) :generator (list (make-generator 8 dec' 351))})
-        result  (first 
-                  (push.core/get-stack 
-                    (i/execute-instruction g :generator-jumpsome) 
+  (let [g (owe/make-everything-interpreter
+        :stacks {:scalar '(712.7)
+                 :generator (list (make-generator 8 dec' 351))})
+        result  (first
+                  (push.core/get-stack
+                    (i/execute-instruction g :generator-jumpsome)
                     :generator))]
         (:state result) => -4  ;; note the jump was (floor (mod 712.7 100)) = 12.0 steps
         (:origin result) => 351
@@ -155,16 +159,16 @@
 
 
 (fact ":generator-jumpsome is OK if the generator disappears"
-  (let [g (push.interpreter.templates.one-with-everything/make-everything-interpreter
+  (let [g (owe/make-everything-interpreter
         :stacks {:scalar '(120) :generator
-          (list 
-            (make-generator 
+          (list
+            (make-generator
               '(1 [2 3])
               (partial push.instructions.aspects.repeatable-and-cycling/dissect-step)
               '(1 [2 3])))})
-        result  (first 
-                  (push.core/get-stack 
-                    (i/execute-instruction g :generator-jumpsome) 
+        result  (first
+                  (push.core/get-stack
+                    (i/execute-instruction g :generator-jumpsome)
                     :generator))]
         result => nil
         ))
@@ -172,10 +176,10 @@
 
 
 (fact ":generator-jumpsome consumes arguments but reports runtime errors"
-  (let [g (push.interpreter.templates.one-with-everything/make-everything-interpreter
-            :stacks {:scalar '(120) 
+  (let [g (owe/make-everything-interpreter
+            :stacks {:scalar '(120)
                      :generator (list (make-generator 8M #(+ 1/3 %)))})
-        result (:stacks 
+        result (:stacks
                     (i/execute-instruction g :generator-jumpsome))]
     result => (contains {:generator '()
                          :scalar '()
@@ -183,5 +187,15 @@
                          })))
 
 
-        
 
+(fact ":generator-jumpsome can handle infinite numeric arguments"
+   (let [g (owe/make-everything-interpreter
+             :stacks {:scalar    (list num/∞)
+                      :generator (list (make-generator 7 #(+ 1 %)))})
+         result (:stacks
+                     (i/execute-instruction g :generator-jumpsome))]
+    result => (contains {:scalar '()
+                         :error '()})
+    (:origin (first (:generator result))) => 7
+    (:state (first (:generator result))) => 106
+    ))

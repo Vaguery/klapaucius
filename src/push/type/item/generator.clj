@@ -6,6 +6,7 @@
             [push.util.exotics :as exotics]
             [clojure.math.numeric-tower :as nt]
             [push.util.numerics :as n]
+            [push.util.code-wrangling :as u]
             )
   (:use [push.type.definitions.generator])
 )
@@ -40,14 +41,19 @@
 (def generator-jumpsome
   (core/build-instruction
     generator-jumpsome
-    "`:generator-jumpsome` pops the top `:generator` and the top `:scalar`, and calls the `:generator`'s  `step` function as many (integer) times as the rounded `:scalar` indicates. The number of steps is calculated modulo 100. The advanced `:generator` is pushed to the `:generator` stack. If the `:scalar` is negative or zero, there is no change to the state. If the `:generator` is exhausted in the process, it is discarded."
+    "`:generator-jumpsome` pops the top `:generator` and the top `:scalar`, and calls the `:generator`'s  `step` function as many (integer) times as the rounded `:scalar` indicates. The number of steps is calculated modulo 100 (with a max of 99 for infinite :scalar argument). The advanced `:generator` is pushed to the `:generator` stack. If the `:scalar` is negative or zero, there is no change to the state. If the `:generator` is exhausted in the process, it is discarded."
     :tags #{:generator}
     (d/consume-top-of :generator :as :arg)
     (d/consume-top-of :scalar :as :steps)
     (d/calculate [:arg :steps]
-      #(first 
-        (drop (nt/floor (mod %2 100))
-          (iterate (fn [g] (if (nil? g) nil (step-generator g))) %1))) :as :result)
+      #(first
+        (drop
+          (nt/floor (max 0 (min (u/safe-mod %2 100) 99)))
+          (iterate
+            (fn [g]
+              (if (nil? g)
+              nil
+              (step-generator g))) %1))) :as :result)
     (d/push-onto :generator :result)))
 
 
@@ -113,7 +119,7 @@
       (t/attach-instruction , generator-reset)
       (t/attach-instruction , generator-stepper)
       (t/attach-instruction , generator-totalistic3)
-      aspects/make-visible 
+      aspects/make-visible
       aspects/make-movable
       aspects/make-quotable
       aspects/make-repeatable
@@ -121,4 +127,3 @@
       aspects/make-storable
       aspects/make-taggable
       )))
-
