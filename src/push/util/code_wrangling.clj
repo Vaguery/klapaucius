@@ -16,6 +16,7 @@
 
 
 (defn children
+  "Returns a `seq` on a node (without checking for type). Used for traversing code objects with `count-collection-points`."
   [node]
   (seq node))
 
@@ -59,7 +60,9 @@
 
 
 
-(defn find-in-tree [tree target]
+(defn find-in-tree
+  "Utility function that determines all the places where a target node or sub-tree exists within another tree. Each location is returned in a vector, which may end up being empty."
+  [tree target]
   (loop [loc (zip/seq-zip (seq tree))
          collector []]
     (if (zip/end? loc)
