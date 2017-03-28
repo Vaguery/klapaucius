@@ -59,7 +59,7 @@
 (defn save-ARG
   [scratch item]
   (let [old-args (:ARGS scratch)]
-    (assoc scratch :ARGS (conj old-args item))))
+    (assoc scratch :ARGS (fix/list! (conj old-args item)))))
 
 
 
@@ -94,7 +94,7 @@
         limit   (get-max-collection-size interpreter)]
     [ (if (< limit bigness)
         (oops/throw-snapshot-oversize-exception)
-        (u/set-stack interpreter :snapshot (conj old-env snap)))
+        (u/set-stack interpreter :snapshot (fix/list! (conj old-env snap))))
       scratch]))
 
 
@@ -294,14 +294,14 @@
           counter     (:counter interpreter)
           new-stack   (if (or (nil? new-item) too-big?)
                         old-stack
-                        (conj old-stack new-item))]
+                        (fix/list! (conj old-stack new-item)))]
       (if too-big?
         [(u/set-stack
             interpreter
             :error
-            (conj error-stack
+            (fix/list! (conj error-stack
                   {:step counter
-                   :item (str "oversized push-onto attempted to " stackname)})) scratch]
+                   :item (str "oversized push-onto attempted to " stackname)}))) scratch]
         [(u/set-stack interpreter stackname new-stack) scratch]))))
 
 
@@ -505,7 +505,7 @@
         (if (nil? msg)
           [interpreter scratch]
           (let [err-item {:step c :item msg}
-                new-err (conj old-err err-item)]
+                new-err (fix/list! (conj old-err err-item))]
             [(u/set-stack interpreter :error new-err) scratch]))))))
 
 
@@ -536,9 +536,6 @@
     (if (nil? as)
       (oops/throw-missing-key-exception :as)
       [interpreter (assoc scratch as result)])))
-
-
-
 
 
 (with-handler! #'calculate
