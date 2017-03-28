@@ -1,5 +1,6 @@
 (ns push.interpreter.core
   (:require [push.util.stack-manipulation :as u]
+            [push.util.code-wrangling :as fix]
             [push.util.exceptions :as oops]
             [push.router.core :as router]
             [push.util.code-wrangling :as fix]
