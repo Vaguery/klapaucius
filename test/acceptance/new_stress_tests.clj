@@ -21,9 +21,9 @@
 ;;;;
 
 (defn run-program-in-standardized-interpreter
-  [interpreter program bindings]
+  [id interpreter program bindings]
   (do
-    (println (str "\n\n\nrunning: " program))
+    (println (str "\n\n\nrunning " id " : " program))
     (push/run
       interpreter
       program
@@ -124,6 +124,7 @@
             (first %) ": "
             (interpreter-details
               (run-program-in-standardized-interpreter
+                (first %)
                 interpreter
                 (second %)
                 bindings))))
