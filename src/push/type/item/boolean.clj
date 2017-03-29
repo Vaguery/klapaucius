@@ -23,18 +23,17 @@
 (def boolean-2bittable
   (core/build-instruction
     boolean-2bittable
-    "`:boolean-2bittable` pops the top `:scalar` item and pushes the result of applying `(exotics/scalar-to-truth-table i 2)` to :booleans"
+    "`:boolean-2bittable` pops the top `:scalar` item and pushes the result of applying `(exotics/scalar-to-truth-table i 2)` to :booleans. If the `:scalar` is not a finite positive number, an empty vector is pushed instead."
     :tags #{:boolean :conversion}
     (d/consume-top-of :scalar :as :value)
     (d/calculate [:value] #(exotics/scalar-to-truth-table %1 2) :as :table)
     (d/push-onto :booleans :table)))
 
 
-
 (def boolean-3bittable
   (core/build-instruction
     boolean-3bittable
-    "`:boolean-3bittable` pops the top `:scalar` item and pushes the result of applying `(exotics/scalar-to-truth-table i 3)` to :booleans"
+    "`:boolean-3bittable` pops the top `:scalar` item and pushes the result of applying `(exotics/scalar-to-truth-table i 3)` to :booleans. If the `:scalar` is not a finite positive number, an empty vector is pushed instead."
     :tags #{:boolean :conversion}
     (d/consume-top-of :scalar :as :value)
     (d/calculate [:value] #(exotics/scalar-to-truth-table %1 3) :as :table)
@@ -44,14 +43,15 @@
 (def boolean-arity2
   (core/build-instruction
     boolean-arity2
-    "`:boolean-arity2` pops the top `:scalar` item, creates a truth table on 2 inputs using `(exotics/scalar-to-truth-table i 2)`, pops the top two `:boolean` values and uses them to look up a `:boolean` result in the table"
+    "`:boolean-arity2` pops the top `:scalar` item, creates a truth table on 2 inputs using `(exotics/scalar-to-truth-table i 2)`, pops the top two `:boolean` values and uses them to look up a `:boolean` result in the table. If the `:scalar` is infinite, `false` will be returned for all input bits."
     :tags #{:boolean :conversion}
     (d/consume-top-of :scalar :as :value)
     (d/calculate [:value] #(exotics/scalar-to-truth-table %1 2) :as :table)
     (d/consume-top-of :boolean :as :q)
     (d/consume-top-of :boolean :as :p)
     (d/calculate [:p :q] #(+ (bit %1) (* 2 (bit %2))) :as :index)
-    (d/calculate [:table :index] #(nth %1 %2) :as :result)
+    (d/calculate [:table :index]
+      #(if (empty? %1) false (nth %1 %2)) :as :result)
     (d/push-onto :boolean :result)))
 
 
@@ -59,7 +59,7 @@
 (def boolean-arity3
   (core/build-instruction
     boolean-arity3
-    "`:boolean-arity3` pops the top `:scalar` item, creates a truth table on 3 inputs using `(exotics/scalar-to-truth-table i 3)`, pops the top 3 `:boolean` values and uses them to look up a `:boolean` result in the table"
+    "`:boolean-arity3` pops the top `:scalar` item, creates a truth table on 3 inputs using `(exotics/scalar-to-truth-table i 3)`, pops the top 3 `:boolean` values and uses them to look up a `:boolean` result in the table. If the `:scalar` is infinite, `false` will be returned for all input bits."
     :tags #{:boolean :conversion}
     (d/consume-top-of :scalar :as :value)
     (d/calculate [:value] #(exotics/scalar-to-truth-table %1 3) :as :table)
@@ -67,7 +67,8 @@
     (d/consume-top-of :boolean :as :q)
     (d/consume-top-of :boolean :as :p)
     (d/calculate [:p :q :r] #(+ (bit %1) (* 2 (bit %2)) (* 4 (bit %3))) :as :index)
-    (d/calculate [:table :index] #(nth %1 %2) :as :result)
+    (d/calculate [:table :index]
+      #(if (empty? %1) false (nth %1 %2)) :as :result)
     (d/push-onto :boolean :result)))
 
 
@@ -79,7 +80,7 @@
 
 
 
-(def bool-not 
+(def bool-not
   (t/simple-1-in-1-out-instruction
   "`:boolean-not returns the logical negation of the top item on the `:boolean`
   stack"
@@ -135,7 +136,7 @@
         aspects/make-returnable
         aspects/make-storable
         aspects/make-taggable
-        aspects/make-visible 
+        aspects/make-visible
         (t/attach-instruction , boolean-2bittable)
         (t/attach-instruction , boolean-3bittable)
         (t/attach-instruction , bool-and)
@@ -147,4 +148,3 @@
         (t/attach-instruction , scalar->boolean)
         (t/attach-instruction , scalarsign->boolean)
         ))
-

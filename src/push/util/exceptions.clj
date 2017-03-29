@@ -29,6 +29,12 @@
     "Push Parsing Error: Cannot interpret '" item "' as a Push item."))))
 
 
+(defn throw-invalid-bit-table-error
+  [item]
+  (throw (Exception. (str
+    "Push Argument Error: scalar-to-truth-table can't be made from " item))))
+
+
 ;; DSL exceptions
 
 

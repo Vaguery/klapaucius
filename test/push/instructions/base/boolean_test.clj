@@ -1,5 +1,6 @@
 (ns push.instructions.base.boolean_test
-  (:require [push.interpreter.core :as i])
+  (:require [push.interpreter.core :as i]
+            [push.util.numerics :as num])
   (:use midje.sweet)
   (:use [push.util.test-helpers])
   (:use push.util.exotics)
@@ -62,8 +63,11 @@
 
 
 (fact "scalar-to-truth-table with really bad args"
-  (scalar-to-truth-table 11 -1) => (throws #"argument error")
-  (scalar-to-truth-table 11 0) => (throws #"argument error")
+  (scalar-to-truth-table 11 -1) => []
+  (scalar-to-truth-table 11 0) => []
+  (scalar-to-truth-table num/∞ 0) =>[]
+  (scalar-to-truth-table num/-∞ 0) => []
+  (scalar-to-truth-table -12345678912344567899.123567899M 3) =not=> []
   )
 
 
@@ -98,7 +102,7 @@
     :scalar     '(11/7)      :scalarsign->boolean   :boolean       '(true)
     :scalar     '(-4/7)      :scalarsign->boolean   :boolean       '(false)
     )
- 
+
 
 ;; quotable
 
@@ -240,6 +244,35 @@
 
 
 (tabular
+  (fact "`:boolean-arity2` returns `false` for infinite arguments"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks boolean-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction      ?expected
+    {:scalar  (list num/∞)
+     :boolean '(true true)}
+               ;  q    p
+                              :boolean-arity2   {:scalar  '()
+                                                  :boolean '(false)}
+    {:scalar  (list num/∞)
+     :boolean '(true false)}
+               ;  q    p
+                              :boolean-arity2   {:scalar  '()
+                                                  :boolean '(false)}
+    {:scalar  (list num/-∞)
+     :boolean '(false true)}
+               ;  q    p
+                              :boolean-arity2   {:scalar  '()
+                                                  :boolean '(false)}
+    {:scalar  (list num/-∞)
+     :boolean '(false false)}
+               ;  q    p
+                              :boolean-arity2   {:scalar  '()
+                                                  :boolean '(false)}
+    )
+
+
+(tabular
   (fact "`:boolean-arity3` pops a `:scalar`, makes a lookup table, and pops 3 `:boolean` values as inputs, pushes the result from the table"
     (check-instruction-with-all-kinds-of-stack-stuff
         ?new-stacks boolean-type ?instruction) => (contains ?expected))
@@ -251,26 +284,55 @@
 
     ?new-stacks                ?instruction      ?expected
     {:scalar  '(23)
-     :boolean '(true true true)}  
-               ;  r    q    p 
+     :boolean '(true true true)}
+               ;  r    q    p
                                :boolean-arity3   {:scalar  '()
                                                   :boolean '(false)}
     {:scalar  '(23)
-     :boolean '(true false false)}  
-               ;  r    q    p 
+     :boolean '(true false false)}
+               ;  r    q    p
                                :boolean-arity3   {:scalar  '()
                                                   :boolean '(true)}
     {:scalar  '(23)
-     :boolean '(false true false)}  
-               ;  r    q    p 
+     :boolean '(false true false)}
+               ;  r    q    p
                                :boolean-arity3   {:scalar  '()
                                                   :boolean '(true)}
     {:scalar  '(23)
-     :boolean '(false false false)} 
-               ;  r    q    p 
+     :boolean '(false false false)}
+               ;  r    q    p
                                :boolean-arity3   {:scalar  '()
                                                   :boolean '(true)}
     )
+
+(tabular
+  (fact "`:boolean-arity3` returns false for all bad scalar arguments"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks boolean-type ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction      ?expected
+    {:scalar  (list num/∞)
+     :boolean '(true true true)}
+               ;  r    q    p
+                               :boolean-arity3   {:scalar  '()
+                                                  :boolean '(false)}
+    {:scalar  (list num/∞)
+     :boolean '(true false false)}
+               ;  r    q    p
+                               :boolean-arity3   {:scalar  '()
+                                                  :boolean '(false)}
+    {:scalar  (list num/-∞)
+     :boolean '(false true false)}
+               ;  r    q    p
+                               :boolean-arity3   {:scalar  '()
+                                                  :boolean '(false)}
+    {:scalar  (list num/∞)
+     :boolean '(false false false)}
+               ;  r    q    p
+                               :boolean-arity3   {:scalar  '()
+                                                  :boolean '(false)}
+    )
+
 
 ;; combinators
 
@@ -284,7 +346,7 @@
     ;; just shifting things
     :boolean    '(false true)   :boolean-dup      :boolean       '(false false true)
     :boolean    '(true)         :boolean-dup      :boolean       '(true true)
-    ;; missing args 
+    ;; missing args
     :boolean    '()             :boolean-dup      :boolean       '())
 
 
@@ -297,7 +359,7 @@
     ;; just shifting things
     :boolean    '(false true)   :boolean-pop      :boolean       '(true)
     :boolean    '(true)         :boolean-pop      :boolean       '()
-    ;; missing args 
+    ;; missing args
     :boolean    '()             :boolean-pop      :boolean       '())
 
 
@@ -310,7 +372,7 @@
     ;; just shifting things
     :boolean    '(false true true false)
                                    :boolean-rotate      :boolean       '(true false true false)
-    ;; missing args 
+    ;; missing args
     :boolean    '(false true)      :boolean-rotate      :boolean       '(false true)
     :boolean    '(true)            :boolean-rotate      :boolean       '(true)
     :boolean    '()                :boolean-rotate      :boolean       '())
@@ -334,11 +396,11 @@
 
     ?set-stack  ?items     ?instruction    ?get-stack     ?expected
     ;; just shifting things
-    :boolean    '(false true true)   
+    :boolean    '(false true true)
                            :boolean-swap      :boolean       '(true false true)
     :boolean    '(false true)
                            :boolean-swap      :boolean       '(true false)
-    ;; missing args 
+    ;; missing args
     :boolean    '(false)   :boolean-swap      :boolean       '(false)
     :boolean    '()        :boolean-swap      :boolean       '())
 
@@ -352,8 +414,6 @@
     ?set-stack  ?items          ?instruction    ?get-stack     ?expected
     ;; just shifting things
     :boolean    '(false true)   :boolean-flush      :boolean       '()
-    ;; missing args 
+    ;; missing args
     :boolean    '()             :boolean-flush      :boolean       '()
     )
-
-

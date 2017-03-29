@@ -38,6 +38,7 @@ This is the core documentation site for the Klapaucius interpreter, written in C
 
 #### Collections
 
+- `:set`
 - `:string`
 - `:tagspace`
 - `:vector`
@@ -49,7 +50,6 @@ This is the core documentation site for the Klapaucius interpreter, written in C
   - `:intervals`
   - `:refs`
   - `:strings`
-- `:set`
 
 #### Introspection & Control
 
