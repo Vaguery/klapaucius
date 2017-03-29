@@ -217,7 +217,7 @@
         old-exec (u/get-stack interpreter :exec)]
     (if cycle?
       (u/set-stack interpreter :exec
-        (fix/list! (reverse (into (reverse old-exec) (list item)))))
+        (reverse (into (reverse old-exec) (list item))))
       interpreter)))
 
 
@@ -245,7 +245,7 @@
     interpreter
     (let [old-stack (get-in interpreter [:stacks stack])]
       (assoc-in interpreter [:stacks stack]
-        (fix/list! (conj old-stack item))))))
+        (conj old-stack item)))))
 
 
 (defn missing-args-message

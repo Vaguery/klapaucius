@@ -22,6 +22,8 @@
 
 (defn run-program-in-standardized-interpreter
   [interpreter program bindings]
+  (do
+    (println (str "\n\n\nrunning: " program))
     (push/run
       interpreter
       program
@@ -30,7 +32,7 @@
       :config {:step-limit 20000
                :lenient true
                :max-collection-size 131072} ;131072
-               ))
+               )))
 
 (defn spit-prisoner-file
   [program bindings exception-message]
@@ -69,7 +71,7 @@
         (count (:program i))
         " (" (fix/count-collection-points (:program i)) ")")
     :steps (:counter i)
-    ; :errors (count (push/get-stack i :error))
+    :errors (count (push/get-stack i :error))
     ; :argument-errors
     ;   (count
     ;     (filter
@@ -114,7 +116,7 @@
 
 (defn launch-some-workers
   [interpreter bindings how-many]
-  (cp/with-shutdown! [net-pool (cp/threadpool 16)]
+  (cp/with-shutdown! [net-pool (cp/threadpool 10)]
     (doall
       (lazy/upmap net-pool
         #(println ; .write *out*
