@@ -25,7 +25,7 @@
     "`:push-bindings` pushes a list (in sorted order) containing all the registered :bindings keywords to the :code stack"
     :tags #{:binding :introspection}
     (d/save-bindings :as :known)
-    (d/calculate [:known] #(sort %1) :as :listed)
+    (d/calculate [:known] #(u/list! (sort %1)) :as :listed)
     (d/push-onto :code :listed)))
 
 

@@ -217,7 +217,7 @@
         old-exec (u/get-stack interpreter :exec)]
     (if cycle?
       (u/set-stack interpreter :exec
-        (reverse (into (reverse old-exec) (list item))))
+        (fix/list! (reverse (into (reverse old-exec) (list item)))))
       interpreter)))
 
 
@@ -238,15 +238,14 @@
     )))
 
 
-
-
 (defn push-item
   "Takes an Interpreter, a stack name and a Clojure expression, and returns the Interpreter with the item pushed onto the specified stack. If the stack doesn't already exist, it is created. If the item is nil, no change occurs."
   [interpreter stack item]
   (if (nil? item)
     interpreter
     (let [old-stack (get-in interpreter [:stacks stack])]
-      (assoc-in interpreter [:stacks stack] (conj old-stack item)))))
+      (assoc-in interpreter [:stacks stack]
+        (fix/list! (conj old-stack item))))))
 
 
 (defn missing-args-message

@@ -29,7 +29,7 @@
       :bindings bindings
       :config {:step-limit 20000
                :lenient true
-               :max-collection-size 138072} ;138072
+               :max-collection-size 131072} ;131072
                ))
 
 (defn spit-prisoner-file
@@ -69,27 +69,27 @@
         (count (:program i))
         " (" (fix/count-collection-points (:program i)) ")")
     :steps (:counter i)
-    :errors (count (push/get-stack i :error))
-    :argument-errors
-      (count
-        (filter
-          #(.contains (:item %)
-                      "missing arguments")
-                      (push/get-stack i :error)))
-    :stack-points
-      (reduce-kv
-        (fn [counts key value]
-          (assoc counts key
-            (str (count value) ))) ;" (" (fix/count-collection-points value) ")"
-        {}
-        (:stacks i))
-    :binding-points
-      (reduce-kv
-        (fn [counts key value]
-          (assoc counts key
-            (str (count value) ))) ;" (" (fix/count-collection-points value) ")"
-        {}
-        (:bindings i))
+    ; :errors (count (push/get-stack i :error))
+    ; :argument-errors
+    ;   (count
+    ;     (filter
+    ;       #(.contains (:item %)
+    ;                   "missing arguments")
+    ;                   (push/get-stack i :error)))
+    ; :stack-points
+    ;   (reduce-kv
+    ;     (fn [counts key value]
+    ;       (assoc counts key
+    ;         (str (count value) ))) ;" (" (fix/count-collection-points value) ")"
+    ;     {}
+    ;     (:stacks i))
+    ; :binding-points
+    ;   (reduce-kv
+    ;     (fn [counts key value]
+    ;       (assoc counts key
+    ;         (str (count value) ))) ;" (" (fix/count-collection-points value) ")"
+    ;     {}
+    ;     (:bindings i))
 
   })
 
@@ -117,7 +117,7 @@
   (cp/with-shutdown! [net-pool (cp/threadpool 16)]
     (doall
       (lazy/upmap net-pool
-        #(.write *out*
+        #(println ; .write *out*
           (str "\n\n"
             (first %) ": "
             (interpreter-details

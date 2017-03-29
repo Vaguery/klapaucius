@@ -10,7 +10,7 @@
     {:boolean '()
     :char '()
     :code '()
-    :scalar '() 
+    :scalar '()
     :exec '()
     :string '()
     })
@@ -22,7 +22,7 @@
 (defn make-type
   "Create a PushType record from a name (keyword) and a router (PushRouter record), with optional :attributes and :instructions"
   [name & {
-    :keys [recognized-by router attributes instructions manifest builder] 
+    :keys [recognized-by router attributes instructions manifest builder]
     :or {recognized-by (constantly false)
          router (router/make-router name :recognizer recognized-by)
          attributes #{}
@@ -42,9 +42,9 @@
   [pushtype instruction]
   (let [old-instructions (:instructions pushtype)
         new-key (:token instruction)]
-    (assoc 
-      pushtype 
-      :instructions 
+    (assoc
+      pushtype
+      :instructions
       (merge old-instructions (hash-map new-key instruction)))))
 
 
@@ -52,17 +52,13 @@
 
 
 (defn make-module
-  "creates a simple hash-map that is a type-like bundle
-  of attributes and instructions"
-  [module-name & 
-    {:keys [attributes instructions] 
+  "creates a simple hash-map that is a type-like bundle of attributes and instructions"
+  [module-name &
+    {:keys [attributes instructions]
        :or {attributes #{} instructions {}}}]
   {:name module-name
    :attributes attributes
    :instructions instructions})
-
-
-;;;; type-associated instructions
 
 
 ;; some generic instruction constructors
@@ -129,4 +125,3 @@
       :tags #{:complex :base :conversion}
       `(dsl/consume-top-of ~stackname :as :arg)
       `(dsl/push-onto :code :arg)))))
-

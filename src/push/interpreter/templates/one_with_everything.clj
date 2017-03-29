@@ -32,7 +32,7 @@
 
 
 (def all-kinds-of-types
-  [ 
+  [
     boolean-type
     char-type
     generator-type
@@ -66,16 +66,17 @@
     code-module
     print-module
     behavior-module
-    
+
     standard-introspection-module
-    random-scalars-module])
+    random-scalars-module
+    ])
 
 
 (defn make-everything-interpreter
   "A convenience function that creates a new Interpreter with (almost) every defined type and instruction.
 
   With no arguments, it has an empty :program, and these types are loaded (in this order):
-  
+
   - boolean-type
   - char-type
   - code-module
@@ -119,10 +120,10 @@
            done? false}}]
   (let [all-stacks (merge m/minimal-stacks stacks)]
     (-> (defs/make-interpreter
-          program 
+          program
           '()        ;; types
           []         ;; router
-          all-stacks 
+          all-stacks
           {}         ;; inputs
           {}         ;; instructions
           (merge m/interpreter-default-config config)
