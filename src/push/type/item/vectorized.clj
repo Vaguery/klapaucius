@@ -3,7 +3,7 @@
             [push.instructions.dsl]
             [push.type.core]
             )
-  (:require 
+  (:require
             [push.instructions.aspects :as aspects]
             [push.util.numerics :as num]
             [clojure.math.numeric-tower :as nt]
@@ -46,14 +46,14 @@
       :tags #{:vector}
 
       `(consume-top-of :scalar :as :where)
-      `(consume-stack ~rootname :as :items) 
+      `(consume-stack ~rootname :as :items)
       `(calculate [:where :items]
           #(if (empty? %2)
             0
             (num/scalar-to-index %1 (count %2))) :as :idx)
       `(calculate [:idx :items]
           #(into [] (take %1 %2)) :as :new-vector)
-      `(calculate [:idx :items] 
+      `(calculate [:idx :items]
           #(drop %1 %2) :as :new-stack)
       `(replace-stack ~rootname :new-stack)
       `(push-onto ~typename :new-vector)
@@ -95,7 +95,7 @@
           #(if %1 (into [] (take (count %2) %3)) nil) :as :new-vector)
       `(calculate [:enough? :template :pieces]
           #(if %1
-            (into '() (reverse (drop (count %2) %3))) 
+            (fix/list! (drop (count %2) %3))
             %3) :as :new-pieces)
       `(push-onto ~typename :template)
       `(push-onto ~typename :new-vector)
@@ -330,7 +330,7 @@
       `(consume-stack ~typename :as :stack)
       `(consume-stack :vector :as :old-vectors)
       `(calculate [:stack :old-vectors]
-          #(into '() (reverse (concat %1 %2))) :as :new-vectors)
+          #(fix/list! (concat %1 %2)) :as :new-vectors)
       `(replace-stack :vector :new-vectors)
       ))))
 
@@ -619,7 +619,7 @@
           #(if (empty? %1) 0 (num/scalar-to-index %2 (count %1))) :as :idx)
       `(calculate [:arg :idx :subst]
           #(if (empty? %1)
-            %1 
+            %1
             (into [] (assoc %1 (long %2) %3))) :as :result)
       `(push-onto ~typename :result)
       ))))
@@ -638,7 +638,7 @@
       `(consume-top-of ~typename :as :arg1)
       `(consume-stack ~rootname :as :old-stack)
       `(calculate [:arg1 :old-stack]
-          #(into '() (reverse (concat %1 %2))) :as :new-stack)
+          #(fix/list! (concat %1 %2)) :as :new-stack)
       `(replace-stack ~rootname :new-stack)
       ))))
 

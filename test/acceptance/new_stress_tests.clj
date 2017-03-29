@@ -23,7 +23,7 @@
 (defn run-program-in-standardized-interpreter
   [id interpreter program bindings]
   (do
-    (println (str "\n\n\nrunning " id " : " program))
+    (println (str "\n\n\nrunning " id " : " ))
     (push/run
       interpreter
       program
@@ -116,7 +116,7 @@
 
 (defn launch-some-workers
   [interpreter bindings how-many]
-  (cp/with-shutdown! [net-pool (cp/threadpool 10)]
+  (cp/with-shutdown! [net-pool (cp/threadpool 1)]
     (doall
       (lazy/upmap net-pool
         #(println ; .write *out*

@@ -24,7 +24,7 @@
     (d/consume-top-of :scalar :as :counter)
     (d/calculate [:counter] #((complement pos?) %1) :as :done?)
     (d/calculate
-      [:do-this :counter :done?] 
+      [:do-this :counter :done?]
       #(if %3
         (list (dec %2) %1)
         (list 0 %2 :exec-do*range %1)) :as :continuation)
@@ -36,7 +36,7 @@
   (core/build-instruction
     exec-do*range
       "`:exec-do*count` pops the top item of `:exec` and the top two `:scalar` values (call them `end` and `start`, respectively). It constructs a continuation depending on whether the relation between `start` and `end`, which will (when interpreted) send the current `start` value to the `:scalar` stack, execute the `:exec` item, send updated indices to the `:scalar` stack, and then repeat the loop:
-    
+
       - `start` < `end` and more than 1 different:
         `'([start] [item] ([start+1] [end] :exec-do*range [item]))`
       - `start` > `end` and more than 1 different:
@@ -53,7 +53,7 @@
       #(n/within-1? %1 %2) :as :done?)
     (d/calculate [:start :end]  #(+' %1 (compare %2 %1)) :as :next)
     (d/calculate
-      [:do-this :start :end :next :done?] 
+      [:do-this :start :end :next :done?]
       #(cond
         (nil? %4) nil
         (nil? %5) nil
@@ -71,7 +71,7 @@
 
         - negative: `item` (not in a codeblock)
         - zero:     `item` (not in a codeblock)
-        - positive: `(item ([counter-1] :exec-do*times item))` 
+        - positive: `(item ([counter-1] :exec-do*times item))`
         "
 
     :tags #{:complex :base}
@@ -80,7 +80,7 @@
     (d/calculate [:counter] #((complement pos?) %1) :as :done?)
     (d/calculate [:counter] #(+ %1 (compare 0 %1)) :as :next)
     (d/calculate
-      [:do-this :counter :next :done?] 
+      [:do-this :counter :next :done?]
       #(if %4
            %1
            (list %1 (list %3 :exec-do*times %1))) :as :continuation)
@@ -101,7 +101,7 @@
 
 
 
-(def exec-k 
+(def exec-k
   (t/simple-2-in-1-out-instruction
     "`:exec-k` pops the top two `:exec` items, and pushes the top one back onto `:exec` (discarding the second one, in other words)"
     :exec "k" (fn [a b] b)))
@@ -119,7 +119,7 @@
       #(if (zero? %1) %2 (list %2 :exec-laterloop %2)) :as :continuation)
     (d/consume-stack :exec :as :oldstack)
     (d/calculate [:oldstack :continuation]
-          #(into '() (conj (reverse %1) %2)) :as :newstack)
+      #(into '() (conj (reverse %1) %2)) :as :newstack)
     (d/replace-stack :exec :newstack)))
 
 
@@ -204,7 +204,7 @@
         aspects/make-returnable
         aspects/make-storable
         aspects/make-taggable
-        aspects/make-visible 
+        aspects/make-visible
         (t/attach-instruction , exec-do*count)
         (t/attach-instruction , exec-do*range)
         (t/attach-instruction , exec-do*times)
@@ -217,4 +217,3 @@
         (t/attach-instruction , exec-when)
         (t/attach-instruction , exec-while)
         ))
-

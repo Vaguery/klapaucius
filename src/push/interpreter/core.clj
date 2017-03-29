@@ -440,10 +440,10 @@
   [interpreter]
   (let [returns       (u/get-stack interpreter :return)
         current-exec  (u/get-stack interpreter :exec)
-        snapshots  (u/get-stack interpreter :snapshot)
+        snapshots     (u/get-stack interpreter :snapshot)
         retrieved     (first snapshots)
         old-exec      (:exec retrieved)
-        new-exec      (into '() (reverse (concat (reverse returns) current-exec old-exec)))]
+        new-exec      (fix/list! (concat (reverse returns) current-exec old-exec)) ]
     (-> (u/merge-snapshot interpreter retrieved)
         (u/set-stack , :exec new-exec)
         (u/set-stack , :snapshot (pop snapshots))

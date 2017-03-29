@@ -20,7 +20,7 @@
       `(consume-top-of ~typename :as :item)
       `(consume-stack :exec :as :oldstack)
       `(calculate [:oldstack :item]
-          #(into '() (reverse (concat %1 (list %2)))) :as :newstack)
+          #(util/list! (concat %1 (list %2))) :as :newstack)
       `(replace-stack :exec :newstack)
       `(push-onto ~typename :item)))))
 
@@ -42,7 +42,7 @@
       `(calculate [:where :old-stack]
         #(if (empty? %2) 0 (num/scalar-to-index %1 (count %2))) :as :idx)
       `(calculate [:old-stack :idx]
-        #(into '() (reverse (concat (reverse (take %2 %1)) (drop %2 %1)))) :as :new)
+        #(util/list! (concat (reverse (take %2 %1)) (drop %2 %1))) :as :new)
       `(replace-stack ~typename :new)
       ))))
 
@@ -64,7 +64,7 @@
       `(calculate [:where :old-stack]
         #(if (empty? %2) 0 (num/scalar-to-index %1 (count %2))) :as :idx)
       `(calculate [:old-stack :idx]
-        #(into '() (reverse (concat (drop %2 %1) (take %2 %1)))) :as :new)
+        #(util/list! (concat (drop %2 %1) (take %2 %1))) :as :new)
       `(replace-stack ~typename :new)))))
 
 
@@ -131,7 +131,7 @@
       `(consume-top-of ~typename :as :item)
       `(consume-stack :exec :as :oldstack)
       `(calculate [:oldstack :item]
-          #(into '() (reverse (concat %1 (list %2)))) :as :newstack)
+          #(util/list! (concat %1 (list %2))) :as :newstack)
       `(replace-stack :exec :newstack)))))
 
 
@@ -152,7 +152,7 @@
       `(calculate [:old-stack :where]
         #(if (empty? %1) 0 (num/scalar-to-index %2 (count %1))) :as :idx)
       `(calculate [:old-stack :idx]
-        #(into '() (reverse (concat (drop %2 %1) %1))) :as :new)
+        #(util/list! (concat (drop %2 %1) %1)) :as :new)
       `(save-max-collection-size :as :limit)
       `(calculate [:new :limit]
         #(if (> (util/count-collection-points %1) %2) false true) :as :valid)
@@ -221,7 +221,7 @@
         #(if (zero? %2) 0 (max 0 (min (Math/ceil %1) %2))) :as :index)
       `(consume-stack ~typename :as :oldstack)
       `(calculate [:index :shoved-item :oldstack]
-        #(into '() (reverse (concat (take %1 %3) (list %2) (drop %1 %3))))
+        #(util/list! (concat (take %1 %3) (list %2) (drop %1 %3)))
           :as :newstack)
       `(replace-stack ~typename :newstack)
       ))))
@@ -285,9 +285,3 @@
       `(calculate [:which :how-many] #(min (max (Math/ceil %1) 0) (dec %2)) :as :index)
       `(save-nth-of ~typename :at :index :as :yanked-item)
       `(push-onto ~typename :yanked-item)))))
-
-
-
-
-
-

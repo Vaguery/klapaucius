@@ -49,7 +49,7 @@
     "`:scalar->asciichar` pops the top `:scalar` value, reduces it modulo 128, and pushes the `:char` that is represented by that ASCII value"
     :tags #{:string :conversion :base}
     (d/consume-top-of :scalar :as :arg)
-    (d/calculate [:arg] 
+    (d/calculate [:arg]
       #(char (num/scalar-to-index %1 128)) :as :c)
     (d/push-onto :char :c)))
 
@@ -76,9 +76,8 @@
     (d/consume-top-of :string :as :arg)
     (d/consume-stack :char :as :old-stack)
     (d/calculate [:arg :old-stack]
-      #(if (empty? %1) %2 (concat (vec %1) %2)) :as :new-stack)
-    (d/calculate [:new-stack] #(into '() (reverse %1)) :as :kludged)
-    (d/replace-stack :char :kludged)))
+      #(if (empty? %1) %2 (fix/list! (concat (vec %1) %2))) :as :new-stack)
+    (d/replace-stack :char :new-stack)))
 
 
 
@@ -96,7 +95,7 @@
         aspects/make-returnable
         aspects/make-storable
         aspects/make-taggable
-        aspects/make-visible 
+        aspects/make-visible
         (t/attach-instruction , char-digit?)
         (t/attach-instruction , char-letter?)
         (t/attach-instruction , char-lowercase?)
@@ -106,4 +105,3 @@
         (t/attach-instruction , scalar->char)
         (t/attach-instruction , string->chars)
         ))
-

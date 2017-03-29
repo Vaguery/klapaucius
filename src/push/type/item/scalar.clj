@@ -215,7 +215,7 @@
     scalar-modulo
     "`:scalar-modulo` pops the top two `:scalar` values (call them `denominator` and `numerator`, respectively). If `denominator` is zero, it discards the arguments and produces an `:error`. If the result would be `NaN`, it pushes an `:error`. Otherwise, it pushes `(mod numerator denominator)`."
     :tags #{:arithmetic :base :dangerous}
-    
+
     (d/consume-top-of :scalar :as :denominator)
     (d/consume-top-of :scalar :as :numerator)
     (d/calculate [:numerator :denominator] #(mod %1 %2) :as :remainder)
@@ -558,7 +558,7 @@
         aspects/make-returnable
         aspects/make-storable
         aspects/make-taggable
-        aspects/make-visible 
+        aspects/make-visible
         (t/attach-instruction , char->integer)
         (t/attach-instruction , integer-totalistic3)
         (t/attach-instruction , scalar-abs)
@@ -602,5 +602,3 @@
         (t/attach-instruction , boolean->integer)
         (t/attach-instruction , boolean->signedint)
         ))
-
-

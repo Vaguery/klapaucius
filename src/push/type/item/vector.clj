@@ -5,7 +5,7 @@
             [push.type.item.vectorized]
             )
   (:require [push.instructions.aspects :as aspects]
-            
+            [push.util.code-wrangling :as fix]
             ))
 
 
@@ -30,7 +30,8 @@
 
     (consume-stack :vector :as :stack)
     (consume-stack :exec :as :old-exec)
-    (calculate [:stack :old-exec] #(into '() (reverse (concat %1 %2))) :as :new-exec)
+    (calculate [:stack :old-exec]
+      #(fix/list! (concat %1 %2)) :as :new-exec)
     (replace-stack :exec :new-exec)
     ))
 
@@ -54,7 +55,7 @@
       aspects/make-returnable
       aspects/make-storable
       aspects/make-taggable
-      aspects/make-visible 
+      aspects/make-visible
       (attach-instruction , vector-refilter)
       (attach-instruction , vector-refilterall)
       (attach-instruction , (x-build-instruction typename componentname))
