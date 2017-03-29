@@ -19,8 +19,10 @@ This is the core documentation site for the Klapaucius interpreter, written in C
 #### Numeric
 
 - `:scalar`
+
   Including integers, floating-point, rational numbers, `BigDecimal` and `BigInteger` values. All in one big pile.
 - `:complex`
+  
   Numbers in the complex plane, where the `real` and `imaginary` parts are both `:scalar` values.
 - `:interval`
   Represent continuous scalar intervals, with fixed `min` and `max` value (both `:scalar` values), either of which may be included as part of the range.
