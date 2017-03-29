@@ -72,12 +72,12 @@
         " (" (fix/count-collection-points (:program i)) ")")
     :steps (:counter i)
     :errors (count (push/get-stack i :error))
-    ; :argument-errors
-    ;   (count
-    ;     (filter
-    ;       #(.contains (:item %)
-    ;                   "missing arguments")
-    ;                   (push/get-stack i :error)))
+    :argument-errors
+      (count
+        (filter
+          #(.contains (:item %)
+                      "missing arguments")
+                      (push/get-stack i :error)))
     ; :stack-points
     ;   (reduce-kv
     ;     (fn [counts key value]
@@ -116,7 +116,7 @@
 
 (defn launch-some-workers
   [interpreter bindings how-many]
-  (cp/with-shutdown! [net-pool (cp/threadpool 1)]
+  (cp/with-shutdown! [net-pool (cp/threadpool 10)]
     (doall
       (lazy/upmap net-pool
         #(println ; .write *out*
