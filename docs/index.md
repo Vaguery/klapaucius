@@ -11,6 +11,9 @@ This is the core documentation site for the Klapaucius interpreter, written in C
 
 ### Stacks and instructions
 
+### Basic Push syntax
+
+
 ### Types
 
 #### Numeric
@@ -68,6 +71,10 @@ This is the core documentation site for the Klapaucius interpreter, written in C
 
 ## Extending the language
 
-### Type or module?
+### Type, module or both?
 
-### Designing new instruction
+### Designing new instructions
+
+### The Push DSL
+
+### Stress-testing your libraries
