@@ -23,7 +23,7 @@
 
 
 (defn rewrite-digits
-  "Applies a totalistic rewrite rule to the digits of an integer value, using a given window size and preserving its sign"
+  "Applies a totalistic rewrite rule to the digits of an integer value, using a given window size and preserving its sign. If the number is infinite, returns 0"
   [number window]
   (let [digits    (seq (str (max number (-' number))))
         extended  (extend-short-list digits (+ (count digits) (dec window)))
@@ -32,9 +32,11 @@
         rewrote   (apply str (map #(mod % 10) sums))
         chomped   (clojure.string/replace-first rewrote #"(^0+)" "")
         as-number (eval (read-string (if (empty? chomped) "0" chomped)))]
-    (if (neg? number)
-      (- as-number)
-      as-number)))
+    (if (num/infinite? number)
+      0
+      (if (neg? number)
+        (- as-number)
+        as-number))))
 
 
 ;; boolean
