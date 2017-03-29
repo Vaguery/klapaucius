@@ -19,9 +19,7 @@
 
 
 (defn index-from-scratch-ref
-  "Takes a keyword and a scratch hashmap. If an integer is stored
-  under that key in the hashmap, it's returned. Otherwise raises an
-  exception."
+  "Takes a keyword and a scratch hashmap. If an integer is stored under that key in the hashmap, it's returned. Otherwise raises an exception."
   [k locals]
   (let [stored (k locals)]
     (if (number? stored)
@@ -30,10 +28,7 @@
 
 
 (defn- valid-DSL-index
-  "Takes an item (presumably part of a DSL function requiring an :at
-  index) and a hashmap, and returns an integer index value, or an
-  integer from the hashmap if a keyword. Blows up informatively if
-  neither of those is possible."
+  "Takes an item (presumably part of a DSL function requiring an :at index) and a hashmap, and returns an integer index value, or an integer from the hashmap if a keyword. Blows up informatively if neither of those is possible."
   [item scratch]
   (cond
     (integer? item) item
@@ -43,10 +38,7 @@
 
 
 (defn- get-nth-of
-  "Abstract function invoked by all the X-nth-of DSL functions.
-  Takes a PushDSL blob, a stackname, an :at index (integer or keyword)
-  (but no :as keyword), and returns the index and the item at that
-  index, raising any argument exceptions it finds."
+  "Abstract function invoked by all the X-nth-of DSL functions. Takes a PushDSL blob, a stackname, an :at index (integer or keyword) (but no :as keyword), and returns the index and the item at that index, raising any argument exceptions it finds."
   [[interpreter scratch] stackname & {:keys [at]}]
   (let [old-stack (u/get-stack interpreter stackname)]
     (if (empty? old-stack)
@@ -161,12 +153,7 @@
 
 
 (defn consume-stack
-  "Removes an entire named stack; if an `:as local` argument is given,
-  it saves the stack in that scratch variable. If no local is given,
-  it just deletes the stack.
-
-  Exceptions when:
-  - the stack doesn't exist"
+  "Removes an entire named stack; if an `:as local` argument is given, it saves the stack in that scratch variable. If no local is given, it just deletes the stack. Exceptions when: the stack doesn't exist"
   [[interpreter scratch] stackname & {:keys [as]}]
   (let [old-stack (u/get-stack interpreter stackname)]
     (if (nil? as)
@@ -178,12 +165,7 @@
 
 
 (defn consume-top-of
-  "Takes an PushDSL blob, a stackname (keyword) and a scratch variable
-  (keyword) in which to store the top value from that stack.
-
-    Exceptions when:
-    - the stack doesn't exist
-    - the stack is empty"
+  "Takes an PushDSL blob, a stackname (keyword) and a scratch variable (keyword) in which to store the top value from that stack. Exceptions when: the stack doesn't exist, the stack is empty"
   [ [interpreter scratch] stackname & {:keys [as]}]
   (let [old-stack (u/get-stack interpreter stackname)
         old-args (:ARGS scratch)]
@@ -208,18 +190,7 @@
 
 
 (defn consume-nth-of
-  "Takes a PushDSL blob, a stackname (keyword), an index argument (an
-  integer or a keyword), and a scratch key (also a keyword), copies
-  the indicated item from that stack into the scratch variable, and
-  deletes it from the stack.
-
-  Exceptions when:
-  - the stack doesn't exist
-  - the stack is empty
-  - no :as argument is present
-  - no :at argument is present
-  - the :at argument is not a keyword or integer
-  - the scratch value passed as a reference is not an integer"
+  "Takes a PushDSL blob, a stackname (keyword), an index argument (an integer or a keyword), and a scratch key (also a keyword), copies the indicated item from that stack into the scratch variable, and deletes it from the stack. Exceptions when: the stack doesn't exist, the stack is empty, no :as argument is present, no :at argument is present, the :at argument is not a keyword or integer, the scratch value passed as a reference is not an integer"
   [[interpreter scratch] stackname & {:keys [as at]}]
   (let [[idx old-stack]
           (get-nth-of [interpreter scratch] stackname :at at)]
@@ -234,18 +205,7 @@
 
 
 (defn delete-nth-of
-  "Usage: `delete-nth-of [stackname :at where]`
-
-  Removes item at index `where` from stack `stackname`. If `where` is
-  an integer, the index deleted is `(mod where (count stackname))`; if
-  it is a scratch reference, the numerical value is looked up. If the
-  item stored under key `where` is not an integer, an error occurs.
-
-  Exceptions when:
-    - the stack doesn't exist
-    - the stack is empty
-    - no index is given
-    - the index is a :keyword that doesn't point to an integer"
+  "Removes item at index `where` from stack `stackname`. If `where` is an integer, the index deleted is `(mod where (count stackname))`; if it is a scratch reference, the numerical value is looked up. If the item stored under key `where` is not an integer, an error occurs. Exceptions when: the stack doesn't exist, the stack is empty, no index is given, the index is a :keyword that doesn't point to an integer"
   [[interpreter scratch] stackname & {:keys [as at]}]
   (let [[idx old-stack]
           (get-nth-of [interpreter scratch] stackname :at at)]
@@ -262,8 +222,7 @@
 
 
 (defn delete-top-of
-  "Takes an PushDSL blob and a stackname (keyword); deletes the top
-  item of that stack."
+  "Takes an PushDSL blob and a stackname (keyword); deletes the top item of that stack."
   [[interpreter scratch] stackname]
   (let [old-stack (u/get-stack interpreter stackname)
         top-item  (first old-stack)]
@@ -290,9 +249,7 @@
 
 
 (defn insert-as-nth-of
-  "Usage: `insert-of-nth-of [stackname local :at where]`
-
-  Place item stored in scratch variable `local` into the named stack so it becomes the new item in the `where` position. If `where` is an integer, the index deleted is `(mod where (count stackname))`; if it is a scratch reference, the numerical value is looked up. If the item stored under key `where` in scratch is not an integer, an error occurs. Exceptions when the stack is empty, no index is given, or the index is a :keyword that doesn't point to an integer. Pushes an `:error` item if the number of points in the item plus the number of items in the stack exceeds `:max-collection-size`."
+  "Place item stored in scratch variable `local` into the named stack so it becomes the new item in the `where` position. If `where` is an integer, the index deleted is `(mod where (count stackname))`; if it is a scratch reference, the numerical value is looked up. If the item stored under key `where` in scratch is not an integer, an error occurs. Exceptions when the stack is empty, no index is given, or the index is a :keyword that doesn't point to an integer. Pushes an `:error` item if the number of points in the item plus the number of items in the stack exceeds `:max-collection-size`."
   [[interpreter scratch] stackname kwd & {:keys [as at]}]
     (let [old-stack (u/get-stack interpreter stackname)
           idx       (valid-DSL-index at scratch)
@@ -445,18 +402,7 @@
 
 
 (defn save-nth-of
-  "Takes a PushDSL blob, a stackname (keyword), an index argument (an
-  integer or a keyword), and a scratch key (also a keyword), and
-  copies the indicated item from that stack into the scratch
-  variable (without deleting it).
-
-  Exceptions when:
-  - the stack doesn't exist
-  - the stack is empty
-  - no :as argument is present
-  - no :at argument is present
-  - the :at argument is not a keyword or integer
-  - the scratch value passed as a reference is not an integer"
+  "Takes a PushDSL blob, a stackname (keyword), an index argument (an integer or a keyword), and a scratch key (also a keyword), and copies the indicated item from that stack into the scratch variable (without deleting it). Exceptions when: the stack doesn't exist, the stack is empty, no :as argument is present, no :at argument is present, the :at argument is not a keyword or integer, the scratch value passed as a reference is not an integer"
   [[interpreter scratch] stackname & {:keys [as at]}]
   (let [[idx old-stack]
           (get-nth-of [interpreter scratch] stackname :at at)]
@@ -467,13 +413,7 @@
 
 
 (defn save-top-of
-  "Takes a PushDSL blob, a stackname (keyword) and a scratch key (also
-  keyword), and copies the top item from that stack into the scratch
-  variable (without deleting it).
-
-  Exceptions when:
-  - no :as argument is present
-  - the stack is empty"
+  "Takes a PushDSL blob, a stackname (keyword) and a scratch key (also keyword), and copies the top item from that stack into the scratch variable (without deleting it). Exceptions when: no :as argument is present, the stack is empty"
   [[interpreter scratch] stackname & {:keys [as]}]
   (let [old-stack (u/get-stack interpreter stackname)]
     (cond (empty? old-stack) (oops/throw-empty-stack-exception stackname)
@@ -563,15 +503,7 @@
 
 
 (defn calculate
-  "Takes a PushDSL blob, a vector of keywords referring to scratch
-  item keys, a function over _those keys_ (using positional notation),
-  and an :as keyword in which to store the result of the function.
-
-  Exceptions when:
-  - [args] is not a vector
-  - no :as argument is present
-  - the wrong number of arguments are provided
-  - (does not check for nil arguments)"
+  "Takes a PushDSL blob, a vector of keywords referring to scratch item keys, a function over _those keys_ (using positional notation), and an :as keyword in which to store the result of the function. Exceptions when: [args] is not a vector, no :as argument is present, the wrong number of arguments are provided. Does not check for nil arguments."
   [[interpreter scratch] args fxn & {:keys [as]}]
   (let [locals (map scratch args)
         result (if (vector? args)
