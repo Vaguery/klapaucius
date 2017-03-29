@@ -18,31 +18,29 @@ This is the core documentation site for the Klapaucius interpreter, written in C
 
 #### Numeric
 
-- `:scalar`
-
+- `:scalar` \\
   Including integers, floating-point, rational numbers, `BigDecimal` and `BigInteger` values. All in one big pile.
-- `:complex`
-  
+- `:complex` \\
   Numbers in the complex plane, where the `real` and `imaginary` parts are both `:scalar` values.
-- `:interval`
+- `:interval` \\
   Represent continuous scalar intervals, with fixed `min` and `max` value (both `:scalar` values), either of which may be included as part of the range.
 
 #### Other basics
 
-- `:boolean`
+- `:boolean` \\
   The values `true` and `false`.
-- `:char`
+- `:char` \\
   Pseudo-numeric values representing single characters (from anywhere in the unicode universe).
 
 #### Collections
 
-- `:set`
+- `:set` \\
   Finite unordered collections, containing no more than a single copy of any given item. In general they can contain any items at all, including other `:set` items.
-- `:string`
+- `:string` \\
   An ordered collection of `:char` elements. You probably already know what they look like and how they work.
-- `:vector`
+- `:vector` \\
   An ordered collection of _any_ kind of items. Technically, an ordered collection of zero or more `:code` items.
-- `:vectorized` types
+- `:vectorized` types \\
   Ordered collection which contain only a single type of element.
   - `:booleans`
   - `:chars`
@@ -51,33 +49,33 @@ This is the core documentation site for the Klapaucius interpreter, written in C
   - `:intervals`
   - `:refs`
   - `:strings`
-- `:tagspace`
+- `:tagspace` \\
   A special `:scalar`-indexed key-value collection, with an approximate lookup function. Items (of any type) are stored at arbitrary _sorted_ `:scalar` indices. When another `:scalar` is used to retrieve an item stored in a `:tagspace`, any item stored in that exact value is returned, or if that specific index is empty, then the item at the next-larger index existing is returned.
 
 #### Programming
 
-- `:code`
+- `:code` \\
   The fundamental Push literal type. All items are `:code`. A `:vector` is a collection of `:code` items.
-- `:exec`
+- `:exec` \\
   A special stack (and collection of instructions) used by the Push interpreter to execute programs. Technically not a "type" in a strict sense; consider it a collection of `:code` items in a special place.
-- `:ref`
+- `:ref` \\
   Inputs, arguments, and "local" variables. A `:ref` is always a Clojure keyword, and can be used to refer to a `:binding`.
-- `:snapshot`
+- `:snapshot` \\
   A "saved" collection of interpreter stacks, which various Push instructions can save and retrieve.
-- `:generator`
+- `:generator` \\
   A stateful item which contains a Push item, and responds to various Push instructions by emitting copies of the stored item, cycling through a stored collection one step at a time, and so forth. Similar to a stateful `iterator` in some other languages.
-- `:quoted`
+- `:quoted` \\
   A special wrapper type which can contain any `:code`. When the interpreter encounters a `:quoted` item, it is stored on the `:code` stack instead of being interpreted and acted upon.
 
 #### Non-type stacks
 
-- `:log`
+- `:log` \\
   A special stack to which the Interpreter writes records of each step it takes.
-- `:error`
+- `:error` \\
   A special stack to which the Interpreter writes records of runtime errors: missing arguments, division by zero errors, violations of size constraints, and so forth.
-- `:return`
+- `:return` \\
   A special stack to which the Interpreter can push any `:code` values.
-- `:print`
+- `:print` \\
   A special stack to which the Interpreter can push the _printed_ string version of any `:code` values.
 
 ### Interpreter states
