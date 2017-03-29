@@ -2,6 +2,7 @@
   (:require [clojure.math.numeric-tower :as nt]
             [push.util.numerics :as num]
             [push.util.exceptions :as oops]
+            [push.util.code-wrangling :as fix]
     ))
 
 
@@ -16,7 +17,7 @@
   (loop [extended items
          n 0]
     (if (>= (count extended) target)
-      extended
+      (fix/list! extended)
       (recur (concat extended (list (nth extended n)))
              (inc n)))))
 

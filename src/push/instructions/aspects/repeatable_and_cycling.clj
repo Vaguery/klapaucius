@@ -43,7 +43,7 @@
   "Takes an item and attempts to produce an initial :cycler item's :state tuple. Returns `nil` if it's not possible."
   [item]
   (if (splittable? item)
-    (list (first item) (concat (drop 1 item) (take 1 item)))
+    (list (first item) (util/list! (concat (drop 1 item) (take 1 item))))
     nil))
 
 
@@ -53,7 +53,7 @@
   (let [item  (first item-and-items)
         items (second item-and-items)]
     (if (splittable? items)
-      (list (first items) (concat (drop 1 items) (take 1 items)))
+      (list (first items) (util/list! (concat (drop 1 items) (take 1 items))))
       nil)))
 
 
@@ -184,7 +184,7 @@
       instruction-name
       (str "`:" instruction-name "` copies the `" typename "` stack into a new _cycler_ `:generator` instance, if the stack is not empty.")
       :tags #{:generator :cycling}
-      
+
       `(save-stack ~typename :as :all)
       `(calculate [:all]
           #(g/make-generator

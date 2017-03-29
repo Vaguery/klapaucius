@@ -3,7 +3,7 @@
             [push.type.core :as t]
             [push.instructions.dsl :as d]
             [push.util.stack-manipulation :as stacks]
-            [push.util.code-wrangling :as u]
+            [push.util.code-wrangling :as fix]
             [push.instructions.aspects :as aspects]
             [clojure.math.numeric-tower :as math]
             [push.util.numerics :as n]
@@ -24,9 +24,9 @@
     (d/consume-top-of :code :as :arg1)
     (d/calculate [:arg1] #(if (coll? %1) %1 (list %1)) :as :list1)
     (d/calculate [:arg2] #(if (coll? %1) %1 (list %1)) :as :list2)
-    (d/calculate [:list1 :list2] #(concat %1 %2) :as :both)
+    (d/calculate [:list1 :list2] #(fix/list! (concat %1 %2)) :as :both)
     (d/save-max-collection-size :as :limit)
-    (d/calculate [:both :limit] #(if (< (u/count-code-points %1) %2) %1 nil) :as :result)
+    (d/calculate [:both :limit] #(if (< (fix/count-code-points %1) %2) %1 nil) :as :result)
     (d/push-onto :code :result)))
 
 
@@ -38,7 +38,7 @@
 
 
 
-(def code-cons 
+(def code-cons
   (core/build-instruction
     code-cons
     "`:code-cons` pops the top two `:code` items. If the first one is a list, it conjoins the second item to that; if it's not a list, it makes it one, then conjoins. If the result would be larger than :max-code-points it is discarded."
@@ -46,17 +46,17 @@
     (d/consume-top-of :code :as :item2)
     (d/consume-top-of :code :as :item1)
     (d/calculate [:item2] #(if (seq? %1) %1 (list %1)) :as :list)
-    (d/calculate [:list :item1] #(conj %1 %2) :as :conjed)
+    (d/calculate [:list :item1] #(fix/list! (conj %1 %2)) :as :conjed)
     (d/save-max-collection-size :as :limit)
     (d/calculate [:conjed :limit]
-      #(if (< (u/count-code-points %1) %2) %1 nil) :as :result)
+      #(if (< (fix/count-code-points %1) %2) %1 nil) :as :result)
     (d/push-onto :code :result)))
 
 
 
 (def code-container (t/simple-2-in-1-out-instruction
   "`:code-container` pops the top two `:code` items. It performs a depth-first traversal of the second code item (if it is a list or not), looking for duplicates of the first item. If it finds one, then the _parent_ node of the tree is returned as a list. If the item is not found, or there is no parent (the two items are identical), there is no return value."
-  :code "container" #(first (u/containers-in %1 %2))))
+  :code "container" #(first (fix/containers-in %1 %2))))
 
 
 
@@ -67,7 +67,7 @@
     :tags #{:complex :base}
     (d/consume-top-of :code :as :arg2)
     (d/consume-top-of :code :as :arg1)
-    (d/calculate [:arg1 :arg2] #(u/contains-anywhere? %1 %2) :as :found)
+    (d/calculate [:arg1 :arg2] #(fix/contains-anywhere? %1 %2) :as :found)
     (d/push-onto :boolean :found)))
 
 
@@ -109,9 +109,9 @@
     (d/consume-top-of :scalar :as :counter)
     (d/calculate [:counter] #(pos? %1) :as :go?)
     (d/calculate
-      [:do-this :counter :go?] 
-      #(if %3 
-        (list %2 0 :code-quote %1 :code-do*range) 
+      [:do-this :counter :go?]
+      #(if %3
+        (list %2 0 :code-quote %1 :code-do*range)
         (list %2 :code-quote %1)) :as :continuation)
     (d/push-onto :exec :continuation)))
 
@@ -134,7 +134,7 @@
     (d/calculate [:start :end] #(n/within-1? %1 %2) :as :done?)
     (d/calculate [:start :end] #(+' %1 (compare %2 %1)) :as :next)
     (d/calculate
-      [:do-this :start :end :next :done?] 
+      [:do-this :start :end :next :done?]
       #(cond
         (nil? %4) nil
         (nil? %5) nil
@@ -160,7 +160,7 @@
     (d/calculate [:count] #((complement pos?) %1) :as :done?)
     (d/calculate [:count] #(dec' %1) :as :next)
     (d/calculate
-      [:do-this :count :next :done?] 
+      [:do-this :count :next :done?]
       #(if %4
            %1
            (list %1 (list %3 :code-quote %1 :code-do*times))) :as :continuation)
@@ -168,7 +168,7 @@
 
 
 
-(def code-drop      
+(def code-drop
   (core/build-instruction
     code-drop
     "`:code-drop` pops the top `:code` and `:scalar` items. It wraps the `:code` item in a list if it isn't one, and forces the scalar into an index range. It then pushes the result of `(drop index code)`."
@@ -190,16 +190,16 @@
     :tags #{:complex :base}
     (d/consume-top-of :code :as :c)
     (d/consume-top-of :scalar :as :i)
-    (d/calculate [:c] #(u/count-code-points %1) :as :size)
+    (d/calculate [:c] #(fix/count-code-points %1) :as :size)
     (d/calculate [:size :i]
       #(n/scalar-to-index %2 %1) :as :idx)
     (d/calculate [:c :idx]
-      #(u/nth-code-point %1 %2) :as :result)
+      #(fix/nth-code-point %1 %2) :as :result)
     (d/push-onto :code :result)))
 
 
 
-(def code-first (t/simple-1-in-1-out-instruction 
+(def code-first (t/simple-1-in-1-out-instruction
   "`:code-first` examines the top `:code` item to determine if it's a code block (not a vector, map, record or other collection type!) If it is, the function returns its first item, otherwise the item itself it returned."
   :code "first" #(if (seq? %) (first %) %)))
 
@@ -226,11 +226,11 @@
     (d/consume-top-of :code :as :a)
     (d/consume-top-of :code :as :b)
     (d/consume-top-of :scalar :as :i)
-    (d/calculate [:b] #(u/count-code-points %1) :as :size)
+    (d/calculate [:b] #(fix/count-code-points %1) :as :size)
     (d/calculate [:i :size] #(n/scalar-to-index %1 %2) :as :idx)
-    (d/calculate [:a :b :idx] #(u/replace-nth-in-code %2 %1 %3) :as :replaced)
+    (d/calculate [:a :b :idx] #(fix/replace-nth-in-code %2 %1 %3) :as :replaced)
     (d/save-max-collection-size :as :limit)
-    (d/calculate [:replaced :limit] #(if (< (u/count-code-points %1) %2) %1 nil) :as :result)
+    (d/calculate [:replaced :limit] #(if (< (fix/count-code-points %1) %2) %1 nil) :as :result)
     (d/push-onto :code :result)))
 
 
@@ -256,7 +256,7 @@
     (d/calculate [:arg1 :arg2] #(list %1 %2) :as :both)
     (d/save-max-collection-size :as :limit)
     (d/calculate [:both :limit]
-      #(if (< (u/count-code-points %1) %2) %1 nil) :as :result)
+      #(if (< (fix/count-code-points %1) %2) %1 nil) :as :result)
     (d/push-onto :code :result)))
 
 
@@ -273,16 +273,16 @@
       #(cond  (empty? %1)
                 nil
               (= 1 (count %1))
-                (list :code-quote '() 
+                (list :code-quote '()
                       (list :code-quote (first %1) %2) :code-cons)
               :else
-                (list :code-quote '() 
+                (list :code-quote '()
                       (list :code-quote (first %1) %2) :code-cons
                       (list :code-quote (rest %1) :code-reduce %2)))
       :as :continuation)
     (d/save-max-collection-size :as :limit)
     (d/calculate [:continuation :limit]
-      #(if (< (u/count-code-points %1) %2) %1 nil) :as :result)
+      #(if (< (fix/count-code-points %1) %2) %1 nil) :as :result)
     (d/push-onto :exec :result)))
 
 
@@ -307,7 +307,7 @@
       :as :continuation)
     (d/save-max-collection-size :as :limit)
     (d/calculate [:continuation :limit]
-      #(if (< (u/count-code-points %1) %2) %1 nil) :as :result)
+      #(if (< (fix/count-code-points %1) %2) %1 nil) :as :result)
     (d/push-onto :exec :result)))
 
 
@@ -360,7 +360,7 @@
     "`:code-points` pops the top item from the `:code` stack, and treats it as a tree of seqs and non-seq items. If it is an empty list, or any literal (including a vector, map, set or other collection type), the result is 1; if it is a list containing items, they are also counted, including any contents of sub-lists, and so on. _Note_ the difference from `:code-size`, which counts contents of all Collections, not just (code) lists. The result is pushed to the `:scalar` stack."
     :tags #{:complex :base}
     (d/consume-top-of :code :as :arg1)
-    (d/calculate [:arg1] #(u/count-code-points %1) :as :size)
+    (d/calculate [:arg1] #(fix/count-code-points %1) :as :size)
     (d/push-onto :scalar :size)))
 
 
@@ -402,7 +402,7 @@
     "`:code-size` pops the top item from the `:code` stack, and totals the number of items it contains anywhere, in any nested Collection of any type. The root of the item counts as 1, and every element (including sub-Collections) nested inside that add 1 more. Items in lists, vectors, sets, and maps are counted. Maps are counted as a collection of key-value pairs, each key and value are an item in a pair, and if they themselves are nested items those are traversed as well. (_Note_ that this differs from `:code-points` by counting the contents of Collections, as opposed to lists only.) The result is pushed to the `:scalar` stack."
     :tags #{:complex :base}
     (d/consume-top-of :code :as :arg1)
-    (d/calculate [:arg1] #(u/count-collection-points %1) :as :size)
+    (d/calculate [:arg1] #(fix/count-collection-points %1) :as :size)
     (d/push-onto :scalar :size)))
 
 
@@ -415,9 +415,9 @@
     (d/consume-top-of :code :as :arg3)
     (d/consume-top-of :code :as :arg2)
     (d/consume-top-of :code :as :arg1)
-    (d/calculate [:arg1 :arg2 :arg3] #(u/replace-in-code %1 %2 %3) :as :replaced)
+    (d/calculate [:arg1 :arg2 :arg3] #(fix/replace-in-code %1 %2 %3) :as :replaced)
     (d/save-max-collection-size :as :limit)
-    (d/calculate [:replaced :limit] #(if (< (u/count-code-points %1) %2) %1 nil) :as :result)
+    (d/calculate [:replaced :limit] #(if (< (fix/count-code-points %1) %2) %1 nil) :as :result)
     (d/push-onto :code :result)))
 
 
@@ -451,7 +451,7 @@
         aspects/make-returnable
         aspects/make-storable
         aspects/make-taggable
-        aspects/make-visible 
+        aspects/make-visible
         (t/attach-instruction , code-append)
         (t/attach-instruction , code-atom?)
         (t/attach-instruction , code-cons)

@@ -1,4 +1,5 @@
 (ns push.instructions.aspects.returnable
+  (:require [push.util.code-wrangling :as fix])
   (:use [push.instructions.core :only (build-instruction)]
         [push.instructions.dsl]))
 
@@ -35,6 +36,6 @@
       :tags #{:io}
 
       `(consume-stack :return :as :old-stack)
-      `(calculate [:old-stack] 
-          #(concat %1 (list ~token)) :as :new-stack)
+      `(calculate [:old-stack]
+          #(fix/list! (concat %1 (list ~token))) :as :new-stack)
       `(replace-stack :return :new-stack)))))
