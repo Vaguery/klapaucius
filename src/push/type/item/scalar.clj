@@ -384,7 +384,8 @@
     "`:integer-totalistic3` pops the top `:scalar`. It is turned into an integer using `(bigint x)`. Then each digit is replaced by the sum of its current value and the two neighbors to the right, modulo 10, wrapping cyclically around the number. An infinite argument produces a result of 0."
     :tags #{:numeric :exotic}
     (d/consume-top-of :scalar :as :arg)
-    (d/calculate [:arg] #(x/rewrite-digits (bigint %1) 3) :as :result)
+    (d/calculate [:arg] #(if (math/infinite? %1) 0 %1) :as :safe)
+    (d/calculate [:safe] #(x/rewrite-digits (bigint %1) 3) :as :result)
     (d/push-onto :scalar :result)))
 
 

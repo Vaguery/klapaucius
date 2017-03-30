@@ -83,7 +83,7 @@
       [:bindings kwd]
       (if (nil? item)
         old-stack
-        (fix/list! (conj old-stack item))
+        (conj old-stack item)
         ))))
 
 

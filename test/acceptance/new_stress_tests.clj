@@ -13,7 +13,7 @@
 ;;;; setup
 
 (def my-interpreter (push/interpreter))
-(def program-size 1000)
+(def program-size 500)
 (def erc-scale 10)
 (def erc-prob 3/5)
 
@@ -26,11 +26,11 @@
     (push/run
       interpreter
       program
-      20000
+      5000
       :bindings bindings
-      :config {:step-limit 20000
+      :config {:step-limit 5000
                :lenient true
-               :max-collection-size 131072} ;131072
+               :max-collection-size 32768} ;131072
                )))
 
 (defn spit-prisoner-file
