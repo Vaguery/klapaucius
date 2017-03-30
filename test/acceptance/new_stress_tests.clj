@@ -23,7 +23,6 @@
 (defn run-program-in-standardized-interpreter
   [id interpreter program bindings]
   (do
-    (println (str "\n\n\nrunning " id " : " ))
     (push/run
       interpreter
       program
@@ -75,9 +74,10 @@
     :argument-errors
       (count
         (filter
-          #(.contains (:item %)
-                      "missing arguments")
-                      (push/get-stack i :error)))
+          #(re-find
+            #"missing arguments"
+            (get % :item ""))
+          (push/get-stack i :error)))
     ; :stack-points
     ;   (reduce-kv
     ;     (fn [counts key value]
@@ -116,18 +116,18 @@
 
 (defn launch-some-workers
   [interpreter bindings how-many]
-  (cp/with-shutdown! [net-pool (cp/threadpool 10)]
-    (doall
+  (cp/with-shutdown! [net-pool (cp/threadpool 8)]
+    (dorun
       (lazy/upmap net-pool
-        #(println ; .write *out*
-          (str "\n\n"
+        #(time
+          (println (str "\n"
             (first %) ": "
             (interpreter-details
               (run-program-in-standardized-interpreter
                 (first %)
                 interpreter
                 (second %)
-                bindings))))
+                bindings)))))
         (map sample-program (range how-many))
         ))))
 
