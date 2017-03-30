@@ -97,9 +97,11 @@
 (def generator-totalistic3
   (core/build-instruction
     generator-totalistic3
-    "`:generator-totalistic3` pops a `:scalar` and uses that to create a `:generator` that will cycle through a digitwise totalistic rewrite rule of width 3. The scalar is converted to a `bigint` when consumed."
+    "`:generator-totalistic3` pops a `:scalar` and uses that to create a `:generator` that will cycle through a digitwise totalistic rewrite rule of width 3. The scalar is converted to a `bigint` when consumed. If the `:scalar` is infinite, 0 is used as the starting value."
     :tags #{:generator}
     (d/consume-top-of :scalar :as :arg)
+    (d/calculate [:arg]
+      #(if (n/infinite? %1) 0 %1) :as :arg)
     (d/calculate [:arg]
       #(make-generator (bigint %1) (fn [x] (exotics/rewrite-digits x 3))) :as :g)
     (d/push-onto :generator :g)))
