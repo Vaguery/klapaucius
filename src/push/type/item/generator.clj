@@ -103,7 +103,9 @@
     (d/calculate [:arg]
       #(if (n/infinite? %1) 0 %1) :as :arg)
     (d/calculate [:arg]
-      #(make-generator (bigint %1) (fn [x] (exotics/rewrite-digits x 3))) :as :g)
+      #(make-generator
+        (bigint %1)
+        (fn [x] (exotics/rewrite-digits x 3))) :as :g)
     (d/push-onto :generator :g)))
 
 
