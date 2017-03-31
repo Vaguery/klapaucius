@@ -116,9 +116,9 @@
 
 (defn launch-some-workers
   [interpreter bindings how-many]
-  (cp/with-shutdown! [net-pool (cp/threadpool 16)]
+  (cp/with-shutdown! [net-pool (cp/threadpool 2)]
     (dorun
-      (lazy/upmap net-pool
+      (cp/upmap net-pool
         #(time
           (println (str "\n"
             (first %) ": "

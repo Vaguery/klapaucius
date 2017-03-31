@@ -313,6 +313,7 @@
         (oops/throw-stack-oversize-exception stackname)
         [(u/set-stack interpreter stackname new-stack) scratch]))))
 
+
 (with-handler! #'push-these-onto
   "Handles attempts to add an over-large collections of items to a stack"
   #(re-find #"stack .+ is over size limit" (.getMessage %))
@@ -543,3 +544,19 @@
       [(add-error-message! interpreter (.getMessage e))
        (assoc scratch as nil)]
     ))
+
+
+(with-handler! #'calculate
+  "Handles unknown and mysterious exceptions from `calculate`"
+  java.lang.RuntimeException
+  (fn
+    [e [interpreter scratch] args fxn & {:keys [as]}]
+      (do (println "CALCULATION RUNTIME EXCEPTION")
+          (println (str
+            "\nmessage: " (.getMessage e)
+            "\nscratch: " scratch
+            "\nargs: " args
+            "\nbetween items " (first (u/get-stack interpreter :log)) " AND "(first (u/get-stack interpreter :exec)) " IN " (:program interpreter)))
+
+          (throw (Exception. "BAD THING HAPPENED"))
+          )))
