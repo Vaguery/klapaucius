@@ -541,6 +541,7 @@
        (assoc scratch as nil)]
       )))
 
+
 (with-handler! #'calculate
   "Handles bad result (Infinite or NaN) runtime errors in `calculate`"
   #(re-find #"Infinite or NaN" (.getMessage %))
@@ -568,6 +569,8 @@
     [(add-error-message! interpreter (.getMessage e))
      (assoc scratch as nil)]
     )))
+
+
 
 
 

@@ -40,10 +40,14 @@
   (scalar-to-index 2.1M 99) => 2N
   (scalar-to-index 99.1M 99) => 0N
   (scalar-to-index 99M 99) => 0
-  
+
 
   (scalar-to-index ∞ 99) => 0
   (scalar-to-index -∞ 99) => 0
+
+  (scalar-to-index (clojure.math.numeric-tower/sqrt -99) 66) => 0
+  (scalar-to-index (clojure.math.numeric-tower/sqrt -99) 66) => 0
+  (scalar-to-index (/ ∞ ∞) 99) => 0
   )
 
 
@@ -98,4 +102,3 @@
   (ninfty? -∞) => true
   (ninfty? (/ -1.0 0.0)) => true
   )
-

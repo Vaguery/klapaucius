@@ -30,6 +30,8 @@
       (throw (Exception. "scalar-to-index requires a strictly positive argument"))
     (infinite? value)
       0
+    (Double/isNaN value)
+      0
     :else
       (let [idx (nt/floor (mod value howmany))]
         (if (>= idx howmany)
@@ -68,4 +70,3 @@
   (map
     #(+' start (*' %1 delta))
     (range 0 howmany)))
-
