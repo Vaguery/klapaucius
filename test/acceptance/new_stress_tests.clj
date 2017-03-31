@@ -114,20 +114,34 @@
     :OUTPUT nil))
 
 
+(defn timeout [timeout-ms callback]
+ (let [fut (future (callback))
+       ret (deref fut timeout-ms ::timed-out)]
+   (when (= ret ::timed-out)
+     (do
+       (future-cancel fut)
+       (throw (Exception. "timed out"))))
+   ret))
+
+;; (timeout 100 #(do (Thread/sleep 1000) (println "I finished")))
+
+
+
 (defn launch-some-workers
   [interpreter bindings how-many]
   (cp/with-shutdown! [net-pool (cp/threadpool 2)]
     (dorun
       (cp/upmap net-pool
-        #(time
-          (println (str "\n"
-            (first %) ": "
-            (interpreter-details
-              (run-program-in-standardized-interpreter
-                (first %)
-                interpreter
-                (second %)
-                bindings)))))
+        (fn [i]
+          (time
+            (println (str "\n"
+              (first i) ": "
+              (interpreter-details
+                (run-program-in-standardized-interpreter
+                  (first i)
+                  interpreter
+                  (second i)
+                  bindings))))))
         (map sample-program (range how-many))
         ))))
 

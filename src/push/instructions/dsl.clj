@@ -525,7 +525,6 @@
     ))
 
 
-
 (with-handler! #'calculate
   "Handles bigdec vs rational errors in `calculate`"
   #(re-find #"Non-terminating decimal expansion" (.getMessage %))
@@ -544,6 +543,24 @@
       [(add-error-message! interpreter (.getMessage e))
        (assoc scratch as nil)]
     ))
+
+
+(with-handler! #'calculate
+  "Handles bad result (Infinite or NaN) runtime errors in `calculate`"
+  java.lang.NullPointerException
+  (fn
+    [e [interpreter scratch] args fxn & {:keys [as]}]
+    (do (println "CALCULATION RUNTIME EXCEPTION")
+        (println (str
+          "\nmessage: " (.getMessage e)
+          "\nscratch: " scratch
+          "\nargs: " args
+          "\nbetween items " (first (u/get-stack interpreter :log)) " AND "(first (u/get-stack interpreter :exec)) " IN " (:program interpreter)))
+
+    [(add-error-message! interpreter (.getMessage e))
+     (assoc scratch as nil)]
+    )))
+
 
 
 (with-handler! #'calculate
