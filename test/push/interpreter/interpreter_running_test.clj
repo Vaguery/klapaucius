@@ -187,13 +187,16 @@
 
 
 
-(fact "handle-item will not execute an unregistered instruction if :lenient is false"
+(fact "handle-item will execute an unregistered instruction if :lenient is true (and will record it in `:current-item`)"
  (let [foo-noop (instr/make-instruction :foo-noop)
        registry {:foo-noop foo-noop}
        he-knows-foo (m/basic-interpreter
                       :instructions registry
                       :config {:lenient? true})]
-   (handle-item he-knows-foo :foo-noop) => he-knows-foo))
+   (handle-item he-knows-foo :foo-noop) =>
+    (assoc he-knows-foo :current-item :foo-noop)
+    ))
+
 
 
 
@@ -204,6 +207,13 @@
        he-knows-foo (m/basic-interpreter :instructions registry :config {:lenient? false})]
    (handle-item he-knows-foo {:thing 9}) => (throws #"Push Parsing Error:")))
 
+
+(fact "handle-item records the item being processed in `:current-item` of the interpreter (for error reporting and introspection)"
+  (:current-item (handle-item supreme false)) => false
+  (:current-item (handle-item supreme 99)) => 99
+  (:current-item (handle-item supreme :j)) => :j
+  (:current-item (handle-item supreme nil)) => nil
+)
 
 
 ;; argument retention

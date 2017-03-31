@@ -520,9 +520,13 @@
   #(re-find #"Divide by zero" (.getMessage %))
   (fn
     [e [interpreter scratch] args fxn & {:keys [as]}]
+    (do
+      ; (println
+      ;   (str "Divide by 0 calculating " (:current-item interpreter)
+      ;        " with args " scratch))
       [(add-error-message! interpreter (.getMessage e))
        (assoc scratch as nil)]
-    ))
+    )))
 
 
 (with-handler! #'calculate
@@ -530,19 +534,24 @@
   #(re-find #"Non-terminating decimal expansion" (.getMessage %))
   (fn
     [e [interpreter scratch] args fxn & {:keys [as]}]
+    (do
+      ; (println
+      ;   (str "Non-terminating decimal when calculating " (:current-item interpreter) " with args " scratch))
       [(add-error-message! interpreter (.getMessage e))
        (assoc scratch as nil)]
-    ))
-
+      )))
 
 (with-handler! #'calculate
   "Handles bad result (Infinite or NaN) runtime errors in `calculate`"
   #(re-find #"Infinite or NaN" (.getMessage %))
   (fn
     [e [interpreter scratch] args fxn & {:keys [as]}]
+    (do
+      (println
+        (str "Infinite or NaN result calculating " (:current-item interpreter) " with args " scratch))
       [(add-error-message! interpreter (.getMessage e))
        (assoc scratch as nil)]
-    ))
+    )))
 
 
 (with-handler! #'calculate
@@ -555,8 +564,7 @@
           "\nmessage: " (.getMessage e)
           "\nscratch: " scratch
           "\nargs: " args
-          "\nbetween items " (first (u/get-stack interpreter :log)) " AND "(first (u/get-stack interpreter :exec)) " IN " (:program interpreter)))
-
+          "\nhandling item " (:current-item interpreter)))
     [(add-error-message! interpreter (.getMessage e))
      (assoc scratch as nil)]
     )))
@@ -573,7 +581,6 @@
             "\nmessage: " (.getMessage e)
             "\nscratch: " scratch
             "\nargs: " args
-            "\nbetween items " (first (u/get-stack interpreter :log)) " AND "(first (u/get-stack interpreter :exec)) " IN " (:program interpreter)))
-
+            "\nhandling item " (:current-item interpreter)))
           (throw (Exception. "BAD THING HAPPENED"))
           )))

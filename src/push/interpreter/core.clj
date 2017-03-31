@@ -321,23 +321,22 @@
 (defn handle-item
   "Takes an Interpreter and an item, and either recognizes and invokes
   a keyword registered in that Interpreter as an binding or instruction,
-  or sends the item to the correct stack (if it exists). Throws an
-  exception if the Clojure expression is not recognized explicitly as
-  a registered instruction or some other kind of Push literal."
-  [interpreter item]
-  (cond
-    (keyword? item)
-      (cond
-        (bound-keyword? interpreter item)
-          (if (get-in interpreter [:config :quote-refs?])
-            (push-item interpreter :ref item)
-            (push-item interpreter :exec (peek-at-binding interpreter item)))
-        (instruction? interpreter item)
-          (execute-instruction interpreter item)
-        :else (push-item interpreter :ref item))
-    (routers-see? interpreter item) (route-item interpreter item)
-    (pushcode? item) (load-items interpreter :exec item)
-    :else (handle-unknown-item interpreter item)))
+  or sends the item to the correct stack (if it exists). As a side-effect, the item being processed will be stored in `:current-item` in the Interpreter record."
+  [naive-interpreter item]
+  (let [interpreter (assoc naive-interpreter :current-item item)]
+    (cond
+      (keyword? item)
+        (cond
+          (bound-keyword? interpreter item)
+            (if (get-in interpreter [:config :quote-refs?])
+              (push-item interpreter :ref item)
+              (push-item interpreter :exec (peek-at-binding interpreter item)))
+          (instruction? interpreter item)
+            (execute-instruction interpreter item)
+          :else (push-item interpreter :ref item))
+      (routers-see? interpreter item) (route-item interpreter item)
+      (pushcode? item) (load-items interpreter :exec item)
+      :else (handle-unknown-item interpreter item))))
 
 
 (defn clear-all-stacks
