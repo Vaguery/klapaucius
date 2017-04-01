@@ -26,9 +26,9 @@
     (push/run
       interpreter
       program
-      20000
+      5000
       :bindings bindings
-      :config {:step-limit 20000
+      :config {:step-limit 5000
                :lenient true
                :max-collection-size 131072} ;131072
                )))
