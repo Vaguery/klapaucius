@@ -2,6 +2,7 @@
   (:use midje.sweet)
   (:use [push.util.test-helpers])
   (:require [push.interpreter.core :as i])
+  (:require [push.core :as push])
   (:require [push.type.core :as t])
   (:require [push.util.code-wrangling :as u])
   (:use push.instructions.aspects)
@@ -18,6 +19,7 @@
                                 :attributes #{:foo})
                    make-movable))
 
+(def teeny (push/interpreter :config {:max-collection-size 9}))
 ;;;;;;;;;;;;;;;
 
 
@@ -31,6 +33,27 @@
     :foo       '(1 2 3 4 5)    :foo-againlater   :exec             '(1)
     ;; missing args
     :foo       '()             :foo-againlater   :exec              '())
+
+
+
+(tabular
+  (fact ":foo-againlater produces an error when the result is oversized"
+    (check-instruction-here-using-this
+      (i/register-type teeny foo-type)
+      ?new-stacks ?instruction) => (contains ?expected))
+
+    ?new-stacks           ?instruction        ?expected
+    {:foo '([1 1] 2 3 4)
+     :exec '(99)}       :foo-againlater      {:foo '([1 1] 2 3 4)
+                                              :exec '(99 [1 1])
+                                              :error '()}
+     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     {:foo '([1 1 1 1 1 1 1 1 1 1 1] 2 3 4)
+      :exec '(99)}       :foo-againlater      {:foo '(2 3 4)
+                                               :exec '(99)
+                                               :error '({:item "foo-againlater produced an oversized result", :step 0})}
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     )
 
 
 
@@ -148,8 +171,6 @@
 
 
 
-(def huge-list (repeat 131070 1))
-
 
 (tabular
   (fact "`foo-liftstack` takes a :scalar, divides the stack into two parts at that index (measured from the top), and puts the top segment at the bottom"
@@ -179,7 +200,7 @@
                                                      :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foo      '(9 8 7 6 5 4)
-     :scalar  '(1e181)}            :foo-liftstack      {:foo    '(9 8 7 6 5 4 9 8 7 6 5 4)
+     :scalar  '(1e181)}         :foo-liftstack      {:foo    '(9 8 7 6 5 4 9 8 7 6 5 4)
                                                      :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foo      '()
