@@ -232,10 +232,23 @@
      :scalar  '()}              :foo-liftstack      {:foo    '(2 3 4)
                                                      :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ;; oversized produces an :error
-    {:foo      huge-list
-     :scalar  '(12000)}         :foo-liftstack      {:foo    huge-list
-                                                     :scalar '()
-                                                     :error '({:item "foo-liftstack produced stack overflow", :step 0})}
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
+
+(tabular
+  (fact ":foo-liftstack produces an error when the result is oversized"
+    (check-instruction-here-using-this
+      (i/register-type teeny foo-type)
+      ?new-stacks ?instruction) => (contains ?expected))
+
+    ?new-stacks           ?instruction        ?expected
+    {:foo    '(1 2 3 4)
+     :scalar '(1)}       :foo-liftstack      {:foo    '(2 3 4 1 2 3 4)
+                                              :scalar '()
+                                              :error  '()}
+     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foo    '(1 2 3 4 5)
+     :scalar '(1)}       :foo-liftstack      {:foo    '(1 2 3 4 5)
+                                              :scalar '()
+                                              :error  '({:item "foo-liftstack produced stack overflow", :step 0})}
+     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     )
