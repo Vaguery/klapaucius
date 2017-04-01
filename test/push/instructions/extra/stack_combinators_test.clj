@@ -49,8 +49,8 @@
                                               :error '()}
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      {:foo '([1 1 1 1 1 1 1 1 1 1 1] 2 3 4)
-      :exec '(99)}       :foo-againlater      {:foo '(2 3 4)
-                                               :exec '(99)
+      :exec '(99)}       :foo-againlater      {:foo   '(2 3 4)
+                                               :exec  '(99)
                                                :error '({:item "foo-againlater produced an oversized result", :step 0})}
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      )
@@ -72,6 +72,27 @@
      :exec  '()}              :foo-later      {:foo   '()
                                                :exec  '(9)}
     )
+
+
+(tabular
+  (fact ":foo-later produces an error when the result is oversized"
+    (check-instruction-here-using-this
+      (i/register-type teeny foo-type)
+      ?new-stacks ?instruction) => (contains ?expected))
+
+    ?new-stacks           ?instruction        ?expected
+    {:foo '([1 1] 2 3 4)
+     :exec '(99)}         :foo-later         {:foo '(2 3 4)
+                                              :exec '(99 [1 1])
+                                              :error '()}
+     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     {:foo '([1 1 1 1 1 1 1 1 1 1 1] 2 3 4)
+      :exec '(99)}         :foo-later         {:foo  '(2 3 4)
+                                               :exec '(99)
+                                               :error '({:item "foo-later produced an oversized result", :step 0})}
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     )
+
 
 
 (tabular
