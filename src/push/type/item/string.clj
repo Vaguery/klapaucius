@@ -5,6 +5,7 @@
             [clojure.string :as strings]
             [push.instructions.aspects :as aspects]
             [push.util.numerics :as num]
+            [clojure.edn :as edn]
             )
   (:use push.type.item.tagspace)
 )
@@ -68,6 +69,30 @@
 (def code->string    (simple-item-to-string-instruction :code   ))
 (def exec->string    (simple-item-to-string-instruction :exec   ))
 (def scalar->string  (simple-item-to-string-instruction :scalar ))
+
+
+(defn valid-numbers-only
+  "Given a collection of strings, this will parse each one with edn/read-string, ignoring errors, and return only those that parse as Clojure numeric values."
+  [chunks]
+  (filter
+    number?
+    (map
+      #(try (edn/read-string %) (catch Exception e nil))
+      chunks)
+      ))
+
+
+(def string->scalar
+  (core/build-instruction
+    string->scalar
+    "`:string->scalar` pops the top `:string` item and attempts to convert it into a `:scalar` value. The rules (in order of precedence) are: (1) If the string is empty, there is no result (no `:scalar` is pushed). (2) If the string contains whitespace, then it is broken into individual space-delimited tokens, and each of those is processed as follows, in turn, until the _first_ successful token creates a `:scalar` value, using the Clojure EDN reader as its standard. If no token produces any readable numeric result, no result is pushed. Tokens that produce reader errors are ignored. The first successful numeric value is pushed."
+    :tags #{:string :base}
+    (d/consume-top-of :string :as :arg)
+    (d/calculate [:arg] #(clojure.string/split %1 #"\s+") :as :chunks)
+    (d/calculate [:chunks] #(valid-numbers-only %1) :as :numbers)
+    (d/calculate [:numbers] #(first %1) :as :result)
+    (d/push-onto :scalar :result)))
+
 
 
 
@@ -406,12 +431,13 @@
         aspects/make-returnable
         aspects/make-storable
         aspects/make-taggable
-        aspects/make-visible 
+        aspects/make-visible
         (t/attach-instruction , boolean->string)
         (t/attach-instruction , char->string)
         (t/attach-instruction , code->string)
         (t/attach-instruction , exec->string)
         (t/attach-instruction , scalar->string)
+        (t/attach-instruction , string->scalar)
         (t/attach-instruction , exec-string-iterate)
         (t/attach-instruction , string-butlast)
         (t/attach-instruction , string-concat)
@@ -440,4 +466,3 @@
         (t/attach-instruction , string-substring)
         (t/attach-instruction , string-take)
         ))
-

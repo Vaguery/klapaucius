@@ -6,11 +6,62 @@
   )
 
 
-;; a fixure
+;; a fixture
 
 (def huge-string (apply str (repeat 131070 "*")))
 
 ;; all the conversions
+
+
+(fact "valid-numbers-only produces collection of parsed numbers, or nil values, given a collection of strings"
+  (valid-numbers-only
+    ["9" "0000009.9" "0.123" "1e4"
+    "0x83c" "8/11" "2r101110001011001" "01271216530"]) =>
+    [9 9.9 0.123 10000.0 2108 8/11 23641 182787416]
+  (valid-numbers-only
+    ["9e" "f99" ".0.123" "(1e4)" "'0x83c" "8/11.0" "01119" "0129"]) => []
+  )
+
+
+(tabular
+  (fact "the very very difficult :string->scalar instruction works fine for easy strings"
+    (register-type-and-check-instruction
+        ?set-stack ?items string-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items         ?instruction       ?get-stack     ?expected
+    :string    '("88")       :string->scalar      :scalar       '(88)
+    :string    '("88.8")     :string->scalar      :scalar       '(88.8)
+    :string    '("6.2e7")    :string->scalar     :scalar       '(6.2e7)
+    :string    '("88N")      :string->scalar     :scalar       '(88N)
+    :string    '("3/11")     :string->scalar     :scalar       '(3/11)
+  )
+
+
+(tabular
+  (fact "the very very difficult :string->scalar instruction takes the first number it finds"
+    (register-type-and-check-instruction
+        ?set-stack ?items string-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items         ?instruction       ?get-stack     ?expected
+    :string    '("hey 88")     :string->scalar     :scalar       '(88)
+    :string    '("(neg 88.8")  :string->scalar     :scalar       '(88.8)
+    :string    '("\n\n6.2e7")  :string->scalar     :scalar       '(6.2e7)
+    :string    '("{:x 88N}")   :string->scalar     :scalar       '(88N)
+    :string    '("(+ 3/11 9)") :string->scalar     :scalar       '(3/11)
+  )
+
+(tabular
+  (fact "the very very difficult :string->scalar instruction works when no string is present"
+    (register-type-and-check-instruction
+        ?set-stack ?items string-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items         ?instruction       ?get-stack     ?expected
+    :string    '("hey88")      :string->scalar     :scalar       '()
+    :string    '("(88.8)")     :string->scalar     :scalar       '()
+    :string    '("")           :string->scalar     :scalar       '()
+    :string    '("string")     :string->scalar     :scalar       '()
+    :string    '(":foo")       :string->scalar     :scalar       '()
+  )
 
 (tabular
   (fact " :boolean->string, :code->string, :exec->string"
@@ -67,52 +118,52 @@
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec   '(:scalar-add)
-     :string '("ere he was able")}           
-                            :exec-string-iterate       
+     :string '("ere he was able")}
+                            :exec-string-iterate
                                                   {:char   '()
                                                    :string '()
-                                                   :exec   '((\e :scalar-add 
-                                                              "re he was able" 
-                                                              :exec-string-iterate 
+                                                   :exec   '((\e :scalar-add
+                                                              "re he was able"
+                                                              :exec-string-iterate
                                                               :scalar-add))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec   '(:scalar-add :foo)
-     :string '("ere he was able")}           
-                            :exec-string-iterate       
+     :string '("ere he was able")}
+                            :exec-string-iterate
                                                   {:char   '()
                                                    :string '()
-                                                   :exec   '((\e :scalar-add 
-                                                              "re he was able" 
+                                                   :exec   '((\e :scalar-add
+                                                              "re he was able"
                                                               :exec-string-iterate
-                                                              :scalar-add) :foo)} 
+                                                              :scalar-add) :foo)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec   '((2 :scalar-add (7)))
-     :string '("ere he was able")}           
-                            :exec-string-iterate       
+     :string '("ere he was able")}
+                            :exec-string-iterate
                                                   {:char   '()
                                                    :string '()
                                                    :exec   '((\e (2 :scalar-add (7))
-                                                              "re he was able" 
+                                                              "re he was able"
                                                               :exec-string-iterate
-                                                              (2 :scalar-add (7))))} 
+                                                              (2 :scalar-add (7))))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec   '(:scalar-add)
-     :string '("e")}           
-                            :exec-string-iterate       
+     :string '("e")}
+                            :exec-string-iterate
                                                   {:char   '()
                                                    :string '()
                                                    :exec   '((\e :scalar-add))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec   '(:scalar-add)
-     :string '("")}           
-                            :exec-string-iterate       
+     :string '("")}
+                            :exec-string-iterate
                                                   {:char   '()
                                                    :string '()
                                                    :exec   '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec   '(:scalar-add :foo)
-     :string '("")}           
-                            :exec-string-iterate       
+     :string '("")}
+                            :exec-string-iterate
                                                   {:char   '()
                                                    :string '()
                                                    :exec   '(:foo)})
@@ -177,15 +228,15 @@
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:char   '(\e)
-     :string '("ere he was able")}           
-                                :string-containschar?       
+     :string '("ere he was able")}
+                                :string-containschar?
                                                   {:char '()
                                                    :string '()
-                                                   :boolean '(true)} 
+                                                   :boolean '(true)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:char   '(\q)
-     :string '("ere he was able")}           
-                                :string-containschar?       
+     :string '("ere he was able")}
+                                :string-containschar?
                                                   {:char '()
                                                    :string '()
                                                    :boolean '(false)} )
@@ -247,37 +298,37 @@
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:char   '(\e)
-     :string '("ere he was able")}           
-                                :string-indexofchar       
+     :string '("ere he was able")}
+                                :string-indexofchar
                                                   {:char '()
                                                    :string '()
-                                                   :scalar '(0)} 
+                                                   :scalar '(0)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:char   '(\a)
-     :string '("ere he was able")}           
-                                :string-indexofchar       
+     :string '("ere he was able")}
+                                :string-indexofchar
                                                   {:char '()
                                                    :string '()
-                                                   :scalar '(8)} 
+                                                   :scalar '(8)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:char   '(\z)
-     :string '("ere he was able")}           
-                                :string-indexofchar       
+     :string '("ere he was able")}
+                                :string-indexofchar
                                                   {:char '()
                                                    :string '()
-                                                   :scalar '(-1)} 
+                                                   :scalar '(-1)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;; missing arguments
     {:char   '()
-     :string '("ere he was able")}           
-                                :string-indexofchar       
+     :string '("ere he was able")}
+                                :string-indexofchar
                                                   {:char '()
                                                    :string '("ere he was able")
-                                                   :scalar '()} 
+                                                   :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:char   '(\e)
-     :string '()}           
-                                :string-indexofchar       
+     :string '()}
+                                :string-indexofchar
                                                   {:char '(\e)
                                                    :string '()
                                                    :scalar '()})
@@ -328,44 +379,44 @@
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar '(0)
-     :string  '("ere he was able")}           
-                                :string-nth       
+     :string  '("ere he was able")}
+                                :string-nth
                                                   {:char '(\e)
                                                    :string '()
-                                                   :scalar '()} 
+                                                   :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar '(-2)
-     :string '("ere he was able")}           
-                                :string-nth       
+     :string '("ere he was able")}
+                                :string-nth
                                                   {:char '(\l)
                                                    :string '()
-                                                   :scalar '()} 
+                                                   :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar '(16)
-     :string '("ere he was able")}           
-                                :string-nth       
+     :string '("ere he was able")}
+                                :string-nth
                                                   {:char '(\r)
                                                    :string '()
-                                                   :scalar '()} 
+                                                   :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar '(16)
-     :string '("")}           
-                                :string-nth       
+     :string '("")}
+                                :string-nth
                                                   {:char '()
                                                    :string '()
-                                                   :scalar '()} 
+                                                   :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;; missing arguments
     {:scalar '()
-     :string '("ere he was able")}           
-                                :string-nth       
+     :string '("ere he was able")}
+                                :string-nth
                                                   {:char '()
                                                    :string '("ere he was able")
-                                                   :scalar '()} 
+                                                   :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar '(0)
-     :string '()}           
-                                :string-nth       
+     :string '()}
+                                :string-nth
                                                   {:char '()
                                                    :string '()
                                                    :scalar '(0)})
@@ -380,30 +431,30 @@
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:char   '(\e)
-     :string '("ere he was able")}           
-                                :string-occurrencesofchar       
+     :string '("ere he was able")}
+                                :string-occurrencesofchar
                                                   {:char '()
                                                    :string '()
-                                                   :scalar '(4)} 
+                                                   :scalar '(4)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:char   '(\z)
-     :string '("ere he was able")}           
-                                :string-occurrencesofchar       
+     :string '("ere he was able")}
+                                :string-occurrencesofchar
                                                   {:char '()
                                                    :string '()
-                                                   :scalar '(0)} 
+                                                   :scalar '(0)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;; missing arguments
     {:char   '()
-     :string '("ere he was able")}           
-                                :string-occurrencesofchar       
+     :string '("ere he was able")}
+                                :string-occurrencesofchar
                                                   {:char '()
                                                    :string '("ere he was able")
-                                                   :scalar '()} 
+                                                   :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:char   '(\e)
-     :string '()}           
-                                :string-occurrencesofchar       
+     :string '()}
+                                :string-occurrencesofchar
                                                   {:char '(\e)
                                                    :string '()
                                                    :scalar '()})
@@ -418,33 +469,33 @@
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:char   '(\e)
-     :string '("ere he was able")}           
-                                :string-removechar       
+     :string '("ere he was able")}
+                                :string-removechar
                                                   {:char '()
-                                                   :string '("r h was abl")} 
+                                                   :string '("r h was abl")}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:char   '(\space)
-     :string '("ere he was able")}           
-                                :string-removechar       
+     :string '("ere he was able")}
+                                :string-removechar
                                                   {:char '()
-                                                   :string '("erehewasable")} 
+                                                   :string '("erehewasable")}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:char   '(\z)
-     :string '("ere he was able")}           
-                                :string-removechar       
+     :string '("ere he was able")}
+                                :string-removechar
                                                   {:char '()
-                                                   :string '("ere he was able")} 
+                                                   :string '("ere he was able")}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;; missing arguments
     {:char   '()
-     :string '("ere he was able")}           
-                                :string-removechar       
+     :string '("ere he was able")}
+                                :string-removechar
                                                   {:char '()
-                                                   :string '("ere he was able")} 
+                                                   :string '("ere he was able")}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:char   '(\e)
-     :string '()}           
-                                :string-removechar       
+     :string '()}
+                                :string-removechar
                                                   {:char '(\e)
                                                    :string '()})
 
@@ -456,9 +507,9 @@
         ?set-stack ?items string-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction  ?get-stack   ?expected
-    :string    '("X" "ab" "aabbaaabbb")         
+    :string    '("X" "ab" "aabbaaabbb")
                                 :string-replace  :string     '("aXbaaXbb")
-    :string    '("Napoleon" "he" "ere he was able")       
+    :string    '("Napoleon" "he" "ere he was able")
                                 :string-replace  :string     '("ere Napoleon was able")
     :string    '(" " "\n" "foo\n\t\t\n")
                                 :string-replace  :string     '("foo \t\t ")
@@ -466,7 +517,7 @@
                                 :string-replace  :string     '("bbbbb")
     :string    '("X" "" "aabbaaabbb")
                                 :string-replace  :string     '("XaXaXbXbXaXaXaXbXbXbX")
-    ;; size limit  
+    ;; size limit
     :string    (list "XX" "-" huge-string) ;; no substitution
                                 :string-replace  :string     (list huge-string)
     :string    (list "XX" "*" huge-string) ;; doubles length
@@ -483,9 +534,9 @@
         ?set-stack ?items string-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction           ?get-stack   ?expected
-    :string    '("X" "ab" "aabbaaabbb")         
+    :string    '("X" "ab" "aabbaaabbb")
                                 :string-replacefirst  :string     '("aXbaaabbb")
-    :string    '("Napoleon" "he" "ere he was able")       
+    :string    '("Napoleon" "he" "ere he was able")
                                 :string-replacefirst  :string     '("ere Napoleon was able")
     :string    '(" " "\n" "foo\n\t\t\n")
                                 :string-replacefirst  :string     '("foo \t\t\n")
@@ -508,39 +559,39 @@
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:char   '(\e \f)
-     :string '("ere he was able")}           
-                                :string-replacechar       
+     :string '("ere he was able")}
+                                :string-replacechar
                                                   {:char '()
-                                                   :string '("frf hf was ablf")} 
+                                                   :string '("frf hf was ablf")}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:char   '(\space \•)
-     :string '("ere he was able")}           
-                                :string-replacechar       
+     :string '("ere he was able")}
+                                :string-replacechar
                                                   {:char '()
-                                                   :string '("ere•he•was•able")} 
+                                                   :string '("ere•he•was•able")}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:char   '(\z \q)
-     :string '("ere he was able")}           
-                                :string-replacechar       
+     :string '("ere he was able")}
+                                :string-replacechar
                                                   {:char '()
-                                                   :string '("ere he was able")} 
+                                                   :string '("ere he was able")}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;; missing arguments
     {:char   '()
-     :string '("ere he was able")}           
-                                :string-replacechar       
+     :string '("ere he was able")}
+                                :string-replacechar
                                                   {:char '()
-                                                   :string '("ere he was able")} 
+                                                   :string '("ere he was able")}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:char   '(\e)
-     :string '("ere he was able")}           
-                                :string-replacechar       
+     :string '("ere he was able")}
+                                :string-replacechar
                                                   {:char '(\e)
-                                                   :string '("ere he was able")} 
+                                                   :string '("ere he was able")}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:char   '(\e \f)
-     :string '()}           
-                                :string-replacechar       
+     :string '()}
+                                :string-replacechar
                                                   {:char '(\e \f)
                                                    :string '()})
 
@@ -555,39 +606,39 @@
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:char   '(\e \f)
-     :string '("ere he was able")}           
-                                :string-replacefirstchar       
+     :string '("ere he was able")}
+                                :string-replacefirstchar
                                                   {:char '()
-                                                   :string '("fre he was able")} 
+                                                   :string '("fre he was able")}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:char   '(\space \•)
-     :string '("ere he was able")}           
-                                :string-replacefirstchar       
+     :string '("ere he was able")}
+                                :string-replacefirstchar
                                                   {:char '()
-                                                   :string '("ere•he was able")} 
+                                                   :string '("ere•he was able")}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:char   '(\z \q)
-     :string '("ere he was able")}           
-                                :string-replacefirstchar       
+     :string '("ere he was able")}
+                                :string-replacefirstchar
                                                   {:char '()
-                                                   :string '("ere he was able")} 
+                                                   :string '("ere he was able")}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;; missing arguments
     {:char   '()
-     :string '("ere he was able")}           
-                                :string-replacefirstchar       
+     :string '("ere he was able")}
+                                :string-replacefirstchar
                                                   {:char '()
-                                                   :string '("ere he was able")} 
+                                                   :string '("ere he was able")}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:char   '(\e)
-     :string '("ere he was able")}           
-                                :string-replacefirstchar       
+     :string '("ere he was able")}
+                                :string-replacefirstchar
                                                   {:char '(\e)
-                                                   :string '("ere he was able")} 
+                                                   :string '("ere he was able")}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:char   '(\e \f)
-     :string '()}           
-                                :string-replacefirstchar       
+     :string '()}
+                                :string-replacefirstchar
                                                   {:char '(\e \f)
                                                    :string '()})
 
@@ -640,17 +691,17 @@
     {:string  '("foo")
      :scalar  '(1)
      :char    '(\O)}          :string-setchar        {:string '("fOo")
-                                                     :char '()}         
+                                                     :char '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:string  '("foo")
      :scalar  '(6)
      :char    '(\O)}          :string-setchar        {:string '("Ooo")
-                                                     :char '()}         
+                                                     :char '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:string  '("foo")
      :scalar  '(-2)
      :char    '(\O)}          :string-setchar        {:string '("fOo")
-                                                     :char '()}         
+                                                     :char '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:string  '("")
      :scalar  '(11)
@@ -691,7 +742,7 @@
     :string    '("foo bar")     :string-solid?  :boolean     '(false)
     :string    '("foo\nbar")    :string-solid?  :boolean     '(false)
     :string    '(" foo")        :string-solid?  :boolean     '(false)
-    ;; missing args  
+    ;; missing args
     :string    '()              :string-solid?  :boolean     '())
 
 
@@ -708,7 +759,7 @@
     :string    '("\n\n\n\n")    :string-spacey?  :boolean     '(true)
     :string    '("\n\n\n\n.")    :string-spacey?  :boolean    '(false)
     :string    '("")            :string-spacey?  :boolean     '(false)
-    ;; missing args  
+    ;; missing args
     :string    '()              :string-spacey?  :boolean     '())
 
 
@@ -721,7 +772,7 @@
     ;; chunks
     :string    '("a b c d e")   :string-splitonspaces  :string     '("a" "b" "c" "d" "e")
     :string    '(" foo ")       :string-splitonspaces  :string     '("" "foo")
-    :string    '("\na\tb\tc\n\n") 
+    :string    '("\na\tb\tc\n\n")
                                 :string-splitonspaces  :string   '("" "a" "b" "c")
     :string    '("\"\"")        :string-splitonspaces  :string     '("\"\"")
     :string    '("")            :string-splitonspaces  :string     '("")
@@ -739,23 +790,23 @@
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar  '(2 12)
-     :string   '("ere he was able")}           
-                                :string-substring       
-                                                  {:string '("e he was a")} 
+     :string   '("ere he was able")}
+                                :string-substring
+                                                  {:string '("e he was a")}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar  '(12 2)
-     :string   '("ere he was able")}           
-                                :string-substring       
-                                                  {:string '("e he was a")} 
+     :string   '("ere he was able")}
+                                :string-substring
+                                                  {:string '("e he was a")}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar  '(33 -712)                    ;; these get cropped to 0, count s
-     :string   '("ere he was able")}           
-                                :string-substring       
-                                                  {:string '("ere he was able")} 
+     :string   '("ere he was able")}
+                                :string-substring
+                                                  {:string '("ere he was able")}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:scalar  '(4 4)                    
-     :string   '("ere he was able")}           
-                                :string-substring       
+    {:scalar  '(4 4)
+     :string   '("ere he was able")}
+                                :string-substring
                                                   {:string '("")})
 
 
@@ -768,38 +819,38 @@
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar    '(8)
-     :string '("ere he was able")}           
-                                :string-take       
+     :string '("ere he was able")}
+                                :string-take
                                                   {:string '("ere he w")
-                                                   :scalar  '()} 
+                                                   :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar    '(-3)
-     :string '("ere he was able")}           
-                                :string-take       
+     :string '("ere he was able")}
+                                :string-take
                                                   {:string '("ere he was a")
-                                                   :scalar  '()} 
+                                                   :scalar  '()}
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar    '(99)
-     :string '("ere he was able")}           
-                                :string-take       
+     :string '("ere he was able")}
+                                :string-take
                                                   {:string '("ere he wa")
-                                                   :scalar  '()} 
+                                                   :scalar  '()}
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar    '(99)
-     :string '("")}           
-                                :string-take       
+     :string '("")}
+                                :string-take
                                                   {:string '("")
-                                                   :scalar  '()} 
+                                                   :scalar  '()}
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar    '()
-     :string '("ere he was able")}           
-                                :string-take       
+     :string '("ere he was able")}
+                                :string-take
                                                   {:string '("ere he was able")
-                                                   :scalar  '()} 
+                                                   :scalar  '()}
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar    '(99)
-     :string '()}           
-                                :string-take       
+     :string '()}
+                                :string-take
                                                   {:string '()
                                                    :scalar  '(99)})
 
@@ -843,7 +894,7 @@
     :string    '("o" "p")       :string-equal?      :boolean        '(false)
     :string    '("p" "o")       :string-equal?      :boolean        '(false)
     :string    '("o" "o")       :string-equal?      :boolean        '(true)
-    ;; missing args    
+    ;; missing args
     :string    '("p")           :string-equal?      :boolean        '()
     :string    '("p")           :string-equal?      :string         '("p")
     :string    '()              :string-equal?      :boolean        '()
@@ -860,7 +911,7 @@
     :string    '("y" "z")       :string-notequal?      :boolean        '(true)
     :string    '("z" "y")       :string-notequal?      :boolean        '(true)
     :string    '("y" "y")       :string-notequal?      :boolean        '(false)
-    ;; missing args    
+    ;; missing args
     :string    '("z")           :string-notequal?      :boolean        '()
     :string    '("z")           :string-notequal?      :string         '("z")
     :string    '()              :string-notequal?      :boolean        '()
@@ -886,7 +937,7 @@
     :string    '("abc" "ab")        :string<?      :boolean        '(true)
     :string    '("abc" "abc")       :string<?      :boolean        '(false)
     :string    '("" "")             :string<?      :boolean        '(false)
-    ;; missing args    
+    ;; missing args
     :string    '("def")             :string<?      :boolean        '()
     :string    '("def")             :string<?      :string         '("def")
     :string    '()                  :string<?      :boolean        '()
@@ -909,7 +960,7 @@
     :string    '("abc" "ab")        :string≤?      :boolean        '(true)
     :string    '("abc" "abc")       :string≤?      :boolean        '(true)
     :string    '("" "")             :string≤?      :boolean        '(true)
-    ;; missing args    
+    ;; missing args
     :string    '("def")             :string≤?      :boolean        '()
     :string    '("def")             :string≤?      :string         '("def")
     :string    '()                  :string≤?      :boolean        '()
@@ -933,7 +984,7 @@
     :string    '("abc" "ab")        :string≥?      :boolean        '(false)
     :string    '("abc" "abc")       :string≥?      :boolean        '(true)
     :string    '("" "")             :string≥?      :boolean        '(true)
-    ;; missing args    
+    ;; missing args
     :string    '("def")             :string≥?      :boolean        '()
     :string    '("def")             :string≥?      :string         '("def")
     :string    '()                  :string≥?      :boolean        '()
@@ -956,7 +1007,7 @@
     :string    '("abc" "ab")        :string>?      :boolean        '(false)
     :string    '("abc" "abc")       :string>?      :boolean        '(false)
     :string    '("" "")             :string>?      :boolean        '(false)
-    ;; missing args    
+    ;; missing args
     :string    '("def")             :string>?      :boolean        '()
     :string    '("def")             :string>?      :string         '("def")
     :string    '()                  :string>?      :boolean        '()
@@ -973,7 +1024,7 @@
     :string    '("foo" "bar")   :string-max      :string        '("foo")
     :string    '("bar" "foo")   :string-max      :string        '("foo")
     :string    '("foo" "foo")   :string-max      :string        '("foo")
-    ; ;; missing args    
+    ; ;; missing args
     :string    '("bar")         :string-max      :string        '("bar")
     :string    '()              :string-max      :string        '()
     )
@@ -989,7 +1040,7 @@
     :string    '("foo" "bar")    :string-min      :string        '("bar")
     :string    '("bar" "foo")    :string-min      :string        '("bar")
     :string    '("foo" "foo")    :string-min      :string        '("foo")
-    ; ;; missing args    
+    ; ;; missing args
     :string    '("bar")          :string-min      :string        '("bar")
     :string    '()               :string-min      :string        '()
     )

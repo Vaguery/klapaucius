@@ -548,8 +548,8 @@
   (fn
     [e [interpreter scratch] args fxn & {:keys [as]}]
     (do
-      (println
-        (str "Infinite or NaN result calculating " (:current-item interpreter) " with args " scratch))
+      ; (println
+      ;   (str "Infinite or NaN result calculating " (:current-item interpreter) " with args " scratch))
       [(add-error-message! interpreter (.getMessage e))
        (assoc scratch as nil)]
     )))
@@ -571,6 +571,10 @@
     )))
 
 
+(with-handler! #'calculate
+  "pre-defined REAL crashes due to mal-formed DSL syntax; this handler passes the exceptions out to the system (avoiding getting caught in the general case, below)"
+  #(re-find #"Wrong number of args" (.getMessage %))
+  (fn [e & args] (throw e)))
 
 
 
