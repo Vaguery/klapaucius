@@ -94,6 +94,16 @@
     (d/push-onto :scalar :result)))
 
 
+(def string->scalars
+  (core/build-instruction
+    string->scalars
+    "`:string->scalar` pops the top `:string` item and attempts to convert it into a `:scalars` vector. The rules (in order of precedence) are: (1) If the string is empty, an empty vector is pushed to `:scalars`. (2) If the string contains whitespace and any other characters, then it is broken into individual space-delimited tokens, and each of those is processed using the Clojure EDN reader as its standard. If no token produces any readable numeric result, an empty vector is pushed. Tokens that produce reader errors are ignored and skipped. Each whitespace-delimited numeric item is returned, in order, as part of a single `:scalars` result."
+    :tags #{:string :base :vector}
+    (d/consume-top-of :string :as :arg)
+    (d/calculate [:arg] #(clojure.string/split %1 #"\s+") :as :chunks)
+    (d/calculate [:chunks] #(valid-numbers-only %1) :as :numbers)
+    (d/calculate [:numbers] #(into [] %1) :as :result)
+    (d/push-onto :scalars :result)))
 
 
 (def exec-string-iterate
@@ -438,6 +448,7 @@
         (t/attach-instruction , exec->string)
         (t/attach-instruction , scalar->string)
         (t/attach-instruction , string->scalar)
+        (t/attach-instruction , string->scalars)
         (t/attach-instruction , exec-string-iterate)
         (t/attach-instruction , string-butlast)
         (t/attach-instruction , string-concat)

@@ -63,6 +63,25 @@
     :string    '(":foo")       :string->scalar     :scalar       '()
   )
 
+
+(tabular
+  (fact ":string->scalars returns a complete vector of numeric items in the string"
+    (register-type-and-check-instruction
+        ?set-stack ?items string-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items          ?instruction       ?get-stack     ?expected
+    :string    '("")            :string->scalars     :scalars       '([])
+    :string    '("8, 9, 10")    :string->scalars     :scalars       '([8 9 10])
+    :string    '("17.2 3.1 a")  :string->scalars     :scalars       '([17.2 3.1])
+    :string    '("nothing 5M")  :string->scalars     :scalars       '([5M])
+    :string    '("1e7 0x8 061") :string->scalars     :scalars       '([1.0E7 8 49])
+    :string    '("፹ 〺 Ⅸ ⅔")   :string->scalars     :scalars       '([])
+    :string    '("(->Complex -∞ 2/3)")
+                                :string->scalars     :scalars       '([2/3])
+  )
+
+
+
 (tabular
   (fact " :boolean->string, :code->string, :exec->string"
     (register-type-and-check-instruction
