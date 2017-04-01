@@ -34,6 +34,7 @@
   [prisoner]
   (println (str "\n\nrunning: " (:program prisoner)))
   (stress/run-program-in-standardized-interpreter
+    0 ;; dummy id
     (push/interpreter)
     (:program prisoner)
     (:bindings prisoner)
