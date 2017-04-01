@@ -1,14 +1,15 @@
 (ns push.instructions.base.string_test
-  (:require [push.interpreter.core :as i])
+  (:require [push.core :as push])
   (:use midje.sweet)
   (:use [push.util.test-helpers])
-  (:use [push.type.item.string])  ;; sets up string-type
+  (:use [push.type.item.string])
   )
 
 
 ;; a fixture
 
-(def huge-string (apply str (repeat 131070 "*")))
+(def teeny (push/interpreter :config {:max-collection-size 9}))
+
 
 ;; all the conversions
 
@@ -220,11 +221,29 @@
     ;; because Java is weird enough to let you inline backspace characters
     :string    '("\b8" "\n" )
                                 :string-concat  :string     '("\n\b8")
-    ;; length limit behavior
-    :string    (list huge-string huge-string)
-                                :string-concat  :string     '()
     ;; missing args
     :string    '("foo")         :string-concat  :string     '("foo"))
+
+
+
+(tabular
+  (fact ":string-concat checks for oversized results and pushes an `:error` if one arises"
+    (register-type-and-check-instruction-in-this-interpreter
+      teeny
+      ?set-stack ?items string-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack   ?items    ?instruction     ?get-stack     ?expected
+    :string     '("foo" "bar")
+                          :string-concat    :string
+                                                           '("barfoo")
+    :string     '("fools" "barge")
+                          :string-concat    :string
+                                                           '()
+    :string     '("fools" "barge")
+                          :string-concat    :error
+                                                           '({:item ":string-concat produced oversized result", :step 0})
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
 
 
 (tabular
@@ -536,15 +555,31 @@
                                 :string-replace  :string     '("bbbbb")
     :string    '("X" "" "aabbaaabbb")
                                 :string-replace  :string     '("XaXaXbXbXaXaXaXbXbXbX")
-    ;; size limit
-    :string    (list "XX" "-" huge-string) ;; no substitution
-                                :string-replace  :string     (list huge-string)
-    :string    (list "XX" "*" huge-string) ;; doubles length
-                                :string-replace  :string     '()
     ;; missing args
     :string    '("a" "b")       :string-replace  :string     '("a" "b")
     :string    '("a")           :string-replace  :string     '("a")
     :string    '("")            :string-replace  :string     '(""))
+
+
+(tabular
+  (fact ":string-replace checks for oversized results and pushes an `:error` if one arises"
+    (register-type-and-check-instruction-in-this-interpreter
+      teeny
+      ?set-stack ?items string-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack   ?items    ?instruction     ?get-stack     ?expected
+    :string     '("foo" "a" "aa")
+                          :string-replace    :string
+                                                           '("foofoo")
+    :string     '("foo" "a" "aaaa")
+                          :string-replace    :string
+                                                           '()
+    :string     '("foo" "a" "aaaa")
+                          :string-replace    :error
+                                                           '({:step 0, :item ":string-replace result too large"})
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
 
 
 (tabular

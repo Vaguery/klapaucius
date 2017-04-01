@@ -136,14 +136,21 @@
 (def string-concat
   (core/build-instruction
     string-concat
-    "`:string-concat` pops the top two `:string` items, and pushes the result of concatenating the top item at the end of the second item. If the result would be longer than :max-collection-size, it is discarded."
+    "`:string-concat` pops the top two `:string` items, and pushes the result of concatenating the top item at the end of the second item. If the result would be longer than :max-collection-size, it is discarded and an `:error` is pushed instead."
     :tags #{:string :base}
     (d/consume-top-of :string :as :arg2)
     (d/consume-top-of :string :as :arg1)
-    (d/calculate [:arg1 :arg2] #(s/join (list %1 (str %2))) :as :longer)
+    (d/calculate [:arg1 :arg2]
+      #(s/join (list %1 (str %2))) :as :longer)
     (d/save-max-collection-size :as :limit)
-    (d/calculate [:longer :limit] #(when (< (count %1) %2) %1) :as :result)
-    (d/push-onto :string :result)))
+    (d/calculate [:longer :limit]
+      #(when (< (count %1) %2) %1) :as :result)
+    (d/calculate [:longer :limit]
+      #(when-not (< (count %1) %2)
+        ":string-concat produced oversized result") :as :message)
+    (d/push-onto :string :result)
+    (d/record-an-error :from :message)
+    ))
 
 
 
@@ -276,7 +283,7 @@
 (def string-replace
   (core/build-instruction
     string-replace
-    "`:string-replace` pops the top three `:string` values; call them `C`, `B` and `A`, respectively. It pushes the `:string` which results when `B` is replaced with `C` everywhere it occurs as a substring in `A`. The maximum :string the interpreter's `:max-collection-size`; if this is exceeded, the result is discarded."
+    "`:string-replace` pops the top three `:string` values; call them `C`, `B` and `A`, respectively. It pushes the `:string` which results when `B` is replaced with `C` everywhere it occurs as a substring in `A`. The maximum :string the interpreter's `:max-collection-size`; if this is exceeded, the result is discarded and an `:error` is created."
     :tags #{:string :base}
     (d/consume-top-of :string :as :s3)
     (d/consume-top-of :string :as :s2)
@@ -285,7 +292,10 @@
     (d/save-max-collection-size :as :limit)
     (d/calculate [:replaced :limit]
       #(when (<= (count %1) %2) %1) :as :result)
-    (d/push-onto :string :result)))
+    (d/calculate [:replaced :limit]
+      #(when-not (<= (count %1) %2) ":string-replace result too large") :as :message)
+    (d/push-onto :string :result)
+    (d/record-an-error :from :message)))
 
 
 
