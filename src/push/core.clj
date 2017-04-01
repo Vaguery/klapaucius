@@ -23,7 +23,7 @@
 (defn merge-stacks
   "takes an interpreter and a hash-map of stacks, and merges the hash-map with those of the interpreter"
   [interpreter stacks]
-  (assoc interpreter :stacks (merge (:stacks interpreter) stacks)))
+  (update-in interpreter [:stacks] merge stacks))
 
 
 (defn interpreter

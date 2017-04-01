@@ -36,7 +36,7 @@
     "`:push-bindingset` pushes a set containing all the registered :bindings keywords to the :set stack"
     :tags #{:set :binding :introspection}
     (d/save-bindings :as :known)
-    (d/calculate [:known] #(into #{} %1) :as :bindingset)
+    (d/calculate [:known] set :as :bindingset)
     (d/push-onto :set :bindingset)))
 
 
@@ -70,7 +70,7 @@
     (d/save-bindings :as :known) ;; just the keys
     (d/calculate [:known :i]
         #(if (empty? %1) 0 (num/scalar-to-index %2 (count %1))) :as :idx)
-    (d/calculate [:known :idx] #(if (empty? %1) nil (nth (sort %1) %2)) :as :result)
+    (d/calculate [:known :idx] #(when (seq %1) (nth (sort %1) %2)) :as :result)
     (d/push-onto :ref :result)
     ))
 

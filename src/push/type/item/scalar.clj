@@ -28,11 +28,11 @@
     :tags #{:arithmetic :base :dangerous}
     (d/consume-top-of :scalar :as :arg2)
     (d/consume-top-of :scalar :as :arg1)
-    (d/calculate [:arg1 :arg2] #(+' %1 %2) :as :prelim)
+    (d/calculate [:arg1 :arg2] +' :as :prelim)
     (d/calculate [:prelim] #(if %1 (Double/isNaN %1) false) :as :nan)
-    (d/calculate [:nan :prelim] #(if %1 nil %2) :as :sum)
+    (d/calculate [:nan :prelim] #(when-not %1 %2) :as :sum)
     (d/push-onto :scalar :sum)
-    (d/calculate [:nan] #(if %1 ":scalar-add produced NaN" nil) :as :warning)
+    (d/calculate [:nan] #(when %1 ":scalar-add produced NaN") :as :warning)
     (d/record-an-error :from :warning)
     ))
 
@@ -45,10 +45,8 @@
     :tags #{:arithmetic :base :dangerous}
     (d/consume-top-of :scalar :as :arg)
     (d/calculate [:arg] #(or (> %1 1) (< %1 -1)) :as :bad-arg?)
-    (d/calculate [:bad-arg? :arg]
-      #(if %1 nil (Math/acos %2)) :as :result)
-    (d/calculate [:bad-arg?]
-      #(if %1 ":scalar-arccosine bad argument" nil) :as :warning)
+    (d/calculate [:bad-arg? :arg] #(when-not %1 (Math/acos %2)) :as :result)
+    (d/calculate [:bad-arg?] #(when %1 ":scalar-arccosine bad argument") :as :warning)
     (d/push-onto :scalar :result)
     (d/record-an-error :from :warning)))
 
@@ -61,10 +59,8 @@
     :tags #{:arithmetic :base :dangerous}
     (d/consume-top-of :scalar :as :arg)
     (d/calculate [:arg] #(or (> %1 1) (< %1 -1)) :as :bad-arg?)
-    (d/calculate [:bad-arg? :arg]
-      #(if %1 nil (Math/asin %2)) :as :result)
-    (d/calculate [:bad-arg?]
-      #(if %1 ":scalar-arcsine bad argument" nil) :as :warning)
+    (d/calculate [:bad-arg? :arg] #(when-not %1 (Math/asin %2)) :as :result)
+    (d/calculate [:bad-arg?] #(when %1 ":scalar-arcsine bad argument") :as :warning)
     (d/push-onto :scalar :result)
     (d/record-an-error :from :warning)))
 
@@ -104,10 +100,9 @@
     (d/consume-top-of :scalar :as :numerator)
     (d/calculate [:numerator :denominator] #(/ %1 %2) :as :quotient)
     (d/calculate [:quotient] #(if %1 (Double/isNaN %1) false) :as :nan)
-    (d/calculate [:nan :quotient] #(if %1 nil %2) :as :quotient)
+    (d/calculate [:nan :quotient] #(when-not %1 %2) :as :quotient)
     (d/push-onto :scalar :quotient)
-    (d/calculate [:nan]
-      #(if %1 ":scalar-divide produced NaN" nil) :as :warn2)
+    (d/calculate [:nan] #(when %1 ":scalar-divide produced NaN") :as :warn2)
     (d/record-an-error :from :warn2)
     ))
 
@@ -166,10 +161,8 @@
     :tags #{:arithmetic :base :dangerous}
     (d/consume-top-of :scalar :as :arg)
     (d/calculate [:arg] #( (complement pos?) %1) :as :bad-arg?)
-    (d/calculate [:bad-arg? :arg]
-      #(if %1 nil (Math/log %2)) :as :result)
-    (d/calculate [:bad-arg?]
-      #(if %1 ":scalar-ln bad argument" nil) :as :warning)
+    (d/calculate [:bad-arg? :arg] #(when-not %1 (Math/log %2)) :as :result)
+    (d/calculate [:bad-arg?] #(when %1 ":scalar-ln bad argument") :as :warning)
     (d/push-onto :scalar :result)
     (d/record-an-error :from :warning)))
 
@@ -183,10 +176,8 @@
     (d/consume-top-of :scalar :as :arg)
     (d/calculate [:arg]
       #(<= %1 -1) :as :bad-arg?)
-    (d/calculate [:bad-arg? :arg]
-      #(if %1 nil (Math/log1p %2)) :as :result)
-    (d/calculate [:bad-arg?]
-      #(if %1 ":scalar-ln1p bad argument" nil) :as :warning)
+    (d/calculate [:bad-arg? :arg] #(when-not %1 (Math/log1p %2)) :as :result)
+    (d/calculate [:bad-arg?] #(when %1 ":scalar-ln1p bad argument") :as :warning)
     (d/push-onto :scalar :result)
     (d/record-an-error :from :warning)))
 
@@ -201,10 +192,8 @@
     (d/consume-top-of :scalar :as :arg)
     (d/calculate [:arg]
       #( (complement pos?) %1) :as :bad-arg?)
-    (d/calculate [:bad-arg? :arg]
-      #(if %1 nil (Math/log10 %2)) :as :result)
-    (d/calculate [:bad-arg?]
-      #(if %1 ":scalar-log10 bad argument" nil) :as :warning)
+    (d/calculate [:bad-arg? :arg] #(when-not %1 (Math/log10 %2)) :as :result)
+    (d/calculate [:bad-arg?] #(when %1 ":scalar-log10 bad argument") :as :warning)
     (d/push-onto :scalar :result)
     (d/record-an-error :from :warning)))
 
@@ -218,12 +207,11 @@
 
     (d/consume-top-of :scalar :as :denominator)
     (d/consume-top-of :scalar :as :numerator)
-    (d/calculate [:numerator :denominator] #(mod %1 %2) :as :remainder)
+    (d/calculate [:numerator :denominator] mod :as :remainder)
     (d/calculate [:remainder] #(if %1 (Double/isNaN %1) false) :as :nan)
-    (d/calculate [:nan :remainder] #(if %1 nil %2) :as :remainder)
+    (d/calculate [:nan :remainder] #(when-not %1 %2) :as :remainder)
     (d/push-onto :scalar :remainder)
-    (d/calculate [:nan]
-      #(if %1 ":scalar-modulo produced NaN" nil) :as :warn2)
+    (d/calculate [:nan] #(when %1 ":scalar-modulo produced NaN") :as :warn2)
     (d/record-an-error :from :warn2)
     ))
 
@@ -237,11 +225,10 @@
     :tags #{:arithmetic :base :dangerous}
     (d/consume-top-of :scalar :as :arg2)
     (d/consume-top-of :scalar :as :arg1)
-    (d/calculate [:arg1 :arg2] #(*' %1 %2) :as :prelim)
+    (d/calculate [:arg1 :arg2] *' :as :prelim)
     (d/calculate [:prelim] #(if %1 (Double/isNaN %1) false) :as :nan)
-    (d/calculate [:nan :prelim] #(if %1 nil %2) :as :product)
-    (d/calculate [:nan]
-      #(if %1 ":scalar-multiply produced NaN" nil) :as :warning)
+    (d/calculate [:nan :prelim] #(when-not %1 %2) :as :product)
+    (d/calculate [:nan] #(when %1 ":scalar-multiply produced NaN") :as :warning)
     (d/push-onto :scalar :product)
     (d/record-an-error :from :warning)
     ))
@@ -279,17 +266,14 @@
              (math/infinite? %2) false
              (oversized-for-scalar-power? %1 %2) true
              :else false) :as :oversized?)
-    (d/calculate [:base :exp :oversized?]
-      #(if %3 nil (nt/expt %1 %2)) :as :prelim)
+    (d/calculate [:base :exp :oversized?] #(when-not %3 (nt/expt %1 %2)) :as :prelim)
     (d/calculate [:prelim]
       #(or (nil? %1)
            (math/infinite? %1)
            (Double/isNaN %1)
            ) :as :bad-result)
-    (d/calculate [:bad-result :prelim]
-      #(if %1 nil %2) :as :result)
-    (d/calculate [:bad-result]
-      #(if %1 ":scalar-power out of bounds") :as :warning)
+    (d/calculate [:bad-result :prelim] #(when-not %1 %2) :as :result)
+    (d/calculate [:bad-result] #(when %1 ":scalar-power out of bounds") :as :warning)
     (d/push-onto :scalar :result)
     (d/record-an-error :from :warning)
   ))
@@ -330,8 +314,7 @@
     "`:scalar-sqrt` pops the top `:scalar` value. If it's not negative, its square root is pushed to `:scalar`; if it is complex, then a `:complex` is pushed; otherwise, the argument is consumed and an error is pushed to the `:error` stack."
     :tags #{:arithmetic :base :dangerous}
     (d/consume-top-of :scalar :as :arg)
-    (d/calculate [:arg]
-      #(neg? %1) :as :complex?)
+    (d/calculate [:arg] neg? :as :complex?)
     (d/calculate [:complex? :arg]
       #(if %1 (complex/complexify 0 (nt/sqrt (nt/abs %2))) (nt/sqrt %2)) :as :result)
     (d/push-onto :exec :result)))
@@ -345,11 +328,10 @@
     :tags #{:arithmetic :base :dangerous}
     (d/consume-top-of :scalar :as :arg2)
     (d/consume-top-of :scalar :as :arg1)
-    (d/calculate [:arg1 :arg2] #(-' %1 %2) :as :prelim)
+    (d/calculate [:arg1 :arg2] -' :as :prelim)
     (d/calculate [:prelim] #(if %1 (Double/isNaN %1) false) :as :nan)
-    (d/calculate [:nan :prelim] #(if %1 nil %2) :as :diff)
-    (d/calculate [:nan]
-      #(if %1 ":scalar-subtract produced NaN" nil) :as :warning)
+    (d/calculate [:nan :prelim] #(when-not %1 %2) :as :diff)
+    (d/calculate [:nan] #(when %1 ":scalar-subtract produced NaN") :as :warning)
     (d/push-onto :scalar :diff)
     (d/record-an-error :from :warning)
     ))
@@ -364,10 +346,8 @@
     (d/consume-top-of :scalar :as :arg)
     (d/calculate [:arg]
       #(Double/isNaN (Math/tan %1)) :as :bad-arg?)
-    (d/calculate [:bad-arg? :arg]
-      #(if %1 nil (Math/tan %2)) :as :result)
-    (d/calculate [:bad-arg?]
-      #(if %1 ":scalar-tangent bad argument" nil) :as :warning)
+    (d/calculate [:bad-arg? :arg] #(when-not %1 (Math/tan %2)) :as :result)
+    (d/calculate [:bad-arg?] #(when %1 ":scalar-tangent bad argument") :as :warning)
     (d/push-onto :scalar :result)
     (d/record-an-error :from :warning)))
 
@@ -493,7 +473,7 @@
     "`:char->integer` pops the top `:char` item, and converts it to an (integer) index"
     :tags #{:base :conversion}
     (d/consume-top-of :char :as :arg1)
-    (d/calculate [:arg1] #(long %1) :as :int)
+    (d/calculate [:arg1] long :as :int)
     (d/push-onto :scalar :int)))
 
 
@@ -529,7 +509,7 @@
     "`:scalar-integer?` pops the top `:scalar` item, and pushes `true` if it is a Clojure integer"
     :tags #{:numeric :predicate}
     (d/consume-top-of :scalar :as :arg)
-    (d/calculate [:arg] #(integer? %1) :as :result)
+    (d/calculate [:arg] integer? :as :result)
     (d/push-onto :boolean :result)))
 
 
@@ -540,7 +520,7 @@
     "`:scalar-ratio?` pops the top `:scalar` item, and pushes `true` if it is a ratio"
     :tags #{:numeric :predicate}
     (d/consume-top-of :scalar :as :arg)
-    (d/calculate [:arg] #(ratio? %1) :as :result)
+    (d/calculate [:arg] ratio? :as :result)
     (d/push-onto :boolean :result)))
 
 

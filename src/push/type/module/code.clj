@@ -26,7 +26,7 @@
     (d/calculate [:arg2] #(if (coll? %1) %1 (list %1)) :as :list2)
     (d/calculate [:list1 :list2] #(fix/list! (concat %1 %2)) :as :both)
     (d/save-max-collection-size :as :limit)
-    (d/calculate [:both :limit] #(if (< (fix/count-code-points %1) %2) %1 nil) :as :result)
+    (d/calculate [:both :limit] #(when (< (fix/count-code-points %1) %2) %1) :as :result)
     (d/push-onto :code :result)))
 
 
@@ -49,7 +49,7 @@
     (d/calculate [:list :item1] #(fix/list! (conj %1 %2)) :as :conjed)
     (d/save-max-collection-size :as :limit)
     (d/calculate [:conjed :limit]
-      #(if (< (fix/count-code-points %1) %2) %1 nil) :as :result)
+      #(when (< (fix/count-code-points %1) %2) %1) :as :result)
     (d/push-onto :code :result)))
 
 
@@ -107,7 +107,7 @@
     :tags #{:complex :base}
     (d/consume-top-of :code :as :do-this)
     (d/consume-top-of :scalar :as :counter)
-    (d/calculate [:counter] #(pos? %1) :as :go?)
+    (d/calculate [:counter] pos? :as :go?)
     (d/calculate
       [:do-this :counter :go?]
       #(if %3
@@ -158,7 +158,7 @@
     (d/consume-top-of :code :as :do-this)
     (d/consume-top-of :scalar :as :count)
     (d/calculate [:count] #((complement pos?) %1) :as :done?)
-    (d/calculate [:count] #(dec' %1) :as :next)
+    (d/calculate [:count] dec' :as :next)
     (d/calculate
       [:do-this :count :next :done?]
       #(if %4
@@ -230,7 +230,8 @@
     (d/calculate [:i :size] #(n/scalar-to-index %1 %2) :as :idx)
     (d/calculate [:a :b :idx] #(fix/replace-nth-in-code %2 %1 %3) :as :replaced)
     (d/save-max-collection-size :as :limit)
-    (d/calculate [:replaced :limit] #(if (< (fix/count-code-points %1) %2) %1 nil) :as :result)
+    (d/calculate [:replaced :limit]
+      #(when (< (fix/count-code-points %1) %2) %1) :as :result)
     (d/push-onto :code :result)))
 
 
@@ -253,10 +254,10 @@
     :tags #{:complex :base}
     (d/consume-top-of :code :as :arg2)
     (d/consume-top-of :code :as :arg1)
-    (d/calculate [:arg1 :arg2] #(list %1 %2) :as :both)
+    (d/calculate [:arg1 :arg2] list :as :both)
     (d/save-max-collection-size :as :limit)
     (d/calculate [:both :limit]
-      #(if (< (fix/count-code-points %1) %2) %1 nil) :as :result)
+      #(when (< (fix/count-code-points %1) %2) %1) :as :result)
     (d/push-onto :code :result)))
 
 
@@ -282,7 +283,7 @@
       :as :continuation)
     (d/save-max-collection-size :as :limit)
     (d/calculate [:continuation :limit]
-      #(if (< (fix/count-code-points %1) %2) %1 nil) :as :result)
+      #(when (< (fix/count-code-points %1) %2) %1) :as :result)
     (d/push-onto :exec :result)))
 
 
@@ -307,7 +308,7 @@
       :as :continuation)
     (d/save-max-collection-size :as :limit)
     (d/calculate [:continuation :limit]
-      #(if (< (fix/count-code-points %1) %2) %1 nil) :as :result)
+      #(when (< (fix/count-code-points %1) %2) %1) :as :result)
     (d/push-onto :exec :result)))
 
 
@@ -343,7 +344,7 @@
     (d/calculate [:c] #(if (seq? %1) %1 (list %1)) :as :list)
     (d/calculate [:list :i]
       #(if (empty? %1) 0 (n/scalar-to-index %2 (count %1))) :as :idx)
-    (d/calculate [:list :idx] #(if (empty? %1) nil (nth %1 %2)) :as :result)
+    (d/calculate [:list :idx] #(when (seq %1) (nth %1 %2)) :as :result)
     (d/push-onto :code :result)))
 
 
@@ -415,16 +416,17 @@
     (d/consume-top-of :code :as :arg3)
     (d/consume-top-of :code :as :arg2)
     (d/consume-top-of :code :as :arg1)
-    (d/calculate [:arg1 :arg2 :arg3] #(fix/replace-in-code %1 %2 %3) :as :replaced)
+    (d/calculate [:arg1 :arg2 :arg3] fix/replace-in-code :as :replaced)
     (d/save-max-collection-size :as :limit)
-    (d/calculate [:replaced :limit] #(if (< (fix/count-code-points %1) %2) %1 nil) :as :result)
+    (d/calculate [:replaced :limit]
+      #(when (< (fix/count-code-points %1) %2) %1) :as :result)
     (d/push-onto :code :result)))
 
 
 
 (def code-wrap (t/simple-1-in-1-out-instruction
   "`:code-wrap` puts the top item on the `:code` stack into a one-element list"
-  :code "wrap" #(list %1)))
+  :code "wrap" list))
 
 
 

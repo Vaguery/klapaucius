@@ -21,7 +21,7 @@
   (let [is-here (boolean (some #{target} coll))
         [front back] (split-with (complement #{target}) coll)
         new-tail (if is-here (conj (rest back) substitute) back)]
-    (into [] (concat front new-tail))))
+    (vec (concat front new-tail))))
 
 
 
@@ -30,7 +30,7 @@
   (let [checker (:recognizer (:router type))]
     (and  (vector? item)
           (boolean (seq item))
-          (every? #(checker %) item))))
+          (every? checker item))))
 
 
 ;; EXTERNAL TYPES
@@ -666,7 +666,7 @@
 
 (defn filter-vector-with-vector
   [v f]
-  (into [] (filter #((set f) %1) v)))
+  (filterv #((set f) %) v))
 
 
 
@@ -690,7 +690,7 @@
 
 (defn remove-vector-with-vector
   [v f]
-  (into [] (remove #((set f) %1) v)))
+  (vec (remove #((set f) %1) v)))
 
 
 

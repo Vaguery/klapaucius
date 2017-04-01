@@ -16,9 +16,9 @@
     (d/consume-top-of :scalar :as :arg)
     (d/calculate [:arg]
       #(< (math/abs %1) Long/MAX_VALUE) :as :valid)
-    (d/calculate [:valid :arg] #(if %1 (long (rand %2)) nil) :as :result)
+    (d/calculate [:valid :arg] #(when %1 (long (rand %2))) :as :result)
     (d/calculate [:valid]
-      #(if %1 nil ":integer-uniform argument out of range") :as :warning)
+      #(when-not %1 ":integer-uniform argument out of range") :as :warning)
     (d/push-onto :scalar :result)
     (d/record-an-error :from :warning)))
 
@@ -32,9 +32,9 @@
     (d/consume-top-of :scalar :as :arg)
     (d/calculate [:arg]
       #(< (math/abs %1) Double/MAX_VALUE) :as :valid)
-    (d/calculate [:valid :arg] #(if %1 (rand %2) nil) :as :result)
+    (d/calculate [:valid :arg] #(when %1 (rand %2)) :as :result)
     (d/calculate [:valid]
-      #(if %1 nil ":float-uniform argument out of range") :as :warning)
+      #(when-not %1 ":float-uniform argument out of range") :as :warning)
     (d/push-onto :scalar :result)
     (d/record-an-error :from :warning)))
 

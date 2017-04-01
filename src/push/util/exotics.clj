@@ -30,7 +30,7 @@
         extended  (extend-short-list digits (+ (count digits) (dec window)))
         windows   (partition window 1 extended)
         sums      (map #(apply + (map char-to-digits %)) windows)
-        rewrote   (apply str (map #(mod % 10) sums))
+        rewrote   (clojure.string/join (map #(mod % 10) sums))
         chomped   (clojure.string/replace-first rewrote #"(^0+)" "")
         as-number (eval (read-string (if (empty? chomped) "0" chomped)))]
     (if (num/infinite? number)
@@ -55,7 +55,7 @@
       (let [len       (nth (iterate (partial * 2) 1) bits)
             seed      (.toString (biginteger (nt/abs i)) 2)
             shortfall (max 0 (- len (count seed)))]
-        (into []
+        (vec
           (take len
             (reverse
               (map

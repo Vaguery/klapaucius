@@ -29,15 +29,15 @@
   [pushtype]
   (let [typename     (:name pushtype)
         pieces       (:manifest pushtype)
-        argvector    (into [] (keys pieces))
+        argvector    (vec (keys pieces))
         argsymbols   (reduce (fn [s i] (conj s (symbol (name i))))
-                        [] 
+                        []
                         argvector)
         maker        (:builder pushtype)]
     (list
-      `(calculate 
-          ~argvector 
-          (fn ~argsymbols (apply ~maker ~argsymbols)) 
+      `(calculate
+          ~argvector
+          (fn ~argsymbols (apply ~maker ~argsymbols))
           :as :result)
       `(push-onto ~typename :result)
       )
@@ -55,7 +55,7 @@
         manifesttring (component-list pushtype)]
     (if (or (nil? manifest) (nil? (:builder pushtype)))
       (throw (Exception. "a make instruction cannot be constructed for a type lacking a :manifest or :builder value"))
-      (eval 
+      (eval
         (concat
           (list
             `build-instruction
@@ -71,7 +71,7 @@
   "Takes a pushtype, and returns a list containing one `calculate` and one `push-onto` DSL command, which constructs a code block from the named keys in the type's `:manifest` field. The pushtype being broken should _probably_ be a Clojure `record`."
   [pushtype]
   (let [pieces       (:manifest pushtype)
-        argvector    (into [] (reverse (keys pieces)))]
+        argvector    (vec (reverse (keys pieces)))]
     (list
       `(calculate [:arg] #(map (into {} %1) ~argvector) :as :continuation)
       `(push-onto :exec :continuation))
@@ -87,14 +87,12 @@
         manifest (:manifest pushtype)]
     (if (or (nil? manifest) (nil? (:builder pushtype)))
       (throw (Exception. "a manifest instruction cannot be constructed for a type lacking a :manifest or :builder value"))
-      (eval 
+      (eval
         (concat
           (list
             `build-instruction
             instruction-name
-            (str "`:" instruction-name "` constructs a new code block from the component parts of the top `" typename "` item (in the order '(" (apply str (interpose " " (keys manifest))) ") and pushes that onto the `:exec` stack.")
+            (str "`:" instruction-name "` constructs a new code block from the component parts of the top `" typename "` item (in the order '(" (clojure.string/join " "  (keys manifest)) ") and pushes that onto the `:exec` stack.")
             `(consume-top-of ~typename :as :arg))
           (invoke-breaker pushtype)
         )))))
-
-

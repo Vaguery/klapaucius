@@ -20,8 +20,8 @@
     (d/consume-top-of :complex :as :arg1)
     (d/calculate [:arg1 :arg2] #(complex/complex-sum %1 %2) :as :sum)
     (d/calculate [:sum] #(if %1 (complex/complex-NaN? %1) false) :as :nan)
-    (d/calculate [:nan :sum] #(if %1 nil %2) :as :sum)
-    (d/calculate [:nan] #(if %1 ":complex-add produced NaN" nil) :as :warning)
+    (d/calculate [:nan :sum]#(when-not %1 %2):as :sum)
+    (d/calculate [:nan] #(when %1 ":complex-add produced NaN") :as :warning)
     (d/push-onto :complex :sum)
     (d/record-an-error :from :warning)
     ))
@@ -53,10 +53,10 @@
       #(complex/complex-quotient %1 %2) :as :quotient)
     (d/calculate [:quotient]
       #(if %1 (complex/complex-NaN? %1) false) :as :nan)
-    (d/calculate [:nan :quotient] #(if %1 nil %2) :as :quotient)
+    (d/calculate [:nan :quotient] #(when-not %1 %2) :as :quotient)
     (d/push-onto :complex :quotient)
     (d/calculate [:nan]
-      #(if %1 ":complex-divide produced NaN" nil) :as :warn2)
+      #(when %1 ":complex-divide produced NaN") :as :warn2)
     (d/record-an-error :from :warn2)
     ))
 
@@ -85,9 +85,8 @@
     (d/consume-top-of :complex :as :arg1)
     (d/calculate [:arg1 :arg2] #(complex/complex-product %1 %2) :as :prelim)
     (d/calculate [:prelim] #(if %1 (complex/complex-NaN? %1) false) :as :nan)
-    (d/calculate [:nan :prelim] #(if %1 nil %2) :as :product)
-    (d/calculate [:nan]
-      #(if %1 ":complex-multiply produced NaN" nil) :as :warning)
+    (d/calculate [:nan :prelim]#(when-not %1 %2):as :product)
+    (d/calculate [:nan] #(when %1 ":complex-multiply produced NaN") :as :warning)
     (d/push-onto :complex :product)
     (d/record-an-error :from :warning)
     ))
@@ -118,9 +117,8 @@
     (d/calculate [:arg]
         #(complex/complex-quotient (complex/complexify 1) %1) :as :prelim)
     (d/calculate [:prelim] #(if %1 (complex/complex-NaN? %1) false) :as :nan)
-    (d/calculate [:nan :prelim] #(if %1 nil %2) :as :product)
-    (d/calculate [:nan]
-      #(if %1 ":complex-reciprocal produced NaN" nil) :as :warning)
+    (d/calculate [:nan :prelim]#(when-not %1 %2):as :product)
+    (d/calculate [:nan] #(when %1 ":complex-reciprocal produced NaN") :as :warning)
     (d/push-onto :complex :product)
     (d/record-an-error :from :warning)
     ))
@@ -167,8 +165,8 @@
     (d/consume-top-of :complex :as :arg1)
     (d/calculate [:arg1 :arg2] #(complex/complex-diff %1 %2) :as :diff)
     (d/calculate [:diff] #(if %1 (complex/complex-NaN? %1) false) :as :nan)
-    (d/calculate [:nan :diff] #(if %1 nil %2) :as :diff)
-    (d/calculate [:nan] #(if %1 ":complex-subtract produced NaN" nil) :as :warning)
+    (d/calculate [:nan :diff]#(when-not %1 %2):as :diff)
+    (d/calculate [:nan] #(when %1 ":complex-subtract produced NaN") :as :warning)
     (d/push-onto :complex :diff)
     (d/record-an-error :from :warning)
     ))
@@ -218,7 +216,7 @@
         aspects/make-set-able
         aspects/make-storable
         aspects/make-taggable
-        aspects/make-visible 
+        aspects/make-visible
         (t/attach-instruction , complex-add)
         (t/attach-instruction , complex-conjugate)
         (t/attach-instruction , complex-divide)
@@ -233,4 +231,3 @@
         (t/attach-instruction , scalar-complexify)
 
   ))
-

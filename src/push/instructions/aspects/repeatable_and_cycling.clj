@@ -24,9 +24,8 @@
 (defn dissect-collection
   "Takes an item that is a collection and produces a 'dissected list' composed of `(first item)` and `(rest item)`, or returns nil if that is imposeible."
   [item]
-  (if (splittable? item)
-    (list (first item) (rest item))
-    nil))
+  (when (splittable? item)
+    (list (first item) (rest item))))
 
 
 (defn dissect-step
@@ -34,17 +33,15 @@
   [item-and-items]
   (let [item  (first item-and-items)
         items (second item-and-items)]
-    (if (splittable? items)
-      (list (first items) (drop 1 items))
-      nil)))
+    (when (splittable? items)
+      (list (first items) (drop 1 items)))))
 
 
 (defn cycle-collection
   "Takes an item and attempts to produce an initial :cycler item's :state tuple. Returns `nil` if it's not possible."
   [item]
-  (if (splittable? item)
-    (list (first item) (util/list! (concat (drop 1 item) (take 1 item))))
-    nil))
+  (when (splittable? item)
+    (list (first item) (util/list! (concat (drop 1 item) (take 1 item))))))
 
 
 (defn cycle-step
@@ -52,16 +49,16 @@
   [item-and-items]
   (let [item  (first item-and-items)
         items (second item-and-items)]
-    (if (splittable? items)
+    (when (splittable? items)
       (list (first items) (util/list! (concat (drop 1 items) (take 1 items))))
-      nil)))
+      )))
 
 
 (defn rand-nth-seq-function
   [items]
-  (if (splittable? items)
+  (when (splittable? items)
     (fn [_] (rand-nth (seq items)))
-    nil))
+    ))
 
 
 ;; CYCLER INSTRUCTIONS

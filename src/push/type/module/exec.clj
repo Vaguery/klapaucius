@@ -145,7 +145,7 @@
     (d/consume-top-of :exec :as :a)
     (d/consume-top-of :exec :as :b)
     (d/consume-top-of :exec :as :c)
-    (d/calculate [:b :c] #(list %1 %2) :as :bc)
+    (d/calculate [:b :c] list :as :bc)
     (d/push-onto :exec :bc)
     (d/push-onto :exec :c)
     (d/push-onto :exec :a)))
@@ -160,7 +160,7 @@
     :tags #{:complex :base}
     (d/consume-top-of :exec :as :do-this)
     (d/consume-top-of :boolean :as :really?)
-    (d/calculate [:do-this :really?] #(if %2 %1 nil) :as :continuation)
+    (d/calculate [:do-this :really?] #(when %2 %1) :as :continuation)
     (d/push-onto :exec :continuation)))
 
 

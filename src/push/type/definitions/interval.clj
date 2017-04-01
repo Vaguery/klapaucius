@@ -127,7 +127,7 @@
 (defn interval-intersection
   "Takes two Interval records, and returns a new one that contains their intersection, or nil if there is none."
   [i1 i2]
-  (if (interval-overlap? i1 i2)
+  (when (interval-overlap? i1 i2)
     (let [min1 (:min i1)
           min2 (:min i2)
           max1 (:max i1)
@@ -136,7 +136,7 @@
                     first
                     [ [min1 (:min-open? i1)]
                       [min2 (:min-open? i2)]
-                      [max1 (:max-open? i1)] 
+                      [max1 (:max-open? i1)]
                       [max2 (:max-open? i2)]])
           new-min (nth sorted 1)
           new-max (nth sorted 2)
@@ -150,7 +150,7 @@
         :max-open? (if (= max1 max2)
                        (or (:max-open? i1) (:max-open? i2))
                        (second new-max))))
-    nil))
+                       ))
 
 
 
@@ -202,7 +202,7 @@
                   first
                   [ [min1 (:min-open? i1)]
                     [min2 (:min-open? i2)]
-                    [max1 (:max-open? i1)] 
+                    [max1 (:max-open? i1)]
                     [max2 (:max-open? i2)]])
         new-min (first sorted)
         new-max (last sorted)]

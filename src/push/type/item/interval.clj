@@ -18,7 +18,7 @@
     (consume-top-of :interval :as :i2)
     (consume-top-of :interval :as :i1)
     (calculate [:i1 :i2]
-        #(interval/make-interval 
+        #(interval/make-interval
             (+' (:min %1) (:min %2))
             (+' (:max %1) (:max %2))
             :min-open? (or (:min-open? %1) (:min-open? %2))
@@ -60,7 +60,7 @@
         (:max %2)
         :min-open? (:max-open? %1)
         :max-open? (:max-open? %2)) :as :last)
-    (calculate [:first :outer :inner :last] #(list %1 %2 %3 %4) :as :foil)
+    (calculate [:first :outer :inner :last] list :as :foil)
     (push-onto :exec :foil)
     ))
 
@@ -108,7 +108,7 @@
     (consume-top-of :interval :as :i2)
     (consume-top-of :interval :as :i1)
     (calculate [:i1 :i2]
-        #(interval/make-interval 
+        #(interval/make-interval
             (min (:min %1) (:min %2))
             (max (:max %1) (:max %2))
             :min-open? (and (:min-open? %1) (:min-open? %2))
@@ -152,7 +152,7 @@
     "`:interval-min` pops the top `:interval` item and pushes its `:min` value to `:scalar`."
     :tags #{:interval}
     (consume-top-of :interval :as :i)
-    (calculate [:i] #(:min %1) :as :result)
+    (calculate [:i] :min :as :result)
     (push-onto :scalar :result)))
 
 
@@ -164,7 +164,7 @@
     "`:interval-max` pops the top `:interval` item and pushes its `:max` value to `:scalar`."
     :tags #{:interval}
     (consume-top-of :interval :as :i)
-    (calculate [:i] #(:max %1) :as :result)
+    (calculate [:i] :max :as :result)
     (push-onto :scalar :result)))
 
 
@@ -252,7 +252,7 @@
     (consume-top-of :boolean :as :min?)
     (consume-top-of :interval :as :i)
     (calculate [:i :min? :max?]
-        #(interval/make-interval 
+        #(interval/make-interval
             (:min %1) (:max %1) :min-open? %2 :max-open? %3) :as :result)
     (push-onto :interval :result)
     ))
@@ -355,7 +355,7 @@
     (consume-top-of :interval :as :i2)
     (consume-top-of :interval :as :i1)
     (calculate [:i1 :i2]
-        #(interval/make-interval 
+        #(interval/make-interval
             (-' (:min %1) (:max %2))
             (-' (:max %1) (:min %2))
             :min-open? (or (:min-open? %1) (:max-open? %2))
@@ -389,8 +389,7 @@
     (consume-top-of :interval :as :allowed)
     (consume-top-of :scalars :as :vector)
     (calculate [:vector :allowed]
-        #(into []
-          (filter (fn [n] (interval/interval-include? %2 n)) %1)) :as :result)
+        #(filterv (fn [n] (interval/interval-include? %2 n)) %1) :as :result)
     (push-onto :scalars :result)
     ))
 
@@ -405,7 +404,7 @@
     (consume-top-of :interval :as :allowed)
     (consume-top-of :scalars :as :vector)
     (calculate [:vector :allowed]
-        #(into []
+        #(vec
           (remove (fn [n] (interval/interval-include? %2 n)) %1)) :as :result)
     (push-onto :scalars :result)
     ))
@@ -421,9 +420,8 @@
     (consume-top-of :scalars :as :vector)
     (calculate [:vector :i]
         #(list
-          (into []
-            (filter (fn [n] (interval/interval-include? %2 n)) %1))
-          (into []
+          (filterv (fn [n] (interval/interval-include? %2 n)) %1)
+          (vec
             (remove (fn [n] (interval/interval-include? %2 n)) %1))) :as :result)
     (push-onto :exec :result)
     ))
@@ -511,7 +509,7 @@
         aspects/make-set-able
         aspects/make-storable
         aspects/make-taggable
-        aspects/make-visible 
+        aspects/make-visible
         (attach-instruction , interval-add)
         (attach-instruction , interval-crossover)
         (attach-instruction , interval-divide)
@@ -541,4 +539,3 @@
         (attach-instruction , tagspace-remove)
         (attach-instruction , tagspace-split)
   ))
-

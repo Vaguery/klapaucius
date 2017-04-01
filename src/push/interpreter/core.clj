@@ -13,25 +13,15 @@
 (defn append-to-record
   "Appends the new thing to the collection stored under the indicated key, in the interpreter passed in"
   [interpreter key new-thing]
-  (assoc
-    interpreter
-    key
-    (conj
-      (key interpreter)
-      new-thing
-      )))
+  (update-in interpreter [key] conj new-thing))
 
 
 (defn merge-into-record
   "Merges the new map with the map stored under the indicated key, in the interpreter passed in"
   [interpreter keyname new-map]
-  (assoc
-    interpreter
-    keyname
-    (merge
-      new-map
-      (keyname interpreter)
-      )))
+  (assoc interpreter keyname
+    (merge new-map (keyname interpreter)
+    )))
 
 
 (defn register-type
@@ -57,21 +47,13 @@
 (defn register-types
   "Takes an Interpreter record, and a list of PushType records. Calls `register-type` on each of the types in turn."
   [interpreter types]
-  (reduce
-    #(register-type %1 %2)
-    interpreter
-    types
-    ))
+  (reduce register-type interpreter types))
 
 
 (defn register-modules
   "Takes an Interpreter record, and a list of modules. Calls `register-module` on each of those in turn."
   [interpreter modules]
-  (reduce
-    #(register-module %1 %2)
-    interpreter
-    modules
-    ))
+  (reduce register-module interpreter modules))
 
 
 (defn bind-value
@@ -110,10 +92,7 @@
     (vector? values)
       (reduce (partial bind-input) interpreter values)
    (map? values)
-    (reduce-kv
-      (fn [i k v] (bind-input i k v))
-      interpreter
-      values)
+    (reduce-kv bind-input interpreter values)
     :else (throw (Exception. "cannot bind inputs"))))
 
 
@@ -388,7 +367,7 @@
   "takes an Interpreter and increments its :counter (without otherwise
   changing it)"
   [interpreter]
-  (assoc interpreter :counter (inc (:counter interpreter))))
+  (update-in interpreter [:counter] inc))
 
 
 (defn step-limit

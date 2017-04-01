@@ -7,8 +7,6 @@
 
 
 (def error-module
-  ( ->  (t/make-module  :error
-                        :attributes #{:internal :base})
-        aspects/make-visible
-        ))
-
+  (aspects/make-visible
+    (t/make-module :error
+                   :attributes #{:internal :base})))

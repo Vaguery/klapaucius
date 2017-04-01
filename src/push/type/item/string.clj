@@ -2,7 +2,7 @@
   (:require [push.instructions.core :as core]
             [push.type.core :as t]
             [push.instructions.dsl :as d]
-            [clojure.string :as strings]
+            [clojure.string :as s]
             [push.instructions.aspects :as aspects]
             [push.util.numerics :as num]
             [clojure.edn :as edn]
@@ -35,7 +35,7 @@
   [string]
   (->> string
        (replace regex-char-esc-smap)
-       (strings/join)
+       (s/join)
        re-pattern))
 
 
@@ -56,7 +56,7 @@
            "` stack and converts it to a `:string` (using Clojure's `str` function)")
       :tags #{:string :base :conversion}
       `(d/consume-top-of ~stackname :as :arg)
-      '(d/calculate [:arg] #(str %1) :as :printed)
+      '(d/calculate [:arg] str :as :printed)
       '(d/push-onto :string :printed)))))
 
 
@@ -88,9 +88,9 @@
     "`:string->scalar` pops the top `:string` item and attempts to convert it into a `:scalar` value. The rules (in order of precedence) are: (1) If the string is empty, there is no result (no `:scalar` is pushed). (2) If the string contains whitespace, then it is broken into individual space-delimited tokens, and each of those is processed as follows, in turn, until the _first_ successful token creates a `:scalar` value, using the Clojure EDN reader as its standard. If no token produces any readable numeric result, no result is pushed. Tokens that produce reader errors are ignored. The first successful numeric value is pushed."
     :tags #{:string :base}
     (d/consume-top-of :string :as :arg)
-    (d/calculate [:arg] #(clojure.string/split %1 #"\s+") :as :chunks)
-    (d/calculate [:chunks] #(valid-numbers-only %1) :as :numbers)
-    (d/calculate [:numbers] #(first %1) :as :result)
+    (d/calculate [:arg] #(s/split %1 #"\s+") :as :chunks)
+    (d/calculate [:chunks] valid-numbers-only :as :numbers)
+    (d/calculate [:numbers] first :as :result)
     (d/push-onto :scalar :result)))
 
 
@@ -100,9 +100,9 @@
     "`:string->scalar` pops the top `:string` item and attempts to convert it into a `:scalars` vector. The rules (in order of precedence) are: (1) If the string is empty, an empty vector is pushed to `:scalars`. (2) If the string contains whitespace and any other characters, then it is broken into individual space-delimited tokens, and each of those is processed using the Clojure EDN reader as its standard. If no token produces any readable numeric result, an empty vector is pushed. Tokens that produce reader errors are ignored and skipped. Each whitespace-delimited numeric item is returned, in order, as part of a single `:scalars` result."
     :tags #{:string :base :vector}
     (d/consume-top-of :string :as :arg)
-    (d/calculate [:arg] #(clojure.string/split %1 #"\s+") :as :chunks)
-    (d/calculate [:chunks] #(valid-numbers-only %1) :as :numbers)
-    (d/calculate [:numbers] #(into [] %1) :as :result)
+    (d/calculate [:arg] #(s/split %1 #"\s+") :as :chunks)
+    (d/calculate [:chunks] valid-numbers-only :as :numbers)
+    (d/calculate [:numbers] vec :as :result)
     (d/push-onto :scalars :result)))
 
 
@@ -117,8 +117,8 @@
     :tags #{:string :base}
     (d/consume-top-of :string :as :s)
     (d/consume-top-of :exec :as :fn)
-    (d/calculate [:s] #(first %1) :as :head)
-    (d/calculate [:s] #(strings/join (rest %1)) :as :tail)
+    (d/calculate [:s] first :as :head)
+    (d/calculate [:s] #(s/join (rest %1)) :as :tail)
     (d/calculate [:fn :s :head :tail]
         #(cond (empty? %2) nil
                (empty? %4) (list %3 %1)
@@ -129,7 +129,7 @@
 
 (def string-butlast (t/simple-1-in-1-out-instruction
   "`:string-butlast` returns the top `:string` item lacking its last character"
-    :string "butlast" #(clojure.string/join (butlast %1))))
+    :string "butlast" #(s/join (butlast %1))))
 
 
 
@@ -140,11 +140,9 @@
     :tags #{:string :base}
     (d/consume-top-of :string :as :arg2)
     (d/consume-top-of :string :as :arg1)
-    (d/calculate [:arg1 :arg2]
-      #(strings/join (list %1 (str %2))) :as :longer)
+    (d/calculate [:arg1 :arg2] #(s/join (list %1 (str %2))) :as :longer)
     (d/save-max-collection-size :as :limit)
-    (d/calculate [:longer :limit]
-      #(if (< (count %1) %2) %1 nil) :as :result)
+    (d/calculate [:longer :limit] #(when (< (count %1) %2) %1) :as :result)
     (d/push-onto :string :result)))
 
 
@@ -156,7 +154,7 @@
     :tags #{:string :base}
     (d/consume-top-of :char :as :c)
     (d/consume-top-of :string :as :s)
-    (d/calculate [:s :c] #(strings/join (list %1 (str %2))) :as :longer)
+    (d/calculate [:s :c] #(s/join (list %1 (str %2))) :as :longer)
     (d/push-onto :string :longer)))
 
 
@@ -198,7 +196,7 @@
     "`:string-first` pops the top `:string` value, and pushes its first `:char`"
     :tags #{:string :base}
     (d/consume-top-of :string :as :arg1)
-    (d/calculate [:arg1] #(first %1) :as :c)
+    (d/calculate [:arg1] first :as :c)
     (d/push-onto :char :c)))
 
 
@@ -221,7 +219,7 @@
     "`:string-last` pops the top `:string` item, and pushes its last `:char` (if it has one)"
     :tags #{:string :base}
     (d/consume-top-of :string :as :arg1)
-    (d/calculate [:arg1] #(last %1) :as :c)
+    (d/calculate [:arg1] last :as :c)
     (d/push-onto :char :c)))
 
 
@@ -232,7 +230,7 @@
     "`:string-length` pops the top `:string` and pushes its length (counting unicode-aware characters) to the `:scalar` stack"
     :tags #{:string :base}
     (d/consume-top-of :string :as :arg1)
-    (d/calculate [:arg1] #(count %1) :as :len)
+    (d/calculate [:arg1] count :as :len)
     (d/push-onto :scalar :len)))
 
 
@@ -246,7 +244,7 @@
     (d/consume-top-of :scalar :as :where)
     (d/calculate [:s :where]
       #(if (empty? %1) 0 (num/scalar-to-index %2 (count %1))) :as :idx)
-    (d/calculate [:s :idx] #(if (empty? %1) nil (nth %1 %2)) :as :result)
+    (d/calculate [:s :idx] #(when (seq %1) (nth %1 %2)) :as :result)
     (d/push-onto :char :result)))
 
 
@@ -270,7 +268,7 @@
     :tags #{:string :base}
     (d/consume-top-of :string :as :s)
     (d/consume-top-of :char :as :c)
-    (d/calculate [:s :c] #(clojure.string/join (remove #{%2} %1)) :as :gone)
+    (d/calculate [:s :c] #(s/join (remove #{%2} %1)) :as :gone)
     (d/push-onto :string :gone)))
 
 
@@ -278,14 +276,15 @@
 (def string-replace
   (core/build-instruction
     string-replace
-    "`:string-replace` pops the top three `:string` values; call them `C`, `B` and `A`, respectively. It pushes the `:string` which results when `B` is replaced with `C` everywhere it occurs as a substring in `A`. The maximum :string length is 131072 (128k) characters; if this is exceeded, the result is discarded."
+    "`:string-replace` pops the top three `:string` values; call them `C`, `B` and `A`, respectively. It pushes the `:string` which results when `B` is replaced with `C` everywhere it occurs as a substring in `A`. The maximum :string the interpreter's `:max-collection-size`; if this is exceeded, the result is discarded."
     :tags #{:string :base}
     (d/consume-top-of :string :as :s3)
     (d/consume-top-of :string :as :s2)
     (d/consume-top-of :string :as :s1)
-    (d/calculate [:s1 :s2 :s3] #(strings/replace %1 %2 %3) :as :replaced)
+    (d/calculate [:s1 :s2 :s3] s/replace :as :replaced)
     (d/save-max-collection-size :as :limit)
-    (d/calculate [:replaced :limit] #(if (< (count %1) %2) %1 nil) :as :result)
+    (d/calculate [:replaced :limit]
+      #(when (<= (count %1) %2) %1) :as :result)
     (d/push-onto :string :result)))
 
 
@@ -298,7 +297,7 @@
     (d/consume-top-of :string :as :s)
     (d/consume-top-of :char :as :c1)
     (d/consume-top-of :char :as :c2)
-    (d/calculate [:s :c1 :c2] #(strings/replace %1 %2 %3) :as :different)
+    (d/calculate [:s :c1 :c2] s/replace :as :different)
     (d/push-onto :string :different)))
 
 
@@ -311,7 +310,7 @@
     (d/consume-top-of :string :as :s3)
     (d/consume-top-of :string :as :s2)
     (d/consume-top-of :string :as :s1)
-    (d/calculate [:s1 :s2 :s3] #(strings/replace-first %1 %2 %3) :as :different)
+    (d/calculate [:s1 :s2 :s3] s/replace-first :as :different)
     (d/push-onto :string :different)))
 
 
@@ -324,20 +323,20 @@
     (d/consume-top-of :string :as :s)
     (d/consume-top-of :char :as :c1)
     (d/consume-top-of :char :as :c2)
-    (d/calculate [:s :c1 :c2] #(strings/replace-first %1 %2 %3) :as :different)
+    (d/calculate [:s :c1 :c2] s/replace-first :as :different)
     (d/push-onto :string :different)))
 
 
 
 (def string-rest (t/simple-1-in-1-out-instruction
   "`:string-rest` returns the top `:string` item, lacking its first character"
-  :string "rest" #(clojure.string/join (rest %1))))
+  :string "rest" #(s/join (rest %1))))
 
 
 
 (def string-reverse (t/simple-1-in-1-out-instruction
   "`:string-reverse` returns the top `:string` item with its characters reversed"
-  :string "reverse" 'strings/reverse))
+  :string "reverse" 's/reverse))
 
 
 
@@ -351,7 +350,7 @@
     (d/consume-top-of :scalar :as :where)
     (d/calculate [:s :where]
       #(if (empty? %1) 0 (num/scalar-to-index %2 (count %1))) :as :idx)
-    (d/calculate [:s :idx :c] #(strings/join (assoc (vec %1) (long %2) %3)) :as :result)
+    (d/calculate [:s :idx :c] #(s/join (assoc (vec %1) (long %2) %3)) :as :result)
     (d/push-onto :string :result)))
 
 
@@ -364,7 +363,7 @@
     (d/consume-top-of :string :as :s1)
     (d/consume-stack :string :as :old)
     (d/calculate [:s1] #(reverse (map str (seq %1))) :as :letters)
-    (d/calculate [:old :letters] #(into %1 %2) :as :new)
+    (d/calculate [:old :letters] into :as :new)
     (d/replace-stack :string :new)))
 
 
@@ -382,7 +381,7 @@
     :tags #{:string :base}
     (d/consume-top-of :string :as :s)
     (d/consume-stack :string :as :old)
-    (d/calculate [:s] #(strings/split %1 #"\s+") :as :words)
+    (d/calculate [:s] #(s/split %1 #"\s+") :as :words)
     (d/calculate [:words :old] #(into %2 (reverse %1)) :as :new)
     (d/replace-stack :string :new)))
 
@@ -421,7 +420,7 @@
     (d/consume-top-of :scalar :as :where)
     (d/calculate [:s1 :where]
       #(if (empty? %1) 0 (num/scalar-to-index %2 (count %1))) :as :idx)
-    (d/calculate [:s1 :idx] #(strings/join (take %2 %1)) :as :leftovers)
+    (d/calculate [:s1 :idx] #(s/join (take %2 %1)) :as :leftovers)
     (d/push-onto :string :leftovers)))
 
 

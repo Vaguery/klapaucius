@@ -435,7 +435,7 @@
 (defn save-instructions
   "Saves a set containing all the registered :instruction keywords to the named scratch variable"
   [[interpreter scratch] & {:keys [as]}]
-  (let [fxns (into #{} (keys (:instructions interpreter)))]
+  (let [fxns (set (keys (:instructions interpreter)))]
     (if (nil? as)
           (oops/throw-missing-key-exception :as)
        [interpreter (assoc scratch as fxns)])))
@@ -520,13 +520,9 @@
   #(re-find #"Divide by zero" (.getMessage %))
   (fn
     [e [interpreter scratch] args fxn & {:keys [as]}]
-    (do
-      ; (println
-      ;   (str "Divide by 0 calculating " (:current-item interpreter)
-      ;        " with args " scratch))
       [(add-error-message! interpreter (.getMessage e))
        (assoc scratch as nil)]
-    )))
+       ))
 
 
 (with-handler! #'calculate
@@ -534,12 +530,9 @@
   #(re-find #"Non-terminating decimal expansion" (.getMessage %))
   (fn
     [e [interpreter scratch] args fxn & {:keys [as]}]
-    (do
-      ; (println
-      ;   (str "Non-terminating decimal when calculating " (:current-item interpreter) " with args " scratch))
       [(add-error-message! interpreter (.getMessage e))
        (assoc scratch as nil)]
-      )))
+       ))
 
 
 (with-handler! #'calculate
@@ -547,12 +540,9 @@
   #(re-find #"Infinite or NaN" (.getMessage %))
   (fn
     [e [interpreter scratch] args fxn & {:keys [as]}]
-    (do
-      ; (println
-      ;   (str "Infinite or NaN result calculating " (:current-item interpreter) " with args " scratch))
       [(add-error-message! interpreter (.getMessage e))
        (assoc scratch as nil)]
-    )))
+       ))
 
 
 (with-handler! #'calculate
@@ -560,22 +550,15 @@
   java.lang.NullPointerException
   (fn
     [e [interpreter scratch] args fxn & {:keys [as]}]
-    (do (println "CALCULATION RUNTIME EXCEPTION")
-        (println (str
-          "\nmessage: " (.getMessage e)
-          "\nscratch: " scratch
-          "\nargs: " args
-          "\nhandling item " (:current-item interpreter)))
     [(add-error-message! interpreter (.getMessage e))
      (assoc scratch as nil)]
-    )))
+     ))
 
 
 (with-handler! #'calculate
   "pre-defined REAL crashes due to mal-formed DSL syntax; this handler passes the exceptions out to the system (avoiding getting caught in the general case, below)"
   #(re-find #"Wrong number of args" (.getMessage %))
   (fn [e & args] (throw e)))
-
 
 
 (with-handler! #'calculate

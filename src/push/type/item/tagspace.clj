@@ -45,7 +45,7 @@
     :tags #{:tagspace :collection}
     (d/consume-top-of :tagspace :as :arg)
     (d/calculate [:arg]
-      #(list (into #{} (or (keys (:contents %1)) (list))) %1) :as :keyset)
+      #(list (set (or (keys (:contents %1)) (list))) %1) :as :keyset)
     (d/push-onto :exec :keyset)))
 
 
@@ -57,7 +57,7 @@
     :tags #{:tagspace :collection}
     (d/consume-top-of :tagspace :as :arg)
     (d/calculate [:arg]
-      #(list (into [] (or (keys (:contents %1)) (list))) %1) :as :keyvec)
+      #(list (vec (or (keys (:contents %1)) (list))) %1) :as :keyvec)
     (d/push-onto :exec :keyvec)))
 
 
@@ -85,7 +85,7 @@
     (d/consume-top-of :tagspace :as :ts)
     (d/calculate [:indices :ts]
       #(map (fn [k] (find-in-tagspace %2 k)) %1) :as :results)
-    (d/calculate [:results] #(if %1 (remove nil? %1) nil) :as :results)
+    (d/calculate [:results] #(when %1 (remove nil? %1)) :as :results)
     (d/push-onto :exec :results)
     (d/push-onto :tagspace :ts)))
 
@@ -139,7 +139,7 @@
     "`:tagspace-min` pops the top `:tagspace` item and pushes a list containing its lowest-valued key and the tagspace itself onto the `:exec` stack. If there is no key, only the tagspace is pushed."
     :tags #{:tagspace :collection}
     (d/consume-top-of :tagspace :as :arg)
-    (d/calculate [:arg] #(first (first (seq (:contents %1)))) :as :key)
+    (d/calculate [:arg] #(ffirst (seq (:contents %1))) :as :key)
     (d/calculate [:arg :key] #(if (nil? %2) %1 (list %2 %1)) :as :minkeylist)
     (d/push-onto :exec :minkeylist)))
 
@@ -162,7 +162,7 @@
     tagspace-new
     "`:tagspace-new` creates a new, empty `:tagspace` item and pushes it to the stack."
     :tags #{:tagspace}
-    (d/calculate [] #(make-tagspace) :as :result)
+    (d/calculate [] make-tagspace :as :result)
     (d/push-onto :tagspace :result)))
 
 
@@ -209,9 +209,9 @@
     (d/consume-top-of :tagspace :as :arg1)
     (d/consume-top-of :scalar :as :cutoff)
     (d/calculate [:arg1 :cutoff]
-      #(map 
+      #(map
           make-tagspace
-          (vals 
+          (vals
             (reduce-kv
               (fn [r k v] (if (< k %2)
                             (assoc-in r [:low k] v)
@@ -235,13 +235,13 @@
     (d/consume-top-of :scalar :as :end)
     (d/consume-top-of :scalar :as :start)
     (d/calculate [:ts] #(vals (:contents %1)) :as :items)
-    (d/calculate [:items] #(count %1) :as :how-many)
+    (d/calculate [:items] count :as :how-many)
     (d/calculate [:start :end :how-many]
       #(if (< %3 2) 0 (/ (-' %2 %1) (dec %3))) :as :delta)
     (d/calculate [:how-many :start :delta]
-      #(if %3 (n/index-maker %1 %2 %3) nil) :as :indices)
+      #(when %3 (n/index-maker %1 %2 %3)) :as :indices)
     (d/calculate [:indices :items]
-      #(if %1 (make-tagspace (zipmap %1 %2)) nil) :as :result)
+      #(when %1 (make-tagspace (zipmap %1 %2))) :as :result)
     (d/push-onto :tagspace :result)))
 
 
@@ -317,7 +317,7 @@
     :tags #{:tagspace :collection}
     (d/consume-top-of :tagspace :as :arg)
     (d/calculate [:arg]
-      #(list (into #{} (or (vals (:contents %1)) (list))) %1) :as :valSet)
+      #(list (set (or (vals (:contents %1)) (list))) %1) :as :valSet)
     (d/push-onto :exec :valSet)))
 
 
@@ -329,7 +329,7 @@
     :tags #{:tagspace :collection}
     (d/consume-top-of :tagspace :as :arg)
     (d/calculate [:arg]
-      #(list (into [] (or (vals (:contents %1)) (list))) %1) :as :valSet)
+      #(list (vec (or (vals (:contents %1)) (list))) %1) :as :valSet)
     (d/push-onto :exec :valSet)))
 
 
@@ -373,5 +373,5 @@
       aspects/make-returnable
       aspects/make-storable
       aspects/make-taggable
-      aspects/make-visible 
+      aspects/make-visible
       )))

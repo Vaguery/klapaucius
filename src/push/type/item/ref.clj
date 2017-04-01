@@ -50,8 +50,7 @@
       #(nth [10 100 1000] (num/scalar-to-index %1 3)) :as :relative)
     (d/calculate [:raw-count :relative]
       #(num/scalar-to-index %1 %2) :as :size)
-    (d/calculate [:contents :size]
-      #(into [] (take %2 (cycle %1))) :as :result)
+    (d/calculate [:contents :size] #(vec (take %2 (cycle %1))) :as :result)
     (d/push-onto :exec :result)
     ))
 
@@ -76,7 +75,7 @@
     :tags #{:binding}
     (d/consume-top-of :ref :as :ref)
     (d/save-binding-stack :ref :as :contents)
-    (d/calculate [:contents] #(into [] %1) :as :vec)
+    (d/calculate [:contents] vec :as :vec)
     (d/calculate [] #((constantly :vector->tagspace)) :as :continuation)
     (d/push-onto :vector :vec)
     (d/push-onto :exec :continuation)
@@ -113,9 +112,7 @@
     (d/calculate [:raw-count :relative]
       #(num/scalar-to-index %1 %2) :as :size)
     (d/calculate [:item :size]
-      #(if (nil? %1)
-        []
-        (into [] (take %2 (repeat %1)))) :as :result)
+      #(if (nil? %1) [] (vec (take %2 (repeat %1)))) :as :result)
     (d/push-onto :exec :result)
     ))
 
@@ -195,7 +192,7 @@
     :tags #{:binding}
     (d/consume-top-of :ref :as :arg)
     (d/save-binding-stack :arg :as :contents)
-    (d/calculate [:contents] #(into [] %1) :as :result)
+    (d/calculate [:contents] vec :as :result)
     (d/push-onto :exec :result)
     ))
 
@@ -236,4 +233,3 @@
         aspects/make-taggable
         aspects/make-visible
         ))
-

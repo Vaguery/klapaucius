@@ -50,10 +50,8 @@
         (drop
           (nt/floor (max 0 (min (u/safe-mod %2 100) 99)))
           (iterate
-            (fn [g]
-              (if (nil? g)
-              nil
-              (step-generator g))) %1))) :as :result)
+            (fn [g] (when-not (nil? g) (step-generator g)))
+            %1))) :as :result)
     (d/push-onto :generator :result)))
 
 
@@ -66,7 +64,7 @@
     (d/consume-top-of :generator :as :arg)
     (d/calculate [:arg]
       #(let [n (step-generator %1)]
-        (if (nil? n) nil (list (:state n) n))) :as :results)
+        (when-not (nil? n) (list (:state n) n))) :as :results)
     (d/push-onto :exec :results)))
 
 
