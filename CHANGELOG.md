@@ -2,6 +2,7 @@
 
 ## current work
 
+- modified `push.interpreter.core/handle-item` to write the current item being processed to the `:current-item` entry of the `Interpreter` record (technically not part of the record, just an annotation). This enables _much_ more informative error reporting, and potentially more detailed and straightforward tracing of program execution.
 - added size limits for `push.instructions.dsl/bind-item` based on stack size limits: if the sum of the count-collection-points(item) and count(binding stack) is too large, it balks and adds an `:error` item to that stack
 - fixed a bug in `push.instructions.dsl/bind-item` that saved the scratch ref, not the value stored in it
 - added size-checking (using `:max-collection-size` as a limit) to bind-value
