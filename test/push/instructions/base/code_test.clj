@@ -9,6 +9,7 @@
 ;; a fixture
 
 (def huge-list (repeat 131070 1))
+(def teeny (push.core/interpreter :config {:max-collection-size 9}))
 
 
 (tabular
@@ -24,11 +25,26 @@
     :code    '(2 ())                :code-append        :code        '((2))
     :code    '(() ())               :code-append        :code        '(())
     :code    '(2)                   :code-append        :code        '(2)
-    ;; oversized results
-    :code    (list huge-list huge-list)
-                                    :code-append        :code        '()
     )
 
+(tabular
+  (fact ":code-append checks for oversized results and pushes an `:error` if one arises"
+    (register-type-and-check-instruction-in-this-interpreter
+      teeny
+      ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
+
+    ?set-stack   ?items    ?instruction     ?get-stack     ?expected
+    :code       '((1 2 3) (4 5))
+                          :code-append      :code
+                                                           '((4 5 1 2 3))
+    :code       '((1 2 3 4 5) (6 7 8 9 10))
+                          :code-append      :code
+                                                           '()
+    :code       '((1 2 3 4 5) (6 7 8 9 10))
+                          :code-append      :error
+                                                           '({:item ":code-append produced an oversized result", :step 0})
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
 
 (tabular
   (fact ":code-atom? pushes true to :boolean if the top :code is not a list"
@@ -56,12 +72,27 @@
     :code    '(2 ())                :code-cons        :code        '((() 2))
     :code    '(() ())               :code-cons        :code        '((()))
     :code    '(2)                   :code-cons        :code        '(2)
-    ;; size limit
-    :code    (list huge-list huge-list)
-                                    :code-cons        :code        '()
     )
 
 
+(tabular
+  (fact ":code-cons checks for oversized results and pushes an `:error` if one arises"
+    (register-type-and-check-instruction-in-this-interpreter
+      teeny
+      ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
+
+    ?set-stack   ?items    ?instruction     ?get-stack     ?expected
+    :code       '((1 2 3) (4 5))
+                          :code-cons         :code
+                                                           '(((4 5) 1 2 3))
+    :code       '((1 2 3 4 5) (6 7 8 9 10))
+                          :code-cons         :code
+                                                           '()
+    :code       '((1 2 3 4 5) (6 7 8 9 10))
+                          :code-cons         :error
+                                                           '({:item ":code-cons produced an oversized result", :step 0})
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
 
 (tabular
   (fact ":code-container returns the smallest, first container of code/1 in code/2"
@@ -74,9 +105,9 @@
     :code    '(2 2)              :code-container        :code        '(())
     :code    '(2 (1 (2 (3))))    :code-container        :code        '((2 (3)))
     :code    '(() (()))          :code-container        :code        '((()))
-    :code    '((3) (0 ((1 2) ((3) 4))))  
+    :code    '((3) (0 ((1 2) ((3) 4))))
                                  :code-container        :code        '(((3) 4))
-    :code    '((3) (0 ((1 (3)) ((3) 4))))  
+    :code    '((3) (0 ((1 (3)) ((3) 4))))
                                  :code-container        :code        '((1 (3)))
     :code    '((1 (2)) (1 (2) 3))
                                  :code-container        :code        '(())
@@ -144,33 +175,33 @@
      :scalar  '(2 9)}         :code-do*count     {:exec '(
                                                       (2 0 :code-quote :foo :code-do*range))
                                                    :scalar '(9)
-                                                   :code '(:bar)} 
+                                                   :code '(:bar)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo :bar)
      :scalar  '(-2 -9)}         :code-do*count     {:exec '((-2 :code-quote :foo))
                                                    :scalar '(-9)
-                                                   :code '(:bar)} 
+                                                   :code '(:bar)}
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo :bar)
      :scalar  '(0 -9)}          :code-do*count     {:exec '((0 :code-quote :foo))
                                                    :scalar '(-9)
-                                                   :code '(:bar)} 
+                                                   :code '(:bar)}
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo :bar)
      :scalar  '(0.3 11/4)}      :code-do*count     {:exec '((0.3 0 :code-quote :foo :code-do*range))
                                                    :scalar '(11/4)
-                                                   :code '(:bar)} 
+                                                   :code '(:bar)}
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo :bar)
      :scalar  '(-11/4)}      :code-do*count     {:exec '((-11/4 :code-quote :foo))
                                                    :scalar '()
-                                                   :code '(:bar)} 
+                                                   :code '(:bar)}
     ; ; ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ; ; ;; missing arguments
     {:code     '()
      :scalar  '(0 -9)}         :code-do*count     {:exec '()
                                                    :scalar '(0 -9)
-                                                   :code '()} 
+                                                   :code '()}
     ; ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo)
      :scalar  '()}             :code-do*count     {:exec '()
@@ -187,44 +218,44 @@
     ?new-stacks                ?instruction             ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo :bar)
-     :scalar  '(2 9)}         :code-do*range     {:exec '((9 :foo 
+     :scalar  '(2 9)}         :code-do*range     {:exec '((9 :foo
                                                     (8 2 :code-quote :foo :code-do*range)))
                                                    :scalar '()
-                                                   :code '(:bar)} 
+                                                   :code '(:bar)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo :bar)
-     :scalar  '(-2 -9)}         :code-do*range     {:exec '((-9 :foo 
+     :scalar  '(-2 -9)}         :code-do*range     {:exec '((-9 :foo
                                                     (-8 -2 :code-quote :foo :code-do*range)))
                                                    :scalar '()
-                                                   :code '(:bar)} 
+                                                   :code '(:bar)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo :bar)
      :scalar  '(-2917.5M -9.3e32M)}  :code-do*range     {:exec '((-9.3E+32M :foo (-929999999999999999999999999999999M -2917.5M :code-quote :foo :code-do*range)))
                                                    :scalar '()
-                                                   :code '(:bar)} 
+                                                   :code '(:bar)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;; these are finished up
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo :bar)
      :scalar  '(2 2)}         :code-do*range     {:exec '((2 :foo))
                                                    :scalar '()
-                                                   :code '(:bar)} 
+                                                   :code '(:bar)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo :bar)
      :scalar  '(0 1)}         :code-do*range     {:exec '((0 :foo))
                                                    :scalar '()
-                                                   :code '(:bar)} 
+                                                   :code '(:bar)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo :bar)
      :scalar  '(5/2 2.1)}     :code-do*range     {:exec '((3.1 :foo))
                                                    :scalar '()
-                                                   :code '(:bar)} 
+                                                   :code '(:bar)}
     ; ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ; ;; missing arguments
     {:code     '()
      :scalar  '(-2 -9)}         :code-do*range     {:exec '()
                                                      :scalar '(-2 -9)
-                                                     :code '()} 
+                                                     :code '()}
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo)
      :scalar  '(-2)}         :code-do*range     {:exec '()
@@ -245,7 +276,7 @@
                                                     :scalar '()
                                                     :code '(:bar)
                                                     :error '({:item "Non-terminating decimal expansion; no exact representable decimal result.", :step 0},
-                                                      {:item "Non-terminating decimal expansion; no exact representable decimal result.", :step 0})} 
+                                                      {:item "Non-terminating decimal expansion; no exact representable decimal result.", :step 0})}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
 
@@ -261,47 +292,47 @@
     {:code     '(:foo :bar)
      :scalar   '(2 9)}         :code-do*times     {:exec '((:foo (1 :code-quote :foo :code-do*times)))
                                                    :scalar  '(9)
-                                                   :code '(:bar)} 
+                                                   :code '(:bar)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo :bar)
      :scalar   '(-2 -9)}       :code-do*times     {:exec '(:foo)
                                                    :scalar  '(-9)
-                                                   :code '(:bar)} 
+                                                   :code '(:bar)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo :bar)
      :scalar   '(1 -9)}        :code-do*times     {:exec '((:foo (0 :code-quote :foo :code-do*times)))
                                                    :scalar  '(-9)
-                                                   :code '(:bar)} 
+                                                   :code '(:bar)}
 
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo :bar)
      :scalar   '(7.8 -9)}       :code-do*times     {:exec '((:foo (6.8 :code-quote :foo :code-do*times)))
                                                    :scalar  '(-9)
-                                                   :code '(:bar)} 
+                                                   :code '(:bar)}
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo :bar)
      :scalar   '(77631M -9)}       :code-do*times     {:exec '((:foo (77630M :code-quote :foo :code-do*times)))
                                                    :scalar  '(-9)
-                                                   :code '(:bar)} 
+                                                   :code '(:bar)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo :bar)
      :scalar   '(0.125 -9)}       :code-do*times     {:exec '((:foo (-0.875 :code-quote :foo :code-do*times)))
                                                    :scalar  '(-9)
-                                                   :code '(:bar)} 
+                                                   :code '(:bar)}
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo :bar)
      :scalar   '(0 2)}          :code-do*times     {:exec '(:foo)
                                                    :scalar  '(2)
-                                                   :code '(:bar)} 
+                                                   :code '(:bar)}
     ; ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ; ;; missing arguments
     {:code     '()
      :scalar   '(-2 -9)}        :code-do*times      {:exec '()
                                                      :scalar  '(-2 -9)
-                                                     :code '()} 
+                                                     :code '()}
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo)
      :scalar   '()}           :code-do*times        {:exec '()
@@ -353,44 +384,44 @@
     ?new-stacks                ?instruction             ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '((9 8 7 6))
-     :scalar   '(2)}            :code-extract             {:code '(8)} 
+     :scalar   '(2)}            :code-extract             {:code '(8)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '((9 8 7 6))
-     :scalar   '(0)}            :code-extract             {:code '((9 8 7 6))} 
+     :scalar   '(0)}            :code-extract             {:code '((9 8 7 6))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '((9 8 7 6))
-     :scalar   '(1/3)}          :code-extract             {:code '((9 8 7 6))} 
+     :scalar   '(1/3)}          :code-extract             {:code '((9 8 7 6))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '((9 8 7 6))
-     :scalar   '(-4/3)}         :code-extract             {:code '(7)} 
+     :scalar   '(-4/3)}         :code-extract             {:code '(7)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '((9 8 7 6))
-     :scalar   '(-2)}           :code-extract             {:code '(7)} 
+     :scalar   '(-2)}           :code-extract             {:code '(7)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '((9 8 7 6))
-     :scalar   '(221)}          :code-extract             {:code '(9)} 
+     :scalar   '(221)}          :code-extract             {:code '(9)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;; nesting
     {:code     '(((9) (8 (7 6))))
-     :scalar   '(1)}           :code-extract           {:code '((9))} 
+     :scalar   '(1)}           :code-extract           {:code '((9))}
     {:code     '(((9) (8 (7 6))))
-     :scalar   '(2)}           :code-extract           {:code '(9)} 
+     :scalar   '(2)}           :code-extract           {:code '(9)}
     {:code     '(((9) (8 (7 6))))
-     :scalar   '(3)}           :code-extract           {:code '((8 (7 6)))} 
+     :scalar   '(3)}           :code-extract           {:code '((8 (7 6)))}
     {:code     '(((9) (8 (7 6))))
-     :scalar   '(4)}           :code-extract           {:code '(8)} 
+     :scalar   '(4)}           :code-extract           {:code '(8)}
     {:code     '(((9) (8 (7 6))))
-     :scalar   '(6)}           :code-extract           {:code '(7)} 
+     :scalar   '(6)}           :code-extract           {:code '(7)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;; does not traverse vectors
     {:code     '(([9] (8 [7 6])))
-     :scalar   '(1)}           :code-extract           {:code '([9])} 
+     :scalar   '(1)}           :code-extract           {:code '([9])}
     {:code     '(([9] (8 [7 6])))
-     :scalar   '(2)}           :code-extract           {:code '((8 [7 6]))} 
+     :scalar   '(2)}           :code-extract           {:code '((8 [7 6]))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;; does not traverse sets
     {:code     '((#{9} (8 [7 6])))
-     :scalar   '(1)}           :code-extract           {:code '(#{9})} 
+     :scalar   '(1)}           :code-extract           {:code '(#{9})}
     {:code     '((#{9} (8 [7 6])))
      :scalar   '(2)}           :code-extract           {:code '((8 [7 6]))})
 
@@ -430,18 +461,18 @@
     {:code     '(:foo :bar)
      :boolean  '(true)}         :code-if            {:code '()
                                                      :boolean '()
-                                                     :exec '(:bar)} 
+                                                     :exec '(:bar)}
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo :bar)
      :boolean  '(false)}         :code-if            {:code '()
                                                      :boolean '()
-                                                     :exec '(:foo)} 
+                                                     :exec '(:foo)}
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ; ; ;; missing arguments
     {:code     '(:foo)
      :boolean  '(false)}         :code-if            {:code '(:foo)
                                                      :boolean '(false)
-                                                     :exec '()} 
+                                                     :exec '()}
     ; ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo :bar)
      :boolean  '()}         :code-if                {:code '(:foo :bar)
@@ -458,54 +489,70 @@
     ?new-stacks                ?instruction             ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(99 (1 2 3))
-     :scalar   '(1)}            :code-insert                 {:code '((99 2 3))} 
+     :scalar   '(1)}            :code-insert                 {:code '((99 2 3))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(99 (1 2 3))
-     :scalar   '(1/3)}          :code-insert                 {:code '(99)} 
+     :scalar   '(1/3)}          :code-insert                 {:code '(99)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(99 (1 2 3))
-     :scalar   '(-4/3)}         :code-insert                 {:code '((1 99 3))} 
+     :scalar   '(-4/3)}         :code-insert                 {:code '((1 99 3))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(99 (1 2 3))
-     :scalar   '(0)}            :code-insert                 {:code '(99)} 
+     :scalar   '(0)}            :code-insert                 {:code '(99)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(99 (1 2 3))
-     :scalar   '(3)}            :code-insert                 {:code '((1 2 99))} 
+     :scalar   '(3)}            :code-insert                 {:code '((1 2 99))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ; wrapping index
     {:code     '(99 (1 2 3))
-     :scalar   '(11)}            :code-insert                 {:code '((1 2 99))} 
+     :scalar   '(11)}            :code-insert                 {:code '((1 2 99))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(99 (1 2 3))
-     :scalar   '(12)}            :code-insert                 {:code '(99)} 
+     :scalar   '(12)}            :code-insert                 {:code '(99)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(99 (1 2 3))
-     :scalar   '(-1)}            :code-insert                 {:code '((1 2 99))} 
+     :scalar   '(-1)}            :code-insert                 {:code '((1 2 99))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ; traverses trees
     {:code     '(99 ((1 (2)) ( ()) (3 4)))
-     :scalar   '(1)}            :code-insert                 {:code '((99 (()) (3 4)))} 
+     :scalar   '(1)}            :code-insert                 {:code '((99 (()) (3 4)))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(99 ((1 (2)) ( ()) (3 4)))
-     :scalar   '(2)}            :code-insert                 {:code '(((99 (2)) (()) (3 4)))} 
+     :scalar   '(2)}            :code-insert                 {:code '(((99 (2)) (()) (3 4)))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(99 ((1 (2)) ( ()) (3 4)))
-     :scalar   '(3)}            :code-insert                 {:code '(((1 99) (()) (3 4)))} 
+     :scalar   '(3)}            :code-insert                 {:code '(((1 99) (()) (3 4)))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(99 ((1 (2)) ( ()) (3 4)))
-     :scalar   '(4)}            :code-insert                 {:code '(((1 (99)) (()) (3 4)))} 
+     :scalar   '(4)}            :code-insert                 {:code '(((1 (99)) (()) (3 4)))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(99 ((1 (2)) ( ()) (3 4)))
-     :scalar   '(5)}            :code-insert                 {:code '(((1 (2)) 99 (3 4)))} 
+     :scalar   '(5)}            :code-insert                 {:code '(((1 (2)) 99 (3 4)))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(99 ((1 (2)) ( ()) (3 4)))
-     :scalar   '(52/7)}         :code-insert          {:code '(((1 (2)) ((99)) (3 4)))} 
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ;; size limit
-    {:code     (list huge-list huge-list)
-     :scalar   '(88)}           :code-insert                 {:code '()} 
+     :scalar   '(52/7)}         :code-insert          {:code '(((1 (2)) ((99)) (3 4)))}
      )
 
+(tabular
+  (fact "code-insert produces an error when the result is oversized"
+    (check-instruction-here-using-this
+      teeny
+      ?new-stacks ?instruction) => (contains ?expected))
+
+    ?new-stacks        ?instruction       ?expected
+    {:code '((1 2 3) (4 5 6))
+     :scalar '(2)}
+                       :code-insert       {:code '((4 (1 2 3) 6))}
+     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code '((1 2 3 4 5) (6 7 8 9 10))
+     :scalar '(2)}
+                       :code-insert       {:code '()}
+     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code '((1 2 3 4 5) (6 7 8 9 10))
+     :scalar '(2)}
+                       :code-insert       {:error '({:item ":code-insert produced an oversized result", :step 0})}
+     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     )
 
 
 (tabular
@@ -536,11 +583,25 @@
     :code    '(2 ())                :code-list        :code        '((() 2))
     :code    '(() ())               :code-list        :code        '((() ()))
     :code    '(2)                   :code-list        :code        '(2)
-    ;; size limit
-    :code    (list huge-list huge-list)
-                                    :code-list        :code        '()
     )
 
+(tabular
+  (fact "code-list produces an error when the result is oversized"
+    (check-instruction-here-using-this
+      teeny
+      ?new-stacks ?instruction) => (contains ?expected))
+
+    ?new-stacks        ?instruction       ?expected
+    {:code '((1) 2)}
+                       :code-list       {:code '((2 (1)))}
+     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code '((1 2 3 4 5) (6 7 8 9 10))}
+                       :code-list       {:code '()}
+     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:code '((1 2 3 4 5) (6 7 8 9 10))}
+                       :code-list       {:error '({:item ":code-list produced an oversized result", :step 0})}
+     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     )
 
 
 (tabular
@@ -551,29 +612,47 @@
     ?new-stacks              ?instruction             ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code  '((1 2 3) :bar)
-     :exec  '(:foo)}          :code-map     {:exec '((:code-quote () 
-                                                    (:code-quote 1 :foo) 
-                                                    :code-cons 
+     :exec  '(:foo)}          :code-map     {:exec '((:code-quote ()
+                                                    (:code-quote 1 :foo)
+                                                    :code-cons
                                                     (:code-quote (2 3)
                                                       :code-reduce :foo)))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code  '((1) :bar)
-     :exec  '(:foo)}          :code-map     {:exec '((:code-quote () 
-                                                    (:code-quote 1 :foo) 
+     :exec  '(:foo)}          :code-map     {:exec '((:code-quote ()
+                                                    (:code-quote 1 :foo)
                                                     :code-cons))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code  '(() :bar)
      :exec  '(:foo)}          :code-map     {:exec '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code  '(88 :bar)
-     :exec  '(:foo)}          :code-map     {:exec '((:code-quote () 
-                                                    (:code-quote 88 :foo) 
+     :exec  '(:foo)}          :code-map     {:exec '((:code-quote ()
+                                                    (:code-quote 88 :foo)
                                                     :code-cons))}
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ;; size limit
-    {:code  (list huge-list :bar)
-     :exec  '(:foo)}          :code-map     {:exec '()}
     )
+
+(tabular
+  (fact "code-map produces an error when the result is oversized"
+    (check-instruction-here-using-this
+      teeny
+      ?new-stacks ?instruction) => (contains ?expected))
+
+    ?new-stacks        ?instruction       ?expected
+    {:code  '(1 2)
+     :exec  '(:foo)}
+                       :code-map       {:code '(2)
+                                        :exec '((:code-quote () (:code-quote 1 :foo) :code-cons))}
+     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     {:code  '([1 2] 10)
+      :exec  '(:foo)}
+                        :code-map       {:exec '()}
+     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     {:code  '([1 2] 10)
+      :exec  '(:foo)}
+                        :code-map       {:error '({:item "Push runtime error: stack :exec is over size limit", :step 0})}
+     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     )
 
 
 (tabular
@@ -584,26 +663,45 @@
     ?new-stacks                ?instruction             ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code  '((1 2 3) :bar)
-     :exec  '(:foo)}          :code-reduce     {:exec '(((:code-quote 1 :foo) 
-                                                  :code-cons 
-                                                  (:code-quote (2 3) 
+     :exec  '(:foo)}          :code-reduce     {:exec '(((:code-quote 1 :foo)
+                                                  :code-cons
+                                                  (:code-quote (2 3)
                                                     :code-reduce :foo)))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code  '((1) :bar)
-     :exec  '(:foo)}          :code-reduce     {:exec '(((:code-quote 1 :foo) 
+     :exec  '(:foo)}          :code-reduce     {:exec '(((:code-quote 1 :foo)
                                                   :code-cons))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code  '(() :bar)
      :exec  '(:foo)}          :code-reduce     {:exec '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code  '(88 :bar)
-     :exec  '(:foo)}          :code-reduce     {:exec '(((:code-quote 88 :foo) 
+     :exec  '(:foo)}          :code-reduce     {:exec '(((:code-quote 88 :foo)
                                                   :code-cons))}
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ;; size limit
-    {:code  (list huge-list :bar)
-     :exec  '(:foo)}          :code-reduce     {:exec '()}
     )
+
+
+(tabular
+  (fact "code-reduce produces an error when the result is oversized"
+    (check-instruction-here-using-this
+      teeny
+      ?new-stacks ?instruction) => (contains ?expected))
+
+    ?new-stacks        ?instruction       ?expected
+    {:code  '(1 2)
+     :exec  '(:foo)}
+                       :code-reduce       {:code '(2)
+                                           :exec '(((:code-quote 1 :foo) :code-cons))}
+     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     {:code  '([1 2 3 4 5] 6)
+      :exec  '(:foo)}
+                        :code-reduce       {:exec '()}
+     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     {:code  '([1 2 3 4 5] 6)
+      :exec  '(:foo)}
+                        :code-reduce       {:error '({:item "Push runtime error: stack :exec is over size limit", :step 0})}
+     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     )
 
 
 (tabular
@@ -612,7 +710,7 @@
         ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
-    ;; 
+    ;;
     :code    '((1 2) 2)           :code-member?        :boolean        '(true)
     :code    '((2 3) 4)           :code-member?        :boolean        '(false)
     :code    '(() 3)              :code-member?        :boolean        '(false)
@@ -631,7 +729,7 @@
     ;; be vewwy quiet
     :code    '(1.1 '(8 9))         :code-noop        :code        '(1.1 '(8 9))
     :code    '()                   :code-noop        :code        '())
-     
+
 
 (tabular
   (fact ":code-nth takes the nth item of :code, using that modulo trick"
@@ -682,7 +780,7 @@
     ;; an echoing sound is heard
     :code    '(1.1 (8 9))         :code-null?        :boolean        '(false)
     :code    '(() 8)               :code-null?        :boolean        '(true)
-    
+
 ;;;;; PROBLEM HERE
     :code    '(() 8)              :code-null?        :boolean        '(true)
     ;; …except in silence
@@ -698,9 +796,9 @@
     ;; say where
     :code    '(3 (1 2 3 4))      :code-position        :scalar         '(2)
     :code    '(6 (1 2 3 4))      :code-position        :scalar         '(-1)
-    :code    '(3 (1 2 3 1 2 3 4)) 
+    :code    '(3 (1 2 3 1 2 3 4))
                                  :code-position        :scalar         '(2)
-    :code    '((2) ((1) (2) (3) (4)))      
+    :code    '((2) ((1) (2) (3) (4)))
                                  :code-position        :scalar         '(1)
     :code    '(2 2)              :code-position        :scalar         '(0)
     :code    '(2)                :code-position        :scalar         '()
@@ -716,11 +814,11 @@
 
     {:exec '(1 2 3)
      :code '(false)}           :code-quote            {:exec '(2 3)
-                                                       :code '(1 false)} 
+                                                       :code '(1 false)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec '((1 2) 3)
      :code '(true)}            :code-quote            {:exec '(3)
-                                                       :code '((1 2) true)} 
+                                                       :code '((1 2) true)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;; missing arguments
     {:exec '()
@@ -798,11 +896,23 @@
                                                                       (99 99)) (99 99) 4))
     :code    '(99 (1 2 3 4))        :code-subst        :code        '(99 (1 2 3 4))
     :code    '(99)                  :code-subst        :code        '(99)
-    ;; size limit
-    :code    (list '(1 2) 1 huge-list)
-                                    :code-subst        :code        '())
+    )
 
+(tabular
+  (fact "code-reduce produces an error when the result is oversized"
+    (check-instruction-here-using-this
+      teeny
+      ?new-stacks ?instruction) => (contains ?expected))
 
+    ?new-stacks        ?instruction       ?expected
+    {:code  '(99 2 (1 2 3 4))}
+                       :code-subst       {:code   '((1 99 3 4))
+                                          :error  '()}
+     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     {:code  '([99 99 99 99 99 99] 2 (1 2 3 4))}
+                        :code-subst      {:code   '()
+                                          :error  '({:item "Push runtime error: stack :code is over size limit", :step 0})}
+     )
 
 
 (tabular
@@ -827,7 +937,7 @@
     :code    '(1)               :code-wrap      :code        '((1))
     :code    '((3 4))           :code-wrap      :code        '(((3 4)))
     :code    '(())              :code-wrap      :code        '((()))
-    ;; missing args     
+    ;; missing args
     :code    '()                :code-wrap      :code          '())
 
 ;; visible
@@ -843,7 +953,7 @@
     :code    '(1.1 2.2 3.3)      :code-stackdepth   :scalar      '(3)
     :code    '(1.0)              :code-stackdepth   :scalar      '(1)
     :code    '()                 :code-stackdepth   :scalar      '(0))
-   
+
 
 (tabular
   (fact ":code-empty? returns the true (to :boolean stack) if the stack is empty"
@@ -871,9 +981,9 @@
     :code    '((1 2) (1 2))     :code-equal?      :boolean        '(true)
 
     ;; note this depends on Clojure's 'eq function
-    :code    '((1 2) (11/11 2.0))     
+    :code    '((1 2) (11/11 2.0))
                                 :code-equal?      :boolean        '(false)
-    ;; missing args     
+    ;; missing args
     :code    '((3 4))           :code-equal?      :boolean        '()
     :code    '((3 4))           :code-equal?      :code           '((3 4))
     :code    '()                :code-equal?      :boolean        '()
@@ -890,7 +1000,7 @@
     :code    '((1) (88))       :code-notequal?      :boolean      '(true)
     :code    '((88) (1))       :code-notequal?      :boolean      '(true)
     :code    '((1) (1))        :code-notequal?      :boolean      '(false)
-    ;; missing args    
+    ;; missing args
     :code    '((88))           :code-notequal?      :boolean      '()
     :code    '((88))           :code-notequal?      :code         '((88))
     :code    '()               :code-notequal?      :boolean      '()

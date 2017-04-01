@@ -18,7 +18,7 @@
 (def code-append
   (core/build-instruction
     code-append
-    "`code-append` concatenates the top :code item to the end of the second :code item. If either argument isn't a list, it's made into one first. If the result would be larger than :max-collection-size points, it is discarded."
+    "`code-append` concatenates the top :code item to the end of the second :code item. If either argument isn't a list, it's made into one first. If the result would be larger than :max-collection-size points, it is discarded and an `:error` is pushed instead"
     :tags #{:complex :base}
     (d/consume-top-of :code :as :arg2)
     (d/consume-top-of :code :as :arg1)
@@ -26,8 +26,13 @@
     (d/calculate [:arg2] #(if (coll? %1) %1 (list %1)) :as :list2)
     (d/calculate [:list1 :list2] #(fix/list! (concat %1 %2)) :as :both)
     (d/save-max-collection-size :as :limit)
-    (d/calculate [:both :limit] #(when (< (fix/count-code-points %1) %2) %1) :as :result)
-    (d/push-onto :code :result)))
+    (d/calculate [:both :limit]
+      #(when (< (fix/count-code-points %1) %2) %1) :as :result)
+    (d/calculate [:both :limit]
+      #(when-not (< (fix/count-code-points %1) %2) ":code-append produced an oversized result") :as :message)
+    (d/push-onto :code :result)
+    (d/record-an-error :from :message)
+    ))
 
 
 
@@ -41,7 +46,7 @@
 (def code-cons
   (core/build-instruction
     code-cons
-    "`:code-cons` pops the top two `:code` items. If the first one is a list, it conjoins the second item to that; if it's not a list, it makes it one, then conjoins. If the result would be larger than :max-code-points it is discarded."
+    "`:code-cons` pops the top two `:code` items. If the first one is a list, it conjoins the second item to that; if it's not a list, it makes it one, then conjoins. If the result would be larger than :max-code-points it is discarded, and an `:error` is pushed instead."
     :tags #{:complex :base}
     (d/consume-top-of :code :as :item2)
     (d/consume-top-of :code :as :item1)
@@ -50,7 +55,11 @@
     (d/save-max-collection-size :as :limit)
     (d/calculate [:conjed :limit]
       #(when (< (fix/count-code-points %1) %2) %1) :as :result)
-    (d/push-onto :code :result)))
+    (d/calculate [:conjed :limit]
+      #(when-not (< (fix/count-code-points %1) %2) ":code-cons produced an oversized result") :as :message)
+    (d/push-onto :code :result)
+    (d/record-an-error :from :message)
+    ))
 
 
 
@@ -221,7 +230,7 @@
 (def code-insert
   (core/build-instruction
     code-insert
-    "`:code-insert` pops the top two `:code` items (call them `A` and `B` respectively), and the top `:scalar`. It counts the number of code points in `B` (that is, lists and items in lists, not other collections), then forces the `:scalar` to a suitable index range. It then pushes the result when the indexed node of `B` is replaced with `A`. If the result would be larger than :max-collection-size, it is discarded."
+    "`:code-insert` pops the top two `:code` items (call them `A` and `B` respectively), and the top `:scalar`. It counts the number of code points in `B` (that is, lists and items in lists, not other collections), then forces the `:scalar` to a suitable index range. It then pushes the result when the indexed node of `B` is replaced with `A`. If the result would be larger than :max-collection-size, it is discarded and an `:error` is pushed instead."
     :tags #{:complex :base}
     (d/consume-top-of :code :as :a)
     (d/consume-top-of :code :as :b)
@@ -232,7 +241,11 @@
     (d/save-max-collection-size :as :limit)
     (d/calculate [:replaced :limit]
       #(when (< (fix/count-code-points %1) %2) %1) :as :result)
-    (d/push-onto :code :result)))
+    (d/calculate [:replaced :limit]
+      #(when-not (< (fix/count-code-points %1) %2) ":code-insert produced an oversized result") :as :message)
+    (d/push-onto :code :result)
+    (d/record-an-error :from :message)
+    ))
 
 
 
@@ -250,7 +263,7 @@
 (def code-list
   (core/build-instruction
     code-list
-    "`:code-list` pops the top two items from the `:code` stack, returning a list of two elements: of the first item, then the second. If the result would be larger than :max-collection-size, it is discarded."
+    "`:code-list` pops the top two items from the `:code` stack, returning a list of two elements: of the first item, then the second. If the result would be larger than :max-collection-size, it is discarded and an `:error` is pushed."
     :tags #{:complex :base}
     (d/consume-top-of :code :as :arg2)
     (d/consume-top-of :code :as :arg1)
@@ -258,14 +271,18 @@
     (d/save-max-collection-size :as :limit)
     (d/calculate [:both :limit]
       #(when (< (fix/count-code-points %1) %2) %1) :as :result)
-    (d/push-onto :code :result)))
+    (d/calculate [:both :limit]
+      #(when-not (< (fix/count-code-points %1) %2) ":code-list produced an oversized result") :as :message)
+    (d/push-onto :code :result)
+    (d/record-an-error :from :message)
+    ))
 
 
 
 (def code-map
   (core/build-instruction
     code-map
-    "`:code-map` pops the top items of the `:code` and `:exec` stacks (call them \"C\" and \"E\", respectively), and pushes a continuation to `:exec`. If C is a list of 2 or more elements, `'(:code-quote () (:code-quote (first C) E) :code-cons (:code-quote (rest C) :code-reduce E))`; if a list of 1 item, `'(:code-quote () (:code-quote (first C) E) :code-cons)`; if an empty list, no continuation results; if not a list, `'(:code-quote () (:code-quote C E) :code-cons)`. If the continuation would be larger than :max-collection-size it is discarded."
+    "`:code-map` pops the top items of the `:code` and `:exec` stacks (call them \"C\" and \"E\", respectively), and pushes a continuation to `:exec`. If C is a list of 2 or more elements, `'(:code-quote () (:code-quote (first C) E) :code-cons (:code-quote (rest C) :code-reduce E))`; if a list of 1 item, `'(:code-quote () (:code-quote (first C) E) :code-cons)`; if an empty list, no continuation results; if not a list, `'(:code-quote () (:code-quote C E) :code-cons)`. If the continuation would be larger than :max-collection-size it is discarded and an `:error` is pushed."
     :tags #{:complex :base}
     (d/consume-top-of :code :as :item)
     (d/consume-top-of :exec :as :fn)
@@ -284,7 +301,12 @@
     (d/save-max-collection-size :as :limit)
     (d/calculate [:continuation :limit]
       #(when (< (fix/count-code-points %1) %2) %1) :as :result)
-    (d/push-onto :exec :result)))
+    (d/calculate [:continuation :limit]
+      #(when-not (< (fix/count-code-points %1) %2)
+        ":code-map produced an oversized result") :as :message)
+    (d/record-an-error :from :message)
+    (d/push-onto :exec :result)
+    ))
 
 
 
