@@ -1,11 +1,14 @@
 (ns push.instructions.standard.vectorized_test
   (:require [push.interpreter.core :as i]
-            [push.type.core :as t])
+            [push.type.core :as t]
+            [push.core :as push])
   (:use midje.sweet)
   (:use [push.util.test-helpers])
   (:use [push.type.item.vectorized])
   )
 
+
+;; fixtures
 
 (def foo-type (t/make-type :foo
                            :recognized-by number?
@@ -13,6 +16,10 @@
 
 (def foos-type (build-vectorized-type foo-type))
 
+(def teeny (-> (push/interpreter :config {:max-collection-size 9})
+               (i/register-type , foos-type)))
+
+;; tests
 
 (fact "foos-type knows some instructions"
   (keys (:instructions foos-type)) =>
@@ -93,6 +100,28 @@
 
 
 (tabular
+  (fact "foos-build produces an error when the result is oversized"
+    (check-instruction-here-using-this
+      teeny
+      ?new-stacks ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction       ?expected
+    {:foos    '([1 2 3])
+     :foo     '(7 77 777 7777)
+     :scalar  '(3)}            :foos-build       {:foos    '([7 77 777] [1 2 3])
+                                                  :foo     '(7777)
+                                                  :error  '()}
+     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     {:foos    '(1 2 3 4 5 6 7 8)
+      :foo     '(7 77 777 7777)
+      :scalar  '(3)}            :foos-build       {:foos    '(1 2 3 4 5 6 7 8)
+                                                   :foo     '(7777)
+                                                   :error   '({:item ":foos-build tried to push an overized item to :foos", :step 0})}
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     )
+
+
+(tabular
   (fact "`foos-concat` concatenates the top two foos vectors"
     (register-type-and-check-instruction
         ?set-stack ?items foos-type ?instruction ?get-stack) => ?expected)
@@ -104,6 +133,23 @@
     :foos       '([] [])               :foos-concat      :foos       '([])
     :foos       '([1 2 3])             :foos-concat      :foos       '([1 2 3])
     )
+
+
+(tabular
+  (fact "foos-concat produces an error when the result is oversized"
+    (check-instruction-here-using-this
+      teeny
+      ?new-stacks ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction       ?expected
+    {:foos    '([1 2 3][4])}   :foos-concat       {:foos    '([4 1 2 3])
+                                                  :error  '()}
+     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     {:foos    '([1 2 3][4] 5 6 7 8 9)}
+                               :foos-concat       {:foos    '(5 6 7 8 9)
+                                                   :error   '({:item ":foos-concat tried to push an overized item to :foos", :step 0})}
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     )
 
 
 (tabular
@@ -127,6 +173,24 @@
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
 
+(tabular
+  (fact "foos-conj produces an error when the result is oversized"
+    (check-instruction-here-using-this
+      teeny
+      ?new-stacks ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction       ?expected
+    {:foos    '([1 2 3])
+     :foo     '(9)}             :foos-conj       {:foos    '([1 2 3 9])
+                                                  :foo     '()
+                                                  :error   '()}
+     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     {:foos    '([1 2 3] 4 5 6 7 8)
+      :foo     '(9)}             :foos-conj       {:foos    '(4 5 6 7 8)
+                                                   :foo     '()
+                                                   :error   '({:item ":foos-conj tried to push an overized item to :foos", :step 0})}
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     )
 
 
 (tabular
@@ -167,8 +231,8 @@
 
     ?new-stacks              ?instruction     ?expected
 
-    {:foos '([3 1 1 2 3 1 2 2])}        
-                             :foos-distinct       
+    {:foos '([3 1 1 2 3 1 2 2])}
+                             :foos-distinct
                                               {:foos '([3 1 2])}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos '([1 2 3])}       :foos-distinct   {:foos '([1 2 3])}
@@ -588,7 +652,7 @@
                                                 :foo  '(1 2 3 9.9)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos   '([])
-     :foo    '(9.9)}       :foos-shatter       {:foos '()   
+     :foo    '(9.9)}       :foos-shatter       {:foos '()
                                                 :foo  '(9.9)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos   '([1 2 3])
@@ -713,7 +777,7 @@
                                                  :foo    '(9.9)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos   '([])
-     :foo    '(9.9)}          :foos-reverse       {:foos   '([])  
+     :foo    '(9.9)}          :foos-reverse       {:foos   '([])
                                                  :foo    '(9.9)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
@@ -823,25 +887,25 @@
 
     {:foos   '([1 2 3 4 5 6]
                [99 88 77 66])
-     :scalar '(3 1)}      
+     :scalar '(3 1)}
                            :foos-pt-crossover       {:foos '([1 2 3 88 77 66]
                                                              [99 4 5 6])}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos   '([1 2 3 4 5 6]
                [99 88 77 66])
-     :scalar '(3/2 -11.7)}      
+     :scalar '(3/2 -11.7)}
                            :foos-pt-crossover       {:foos '([1 99 88 77 66]
                                                              [2 3 4 5 6])}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos   '([1 2 3 4 5 6]
                [])
-     :scalar '(3/2 -11.7)}      
+     :scalar '(3/2 -11.7)}
                            :foos-pt-crossover       {:foos '([1]
                                                              [2 3 4 5 6])}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos   '([]
                [99 88 77 66])
-     :scalar '(3/2 -11.7)}      
+     :scalar '(3/2 -11.7)}
                            :foos-pt-crossover       {:foos '([99 88 77 66]
                                                              [])}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -857,10 +921,10 @@
 
     ?new-stacks             ?instruction         ?expected
 
-    {:foos   '([1 2 3 4 5 6])}      
+    {:foos   '([1 2 3 4 5 6])}
                              :foos-items       {:exec '( (1 2 3 4 5 6) )}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:foos   '([])}      
+    {:foos   '([])}
                              :foos-items       {:exec '(  )} ;; because `(seq '())` = nil
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
@@ -876,28 +940,28 @@
 
     {:foos   '()
      :foo    '(0)
-     :scalar '(3 6)}      
+     :scalar '(3 6)}
                              :foos-fillvector       {:foos '( [0 0 0 0 0 0] )
                                                      :foo  '()
                                                      :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos   '()
      :foo    '(0)
-     :scalar '(0 603)}      
+     :scalar '(0 603)}
                              :foos-fillvector       {:foos '( [0 0 0] )
                                                      :foo  '()
                                                      :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos   '()
      :foo    '(0)
-     :scalar '(1 603)}      
+     :scalar '(1 603)}
                              :foos-fillvector       {:foos '( [0 0 0] )
                                                      :foo  '()
                                                      :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos   '()
      :foo    '(0)
-     :scalar '(-7/2 111)}      
+     :scalar '(-7/2 111)}
                              :foos-fillvector       {:foos (list
                                                       (into [] (take 111 (repeat 0))))
                                                      :foo  '()
@@ -905,7 +969,7 @@
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos   '()
      :foo    '(0)
-     :scalar '(-11/2 111)}      
+     :scalar '(-11/2 111)}
                              :foos-fillvector       {:foos '([0])
                                                      :foo  '()
                                                      :scalar '()}
@@ -924,7 +988,7 @@
 
     {:foos   '()
      :foo    (list (take 10000 (range)))
-     :scalar '(2 999)}      
+     :scalar '(2 999)}
                              :foos-fillvector       {:foos '()
                                                      :foo  '()
                                                      :error '("foos-fillvector produced oversized result")}
@@ -942,21 +1006,21 @@
 
     {:foos   '()
      :foo    '(1/2 3.4)
-     :scalar '(3 5)}      
+     :scalar '(3 5)}
                              :foos-cyclevector       {:foos '( [1/2 3.4 1/2 3.4 1/2] )
                                                      :foo  '(1/2 3.4)
                                                      :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos   '()
      :foo    '(1/2 3.4)
-     :scalar '(0 603)}      
+     :scalar '(0 603)}
                              :foos-cyclevector       {:foos '( [1/2 3.4 1/2] )
                                                      :foo  '(1/2 3.4)
                                                      :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos   '()
      :foo    '(1/2 3.4)
-     :scalar '(-7/2 111)}      
+     :scalar '(-7/2 111)}
                              :foos-cyclevector       {:foos (list
                                                        (into [] (take 111 (cycle [1/2 3.4]))))
                                                      :foo  '(1/2 3.4)
@@ -964,11 +1028,10 @@
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos   '()
      :foo    '()
-     :scalar '(-1.2246467991473532E-16 1356)}      
+     :scalar '(-1.2246467991473532E-16 1356)}
                              :foos-cyclevector       {:foos '([])
                                                      :foo  '()
                                                      :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
     )
-
