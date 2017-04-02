@@ -1,254 +1,154 @@
-(ns acceptance.stress-tests
-  (:require [push.instructions.dsl :as dsl]
-            [push.instructions.core :as instr]
-            [push.type.core :as types]
-            [push.type.definitions.complex :as complex]
-            [push.type.definitions.interval :as interval]
-            [push.util.stack-manipulation :as u]
-            [clojure.string :as s]
+(ns acceptance.new-stress-tests
+  (:require [push.core :as push]
+            [com.climate.claypoole :as cp]
+            [com.climate.claypoole.lazy :as lazy]
+            [acceptance.util :as util]
+            [push.util.code-wrangling :as fix]
+            [dire.core :refer [with-handler!]]
             )
   (:use midje.sweet)
-  (:use [push.interpreter.core])
-  (:use [push.interpreter.templates.one-with-everything])
   )
 
 
-(defn all-instructions
-  [interpreter]
-  (keys (:instructions interpreter)))
+;;;; setup
+
+(def my-interpreter (push/interpreter))
+(def program-size 1000)
+(def erc-scale 10)
+(def erc-prob 3/5)
 
 
-;; some random code generators
+;;;;
+
+(defn run-program-in-standardized-interpreter
+  [id interpreter program bindings]
+  (do
+    (push/run
+      interpreter
+      program
+      5000
+      :bindings bindings
+      :config {:step-limit 5000
+               :lenient true
+               :max-collection-size 131072} ;131072
+               )))
+
+(defn spit-prisoner-file
+  [program bindings exception-message]
+  (println "caught exception: ")
+  (println (str exception-message))
+  (spit
+    (str "test/acceptance/prisoners/prisoner-"
+         (.toString (java.util.UUID/randomUUID))
+         ".txt")
+    (pr-str
+      { :error exception-message
+        :program program
+        :bindings bindings}
+        )))
 
 
-(defn random-integer
-  ([] (long (rand-int 1000000000)))
-  ([range] (long (rand-int range))))
+(with-handler! #'run-program-in-standardized-interpreter
+  "If an interpreter raises an exception, dump a new prisoner file."
+  [java.lang.StackOverflowError, java.lang.NullPointerException]
+  (fn [e interpreter program bindings]
+    (do
+      (println
+        (str "\n\nWRITING FILE >>>>>>> " (str e)))
+      (println "\n\n saving prisoner: ")
+      (spit-prisoner-file
+        program
+        bindings
+        (.getMessage e)))
+        ))
 
 
-(defn random-integers
-  ([] (random-integers 1000000000))
-  ([range] (into [] (repeatedly (random-integer 10) #(random-integer range)))))
+(defn interpreter-details
+  [i]
+  { :program-size
+      (str
+        (count (:program i))
+        " (" (fix/count-collection-points (:program i)) ")")
+    :steps (:counter i)
+    :errors (count (push/get-stack i :error))
+    :argument-errors
+      (count
+        (filter
+          #(re-find
+            #"missing arguments"
+            (get % :item ""))
+          (push/get-stack i :error)))
+    ; :stack-points
+    ;   (reduce-kv
+    ;     (fn [counts key value]
+    ;       (assoc counts key
+    ;         (str (count value) ))) ;" (" (fix/count-collection-points value) ")"
+    ;     {}
+    ;     (:stacks i))
+    ; :binding-points
+    ;   (reduce-kv
+    ;     (fn [counts key value]
+    ;       (assoc counts key
+    ;         (str (count value) ))) ;" (" (fix/count-collection-points value) ")"
+    ;     {}
+    ;     (:bindings i))
+
+  })
+
+
+;; setup for stress test
+
+(defn sample-program
+  [i]
+  [i (util/some-program
+      program-size
+      erc-scale
+      erc-prob
+      my-interpreter)])
 
 
 
-(defn random-boolean
-  []
-  (> 0.5 (rand)))
-
-
-(defn random-booleans
-  [] (into [] (repeatedly (random-integer 10) #(random-boolean))))
-
-
-
-(defn random-float
-  ([] (random-float 100000))
-  ([r] (/ (double (random-integer r)) 256)))
-
-
-(defn random-floats
-  ([] (random-floats 100000))
-  ([range] (into [] (repeatedly (random-integer 10) #(random-float range)))))
-
-
-(defn random-rational
-  [] (/ (random-integer 200) (inc (random-integer 200))))
-
-
-
-(defn random-char
-  [] (char (+ 32 (random-integer 100))))
-
-
-(defn random-chars
-  [] (into [] (repeatedly (random-integer 10) #(random-char))))
-
-
-(defn random-string
-  [] (str (s/join (repeatedly (inc (random-integer 20)) #(random-char)))))
-
-
-(defn random-interval
-  []
-  (interval/make-interval
-    (random-float)
-    (random-rational)
-    :min-open? (random-boolean)
-    :max-open? (random-boolean)))
-
-
-(defn random-strings
-  [] (into [] (repeatedly (random-integer 10) #(random-string))))
-
-
-(defn any-input
-  [interpreter]
-  (rand-nth (keys (:bindings interpreter))))
-
-
-(defn any-instruction
-  [interpreter]
-  (rand-nth (all-instructions interpreter)))
-
-
-(defn bunch-a-junk
-  [interpreter how-much-junk]
-  (remove nil? (repeatedly how-much-junk
-                                  #(condp = (rand-int 30)
-                                     0 (random-integer)
-                                     1 (random-float)
-                                     2 (random-boolean)
-                                     3 (any-input interpreter)
-                                     4 (random-char)
-                                     5 (random-string)
-                                     6 (into '() (bunch-a-junk interpreter 5))
-                                     7 (random-integers 5000)
-                                     8 (random-booleans)
-                                     9 (random-floats 40)
-                                     10 (random-chars)
-                                     11 (random-strings)
-                                     12 (random-rational)
-                                     13 (bigdec (random-integer))
-                                     14 (complex/complexify (random-integer) (random-float))
-                                     15 (random-interval)
-                                     16 (into #{} (bunch-a-junk interpreter 8))
-
-                                     (any-instruction interpreter)))))
+(def sample-bindings
+  (assoc
+    (util/some-bindings 10 erc-scale erc-prob my-interpreter)
+    :OUTPUT nil))
 
 
 (defn timeout [timeout-ms callback]
  (let [fut (future (callback))
        ret (deref fut timeout-ms ::timed-out)]
    (when (= ret ::timed-out)
-     (do (future-cancel fut) (throw (Exception. "timed out"))))
+     (do
+       (future-cancel fut)
+       (throw (Exception. "timed out"))))
    ret))
 
 ;; (timeout 100 #(do (Thread/sleep 1000) (println "I finished")))
 
 
 
-(defn overloaded-interpreter
-  [& args]
- (apply make-everything-interpreter args))
+(defn launch-some-workers
+  [interpreter bindings how-many]
+  (cp/with-shutdown! [net-pool (cp/threadpool 16)]
+    (dorun
+      (cp/upmap net-pool
+        (fn [i]
+          (time
+            (println (str "\n"
+              (first i) ": "
+              (interpreter-details
+                (run-program-in-standardized-interpreter
+                  (first i)
+                  interpreter
+                  (second i)
+                  bindings))))))
+        (map sample-program (range how-many))
+        ))))
 
 
-
-(def all-the-letters (map keyword (map str (map char (range 97 123)))))
-
-
-(defn some-bindings
-  [i]
-  (zipmap
-      (take i all-the-letters)
-      (repeatedly #(bunch-a-junk (overloaded-interpreter) 10))
-      ))
-
-
-(defn random-program-interpreter
-  [i len]
-  (let [interpreter (overloaded-interpreter
-                      :config {:step-limit 50000 :lenient? true :max-collection-size 138072}
-                      :bindings (merge (some-bindings 10) {:OUTPUT nil}))]
-    (assoc interpreter :program (into [] (bunch-a-junk interpreter len)))))
-
-
-
-(defn run-with-wordy-try-block
-  [interpreter]
-  (try
-    (do
-      (println (str (:counter (run-n interpreter 10000)))))
-    (catch Exception e
-      (do
-        (println
-          (str "caught exception: "
-             (.getMessage e)
-             " running \n\n"
-             (pr-str {:program (:program interpreter) :bindings (:bindings interpreter)})))
-          (throw (Exception. (.getMessage e)))))))
-
-
-;; actual tests; they will run hot!
-
-(future-fact "I can create 10000 random programs without an exception"
-  :slow :acceptance
-  (do (println "creating and discarding 10000 random programs")
-      (count (repeatedly 10000 #(random-program-interpreter 10 1000)))) => 10000)
-
-
-
-
-
-;; the following monstrosity is an "acceptance test" for hand-running, at the moment.
-;; it's intended to give a bit more info about the inevitable bugs that
-;; only appear when random programs are executed by an interpreter, in a
-;; bit more of a complex context; by the time you read this, it might be
-;; commented out. If you want to run it, be warned it will spew all kinds
-;; of literally random text to the STDOUT stream.
-(fact "I can create and step through 10000 random programs without an exception"
-  :slow :acceptance
-  (do (println "creating and running 10000 random programs")
-      (dotimes [n 100000]
-        (let [rando (-> (reset-interpreter (random-program-interpreter 10 1000))
-                      (assoc-in , [:config :step-limit] 20000)
-                      (assoc-in , [:config :max-collection-size] 138072)
-                      )]
-          (try
-            (timeout 300000 #(do
-              ; (println (str "\n\n" n " : " (pr-str (:program rando)) "\n" (pr-str (:bindings rando))))
-              (loop [s rando]
-                (if (is-done? s)
-                  (println (str (:counter s)
-                                "\n"
-                                n
-                                "  O:"
-                                (get-in s [:bindings :OUTPUT])
-                                "  "
-                                "  R:"
-                                (into [] (get-in s [:stacks :return]))
-                                "\n"
-                                ; (reduce-kv
-                                ;   (fn [line k v]
-                                ;     (str line "," (count (get-in s [:stacks k]))))
-                                ;   ""
-                                ;   (:stacks s))
-                                ; (reduce-kv
-                                ;   (fn [line k v]
-                                ;     (str line "," (count (get-in s [:bindings k]))))
-                                ;   " **\n"
-                                ;   (:bindings s))
-                                ; "\n   " (get-in s [:bindings :ARGS])
-
-                            ))
-                  (recur
-                    (do
-                      (when (zero? (mod (:counter s) 1000))
-                        (println (str n " " (:counter s))))
-                      (step s)))))))
-              (catch Exception e (do
-                                    (println
-                                      (str "caught exception: "
-                                         (.getMessage e)
-                                         " running \n\n"
-                                         (pr-str {:error (.getMessage e)
-                                                  :program (:program rando)
-                                                  :bindings (:bindings rando)})))
-                                      (throw (Exception. (.getMessage e))))))))) =not=> (throws))
-
-
-
-
-;; the following monstrosity is an "acceptance test" for hand-running, at the moment.
-;; it's intended to give a bit more info about the inevitable bugs that
-;; only appear when random programs are executed by an interpreter, in a
-;; bit more of a complex context; by the time you read this, it might be
-;; commented out. If you want to run it, be warned it will spew all kinds
-;; of literally random text to the STDOUT stream.
-(future-fact "I can create & run 10000 large random programs for up to 5000 steps each without an exception"
-  :slow :acceptance
-  (do (println "creating and running 10000 interpreters in parallel")
-    (let [my-interpreters
-      (repeatedly 10000 #(reset-interpreter (random-program-interpreter 10 1000))) ]
-        (doall (pmap run-with-wordy-try-block my-interpreters))
-      )) =not=> (throws))
+(fact "run some workers in parallel"
+  :danger :parallel
+  (launch-some-workers
+    my-interpreter
+    sample-bindings
+    10000) =not=> (throws))
