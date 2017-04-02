@@ -8,7 +8,7 @@
             [clojure.edn :as edn]
             [clojure.java.io :as io]
             [push.core :as push]
-            [acceptance.new-stress-tests :as stress]
+            [acceptance.stress-tests :as stress]
           )
   (:use [push.type.definitions.complex]
         [push.type.definitions.interval]

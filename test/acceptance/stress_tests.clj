@@ -1,4 +1,4 @@
-(ns acceptance.new-stress-tests
+(ns acceptance.stress-tests
   (:require [push.core :as push]
             [com.climate.claypoole :as cp]
             [com.climate.claypoole.lazy :as lazy]
@@ -13,7 +13,7 @@
 ;;;; setup
 
 (def my-interpreter (push/interpreter))
-(def program-size 1000)
+(def program-size 300)
 (def erc-scale 10)
 (def erc-prob 3/5)
 
@@ -78,21 +78,27 @@
             #"missing arguments"
             (get % :item ""))
           (push/get-stack i :error)))
-    ; :stack-points
-    ;   (reduce-kv
-    ;     (fn [counts key value]
-    ;       (assoc counts key
-    ;         (str (count value) ))) ;" (" (fix/count-collection-points value) ")"
-    ;     {}
-    ;     (:stacks i))
-    ; :binding-points
-    ;   (reduce-kv
-    ;     (fn [counts key value]
-    ;       (assoc counts key
-    ;         (str (count value) ))) ;" (" (fix/count-collection-points value) ")"
-    ;     {}
-    ;     (:bindings i))
-
+    :oversize-errors
+      (count
+        (filter
+          #(re-find
+            #"oversize"
+            (get % :item ""))
+          (push/get-stack i :error)))
+    :stack-points
+      (reduce-kv
+        (fn [counts key value]
+          (assoc counts key
+            (str (count value) " (" (fix/count-collection-points value) ")")))
+        {}
+        (:stacks i))
+    :binding-points
+      (reduce-kv
+        (fn [counts key value]
+          (assoc counts key
+            (str (count value) " (" (fix/count-collection-points value) ")")))
+        {}
+        (:bindings i))
   })
 
 
