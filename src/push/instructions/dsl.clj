@@ -251,14 +251,15 @@
 (defn insert-as-nth-of
   "Place item stored in scratch variable `local` into the named stack so it becomes the new item in the `where` position. If `where` is an integer, the index deleted is `(mod where (count stackname))`; if it is a scratch reference, the numerical value is looked up. If the item stored under key `where` in scratch is not an integer, an error occurs. Exceptions when the stack is empty, no index is given, or the index is a :keyword that doesn't point to an integer. Pushes an `:error` item if the number of points in the item plus the number of items in the stack exceeds `:max-collection-size`."
   [[interpreter scratch] stackname kwd & {:keys [as at]}]
-    (let [old-stack (u/get-stack interpreter stackname)
-          idx       (valid-DSL-index at scratch)
-          which     (fix/safe-mod idx (inc (count old-stack)))
-          new-item  (kwd scratch)
-          item-size (fix/count-collection-points new-item)
-          limit     (get-max-collection-size interpreter)]
+    (let [old-stack   (u/get-stack interpreter stackname)
+          idx         (valid-DSL-index at scratch)
+          which       (fix/safe-mod idx (inc (count old-stack)))
+          new-item    (kwd scratch)
+          instruction (:current-item interpreter)
+          item-size   (fix/count-collection-points new-item)
+          limit       (get-max-collection-size interpreter)]
       (if (oversized-stack? interpreter old-stack new-item)
-          (oops/throw-stack-oversize-exception stackname)
+          (oops/throw-stack-oversize-exception instruction stackname)
           [(u/set-stack interpreter stackname
             (fix/insert-as-nth old-stack new-item which)) scratch]
             )))
@@ -266,7 +267,7 @@
 
 (with-handler! #'insert-as-nth-of
   "Handles attempts to add an over-large item to a stack"
-  #(re-find #"stack .+ is over size limit" (.getMessage %))
+  #(re-find #"tried to push an overized item to" (.getMessage %))
   (fn
     [e [interpreter scratch] stackname kwd & {:keys [as at]}]
       [(add-error-message! interpreter (.getMessage e))
@@ -276,23 +277,24 @@
 
 
 (defn push-onto
-  "Takes a PushDSL blob, a stackname (keyword) and a scratch key (also keyword), and puts item stored in the scratch variable on top of the named stack. If the scratch item is nil, there is no effect (and no exception); if it is a list, that is pushed _as a single item_ onto the stack (not concatenated). No type checking is used. If the total number of items in the stack and program-points in the item is more than the interpreter's `max-collection-size`, the item is not pushed and an :error is pushed to that stack instead. Does not warn when the keyword isn't defined."
+  "Takes a PushDSL blob, a stackname (keyword) and a scratch key (also keyword), and puts item stored in the scratch variable on top of the named stack. If the scratch item is nil, there is no effect (and no exception); if it is a list, that is pushed _as a single item_ onto the stack (not concatenated). No type checking is used. If the total number of items in the stack and program-points in the item is more than the interpreter's `max-collection-size`, the item is not pushed and an :error is pushed instead. Does not warn when the keyword isn't defined."
   [[interpreter scratch] stackname kwd]
   (let [old-stack   (u/get-stack interpreter stackname)
         new-item    (kwd scratch)
         too-big?    (oversized-stack? interpreter old-stack new-item)
         counter     (:counter interpreter)
+        instruction (:current-item interpreter)
         new-stack   (if (or (nil? new-item) too-big?)
                         old-stack
                         (fix/list! (conj old-stack new-item)))]
       (if too-big?
-        (oops/throw-stack-oversize-exception stackname)
+        (oops/throw-stack-oversize-exception instruction stackname)
         [(u/set-stack interpreter stackname new-stack) scratch])))
 
 
 (with-handler! #'push-onto
   "Handles attempts to add an over-large item to a stack"
-  #(re-find #"stack .+ is over size limit" (.getMessage %))
+  #(re-find #"tried to push an overized item to" (.getMessage %))
   (fn
     [e [interpreter scratch] stackname kwd & {:keys [as at]}]
       [(add-error-message! interpreter (.getMessage e))
@@ -303,20 +305,21 @@
 (defn push-these-onto
   "Takes a PushDSL blob, a stackname (keyword) and a vector of scratch keys (all keywords), and puts each item stored in the scratch variables onto top of the named stack, in order specified. If any (or all) of the stored items is nil, there is no effect (and no exception); those items are just skipped. No type checking is used. If the stack doesn't exist, it is created. However if the _sum_ of the sizes of the items pushed is larger than the interpreter's size limit, an `:error` is pushed instead and they are all erased."
   [[interpreter scratch] stackname keywords]
-  (let [old-stack (u/get-stack interpreter stackname)]
-    (let [new-items (map scratch keywords)
-          too-big?  (oversized-stack? interpreter old-stack new-items)
-          new-stack (if (or (nil? new-items) too-big?)
-                      old-stack
-                      (fix/list! (into old-stack (remove nil? new-items))))]
+  (let [old-stack     (u/get-stack interpreter stackname)]
+    (let [new-items   (map scratch keywords)
+          too-big?    (oversized-stack? interpreter old-stack new-items)
+          instruction (:current-item interpreter)
+          new-stack   (if (or (nil? new-items) too-big?)
+                        old-stack
+                        (fix/list! (into old-stack (remove nil? new-items))))]
       (if too-big?
-        (oops/throw-stack-oversize-exception stackname)
+        (oops/throw-stack-oversize-exception instruction stackname)
         [(u/set-stack interpreter stackname new-stack) scratch]))))
 
 
 (with-handler! #'push-these-onto
   "Handles attempts to add an over-large collections of items to a stack"
-  #(re-find #"stack .+ is over size limit" (.getMessage %))
+  #(re-find #"tried to push an overized item to" (.getMessage %))
   (fn
     [e [interpreter scratch] stackname kwd & {:keys [as at]}]
       [(add-error-message! interpreter (.getMessage e))

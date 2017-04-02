@@ -1,0 +1,10 @@
+:exec
+  3
+  :scalar-add
+  false
+  true
+  :boolean-or
+  9
+:scalar
+  1
+:boolean

@@ -98,6 +98,6 @@
 
 
 (defn throw-stack-oversize-exception
-  [stackname]
-  (throw (Exception. (str "Push runtime error: stack "
-                          stackname " is over size limit"))))
+  [instruction stackname]
+  (throw (Exception. (str instruction " tried to push an overized item to "
+                          stackname))))
