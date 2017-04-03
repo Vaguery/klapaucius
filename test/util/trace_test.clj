@@ -12,7 +12,7 @@
   (yaml-from-interpreter-stacks
     (push/interpreter :program [1 2 :scalar-add]
                       :bindings {:x 77})) =>
-  "boolean:\nbooleans:\nchar:\nchars:\ncode:\ncomplex:\ncomplexes:\nerror:\nexec:\n  - 1\n  - 2\n  - :scalar-add\ngenerator:\ninterval:\nintervals:\nlog:\nprint:\nquoted:\nref:\nrefs:\nreturn:\nscalar:\nscalars:\nset:\nsnapshot:\nstring:\nstrings:\ntagspace:\nunknown:\nvector:\nx:\n  - 77\n"
+  "boolean:\nbooleans:\nchar:\nchars:\ncode:\ncomplex:\ncomplexes:\nerror:\nexec:\n  - 1\n  - 2\n  - :scalar-add\ngenerator:\ninterval:\nintervals:\nprint:\nquoted:\nref:\nrefs:\nreturn:\nscalar:\nscalars:\nset:\nsnapshot:\nstring:\nstrings:\ntagspace:\nunknown:\nvector:\nx:\n  - 77\n"
   )
 
 (def fixture-interpreter
@@ -26,23 +26,26 @@
     (:bindings fixture-interpreter)
     (generators/some-bindings 5 10 4/5 (push/interpreter))))
 
-(def fixture-program
-  (generators/some-program 100 10 2/5 fixture-interpreter))
 
-;
-; (println (str fixture-program))
-; (println (str fixture-bindings))
+(def fixture-program
+  (generators/some-program 100 10 1/15 fixture-interpreter))
+
 
 (def loaded-interpreter
-  (i/recycle-interpreter
-    fixture-interpreter
-    fixture-program
-    :bindings fixture-bindings))
+  (push/merge-stacks
+    (i/recycle-interpreter
+      fixture-interpreter
+      fixture-program
+      :bindings fixture-bindings)
+    (generators/preloaded-stacks loaded-interpreter 30 10 2/5)
+    ))
+
+
 
 ;
 ; (loop [time  0
 ;        state loaded-interpreter]
-;   (when (and (< time 500) (not (i/is-done? state)))
+;   (when-not (or (> time 1000) (i/is-done? state))
 ;     (spit (str "test/util/yamls/test-" (format "%04d" time) ".txt")
 ;       (yaml-from-interpreter-stacks state))
 ;     (recur (inc time)

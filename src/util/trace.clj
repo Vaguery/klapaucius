@@ -3,9 +3,16 @@
             [push.interpreter.core :as i]
             ))
 
+
 (defn print-item
   [item]
-  (pr-str item))
+  (cond
+    (char? item)
+      (format "%04x" (int item))
+    (seq? item)
+      (pr-str (doall item))
+    :else
+      (pr-str item)))
 
 
 (defn print-one-stack
@@ -28,7 +35,7 @@
 
 (defn yaml-from-interpreter-stacks
   [interpreter]
-  (let [s (:stacks interpreter)
+  (let [s (dissoc (:stacks interpreter) :log)
         b (:bindings interpreter)]
     (str (print-whole-map s) (print-whole-map b))
     ))
