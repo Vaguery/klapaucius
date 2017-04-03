@@ -75,11 +75,18 @@
   (iv/make-interval (some-long i) (some-double i)))
 
 
-;; some useful constants
-
 (def all-the-variable-names
   (map keyword
        (map str (map char (range 97 123)))))
+
+(defn some-ref
+  "given an interpreter instance, it randomly selects one if the defined bindings, plus one from an additional collection of keywords"
+  [interpreter extra-bindings]
+  (rand-nth
+    (concat
+      (keys (:bindings interpreter))
+      all-the-variable-names)))
+
 
 
 ;; code generation
@@ -107,11 +114,13 @@
       (some-interval (* 100 scale))
       (vector-of-stuff some-long (* 10 scale) (rand-int scale))
       (vector-of-stuff some-double (* 10 scale) (rand-int scale))
-      (rand-nth all-the-variable-names)
       (some-codeblock (dec scale) erc-prob interpreter)
       (qc/push-quote (some-codeblock (dec scale) erc-prob interpreter))
       ])
-    (some-instruction interpreter)))
+    (if (< erc-prob (rand))
+      (some-instruction interpreter)
+      (some-ref interpreter all-the-variable-names)
+      )))
 
 
 (defn some-codeblock
