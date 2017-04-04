@@ -28,7 +28,7 @@
 
 
 (def fixture-program
-  (generators/some-program 100 10 1/15 fixture-interpreter))
+  (generators/some-program 1000 10 1/15 fixture-interpreter))
 
 
 (def loaded-interpreter
@@ -40,12 +40,13 @@
     (generators/preloaded-stacks loaded-interpreter 30 10 2/5)
     ))
 
+; (println (:stacks loaded-interpreter))
 
-
+;
 ;
 ; (loop [time  0
 ;        state loaded-interpreter]
-;   (when-not (or (> time 1000) (i/is-done? state))
+;   (when-not (or (> time 10000) (i/is-done? state))
 ;     (spit (str "test/util/yamls/test-" (format "%04d" time) ".txt")
 ;       (yaml-from-interpreter-stacks state))
 ;     (recur (inc time)

@@ -8,8 +8,6 @@ MiniMagick.configure do |config|
   config.shell_api = "posix-spawn"
 end
 
-# convert -size 800x600 xc:none empty.png
-
 src = "test/util"
 target = "test/util/pngs"
 
