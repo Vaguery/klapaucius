@@ -28,7 +28,7 @@
 
 
 (def fixture-program
-  (generators/some-program 100 10 1/15 fixture-interpreter))
+  (generators/some-program 400 10 1/15 fixture-interpreter))
 
 
 (def loaded-interpreter
@@ -40,6 +40,8 @@
     (generators/preloaded-stacks loaded-interpreter 30 10 2/5)
     ))
 
+
+; (println (:stacks loaded-interpreter))
 
 
 ;
