@@ -28,7 +28,7 @@
 
 
 (def fixture-program
-  (generators/some-program 1000 10 1/15 fixture-interpreter))
+  (generators/some-program 400 10 1/15 fixture-interpreter))
 
 
 (def loaded-interpreter
@@ -42,7 +42,6 @@
 
 ; (println (:stacks loaded-interpreter))
 
-;
 ;
 ; (loop [time  0
 ;        state loaded-interpreter]

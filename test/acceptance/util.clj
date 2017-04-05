@@ -2,8 +2,9 @@
   (:require [push.core :as push]
             [push.type.definitions.interval :as iv]
             [push.type.definitions.complex :as complex]
-            [push.type.definitions.quoted :as qc]
-    ))
+            [push.type.definitions.quoted :as qc])
+  (:use [midje.sweet])
+  )
 
 
 ;; literal generators
@@ -157,19 +158,20 @@
     :boolean (repeatedly how-many some-boolean)
     :booleans (repeatedly how-many
                 #(into []
-                  (repeatedly (rand-int (* how-many scale)) some-boolean)))
+                  (repeatedly (rand-int how-many) some-boolean)))
     :char (repeatedly how-many some-ascii)
     :chars (repeatedly how-many
             #(into []
-              (repeatedly (rand-int (* how-many scale)) some-ascii)))
+              (repeatedly (rand-int how-many) some-ascii)))
     :code (repeatedly how-many
-            #(some-codeblock (rand-int how-many) erc-prob interpreter))
+            #(some-codeblock (inc (rand-int how-many)) erc-prob interpreter))
     :complex (repeatedly how-many
               #(complex/complexify (some-long scale) (some-rational scale)))
     :complexes (repeatedly how-many
                 (fn []
-                  (into [] (repeatedly (rand-int how-many)
-                            #(complex/complexify (some-rational scale)        (some-double scale))))))
+                  (into [] (repeatedly (inc (rand-int how-many))
+                            #(complex/complexify (some-rational scale)
+                              (some-double scale))))))
     :ref (repeatedly how-many
           #(some-ref interpreter all-the-variable-names))
     ; ; :refs '()
@@ -181,6 +183,17 @@
     :string (repeatedly how-many #(some-string scale))
     :strings (repeatedly how-many
                 (fn [] (into [] (repeatedly (rand-int how-many) #(some-string scale)))))
+<<<<<<< HEAD
     :vector '()
+=======
+    :vector (repeatedly how-many
+              (fn []
+                (into []
+                  (repeatedly how-many
+                    #(some-codeblock (inc (rand-int how-many)) erc-prob interpreter)))))
+>>>>>>> b5964f38c530b154daabb637a6d4cd93f419cf57
     }
   )
+
+;
+; (println (str (preloaded-stacks (push/interpreter :bindings {:x 9 :y 99}) 20 10 4/5)))
