@@ -1,13 +1,10 @@
 (ns push.interpreter.core
-  (:require [push.util.stack-manipulation :as u]
-            [push.util.code-wrangling :as fix]
-            [push.util.exceptions :as oops]
-            [push.router.core :as router]
-            [push.util.code-wrangling :as fix]
-            )
-  (:use [push.interpreter.definitions])
-  (:use [push.util.type-checkers])
-  )
+  (:require [push.util.stack-manipulation :as stack]
+            [push.util.code-wrangling     :as util]
+            [push.util.exceptions         :as oops]
+            [push.router.core             :as router]
+            [push.util.type-checkers      :as types   :refer [pushcode?]]
+            ))
 
 
 (defn append-to-record
@@ -147,7 +144,7 @@
   [interpreter stack limit]
     (<=
       limit
-      (count (u/get-stack interpreter stack))))
+      (count (stack/get-stack interpreter stack))))
 
 
 (defn recognizes-instruction?
@@ -193,9 +190,9 @@
   "Takes an Interpreter an a Push item. If the Interpreter's :cycle-args? :config state is `true`, it will append the item passed in to the `:exec` stack. Otherwise it has no effect."
   [interpreter item]
   (let [cycle?   (get-in interpreter [:config :cycle-args?] false)
-        old-exec (u/get-stack interpreter :exec)]
+        old-exec (stack/get-stack interpreter :exec)]
     (if cycle?
-      (u/set-stack interpreter :exec
+      (stack/set-stack interpreter :exec
         (reverse (into (reverse old-exec) (list item))))
       interpreter)))
 
@@ -254,7 +251,7 @@
   [interpreter stackname item-list]
   (let [old-stack (get-in interpreter [:stacks stackname])
         new-stack (into old-stack (reverse item-list))]
-    (u/set-stack interpreter stackname new-stack)))
+    (stack/set-stack interpreter stackname new-stack)))
 
 
 (defn instruction?
@@ -314,7 +311,7 @@
             (execute-instruction interpreter item)
           :else (push-item interpreter :ref item))
       (routers-see? interpreter item) (route-item interpreter item)
-      (pushcode? item) (load-items interpreter :exec item)
+      (types/pushcode? item) (load-items interpreter :exec item)
       :else (handle-unknown-item interpreter item))))
 
 
@@ -383,8 +380,8 @@
   Returns true if any is true. Does not change interpreter state."
   [interpreter]
   (let [limit (step-limit interpreter)]
-    (or  (and (empty? (u/get-stack interpreter :exec))
-              (empty? (u/get-stack interpreter :snapshot)))
+    (or  (and (empty? (stack/get-stack interpreter :exec))
+              (empty? (stack/get-stack interpreter :snapshot)))
          (>= (:counter interpreter) limit))))
 
 
@@ -416,15 +413,15 @@
 (defn soft-snapshot-ending
   "Called when an Interpreter has an empty :exec stack but a stored :snapshot on that stack. Merges the stored stacks, keeps the persistent ones, combines the :exec stacks and puts the :return on top."
   [interpreter]
-  (let [returns       (u/get-stack interpreter :return)
-        current-exec  (u/get-stack interpreter :exec)
-        snapshots     (u/get-stack interpreter :snapshot)
+  (let [returns       (stack/get-stack interpreter :return)
+        current-exec  (stack/get-stack interpreter :exec)
+        snapshots     (stack/get-stack interpreter :snapshot)
         retrieved     (first snapshots)
         old-exec      (:exec retrieved)
-        new-exec      (fix/list! (concat (reverse returns) current-exec old-exec)) ]
-    (-> (u/merge-snapshot interpreter retrieved)
-        (u/set-stack , :exec new-exec)
-        (u/set-stack , :snapshot (pop snapshots))
+        new-exec      (util/list! (concat (reverse returns) current-exec old-exec)) ]
+    (-> (stack/merge-snapshot interpreter retrieved)
+        (stack/set-stack , :exec new-exec)
+        (stack/set-stack , :snapshot (pop snapshots))
         (increment-counter ,)
         (log-routed-item , "SNAPSHOT STACK POPPED")
         (set-doneness ,))))
@@ -435,7 +432,7 @@
   router, increments the counter. If the :exec stack is empty, does
   nothing."
   [interpreter]
-  (let [old-exec (u/get-stack interpreter :exec)]
+  (let [old-exec (stack/get-stack interpreter :exec)]
     (if-not (is-done? interpreter)
       (if (empty? old-exec)
         (soft-snapshot-ending interpreter)
@@ -443,7 +440,7 @@
               new-exec (pop old-exec)]
           (-> interpreter
               (increment-counter)
-              (u/set-stack :exec new-exec)
+              (stack/set-stack :exec new-exec)
               (handle-item next-item)
               (log-routed-item next-item)
               (set-doneness))))

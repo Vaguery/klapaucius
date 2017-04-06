@@ -1,8 +1,10 @@
 (ns push.instructions.core
-  (:require [push.util.exceptions :as oops]
-            [push.util.general :as util])
-  (:use [push.instructions.dsl])
-  )
+  (:require [push.util.exceptions
+              :as oops]
+            [push.util.general
+              :as util])
+  (:use     [push.instructions.dsl]
+            ))
 
 
 ;;;; integration of DSL with instruction definition
@@ -109,8 +111,8 @@
   [& transactions]
   (let [interpreter (gensym 'interpreter)
        words &form]
-    (do 
-    `(fn [~interpreter] 
+    (do
+    `(fn [~interpreter]
       (-> [~interpreter {:ARGS '()}] ~@transactions)))))
 
 
@@ -120,13 +122,13 @@
 (defn make-instruction
   "creates a new Instruction record instance"
   [token & {
-    :keys [docstring tags needs products transaction] 
+    :keys [docstring tags needs products transaction]
     :or { docstring (str "`" token "` needs a docstring!")
           tags #{}
           needs {}
           products {}
           transaction #(vector % {}) }}]
-  (with-meta (->Instruction 
+  (with-meta (->Instruction
                   token
                   docstring
                   tags
@@ -153,5 +155,3 @@
       :needs ~(total-needs steps)
       :products ~(total-products steps)
       :transaction (def-function-from-dsl ~@steps))))
-
-

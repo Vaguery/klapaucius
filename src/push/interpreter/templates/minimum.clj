@@ -1,7 +1,9 @@
 (ns push.interpreter.templates.minimum
-  (:require [push.interpreter.core :as i]
-            [push.interpreter.definitions :as d])
-  )
+  (:require [push.interpreter.core
+              :as i]
+            [push.interpreter.definitions
+              :as d]
+              ))
 
 
 (def minimal-stacks
@@ -11,7 +13,7 @@
     :code '()
     :snapshot '()
     :error '()
-    :scalar '() 
+    :scalar '()
     :exec '()
     :log '()
     :string '()
@@ -47,7 +49,7 @@
 
   ; [program types router stacks bindings instructions config counter done?]
 
-  [& {:keys 
+  [& {:keys
         [program types router stacks bindings instructions config counter done?]
       :or {program []
            types '()
@@ -60,7 +62,7 @@
            done? false}}]
   (let [all-stacks (merge minimal-stacks stacks)]
     (-> (d/make-interpreter
-          program 
+          program
           '()            ;; types are registered below
           router         ;; router
           (merge minimal-stacks stacks)

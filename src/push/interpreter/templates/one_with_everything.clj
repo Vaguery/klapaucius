@@ -1,39 +1,36 @@
 (ns push.interpreter.templates.one-with-everything
-  (:require [push.util.stack-manipulation :as u]
-            [push.interpreter.templates.minimum :as m]
-            [push.util.exceptions :as oops]
-            [push.interpreter.definitions :as defs])
-  (:use push.type.module.behavior)
-  (:use push.type.item.boolean)
-  (:use push.type.item.char)
-  (:use push.type.module.code)
-  (:use push.type.item.complex)
-  (:use push.type.module.exec)
-  (:use push.type.item.interval)
-  (:use push.type.item.scalar)
-  (:use push.type.item.string)
-  (:use push.type.item.ref)
-  (:use push.type.item.snapshot)
-  (:use push.type.module.print)
-  (:use push.type.module.log)
-  (:use push.type.module.error)
-  (:use push.type.item.generator)
-  (:use push.type.item.quoted)
-  (:use push.type.item.tagspace)
-  (:use push.type.item.vectorized)
-  (:use push.type.item.vector)
-  (:use push.type.item.set)
-  (:use [push.interpreter.core])
-  (:use [push.util.type-checkers])
-
-  (:use push.type.module.introspection)
-  (:use push.type.module.random-scalars)
-  )
-
+  (:require [push.interpreter.templates.minimum
+              :as m]
+            [push.interpreter.definitions
+              :as defs]
+            [push.interpreter.core
+              :as i])
+  (:use     [push.type.module.behavior]
+            [push.type.item.boolean]
+            [push.type.item.char]
+            [push.type.module.code]
+            [push.type.item.complex]
+            [push.type.module.exec]
+            [push.type.module.error]
+            [push.type.item.generator]
+            [push.type.item.interval]
+            [push.type.module.introspection]
+            [push.type.module.log]
+            [push.type.module.print]
+            [push.type.item.quoted]
+            [push.type.module.random-scalars]
+            [push.type.item.ref]
+            [push.type.item.scalar]
+            [push.type.item.snapshot]
+            [push.type.item.string]
+            [push.type.item.tagspace]
+            [push.type.item.vectorized]
+            [push.type.item.vector]
+            [push.type.item.set]
+            ))
 
 (def all-kinds-of-types
-  [
-    boolean-type
+  [ boolean-type
     char-type
     generator-type
     interval-type
@@ -44,8 +41,6 @@
     scalar-type
     complex-type
     snapshot-type
-
-
     (build-vectorized-type boolean-type)
     (build-vectorized-type char-type)
     (build-vectorized-type interval-type)
@@ -129,7 +124,7 @@
           (merge m/interpreter-default-config config)
           counter
           done?)
-        (register-types all-kinds-of-types)
-        (register-modules all-kinds-of-modules)
-        (bind-inputs bindings)
+        (i/register-types all-kinds-of-types)
+        (i/register-modules all-kinds-of-modules)
+        (i/bind-inputs bindings)
         )))

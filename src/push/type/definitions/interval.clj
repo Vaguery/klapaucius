@@ -1,5 +1,6 @@
 (ns push.type.definitions.interval
-  (:use [push.util.numerics]))
+  (:require [push.util.numerics :as num :refer [-∞,∞]]
+  ))
 
 
 ;; Interval records
@@ -173,12 +174,12 @@
         eo     (:max-open? i)]
     (cond
       (and (zero? s) (zero? e))
-        (make-interval -∞ ∞)
+        (make-interval num/-∞ num/∞)
       (zero? (:min i))
-        (make-interval (/ 1 (:max i)) ∞
+        (make-interval (/ 1 (:max i)) num/∞
           :min-open? (:max-open? i))
       (zero? (:max i))
-        (make-interval -∞ (/ 1 (:min i))
+        (make-interval num/-∞ (/ 1 (:min i))
           :max-open? (:min-open? i))
       (interval-include? i 0)
         (list
