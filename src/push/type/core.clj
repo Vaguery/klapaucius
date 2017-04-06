@@ -1,8 +1,6 @@
 (ns push.type.core
-  (:require [push.instructions.core :as core]
-            [push.instructions.dsl :as dsl]
-            [push.router.core :as router])
-            )
+  (:require [push.router.core :as router]
+            ))
 
 
 (def core-stacks

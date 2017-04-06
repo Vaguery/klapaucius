@@ -1,7 +1,5 @@
 (ns push.type.module.error
-  (:require [push.instructions.core :as core]
-            [push.type.core :as t]
-            [push.instructions.dsl :as d]
+  (:require [push.type.core            :as t]
             [push.instructions.aspects :as aspects]
             ))
 

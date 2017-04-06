@@ -1,7 +1,7 @@
 (ns push.type.module.print
-  (:require [push.instructions.core :as core]
+  (:require [push.instructions.dsl :as d]
+            [push.instructions.core :as i]
             [push.type.core :as t]
-            [push.instructions.dsl :as d]
             [push.instructions.aspects :as aspects]
             ))
 
@@ -10,7 +10,7 @@
 
 
 (def print-newline
-  (core/build-instruction
+  (i/build-instruction
     print-newline
     "`:print-newline` pushes a single newline character to the `:print` stack"
     :tags #{:print :io :base}
@@ -20,7 +20,7 @@
 
 
 (def print-space
-  (core/build-instruction
+  (i/build-instruction
     print-space
     "`:print-space` pushes a single space character to the `:print` stack"
     :tags #{:print :io :base}
@@ -36,4 +36,3 @@
         (t/attach-instruction print-newline)
         (t/attach-instruction print-space)
         ))
-

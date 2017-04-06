@@ -1,15 +1,15 @@
 (ns push.type.module.introspection
-  (:require [push.instructions.core :as core]
-            [push.type.core :as t]
-            [push.instructions.dsl :as d]
-            [push.util.numerics :as num]
+  (:require [push.instructions.dsl    :as d]
+            [push.instructions.core   :as i]
+            [push.util.numerics       :as n]
+            [push.type.core           :as t]
             [push.util.code-wrangling :as u]
             ))
 
 
 
 (def push-bindingcount
-  (core/build-instruction
+  (i/build-instruction
     push-bindingcount
     "`:push-bindingcount` pushes the number of registered bindings to `:scalar`"
     :tags #{:binding :introspection}
@@ -20,7 +20,7 @@
 
 
 (def push-bindings
-  (core/build-instruction
+  (i/build-instruction
     push-bindings
     "`:push-bindings` pushes a list (in sorted order) containing all the registered :bindings keywords to the :code stack"
     :tags #{:binding :introspection}
@@ -31,7 +31,7 @@
 
 
 (def push-bindingset
-  (core/build-instruction
+  (i/build-instruction
     push-bindingset
     "`:push-bindingset` pushes a set containing all the registered :bindings keywords to the :set stack"
     :tags #{:set :binding :introspection}
@@ -42,7 +42,7 @@
 
 
 (def push-counter
-  (core/build-instruction
+  (i/build-instruction
     push-counter
     "`:push-counter` pushes the current interpreter counter value to the `:scalar` stack"
     :tags #{:introspection}
@@ -52,7 +52,7 @@
 
 
 (def push-instructionset
-  (core/build-instruction
+  (i/build-instruction
     push-instructionset
     "`:push-instructionset` pushes a set containing all the registered :instruction keywords to the :set stack"
     :tags #{:set :introspection}
@@ -62,14 +62,14 @@
 
 
 (def push-nthref
-  (core/build-instruction
+  (i/build-instruction
     push-nthref
     "`:push-nthref` takes an `:scalar`, maps that value onto the number of `:bindings` it knows, and pushes the indexed key to `:ref` (after sorting the list of keywords)"
     :tags #{:binding :introspection}
     (d/consume-top-of :scalar :as :i)
     (d/save-bindings :as :known) ;; just the keys
     (d/calculate [:known :i]
-        #(if (empty? %1) 0 (num/scalar-to-index %2 (count %1))) :as :idx)
+        #(if (empty? %1) 0 (n/scalar-to-index %2 (count %1))) :as :idx)
     (d/calculate [:known :idx] #(when (seq %1) (nth (sort %1) %2)) :as :result)
     (d/push-onto :ref :result)
     ))
@@ -77,7 +77,7 @@
 
 
 (def push-refcycler
-  (core/build-instruction
+  (i/build-instruction
     push-refcycler
     "`:push-refcycler` pushes a code block to `:exec` that contains `(:push-bindings :code-cycler)`"
     :tags #{:binding :generator :introspection}

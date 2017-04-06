@@ -1,9 +1,9 @@
 (ns push.type.module.exec
-  (:require [push.instructions.core :as i]
-            [push.type.core :as t]
-            [push.instructions.dsl :as d]
+  (:require [push.instructions.dsl     :as d]
+            [push.instructions.core    :as i]
+            [push.util.numerics        :as n]
+            [push.type.core            :as t]
             [push.instructions.aspects :as aspects]
-            [push.util.numerics :as n]
             ))
 
 
