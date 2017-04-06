@@ -37,9 +37,9 @@
 
 
 (fact "`make-type` takes an optional :attributes set"
-  (:attributes (make-type 
-                  :numbery-thing 
-                  :recognized-by integer? 
+  (:attributes (make-type
+                  :numbery-thing
+                  :recognized-by integer?
                   :attributes #{:comparable :numeric})) => #{:comparable :numeric})
 
 
@@ -47,8 +47,8 @@
   (keys core-stacks) =>  (contains [:boolean
                                     :char
                                     :code
-                                    :exec 
-                                    :scalar 
+                                    :exec
+                                    :scalar
                                     :string] :in-any-order))
 
 
@@ -88,7 +88,6 @@
 
 
 (fact "`simple-1-in-predicate` requires a docstring"
-  (:docstring (push.type.core/simple-1-in-predicate "foo bar baz" :foo "pos?" pos?)) =>
+  (:docstring (instr/simple-1-in-predicate "foo bar baz" :foo "pos?" pos?)) =>
     "foo bar baz"
   )
-

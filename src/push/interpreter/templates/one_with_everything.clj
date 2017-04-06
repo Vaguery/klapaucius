@@ -1,10 +1,8 @@
 (ns push.interpreter.templates.one-with-everything
-  (:require [push.interpreter.templates.minimum
-              :as m]
-            [push.interpreter.definitions
-              :as defs]
-            [push.interpreter.core
-              :as i])
+  (:require [push.interpreter.templates.minimum :as m]
+            [push.interpreter.definitions :as defs]
+            [push.interpreter.core :as i]
+            )
   (:use     [push.type.module.behavior]
             [push.type.item.boolean]
             [push.type.item.char]

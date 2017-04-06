@@ -1,18 +1,14 @@
 (ns push.type.item.complex
-  (:require [push.instructions.core :as core]
-            [push.type.core :as t]
-            [push.router.core :as r]
-            [push.instructions.dsl :as d]
-            [push.instructions.aspects :as aspects]
+  (:require [push.instructions.dsl         :as d]
+            [push.instructions.core        :as i]
+            [clojure.math.numeric-tower    :as nt :refer [sqrt]]
+            [push.type.core                :as t]
+            [push.instructions.aspects     :as aspects]
             [push.type.definitions.complex :as complex]
-            [clojure.math.numeric-tower :as nt]
             ))
 
-
-
-
 (def complex-add
-  (core/build-instruction
+  (i/build-instruction
     complex-add
     "`:complex-add` pops the top two `:complex` items and pushes their sum; if adding them would cause an arithmetic error (for example, if one is a `bigdec` and the other a `rational`) then an `:error` is the result"
     :tags #{:complex :numeric}
@@ -26,11 +22,8 @@
     (d/record-an-error :from :warning)
     ))
 
-
-
-
 (def complex-conjugate
-  (core/build-instruction
+  (i/build-instruction
     complex-conjugate
     "`:complex-conjugate` pops the top `:complex` item and pushes its complex conjugate"
     :tags #{:complex :numeric}
@@ -42,7 +35,7 @@
 
 
 (def complex-divide
-  (core/build-instruction
+  (i/build-instruction
     complex-divide
     "`:complex-divide` pops the top two `:complex` items and pushes their quotient; if dividing them would cause an arithmetic error (for example, if one is a `bigdec` and the other a `rational`, or division by zero is attempted) then an `:error` is the result"
     :tags #{:complex :numeric}
@@ -64,7 +57,7 @@
 
 
 (def complex-infinite?
-  (core/build-instruction
+  (i/build-instruction
     complex-infinite?
     "`:complex-infinite?` pops the top `:complex` value and pushes `true` if either component is ∞ or -∞."
     :tags #{:arithmetic :base}
@@ -77,7 +70,7 @@
 
 
 (def complex-multiply
-  (core/build-instruction
+  (i/build-instruction
     complex-multiply
     "`:complex-multiply` pops the top two `:complex` values and pushes their product to `:complex`. If the result is or contains `NaN`, an `:error` is produced instead of the product. "
     :tags #{:arithmetic :base :dangerous}
@@ -94,7 +87,7 @@
 
 
 (def complex-norm
-  (core/build-instruction
+  (i/build-instruction
     complex-norm
     "`:complex-norm` pops the top `:complex` value, calculates its norm, and pushes that result to `:scalar`."
     :tags #{:arithmetic :base :dangerous}
@@ -109,7 +102,7 @@
 
 
 (def complex-reciprocal
-  (core/build-instruction
+  (i/build-instruction
     complex-reciprocal
     "`:complex-reciprocal` pops the top `:complex` value and pushes its reciprocal."
     :tags #{:arithmetic :base :dangerous}
@@ -127,7 +120,7 @@
 
 
 (def complex-scale
-  (core/build-instruction
+  (i/build-instruction
     complex-scale
     "`:complex-scale` pops the top `:complex` value and the top `:scalar`, and pushes their product to `:complex`."
     :tags #{:arithmetic :base :dangerous}
@@ -142,7 +135,7 @@
 
 
 (def complex-shift
-  (core/build-instruction
+  (i/build-instruction
     complex-shift
     "`:complex-shift` pops the top `:complex` value and the top `:scalar`, and pushes the result of adding the `:scalar` to each component of the `:complex` value."
     :tags #{:arithmetic :base :dangerous}
@@ -157,7 +150,7 @@
 
 
 (def complex-subtract
-  (core/build-instruction
+  (i/build-instruction
     complex-subtract
     "`:complex-subtract` pops the top two `:complex` items and pushes their difference; if subtracting them would cause an arithmetic error (for example, if one is a `bigdec` and the other a `rational`) then an `:error` is the result"
     :tags #{:complex :numeric}
@@ -174,7 +167,7 @@
 
 
 (def complex-zero
-  (core/build-instruction
+  (i/build-instruction
     complex-zero
     "`:complex-zero` pushes {re:0 im:0} onto `:complex`."
     :tags #{:complex}
@@ -186,7 +179,7 @@
 
 
 (def scalar-complexify
-  (core/build-instruction
+  (i/build-instruction
     scalar-complexify
     "`:scalar-complexify` pops the top `:scalar` value and pushes a new `:complex` item with 0 imaginary component."
     :tags #{:complex}

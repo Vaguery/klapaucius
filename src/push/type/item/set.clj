@@ -1,5 +1,5 @@
 (ns push.type.item.set
-  (:require [push.instructions.core :as core]
+  (:require [push.instructions.core :as i]
             [push.type.core :as t]
             [push.instructions.dsl :as d]
             [push.instructions.aspects :as aspects]
@@ -12,21 +12,21 @@
 
 
 (def set-difference
-  (t/simple-2-in-1-out-instruction
+  (i/simple-2-in-1-out-instruction
     "`:set-difference` pops the top two `:set` items, and pushes their difference"
     :set "difference" 'sets/difference))
 
 
 
 (def set-intersection
-  (t/simple-2-in-1-out-instruction
+  (i/simple-2-in-1-out-instruction
     "`:set-intersection` pops the top two `:set` items, and pushes their intersection"
     :set "intersection" 'sets/intersection))
 
 
 
 (def set-subset?
-  (core/build-instruction
+  (i/build-instruction
     set-subset?
     "`:set-subset?` pops the top two `:set` values (call them `A` and `B`, respectively). Pushes `true` if `B` is a subset of `A`, `false` otherwise."
     :tags #{:set :predicate}
@@ -39,7 +39,7 @@
 
 
 (def set-superset?
-  (core/build-instruction
+  (i/build-instruction
     set-superset?
     "`:set-superset?` pops the top two `:float` values (call them `A` and `B`, respectively). Pushes `true` if `B` is a superset of `A`, `false` otherwise."
     :tags #{:set :predicate}
@@ -52,7 +52,7 @@
 
 
 (def set-union
-  (t/simple-2-in-1-out-instruction
+  (i/simple-2-in-1-out-instruction
     "`:set-union` pops the top two `:set` items, and pushes their union"
     :set "union" 'sets/union))
 
@@ -77,11 +77,10 @@
       aspects/make-returnable
       aspects/make-storable
       aspects/make-taggable
-      aspects/make-visible 
+      aspects/make-visible
       (t/attach-instruction , set-difference)
       (t/attach-instruction , set-intersection)
       (t/attach-instruction , set-subset?)
       (t/attach-instruction , set-superset?)
       (t/attach-instruction , set-union)
       )))
-

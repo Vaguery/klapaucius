@@ -1,23 +1,17 @@
 (ns push.type.item.quoted
-  (:require [push.instructions.core :as core]
-            [push.type.core :as t]
+  (:require [push.type.definitions.quoted :as q :refer [quoted-code?]]
             [push.router.core :as r]
-            [push.instructions.dsl :as d]
-            [push.util.stack-manipulation :as u]
-            [push.util.code-wrangling :as fix]
-            [push.instructions.aspects :as aspects]
-            )
-  (:use push.type.definitions.quoted))
-  
+            [push.type.core :as t]
+            ))
+
 
 
 (def quoted-type
   (t/make-type  :quoted
                     :router (r/make-router :quoted
-                                           :recognizer quoted-code?
+                                           :recognizer q/quoted-code?
                                            :preprocessor :value
                                            :target-stack :code)
                     :attributes #{}
                     :instructions {}
-  ))
-
+                    ))

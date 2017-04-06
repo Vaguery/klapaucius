@@ -1,5 +1,5 @@
 (ns push.type.module.exec
-  (:require [push.instructions.core :as core]
+  (:require [push.instructions.core :as i]
             [push.type.core :as t]
             [push.instructions.dsl :as d]
             [push.instructions.aspects :as aspects]
@@ -11,7 +11,7 @@
 
 
 (def exec-do*count
-  (core/build-instruction
+  (i/build-instruction
     exec-do*count
     "`:exec-do*count` pops the top item of `:exec` and the top `:scalar`. It constructs a continuation depending on whether the `:scalar` is non-negative:
 
@@ -33,7 +33,7 @@
 
 
 (def exec-do*range
-  (core/build-instruction
+  (i/build-instruction
     exec-do*range
       "`:exec-do*count` pops the top item of `:exec` and the top two `:scalar` values (call them `end` and `start`, respectively). It constructs a continuation depending on whether the relation between `start` and `end`, which will (when interpreted) send the current `start` value to the `:scalar` stack, execute the `:exec` item, send updated indices to the `:scalar` stack, and then repeat the loop:
 
@@ -65,7 +65,7 @@
 
 
 (def exec-do*times
-  (core/build-instruction
+  (i/build-instruction
     exec-do*times
       "`:exec-do*times` pops the top item of `:exec` and the top `:scalar` value (call it `counter`. It constructs a continuation depending on whether the `counter` is positive, negative or zero, which is pushed to `:exec`:
 
@@ -89,7 +89,7 @@
 
 
 (def exec-if
-  (core/build-instruction
+  (i/build-instruction
     exec-if
     "`:exec-if` pops the top `:boolean` item and the top two `:exec` items (call the top one `A` and the second `B`). If the `:boolean` is `true`, it pushes `A` onto `:exec`, otherwise it pushes `B` onto `:exec`."
     :tags #{:complex :base}
@@ -102,14 +102,14 @@
 
 
 (def exec-k
-  (t/simple-2-in-1-out-instruction
+  (i/simple-2-in-1-out-instruction
     "`:exec-k` pops the top two `:exec` items, and pushes the top one back onto `:exec` (discarding the second one, in other words)"
     :exec "k" (fn [a b] b)))
 
 
 
 (def exec-laterloop
-  (core/build-instruction
+  (i/build-instruction
     exec-laterloop
     "`:exec-laterloop` pops the top item from the `:exec` stack, and the top `:scalar item. It calculates an index in the `:exec` stack based on the `:scalar` value, and pushes a continuation in the form `'([item] :exec-laterloop [item])` to the END of the `:exec` stack. If the `:exec` stack is empty except for the looping item, then the loop ceases and nothing is pushed."
     :tags #{:complex :base}
@@ -125,14 +125,14 @@
 
 
 (def exec-noop
-  (core/build-instruction
+  (i/build-instruction
     exec-noop
     "`:exec-noop does not affect the stacks"
     :tags #{:complex :base}))
 
 
 (def exec-s
-  (core/build-instruction
+  (i/build-instruction
     exec-s
     "`:exec-s` pops three items off the `:exec` stack; call them `A, `B` and `C`, from top to third items. It then pushes three items, onto `:exec`:
 
@@ -153,7 +153,7 @@
 
 
 (def exec-when
-  (core/build-instruction
+  (i/build-instruction
     exec-when
     "`:exec-when` pops the top of the `:exec` and `:boolean` stacks. If the `:boolean` is `true`, it pushes the item back onto `:exec` (otherwise nothing is pushed)."
 
@@ -166,7 +166,7 @@
 
 
 (def exec-do*while
-  (core/build-instruction
+  (i/build-instruction
     exec-do*while
     "`:exec-do*while` pops the top of the `:exec` stack. It builds and pushes a continuation to the `:exec` stack which is `'([item] :exec-while [item])` (_Note_ the instruction is `:exec-while` in the continuation form)."
     :tags #{:complex :base}
@@ -177,7 +177,7 @@
 
 
 (def exec-while
-  (core/build-instruction
+  (i/build-instruction
     exec-while
     "`:exec-while` pops the top of the `:exec` stack, and the top `:boolean`. It builds and pushes a continuation to the `:exec` stack based on the `:boolean` value:
 

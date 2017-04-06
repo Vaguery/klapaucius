@@ -1,6 +1,6 @@
 (ns push.type.definitions.interval
   (:require [push.util.numerics :as num :refer [-∞,∞]]
-  ))
+            ))
 
 
 ;; Interval records

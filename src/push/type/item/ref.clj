@@ -1,21 +1,14 @@
 (ns push.type.item.ref
-  (:require [push.instructions.core :as core]
-            [push.type.core :as t]
-            [push.instructions.dsl :as d]
+  (:require [push.instructions.dsl     :as d]
+            [push.instructions.core    :as i]
+            [push.type.core            :as t]
             [push.instructions.aspects :as aspects]
-            [push.util.numerics :as num]
+            [push.util.numerics        :as num]
             ))
 
 
-
-
-
-
-;; storage and retrieval
-
-
 (def ref-ARGS
-  (core/build-instruction
+  (i/build-instruction
     ref-ARGS
     "`:ref-ARGS` (1) pushes the top item currently stored in the special `:ARGS` binding onto `:exec`, and (2) pushes the keyword `:ARGS` onto the `:ref` stack."
     (d/calculate [] (fn [] :ARGS) :as :dummy)  ;; awful syntax needs to be fixed
@@ -27,7 +20,7 @@
 
 
 (def ref-clear
-  (core/build-instruction
+  (i/build-instruction
     ref-clear
     "`:ref-clear` pops the top `:ref` keyword and clears all items currently bound to that keyword in the Interpreter's binding table. The variable remains recognized, it simply has no bound values."
     :tags #{:binding}
@@ -38,7 +31,7 @@
 
 
 (def ref-cyclevector
-  (core/build-instruction
+  (i/build-instruction
     ref-cyclevector
     "`:ref-cyclevector` pops the top `:ref` item and the top two `:scalar` items (call them `scale` and `raw-count`, respectively). The `scale` value is used to determine whether to convert `raw-count` into a :few, :some, :many or :lots value, and then the appropriate number of elements from the `:ref`'s current stack are made into a single vector (by cycling) and pushed to `:exec`. If the `:ref` has no bound values, an empty vector is pushed."
     :tags #{:binding}
@@ -58,7 +51,7 @@
 
 
 (def ref-dump
-  (core/build-instruction
+  (i/build-instruction
     ref-dump
     "`:ref-dump` pops the top `:ref` keyword and pushes the entire current contents of that binding's stack onto the `:exec` stack as a single block"
     :tags #{:binding}
@@ -69,7 +62,7 @@
 
 
 (def ref-dump-tagspace
-  (core/build-instruction
+  (i/build-instruction
     ref-dump-tagspace
     "`:ref-dump-tagspace` pops the top `:ref` keyword and pushes the entire current contents of that binding's stack as a `:vector` item`, then pushes a continuation block to `:exec` that will subsequently convert the `:vector` to a `:tagspace`"
     :tags #{:binding}
@@ -84,7 +77,7 @@
 
 
 (def ref-exchange
-  (core/build-instruction
+  (i/build-instruction
     ref-exchange
     "`:ref-exchange` pops the top two `:ref` keywords; if they are references to the same binding, there is no effect; if either or both is an undefined `:ref`, it has an empty value stack created as needed"
     :tags #{:binding}
@@ -99,7 +92,7 @@
 
 
 (def ref-fillvector
-  (core/build-instruction
+  (i/build-instruction
     ref-fillvector
     "`:ref-fillvector` pops the top `:ref` item and the top two `:scalar` items (call them `scale` and `raw-count`, respectively). The `scale` value is used to determine whether to convert `raw-count` into a :few, :some, :many or :lots value, and then the appropriate number of copies of the `:ref`'s current value are made into a single vector and pushed to `:exec`. If the `:ref` has no bound values, an empty vector is pushed."
     :tags #{:binding}
@@ -120,7 +113,7 @@
 
 
 (def ref-forget
-  (core/build-instruction
+  (i/build-instruction
     ref-forget
     "`:ref-forget` pops the top `:ref` keyword and clears the entire binding currently associated with it, key and all. NOTE: this is permitted to erase an `:input` binding."
     :tags #{:binding}
@@ -130,7 +123,7 @@
 
 
 (def ref-fullquote
-  (core/build-instruction
+  (i/build-instruction
     ref-fullquote
     "`:ref-fullquote` pops the top `:ref` keyword and pushes the entire current contents of that binding's stack onto the `:code` stack as a single block"
     :tags #{:binding}
@@ -141,7 +134,7 @@
 
 
 (def ref-known?
-  (core/build-instruction
+  (i/build-instruction
     ref-known?
     "`:ref-known?` pops the top `:ref` keyword and `true` if it is one of the defined `:binding` keys"
     :tags #{:binding}
@@ -153,7 +146,7 @@
 
 
 (def ref-lookup
-  (core/build-instruction
+  (i/build-instruction
     ref-lookup
     "`:ref-lookup` pops the top `:ref` keyword and pushes a copy of the top item on its stack onto the `:exec` stack"
     :tags #{:binding}
@@ -164,7 +157,7 @@
 
 
 (def ref-new
-  (core/build-instruction
+  (i/build-instruction
     ref-new
     "`:ref-new` creates a new (randomly-named) `:ref` keyword and pushes it to that stack"
     :tags #{:binding}
@@ -174,7 +167,7 @@
 
 
 (def ref-peek
-  (core/build-instruction
+  (i/build-instruction
     ref-peek
     "`:ref-peek` pops the top `:ref` keyword and pushes a copy of the top item on its stack onto the `:exec` stack; it then returns the `:ref` to that stack"
     :tags #{:binding}
@@ -186,7 +179,7 @@
 
 
 (def ref->vector
-  (core/build-instruction
+  (i/build-instruction
     ref->vector
     "`:ref->vector` pops the top `:ref` keyword and copies its entire stack of contents into a new `:vector` item, which is pushed to `:exec`"
     :tags #{:binding}

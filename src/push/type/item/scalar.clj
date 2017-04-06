@@ -1,5 +1,5 @@
 (ns push.type.item.scalar
-  (:require [push.instructions.core :as core]
+  (:require [push.instructions.core :as i]
             [push.type.core :as t]
             [push.instructions.dsl :as d]
             [push.util.code-wrangling :as fix]
@@ -15,14 +15,14 @@
 
 
 
-(def scalar-abs (t/simple-1-in-1-out-instruction
+(def scalar-abs (i/simple-1-in-1-out-instruction
   "`:scalar-abs` pushes the abs of the top `:scalar` item"
   :scalar "abs" 'nt/abs))
 
 
 
 (def scalar-add
-  (core/build-instruction
+  (i/build-instruction
     scalar-add
     "`:scalar-add` pops the top two `:scalar` values and pushes their sum to `:scalar`. If there is a runtime error (for example if the arguments are a rational and a `bigdec` value, or the result is `NaN`) an `:error` is pushed."
     :tags #{:arithmetic :base :dangerous}
@@ -39,7 +39,7 @@
 
 
 (def scalar-arccosine
-  (core/build-instruction
+  (i/build-instruction
     scalar-arccosine
     "`:scalar-arccosine` pops the top `:scalar` value, and if it is between -1.0 and 1.0 it returns the arccos(theta), for theta between 0.0 and π; otherwise it consumes the argument and adds an :error"
     :tags #{:arithmetic :base :dangerous}
@@ -53,7 +53,7 @@
 
 
 (def scalar-arcsine
-  (core/build-instruction
+  (i/build-instruction
     scalar-arcsine
     "`:scalar-arcsine` pops the top `:scalar` value, and if it is between -1.0 and 1.0 it returns the asin(theta), for theta between 0.0 and π; otherwise it consumes the argument and adds an :error"
     :tags #{:arithmetic :base :dangerous}
@@ -66,32 +66,32 @@
 
 
 
-(def scalar-arctangent (t/simple-1-in-1-out-instruction
+(def scalar-arctangent (i/simple-1-in-1-out-instruction
   ":`scalar-arctangent` pops the top `:scalar` and pushes atan(theta) (assuming the angle lies between ±π/2) to `:scalar`"
   :scalar "arctangent" #(Math/atan %)))
 
 
 
-(def scalar-ceiling (t/simple-1-in-1-out-instruction
+(def scalar-ceiling (i/simple-1-in-1-out-instruction
   "`:scalar-ceiling` pops the top `:scalar` value, and pushes the next-largest integer value"
   :scalar "ceiling" 'nt/ceil))
 
 
 
-(def scalar-cosine (t/simple-1-in-1-out-instruction
+(def scalar-cosine (i/simple-1-in-1-out-instruction
   "`:scalar-cosine` pushes the cosine of the top `:scalar` item, read as radians"
   :scalar "cosine" #(Math/cos %)))
 
 
 
-(def scalar-dec (t/simple-1-in-1-out-instruction
+(def scalar-dec (i/simple-1-in-1-out-instruction
   ":`scalar-dec` reduces the top `:scalar` value by 1"
   :scalar "dec" 'dec'))
 
 
 
 (def scalar-divide
-  (core/build-instruction
+  (i/build-instruction
     scalar-divide
     "`:scalar-divide` pops the top two `:scalar` values (call them `denominator` and `numerator`, respectively). If `denominator` is 0 or the result is `NaN`, it consumes the arguments but pushes an `:error`; if not, it pushes their quotient."
     :tags #{:arithmetic :base :dangerous}
@@ -109,7 +109,7 @@
 
 
 (def scalar-E
-  (core/build-instruction
+  (i/build-instruction
     scalar-E
     "`:scalar-E` pushes the value E to the :scalar stack."
     :tags #{:arithmetic :base}
@@ -120,7 +120,7 @@
 
 
 (def scalar-infinite?
-  (core/build-instruction
+  (i/build-instruction
     scalar-infinite?
     "`:scalar-infinite?` pops the top `:scalar` and pushes `true` or `false` depending on whether it is (positive or negative) infinite."
     :tags #{:arithmetic :base}
@@ -131,14 +131,14 @@
 
 
 
-(def scalar-floor (t/simple-1-in-1-out-instruction
+(def scalar-floor (i/simple-1-in-1-out-instruction
   "`:scalar-floor` pops the top `:scalar` value, and pushes the next-smaller integer value"
   :scalar "floor" 'nt/floor))
 
 
 
 (def scalar-fractional
-  (core/build-instruction
+  (i/build-instruction
     scalar-fractional
     "`:scalar-fractional` pushes just the fractional part of the top `:scalar`."
     :tags #{:arithmetic :base}
@@ -148,14 +148,14 @@
 
 
 
-(def scalar-inc (t/simple-1-in-1-out-instruction
+(def scalar-inc (i/simple-1-in-1-out-instruction
   "`:scalar-inc` adds 1 to the top `:scalar` item"
   :scalar "inc" 'inc'))
 
 
 
 (def scalar-ln
-  (core/build-instruction
+  (i/build-instruction
     scalar-ln
     "`:scalar-ln` pops the top `:scalar` value. If it is a strictly positive (non-zero) value, its natural logarithm is pushed; otherwise, the argument is consumed but an error is pushed to the :error stack."
     :tags #{:arithmetic :base :dangerous}
@@ -169,7 +169,7 @@
 
 
 (def scalar-ln1p
-  (core/build-instruction
+  (i/build-instruction
     scalar-ln1p
     "`:scalar-ln1p` pops the top `:scalar` value. If it is a value greater than -1.0, `(Math/log1p x)` is pushed; otherwise, it consumes the argument and an error is pushed to the :error stack."
     :tags #{:arithmetic :base :dangerous}
@@ -185,7 +185,7 @@
 
 
 (def scalar-log10
-  (core/build-instruction
+  (i/build-instruction
     scalar-log10
     "`:scalar-log10` pops the top `:scalar` value. If it is a strictly positive (non-zero) value, its base-10 logarithm is pushed; otherwise, the argument is consumed but an error is pushed to the :error stack."
     :tags #{:arithmetic :base :dangerous}
@@ -200,7 +200,7 @@
 
 
 (def scalar-modulo
-  (core/build-instruction
+  (i/build-instruction
     scalar-modulo
     "`:scalar-modulo` pops the top two `:scalar` values (call them `denominator` and `numerator`, respectively). If `denominator` is zero, it discards the arguments and produces an `:error`. If the result would be `NaN`, it pushes an `:error`. Otherwise, it pushes `(mod numerator denominator)`."
     :tags #{:arithmetic :base :dangerous}
@@ -219,7 +219,7 @@
 
 
 (def scalar-multiply
-  (core/build-instruction
+  (i/build-instruction
     scalar-multiply
     "`:scalar-multiply` pops the top two `:scalar` values and pushes their product to `:scalar`. If there is a runtime error (for example if the arguments are a rational and a `bigdec` value, or the result is `NaN`) an `:error` is pushed."
     :tags #{:arithmetic :base :dangerous}
@@ -236,7 +236,7 @@
 
 
 (def scalar-π
-  (core/build-instruction
+  (i/build-instruction
     scalar-π
     "`:scalar-π` pushes the value π to the :scalar stack."
     :tags #{:arithmetic :base}
@@ -253,7 +253,7 @@
 
 
 (def scalar-power
-  (core/build-instruction
+  (i/build-instruction
     scalar-power
     "`:scalar-power` pops the top two `:scalar` values (call them `exponent` and `base` respectively). It calculates `(numeric-tower/expt base exponent)`. If the absolute value of the product of the exponent and `(Math/log base)` is more than 2^16, no result is returned; instead, an `:error` is pushed. Unlike most `:scalar` instructions, if the value is positive or negative `Infinity`, an error is also produced."
     :tags #{:arithmetic :base :dangerous}
@@ -281,7 +281,7 @@
 
 
 (def scalar-reciprocal
-  (core/build-instruction
+  (i/build-instruction
     scalar-reciprocal
     "`:scalar-reciprocal` pushes the reciprocal of the top `:scalar`."
     :tags #{:arithmetic :base :dangerous}
@@ -291,25 +291,25 @@
 
 
 
-(def scalar-round (t/simple-1-in-1-out-instruction
+(def scalar-round (i/simple-1-in-1-out-instruction
   "`:scalar-round` pops the top `:scalar` value, and pushes the closest integer value"
   :scalar "round" 'nt/round))
 
 
-(def scalar-sign (t/simple-1-in-1-out-instruction
+(def scalar-sign (i/simple-1-in-1-out-instruction
   "`:scalar-sign` pops the top `:scalar` item and pushes -1 if it's negative, 0 if it's zero, and 1 if it's positive"
   :scalar "sign" #(compare %1 0)))
 
 
 
-(def scalar-sine (t/simple-1-in-1-out-instruction
+(def scalar-sine (i/simple-1-in-1-out-instruction
   "`:scalar-sine` pushes the sine of the top `:scalar` item, read as an angle in radians"
   :scalar "sine" #(Math/sin %1)))
 
 
 
 (def scalar-sqrt
-  (core/build-instruction
+  (i/build-instruction
     scalar-sqrt
     "`:scalar-sqrt` pops the top `:scalar` value. If it's not negative, its square root is pushed to `:scalar`; if it is complex, then a `:complex` is pushed; otherwise, the argument is consumed and an error is pushed to the `:error` stack."
     :tags #{:arithmetic :base :dangerous}
@@ -322,7 +322,7 @@
 
 
 (def scalar-subtract
-  (core/build-instruction
+  (i/build-instruction
     scalar-subtract
     "`:scalar-subtract` pops the top two `:scalar` values and pushes their difference to `:scalar`, subtracting the top item from the second. If there is a runtime error (for example if the arguments are a rational and a `bigdec` value, or the result is `NaN`) an `:error` is pushed."
     :tags #{:arithmetic :base :dangerous}
@@ -339,7 +339,7 @@
 
 
 (def scalar-tangent
-  (core/build-instruction
+  (i/build-instruction
     scalar-tangent
     "`:scalar-tangent` pops the top `:scalar` value and calculates tan(theta). If the result is a non-infinite number, it pushes that to :scalar; otherwise, it consumes the argument and pushes an :error"
     :tags #{:arithmetic :base :dangerous}
@@ -359,7 +359,7 @@
 
 
 (def integer-totalistic3
-  (core/build-instruction
+  (i/build-instruction
     integer-totalistic3
     "`:integer-totalistic3` pops the top `:scalar`. It is turned into an integer using `(bigint x)`. Then each digit is replaced by the sum of its current value and the two neighbors to the right, modulo 10, wrapping cyclically around the number. An infinite argument produces a result of 0."
     :tags #{:numeric :exotic}
@@ -375,7 +375,7 @@
 
 
 (def scalar-few
-  (core/build-instruction
+  (i/build-instruction
     scalar-few
     "`:scalar-few` pops the top `:scalar` value, and calculates `(mod 10 x)`."
     :tags #{:numeric}
@@ -386,7 +386,7 @@
 
 
 (def scalar-lots
-  (core/build-instruction
+  (i/build-instruction
     scalar-lots
     "`:scalar-lots` pops the top `:scalar` value, and pushes `(mod 10000 x)`."
     :tags #{:numeric}
@@ -397,7 +397,7 @@
 
 
 (def scalar-many
-  (core/build-instruction
+  (i/build-instruction
     scalar-many
     "`:scalar-many` pops the top `:scalar` value, and calculates `(mod 1000 x)`."
     :tags #{:numeric}
@@ -408,7 +408,7 @@
 
 
 (def scalar-some
-  (core/build-instruction
+  (i/build-instruction
     scalar-some
     "`:scalar-some` pops the top `:scalar` value, and calculates `(mod 100 x)`."
     :tags #{:numeric}
@@ -424,7 +424,7 @@
 
 
 (def boolean->float
-  (core/build-instruction
+  (i/build-instruction
     boolean->float
     "`:boolean->float` pops the top `:boolean` value; if it is `true`, it pushes 1.0, and if `false` it pushes `0.0`"
     :tags #{:conversion :base :numeric}
@@ -435,7 +435,7 @@
 
 
 (def boolean->signedfloat
-  (core/build-instruction
+  (i/build-instruction
     boolean->signedfloat
     "`:boolean->signedfloat` pops the top `:boolean` value; if it is `true`, it pushes 1.0, and if `false` it pushes `-1.0`"
     :tags #{:conversion :base :numeric}
@@ -446,7 +446,7 @@
 
 
 (def boolean->integer
-  (core/build-instruction
+  (i/build-instruction
     boolean->integer
     "`:boolean->integer` pops the top `:boolean`. If it's `true`, it pushes 1; if `false`, it pushes 0."
     :tags #{:base :conversion}
@@ -457,7 +457,7 @@
 
 
 (def boolean->signedint
-  (core/build-instruction
+  (i/build-instruction
     boolean->signedint
     "`:boolean->signedint` pops the top `:boolean`. If it's `true`, it pushes 1; if `false`, it pushes -1."
     :tags #{:base :conversion}
@@ -468,7 +468,7 @@
 
 
 (def char->integer
-  (core/build-instruction
+  (i/build-instruction
     char->integer
     "`:char->integer` pops the top `:char` item, and converts it to an (integer) index"
     :tags #{:base :conversion}
@@ -481,7 +481,7 @@
 
 
 (def scalar-bigdec?
-  (core/build-instruction
+  (i/build-instruction
     scalar-bigdec?
     "`:scalar-bigdec?` pops the top `:scalar` item, and pushes `true` if it is a Clojure bigdec"
     :tags #{:numeric :predicate}
@@ -492,7 +492,7 @@
 
 
 (def scalar-float?
-  (core/build-instruction
+  (i/build-instruction
     scalar-float?
     "`:scalar-float?` pops the top `:scalar` item, and pushes `true` if it is a Clojure float or is a BigDecimal"
     :tags #{:numeric :predicate}
@@ -504,7 +504,7 @@
 
 
 (def scalar-integer?
-  (core/build-instruction
+  (i/build-instruction
     scalar-integer?
     "`:scalar-integer?` pops the top `:scalar` item, and pushes `true` if it is a Clojure integer"
     :tags #{:numeric :predicate}
@@ -515,7 +515,7 @@
 
 
 (def scalar-ratio?
-  (core/build-instruction
+  (i/build-instruction
     scalar-ratio?
     "`:scalar-ratio?` pops the top `:scalar` item, and pushes `true` if it is a ratio"
     :tags #{:numeric :predicate}

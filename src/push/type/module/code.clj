@@ -1,5 +1,5 @@
 (ns push.type.module.code
-  (:require [push.instructions.core :as core]
+  (:require [push.instructions.core :as i]
             [push.type.core :as t]
             [push.instructions.dsl :as d]
             [push.util.stack-manipulation :as stacks]
@@ -16,7 +16,7 @@
 
 
 (def code-append
-  (core/build-instruction
+  (i/build-instruction
     code-append
     "`code-append` concatenates the top :code item to the end of the second :code item. If either argument isn't a list, it's made into one first. If the result would be larger than :max-collection-size points, it is discarded and an `:error` is pushed instead"
     :tags #{:complex :base}
@@ -37,14 +37,14 @@
 
 
 (def code-atom?
-  (t/simple-1-in-predicate
+  (i/simple-1-in-predicate
     "`:code-atom?` pushes `true` if the top `:code` item is not a collection"
       :code "atom?" #(not (coll? %1))))
 
 
 
 (def code-cons
-  (core/build-instruction
+  (i/build-instruction
     code-cons
     "`:code-cons` pops the top two `:code` items. If the first one is a list, it conjoins the second item to that; if it's not a list, it makes it one, then conjoins. If the result would be larger than :max-code-points it is discarded, and an `:error` is pushed instead."
     :tags #{:complex :base}
@@ -63,14 +63,14 @@
 
 
 
-(def code-container (t/simple-2-in-1-out-instruction
+(def code-container (i/simple-2-in-1-out-instruction
   "`:code-container` pops the top two `:code` items. It performs a depth-first traversal of the second code item (if it is a list or not), looking for duplicates of the first item. If it finds one, then the _parent_ node of the tree is returned as a list. If the item is not found, or there is no parent (the two items are identical), there is no return value."
   :code "container" #(first (fix/containers-in %1 %2))))
 
 
 
 (def code-contains?
-  (core/build-instruction
+  (i/build-instruction
     code-contains?
     "`:code-contains?` pops the top two items from the `:code` stack, and pushes `true` if the second one is contained (as any subtree) in the first, or if they are identical."
     :tags #{:complex :base}
@@ -82,7 +82,7 @@
 
 
 (def code-do
-  (core/build-instruction
+  (i/build-instruction
     code-do
     "`:code-do` makes a copy of the top `:code` item, and builds a continuation
       `'([top code item] :code-pop)`
@@ -95,7 +95,7 @@
 
 
 (def code-do*
-  (core/build-instruction
+  (i/build-instruction
     code-do*
     "`:code-do*` pops the top `:code` item, and pushes it onto the `:exec` stack"
     :tags #{:complex :base}
@@ -105,7 +105,7 @@
 
 
 (def code-do*count
-  (core/build-instruction
+  (i/build-instruction
     code-do*count
     "`:code-do*count` pops the top item of `:code` and the top `:scalar`. It constructs a continuation depending on whether the `:scalar` is positive:
 
@@ -127,7 +127,7 @@
 
 
 (def code-do*range
-  (core/build-instruction
+  (i/build-instruction
     code-do*range
     "`:code-do*range` pops the top item of `:code` and the top two `:scalar` values (call them `end` and `start`, respectively, with `end` being the top `:scalar` item). It constructs a continuation depending on the relation between the `end` and `start` values:
 
@@ -155,7 +155,7 @@
 
 
 (def code-do*times
-  (core/build-instruction
+  (i/build-instruction
     code-do*times
     "`:code-do*times` pops the top item of `:code` and the top `:scalar` value (call it `counter`). It constructs a continuation depending on whether `counter` is positive, zero or negative:
 
@@ -178,7 +178,7 @@
 
 
 (def code-drop
-  (core/build-instruction
+  (i/build-instruction
     code-drop
     "`:code-drop` pops the top `:code` and `:scalar` items. It wraps the `:code` item in a list if it isn't one, and forces the scalar into an index range. It then pushes the result of `(drop index code)`."
     :tags #{:complex :base}
@@ -193,7 +193,7 @@
 
 
 (def code-extract
-  (core/build-instruction
+  (i/build-instruction
     code-extract
     "`:code-extract` pops the top `:code` and `:scalar` stacks. It counts the number of code points (that is, lists and items in lists, not other collections) in the `:code` item, then forces the `:scalar` to a suitable index range. It then returns the indexed component of the `:code`, using a depth-first traversal."
     :tags #{:complex :base}
@@ -208,14 +208,14 @@
 
 
 
-(def code-first (t/simple-1-in-1-out-instruction
+(def code-first (i/simple-1-in-1-out-instruction
   "`:code-first` examines the top `:code` item to determine if it's a code block (not a vector, map, record or other collection type!) If it is, the function returns its first item, otherwise the item itself it returned."
   :code "first" #(if (seq? %) (first %) %)))
 
 
 
 (def code-if
-  (core/build-instruction
+  (i/build-instruction
     code-if
     "`:code-if` pops two items from the `:code` stack and one from the `:boolean` stack. If the `:boolean` is `true`, it pushes the second `:code` item back; if false, the first `:code` item. The other popped `:code` item is discarded."
     :tags #{:complex :base}
@@ -228,7 +228,7 @@
 
 
 (def code-insert
-  (core/build-instruction
+  (i/build-instruction
     code-insert
     "`:code-insert` pops the top two `:code` items (call them `A` and `B` respectively), and the top `:scalar`. It counts the number of code points in `B` (that is, lists and items in lists, not other collections), then forces the `:scalar` to a suitable index range. It then pushes the result when the indexed node of `B` is replaced with `A`. If the result would be larger than :max-collection-size, it is discarded and an `:error` is pushed instead."
     :tags #{:complex :base}
@@ -250,7 +250,7 @@
 
 
 (def code-length
-  (core/build-instruction
+  (i/build-instruction
     code-length
     "`:code-length` pops the top `:code` item, and if it is a Collection it counts the number of items in its root and pushes that value to the `:scalar` stack. 1 is pushed to `:scalar` for items that are not Collections."
     :tags #{:complex :base}
@@ -261,7 +261,7 @@
 
 
 (def code-list
-  (core/build-instruction
+  (i/build-instruction
     code-list
     "`:code-list` pops the top two items from the `:code` stack, returning a list of two elements: of the first item, then the second. If the result would be larger than :max-collection-size, it is discarded and an `:error` is pushed."
     :tags #{:complex :base}
@@ -280,7 +280,7 @@
 
 
 (def code-map
-  (core/build-instruction
+  (i/build-instruction
     code-map
     "`:code-map` pops the top items of the `:code` and `:exec` stacks (call them \"C\" and \"E\", respectively), and pushes a continuation to `:exec`. If C is a list of 2 or more elements, `'(:code-quote () (:code-quote (first C) E) :code-cons (:code-quote (rest C) :code-reduce E))`; if a list of 1 item, `'(:code-quote () (:code-quote (first C) E) :code-cons)`; if an empty list, no continuation results; if not a list, `'(:code-quote () (:code-quote C E) :code-cons)`. If the continuation would be larger than :max-collection-size it is discarded and an `:error` is pushed."
     :tags #{:complex :base}
@@ -311,7 +311,7 @@
 
 
 (def code-reduce
-  (core/build-instruction
+  (i/build-instruction
     code-reduce
     "`:code-reduce` pops the top items of the `:code` and `:exec` stacks (call them \"C\" and \"E\", respectively), and pushes a continuation to `:exec`. If C is a list of 2 or more elements, `'((:code-quote (first C) E) :code-cons (:code-quote (rest C) :code-reduce E ))`; if a list of 1 item, `'((:code-quote (first C) E) :code-cons)`; if an empty list, no continuation results; if not a list, `'((:code-quote C E) :code-cons)`. If the continuation would be larger than :max-collection-size it is discarded."
     :tags #{:complex :base}
@@ -336,7 +336,7 @@
 
 
 (def code-member?
-  (core/build-instruction
+  (i/build-instruction
     code-member?
     "`:code-member?` pops two items from the `:code` stack; call them `A` (the top one) and `B` (the second one). First, if `A` is not a Collection, it is wrapped in a list. The result of `true` is pushed to the `:boolean` stack if `B` is a member of this modified `A`, or `false` if not."
     :tags #{:complex :predicate :base}
@@ -349,7 +349,7 @@
 
 
 (def code-noop
-  (core/build-instruction
+  (i/build-instruction
     code-noop
     "`:code-noop` has no effect on the stacks."
     :tags #{:complex :base}))
@@ -357,7 +357,7 @@
 
 
 (def code-nth
-  (core/build-instruction
+  (i/build-instruction
     code-nth
     "`:code-nth` pops the top `:code` and `:scalar` items. It wraps the `:code` item in a list if it isn't one, and forces the scalar into an index range by taking `(mod scalar (count code)`. It then pushes the indexed item of the (listified) `:code` item onto the `:code` stack."
     :tags #{:complex :base}
@@ -371,14 +371,14 @@
 
 
 
-(def code-null? (t/simple-1-in-predicate
+(def code-null? (i/simple-1-in-predicate
   "`:code-null?` pushes `true` if the top `:code` item is an empty collection"
   :code "null?" #(and (coll? %) (empty? %))))
 
 
 
 (def code-points
-  (core/build-instruction
+  (i/build-instruction
     code-points
     "`:code-points` pops the top item from the `:code` stack, and treats it as a tree of seqs and non-seq items. If it is an empty list, or any literal (including a vector, map, set or other collection type), the result is 1; if it is a list containing items, they are also counted, including any contents of sub-lists, and so on. _Note_ the difference from `:code-size`, which counts contents of all Collections, not just (code) lists. The result is pushed to the `:scalar` stack."
     :tags #{:complex :base}
@@ -389,7 +389,7 @@
 
 
 (def code-position
-  (core/build-instruction
+  (i/build-instruction
     code-position
     "`:code-position` pops the top two `:code` items (call them `A` and `B`, respectively). It pushes the index of the first occurrence of `A` in `B`, or -1 if it is not found."
     :tags #{:complex :base}
@@ -402,7 +402,7 @@
 
 
 (def code-quote
-  (core/build-instruction
+  (i/build-instruction
     code-quote
     "`:code-quote` pops the top item from the `:exec` stack and puts it onto the `:code` stack."
     :tags #{:complex :base}
@@ -411,7 +411,7 @@
 
 
 
-(def code-rest (t/simple-1-in-1-out-instruction
+(def code-rest (i/simple-1-in-1-out-instruction
   "`:code-rest` examines the top `:code` item; if it's a Collection, it removes
   the first item and returns the reduced list; if it's not a Collection, it returns
   the original item"
@@ -420,7 +420,7 @@
 
 
 (def code-size
-  (core/build-instruction
+  (i/build-instruction
     code-size
     "`:code-size` pops the top item from the `:code` stack, and totals the number of items it contains anywhere, in any nested Collection of any type. The root of the item counts as 1, and every element (including sub-Collections) nested inside that add 1 more. Items in lists, vectors, sets, and maps are counted. Maps are counted as a collection of key-value pairs, each key and value are an item in a pair, and if they themselves are nested items those are traversed as well. (_Note_ that this differs from `:code-points` by counting the contents of Collections, as opposed to lists only.) The result is pushed to the `:scalar` stack."
     :tags #{:complex :base}
@@ -431,7 +431,7 @@
 
 
 (def code-subst
-  (core/build-instruction
+  (i/build-instruction
     code-subst
     "`:code-subst` pops the top three `:code` items (call them `A` `B` and `C`, respectively). It replaces all occurrences of `B` in `C` (in a depth-first traversal) with `A`. If the result is larger than max-collection-size, it is discarded."
     :tags #{:complex :base}
@@ -446,14 +446,14 @@
 
 
 
-(def code-wrap (t/simple-1-in-1-out-instruction
+(def code-wrap (i/simple-1-in-1-out-instruction
   "`:code-wrap` puts the top item on the `:code` stack into a one-element list"
   :code "wrap" list))
 
 
 
 (def code-return
-  (core/build-instruction
+  (i/build-instruction
     code-return
     "`:code-return` pops the top `:code` item, wraps it in a list with :code-quote, and pushes that form onto the :return stack"
     :tags #{:complex :base}

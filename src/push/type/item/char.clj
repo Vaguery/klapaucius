@@ -1,39 +1,37 @@
 (ns push.type.item.char
-  (:require [push.instructions.core :as core]
-            [push.type.core :as t]
-            [push.instructions.dsl :as d]
+  (:require [push.instructions.dsl        :as d]
+            [push.instructions.core       :as i]
+            [push.type.core               :as t]
             [push.util.stack-manipulation :as u]
-            [push.util.code-wrangling :as fix]
-            [push.instructions.aspects :as aspects]
-            [push.util.numerics :as num]
+            [push.instructions.aspects    :as aspects]
+            [push.util.code-wrangling     :as fix]
+            [push.util.numerics           :as num]
             ))
 
-
-(def char-digit? (t/simple-1-in-predicate
+(def char-digit? (i/simple-1-in-predicate
   "`:char-digit? pushes `true` if the top `:char` is a digit (per Java `Character/isDigit`)"
   :char "digit?" #(Character/isDigit %1)))
 
 
-
-(def char-letter? (t/simple-1-in-predicate
+(def char-letter? (i/simple-1-in-predicate
   "`:char-letter? pushes `true` if the top `:char` is a letter (per Java `Character/isLetter`)"
   :char "letter?" #(Character/isLetter %1)))
 
 
 
-(def char-lowercase? (t/simple-1-in-predicate
+(def char-lowercase? (i/simple-1-in-predicate
   "`:char-lowercase? pushes `true` if the top `:char` is lowercase (per Java `Character/isLowerCase`)"
   :char "lowercase?" #(Character/isLowerCase %1)))
 
 
 
-(def char-uppercase? (t/simple-1-in-predicate
+(def char-uppercase? (i/simple-1-in-predicate
   "`:char-uppercase? pushes `true` if the top `:char` is uppercase (per Java `Character/isUpperCase`)"
   :char "uppercase?" #(Character/isUpperCase %1)))
 
 
 
-(def char-whitespace? (t/simple-1-in-predicate
+(def char-whitespace? (i/simple-1-in-predicate
   "`:char-whitespace? pushes `true` if the top `:char` is a whitespace (per Java `Character/isWhitespace`)"
   :char "whitespace?" #(Character/isWhitespace %1)))
 
@@ -44,7 +42,7 @@
 
 
 (def scalar->asciichar
-  (core/build-instruction
+  (i/build-instruction
     scalar->asciichar
     "`:scalar->asciichar` pops the top `:scalar` value, reduces it modulo 128, and pushes the `:char` that is represented by that ASCII value"
     :tags #{:string :conversion :base}
@@ -56,7 +54,7 @@
 
 
 (def scalar->char
-  (core/build-instruction
+  (i/build-instruction
     scalar->char
     "`:scalar->char` pops the top `:scalar` value, reduces it modulo 65535, and pushes the `:char` that is represented by that unicode value"
     :tags #{:string :conversion :base}
@@ -69,7 +67,7 @@
 
 
 (def string->chars
-  (core/build-instruction
+  (i/build-instruction
     string->chars
     "`:string->chars` pops the top `:string` item, and pushes every character (in the same order as the string) onto the `:char` stack. Thus a string \"foo\" will be pushed onto the `:char` stack as `'(\\f \\o \\o ...)`"
     :tags #{:string :conversion :base}

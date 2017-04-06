@@ -1,5 +1,6 @@
 (ns push.type.definitions.complex
-  (:require [push.util.numerics :as math]))
+  (:require [push.util.numerics :as math]
+            ))
 
 
 ;; Complex records
@@ -96,5 +97,3 @@
     (->Complex
       (/ n1 d)
       (/ n2 d))))
-
-

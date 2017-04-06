@@ -1,27 +1,19 @@
 (ns push.type.item.boolean
-  (:use push.type.item.generator)
-  (:use [push.util.type-checkers :only (boolean?)])
-  (:require [push.instructions.aspects :as aspects]
-            [push.instructions.core :as core]
-            [push.type.core :as t]
-            [push.instructions.dsl :as d]
-            [push.util.exotics :as exotics]
+  ; (:use push.type.item.generator)
+  (:require [push.instructions.dsl     :as d]
+            [push.instructions.core    :as i]
+            [push.instructions.aspects :as aspects]
+            [push.util.type-checkers   :as checkers :refer [boolean?]]
+            [push.util.exotics         :as exotics]
+            [push.type.core            :as types]
             ))
-
-
-;; SUPPORT
-
 
 (defn xor2 [p q] (or (and p (not q)) (and q (not p))))
 
 (defn bit [bool] (if bool 1 0))
 
-
-;; INSTRUCTIONS
-
-
 (def boolean-2bittable
-  (core/build-instruction
+  (i/build-instruction
     boolean-2bittable
     "`:boolean-2bittable` pops the top `:scalar` item and pushes the result of applying `(exotics/scalar-to-truth-table i 2)` to :booleans. If the `:scalar` is not a finite positive number, an empty vector is pushed instead."
     :tags #{:boolean :conversion}
@@ -31,7 +23,7 @@
 
 
 (def boolean-3bittable
-  (core/build-instruction
+  (i/build-instruction
     boolean-3bittable
     "`:boolean-3bittable` pops the top `:scalar` item and pushes the result of applying `(exotics/scalar-to-truth-table i 3)` to :booleans. If the `:scalar` is not a finite positive number, an empty vector is pushed instead."
     :tags #{:boolean :conversion}
@@ -41,7 +33,7 @@
 
 
 (def boolean-arity2
-  (core/build-instruction
+  (i/build-instruction
     boolean-arity2
     "`:boolean-arity2` pops the top `:scalar` item, creates a truth table on 2 inputs using `(exotics/scalar-to-truth-table i 2)`, pops the top two `:boolean` values and uses them to look up a `:boolean` result in the table. If the `:scalar` is infinite, `false` will be returned for all input bits."
     :tags #{:boolean :conversion}
@@ -57,7 +49,7 @@
 
 
 (def boolean-arity3
-  (core/build-instruction
+  (i/build-instruction
     boolean-arity3
     "`:boolean-arity3` pops the top `:scalar` item, creates a truth table on 3 inputs using `(exotics/scalar-to-truth-table i 3)`, pops the top 3 `:boolean` values and uses them to look up a `:boolean` result in the table. If the `:scalar` is infinite, `false` will be returned for all input bits."
     :tags #{:boolean :conversion}
@@ -74,14 +66,14 @@
 
 
 (def bool-and
-  (t/simple-2-in-1-out-instruction
+  (i/simple-2-in-1-out-instruction
     "`:boolean-and` pops the top two `:boolean` items, and pushes `true` if they're both `true`, `false` otherwise"
     :boolean "and" 'and))
 
 
 
 (def bool-not
-  (t/simple-1-in-1-out-instruction
+  (i/simple-1-in-1-out-instruction
   "`:boolean-not returns the logical negation of the top item on the `:boolean`
   stack"
   :boolean "not" 'not))
@@ -89,21 +81,21 @@
 
 
 (def bool-or
-  (t/simple-2-in-1-out-instruction
+  (i/simple-2-in-1-out-instruction
     "`:boolean-or` pops the top two `:boolean` items, and pushes `true` if either one is `true, `false` otherwise"
     :boolean "or" 'or))
 
 
 
 (def bool-xor
-  (t/simple-2-in-1-out-instruction
+  (i/simple-2-in-1-out-instruction
     "`:boolean-xor` pops the top two `:boolean` items, and pushes `true` if exactly one of them is `true`, or `false` otherwise"
     :boolean "xor" 'xor2))
 
 
 
 (def scalar->boolean
-  (core/build-instruction
+  (i/build-instruction
     scalar->boolean
     "`:scalar->boolean` pops the top `:scalar` item, and pushes `false` if it is zero.0, or `true` if it is any other value"
     :tags #{:boolean :conversion :base}
@@ -114,7 +106,7 @@
 
 
 (def scalarsign->boolean
-  (core/build-instruction
+  (i/build-instruction
     scalarsign->boolean
     "`:scalarsign->boolean` pops the top `:scalar` item, and pushes `true` if it positive, or `false` if it is zero or negative"
     :tags #{:boolean :conversion :base}
@@ -124,8 +116,8 @@
 
 
 (def boolean-type
-  ( ->  (t/make-type  :boolean
-                      :recognized-by boolean?
+  ( ->  (types/make-type  :boolean
+                      :recognized-by checkers/boolean?
                       :attributes #{:logical})
         aspects/make-set-able
         aspects/make-equatable
@@ -137,14 +129,14 @@
         aspects/make-storable
         aspects/make-taggable
         aspects/make-visible
-        (t/attach-instruction , boolean-2bittable)
-        (t/attach-instruction , boolean-3bittable)
-        (t/attach-instruction , bool-and)
-        (t/attach-instruction , boolean-arity2)
-        (t/attach-instruction , boolean-arity3)
-        (t/attach-instruction , bool-not)
-        (t/attach-instruction , bool-or)
-        (t/attach-instruction , bool-xor)
-        (t/attach-instruction , scalar->boolean)
-        (t/attach-instruction , scalarsign->boolean)
+        (types/attach-instruction , boolean-2bittable)
+        (types/attach-instruction , boolean-3bittable)
+        (types/attach-instruction , bool-and)
+        (types/attach-instruction , boolean-arity2)
+        (types/attach-instruction , boolean-arity3)
+        (types/attach-instruction , bool-not)
+        (types/attach-instruction , bool-or)
+        (types/attach-instruction , bool-xor)
+        (types/attach-instruction , scalar->boolean)
+        (types/attach-instruction , scalarsign->boolean)
         ))

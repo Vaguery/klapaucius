@@ -1,15 +1,25 @@
 (ns push.instructions.instructions-setup-test
-  (:require [push.util.stack-manipulation :as u]
-            [push.instructions.dsl :as d]
-            [push.interpreter.core :as i]
-            [push.type.core :as t]
-            [push.interpreter.templates.minimum :as m])
+  (:require [push.util.stack-manipulation
+              :as stacks
+              :refer [get-stack]]
+            [push.instructions.dsl
+              :as d]
+            [push.interpreter.core
+              :as interpreter
+              :refer [register-instruction execute-instruction]]
+            [push.interpreter.templates.minimum
+              :as m
+              :refer [basic-interpreter]]
+            [push.type.core
+              :as t
+              :refer [make-type]]
+            )
   (:use midje.sweet)
+  (:use push.instructions.core)
   (:use [push.instructions.aspects.visible])
   (:use [push.instructions.aspects.equatable])
   (:use [push.instructions.aspects.comparable])
   (:use [push.instructions.aspects.movable])
-  (:use [push.instructions.core])
   )
 
 
@@ -51,11 +61,11 @@
 
 
 (fact "build-instruction can accept an optional #tags argument"
-  (:tags 
+  (:tags
     (build-instruction foobar
       (d/consume-top-of :foo :as :in)
       (d/push-onto :bar :in))) => #{}
-  (:tags 
+  (:tags
     (build-instruction foobar
       :tags #{:foo :bar :baz!}
       (d/consume-top-of :foo :as :in)
@@ -77,7 +87,7 @@
 
 
 (fact "`build-instruction` captures an un-keyworded docstring if it's after the token"
-  (:docstring 
+  (:docstring
     (build-instruction
       foobar
       "foobar really?"
@@ -86,7 +96,7 @@
 
 
 (fact "`build-instruction` lacking a docstring will get default"
-  (:docstring 
+  (:docstring
     (build-instruction foobar
       (d/consume-top-of :foo :as :in)
       (d/push-onto :bar :in))) => "`:foobar` needs a docstring!")
@@ -100,17 +110,17 @@
   (let [foobar (build-instruction foobar             ;;; moves top :foo to :bar
                   (d/consume-top-of :foo :as :in)
                   (d/push-onto :bar :in))
-        context (i/register-instruction 
+        context (interpreter/register-instruction
                   (m/basic-interpreter :stacks {:foo '(1 2 3) :bar '(4 5 6)})
                   foobar)]
-  (u/get-stack (i/execute-instruction context :foobar) :bar ) => '(1 4 5 6)
-  (u/get-stack (i/execute-instruction context :foobar) :foo ) => '(2 3)))
+  (stacks/get-stack (interpreter/execute-instruction context :foobar) :bar ) => '(1 4 5 6)
+  (stacks/get-stack (interpreter/execute-instruction context :foobar) :foo ) => '(2 3)))
 
 
 ;; automatic docstrings
 
 (fact "a generated code-fromX instruction has a reasonable docstring"
-  (:docstring (t/simple-item-to-code-instruction :char)) =>
+  (:docstring (simple-item-to-code-instruction :char)) =>
     "`:char->code` pops the top `:char` item and pushes it to `:code`")
 
 

@@ -155,3 +155,69 @@
       :needs ~(total-needs steps)
       :products ~(total-products steps)
       :transaction (def-function-from-dsl ~@steps))))
+
+
+      ;; some generic instruction constructors
+
+
+(defn simple-1-in-1-out-instruction
+  "returns a standard :typed arity-1 function, where the output
+  and input are the same type"
+  [docstring type word operation]
+  (let [stackname (keyword type)
+        instruction-name (str (name stackname) "-" word)]
+    (eval (list
+      'push.instructions.core/build-instruction
+      instruction-name
+      docstring
+      :tags #{:arithmetic :base}
+      `(consume-top-of ~stackname :as :arg1)
+      `(calculate [:arg1] #(~operation %1) :as :result)
+      `(push-onto ~stackname :result)))))
+
+
+(defn simple-2-in-1-out-instruction
+  "returns a standard :typed arity-2 function, where the output
+  and inputs are all the same type"
+  [docstring type word operation]
+  (let [stackname (keyword type)
+        instruction-name (str (name stackname) "-" word)]
+    (eval (list
+      'push.instructions.core/build-instruction
+      instruction-name
+      docstring
+      :tags #{:arithmetic :base}
+      `(consume-top-of ~stackname :as :arg2)
+      `(consume-top-of ~stackname :as :arg1)
+      `(calculate [:arg1 :arg2] #(~operation %1 %2) :as :result)
+      `(push-onto ~stackname :result)))))
+
+
+(defn simple-1-in-predicate
+  "returns a standard :typed arity-1 predicate function, where the output is
+  a :boolean and inputs are the same type"
+  [docstring type word operation]
+  (let [stackname (keyword type)
+        instruction-name (str (name stackname) "-" word)]
+    (eval (list
+      'push.instructions.core/build-instruction
+      instruction-name
+      docstring
+      :tags #{:arithmetic :base}
+      `(consume-top-of ~stackname :as :arg1)
+      `(calculate [:arg1] #(~operation %1) :as :result)
+      `(push-onto :boolean :result)))))
+
+
+(defn simple-item-to-code-instruction
+  "returns a standard arity-1 function, which moves the top item from the named stack to the :code stack"
+  [type]
+  (let [stackname (keyword type)
+        instruction-name (str (name stackname) "->code")]
+    (eval (list
+      'push.instructions.core/build-instruction
+      instruction-name
+      (str "`:" instruction-name "` pops the top `" stackname "` item and pushes it to `:code`")
+      :tags #{:complex :base :conversion}
+      `(consume-top-of ~stackname :as :arg)
+      `(push-onto :code :arg)))))

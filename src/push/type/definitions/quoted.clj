@@ -1,9 +1,6 @@
 (ns push.type.definitions.quoted)
 
 
-;; QuotedCode records
-
-
 (defrecord QuotedCode [value])
 
 

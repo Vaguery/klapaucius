@@ -1,10 +1,7 @@
 (ns push.interpreter.templates.minimum
-  (:require [push.interpreter.core
-              :as i]
-            [push.interpreter.definitions
-              :as d]
-              ))
-
+  (:require [push.interpreter.definitions :as d]
+            [push.interpreter.core        :as i]
+            ))
 
 (def minimal-stacks
   "the stacks expected in any Push interpreter"
