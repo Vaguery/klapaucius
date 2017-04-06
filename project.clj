@@ -7,9 +7,11 @@
                  [marick/structural-typing       "2.0.5"]
                  [com.climate/claypoole          "1.1.4"]
                  [inflections                   "0.13.0"]
-                 [dire                           "0.5.4"]]
+                 [dire                           "0.5.4"]
+                 [criterium                      "0.4.4"]
+                 ]
   :deploy-repositories [["releases" :clojars]
-                        ["snapshots" :clojars]]
-  :profiles {:dev {:dependencies
-                    [[midje "1.8.3"]]
-                    }})
+                        ["snapshots" :clojars]
+                        ]
+  :profiles {:dev {:dependencies [[midje "1.8.3"]]
+                                  }})
