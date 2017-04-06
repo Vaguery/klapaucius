@@ -1,5 +1,6 @@
 (ns push.instructions.aspects.comparable
-  (:use [push.instructions.core :only (build-instruction)]
+  (:use [push.instructions.core
+          :only (build-instruction)]
         [push.instructions.dsl]))
 
 
@@ -111,4 +112,3 @@
       `(consume-top-of ~typename :as :arg1)
       `(calculate [:arg1 :arg2] #(if (neg? (compare %1 %2)) %2 %1) :as :winner)
       `(push-onto ~typename :winner)))))
-

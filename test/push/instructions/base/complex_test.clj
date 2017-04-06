@@ -95,7 +95,7 @@
     :complex    (list (->Complex ∞ -∞) (->Complex ∞ -∞))
                              :complex-divide        :error       '({:item ":complex-divide produced NaN", :step 0})
 
-                             
+
     :complex    (list (->Complex 0 0) (->Complex 2 7))
                              :complex-divide        :complex       '()
     :complex    (list (->Complex 0 0) (->Complex 2 7))
@@ -386,11 +386,11 @@
 
 
 (tabular
-  (fact ":complex-make is generated from the buildable aspect"
+  (fact ":complex-construct is generated from the buildable aspect"
     (register-type-and-check-instruction
         ?set-stack ?items complex-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items    ?instruction     ?get-stack     ?expected
     :scalar    '(9 12)
-                         :complex-make      :complex       (list (complexify 12 9))
+                         :complex-construct :complex       (list (complexify 12 9))
     )

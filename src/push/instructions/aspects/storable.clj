@@ -1,5 +1,6 @@
 (ns push.instructions.aspects.storable
-  (:use [push.instructions.core :only (build-instruction)]
+  (:use [push.instructions.core
+          :only (build-instruction)]
         [push.instructions.dsl]))
 
 
@@ -65,6 +66,6 @@
       instruction-name
       (str "`:" instruction-name "` copies the entire `" typename "` stack into a new `:ref` created in the `:bindings` registry. The stack contents are not consumed.")
       :tags #{:storable}
-      
+
       `(save-stack ~typename :as :all)
       `(replace-binding :all)))))

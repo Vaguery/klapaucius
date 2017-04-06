@@ -183,15 +183,11 @@
     :string (repeatedly how-many #(some-string scale))
     :strings (repeatedly how-many
                 (fn [] (into [] (repeatedly (rand-int how-many) #(some-string scale)))))
-<<<<<<< HEAD
-    :vector '()
-=======
     :vector (repeatedly how-many
               (fn []
                 (into []
                   (repeatedly how-many
                     #(some-codeblock (inc (rand-int how-many)) erc-prob interpreter)))))
->>>>>>> b5964f38c530b154daabb637a6d4cd93f419cf57
     }
   )
 

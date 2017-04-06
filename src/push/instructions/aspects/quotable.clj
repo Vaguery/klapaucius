@@ -1,5 +1,6 @@
 (ns push.instructions.aspects.quotable
-  (:use [push.instructions.core :only (build-instruction)]
+  (:use [push.instructions.core
+          :only (build-instruction)]
         [push.instructions.dsl]))
 
 

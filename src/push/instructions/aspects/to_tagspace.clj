@@ -1,7 +1,10 @@
 (ns push.instructions.aspects.to-tagspace
-  (:require [push.util.numerics :as n])
-  (:use [push.instructions.core :only (build-instruction)]
-        [push.instructions.dsl]))
+  (:require [push.util.numerics
+              :as num
+              :refer [index-maker]])
+  (:use     [push.instructions.core
+              :only (build-instruction)]
+            [push.instructions.dsl]))
 
 
 
@@ -22,15 +25,13 @@
       `(calculate [:arg] #(count %1) :as :howmany)
       `(calculate [:start :end :howmany]
         #(if (< %3 2)
-          0 
+          0
           (/ (-' %2 %1) (dec %3))) :as :delta)
       `(calculate [:howmany :start :delta]
-          #(if %3 (n/index-maker %1 %2 %3) nil) :as :indices)
+          #(if %3 (num/index-maker %1 %2 %3) nil) :as :indices)
       `(calculate [:indices :arg]
           #(if %2
             (push.type.definitions.tagspace/make-tagspace (zipmap %1 %2))
             nil) :as :result)
       `(push-onto :tagspace :result)
       ))))
-
-

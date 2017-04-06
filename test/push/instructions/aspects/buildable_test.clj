@@ -42,7 +42,7 @@
 
 
 (fact "collect-components creates DSL steps for each item"
-  (collect-components foo-type) => 
+  (collect-components foo-type) =>
     '((push.instructions.dsl/consume-top-of :scalar :as :D)
       (push.instructions.dsl/consume-top-of :rgb :as :C)
       (push.instructions.dsl/consume-top-of :image :as :B)
@@ -67,33 +67,33 @@
 
 
 
-(def foo-make-test
-  (make-instruction foo-type))
+(def foo-maker
+  (construct-instruction foo-type))
 
 
-(fact "make-instruction constructs an instruction with the correct pieces"
-  (keys foo-make-test) => '(:token :docstring :tags :needs :products :transaction)
+(fact "construct-instruction constructs an instruction with the correct pieces"
+  (keys foo-maker) => '(:token :docstring :tags :needs :products :transaction)
 
-  (:token foo-make-test) => :foo-make
-  (:docstring foo-make-test) => "`:foo-make` constructs a new `:foo` item from its components, {:scalar 2, :image 1, :rgb 1}."
-  (:needs foo-make-test) => {:image 1, :rgb 1, :scalar 2}
-  (:products foo-make-test) => {:foo 1}
+  (:token foo-maker) => :foo-construct
+  (:docstring foo-maker) => "`:foo-construct` constructs a new `:foo` item from its components, {:scalar 2, :image 1, :rgb 1}."
+  (:needs foo-maker) => {:image 1, :rgb 1, :scalar 2}
+  (:products foo-maker) => {:foo 1}
   )
 
 
 
 
-(def simple-make-test
-  (make-instruction simple-type))
+(def simple-maker
+  (construct-instruction simple-type))
 
 
-(fact "make-instruction constructs an instruction with the correct pieces"
-  (keys simple-make-test) => '(:token :docstring :tags :needs :products :transaction)
+(fact "construct-instruction constructs an instruction with the correct pieces"
+  (keys simple-maker) => '(:token :docstring :tags :needs :products :transaction)
 
-  (:token simple-make-test) => :simple-make
-  (:docstring simple-make-test) => "`:simple-make` constructs a new `:simple` item from its components, {:something 1}."
-  (:needs simple-make-test) => {:something 1}
-  (:products simple-make-test) => {:simple 1}
+  (:token simple-maker) => :simple-construct
+  (:docstring simple-maker) => "`:simple-construct` constructs a new `:simple` item from its components, {:something 1}."
+  (:needs simple-maker) => {:something 1}
+  (:products simple-maker) => {:simple 1}
   )
 
 
@@ -103,15 +103,15 @@
     (i/execute-instruction
       (i/register-instruction
         (m/basic-interpreter :stacks {:something '(99) :simple '()})
-        simple-make-test)
-      :simple-make)
+        simple-maker)
+      :simple-construct)
     :something) => '()
   (get-stack
     (i/execute-instruction
       (i/register-instruction
         (m/basic-interpreter :stacks {:something '(99) :simple '()})
-        simple-make-test)
-      :simple-make)
+        simple-maker)
+      :simple-construct)
     :simple) => '([99])
 )
 
@@ -122,16 +122,16 @@
       (i/register-instruction
         (m/basic-interpreter :stacks
           {:scalar '(11 33) :image '(22) :rgb '(-99)})
-        foo-make-test)
-      :foo-make)
+        foo-maker)
+      :foo-construct)
     :foo) => '({:A 33, :B 22, :C -99, :D 11})
   (get-stack
     (i/execute-instruction
       (i/register-instruction
         (m/basic-interpreter :stacks
           {:scalar '(11 33) :image '(22) :rgb '(-99)})
-        foo-make-test)
-      :foo-make)
+        foo-maker)
+      :foo-construct)
     :scalar) => '()
 )
 
@@ -143,7 +143,7 @@
     (i/execute-instruction
       (push/interpreter
         :stacks {:scalar '(11 33) :boolean '(true true)})
-      :interval-make)
+      :interval-construct)
     :interval) => (list (iv/make-open-interval 33 11 ))
 )
 
@@ -191,10 +191,8 @@
 ;; validation
 
 
-(fact "make-instruction raises an exception if there is no :manifest or :builder value for a given type"
-  (make-instruction push.type.module.print/print-module) =>
+(fact "construct-instruction raises an exception if there is no :manifest or :builder value for a given type"
+  (construct-instruction push.type.module.print/print-module) =>
     (throws #"cannot be constructed")
   (parts-instruction push.type.module.print/print-module) =>
     (throws #"cannot be constructed"))
-
-

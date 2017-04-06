@@ -1,19 +1,21 @@
 (ns push.instructions.aspects
-  (:use [push.instructions.aspects.buildable])
-  (:use [push.instructions.aspects.comparable])
-  (:use [push.instructions.aspects.equatable])
-  (:use push.instructions.aspects.movable)
-  (:use push.instructions.aspects.printable)
-  (:use push.instructions.aspects.quotable)
-  (:use push.instructions.aspects.repeatable-and-cycling)
-  (:use push.instructions.aspects.returnable)
-  (:use [push.instructions.aspects.set-able])
-  (:use push.instructions.aspects.storable)
-  (:use push.instructions.aspects.taggable)
-  (:use push.instructions.aspects.to-tagspace)
-  (:use push.instructions.aspects.visible)
-  (:require [push.type.core :as t]
-            ))
+  (:require [push.type.core
+              :as type
+              :refer [attach-instruction]])
+  (:use [push.instructions.aspects.buildable]
+        [push.instructions.aspects.comparable]
+        [push.instructions.aspects.equatable]
+        [push.instructions.aspects.movable]
+        [push.instructions.aspects.printable]
+        [push.instructions.aspects.quotable]
+        [push.instructions.aspects.repeatable-and-cycling]
+        [push.instructions.aspects.returnable]
+        [push.instructions.aspects.set-able]
+        [push.instructions.aspects.storable]
+        [push.instructions.aspects.taggable]
+        [push.instructions.aspects.to-tagspace]
+        [push.instructions.aspects.visible]
+        ))
 
 
 
@@ -21,8 +23,8 @@
   "takes a PushType and adds the :buildable attribute, and the associated instructions, to that type"
   [pushtype]
   (-> pushtype
-      (t/attach-instruction (make-instruction pushtype))
-      (t/attach-instruction (parts-instruction pushtype))
+      (type/attach-instruction (construct-instruction pushtype))
+      (type/attach-instruction (parts-instruction pushtype))
       (assoc :attributes (conj (:attributes pushtype) :buildable))))
 
 
@@ -31,11 +33,11 @@
   "takes a PushType and adds the :set-able attribute, and the associated instructions to that type"
   [pushtype]
   (-> pushtype
-      (t/attach-instruction (as-set-instruction pushtype))
-      (t/attach-instruction (conj-set-instruction pushtype))
-      (t/attach-instruction (in-set?-instruction pushtype))
-      (t/attach-instruction (toset-instruction pushtype))
-      (t/attach-instruction (intoset-instruction pushtype))
+      (type/attach-instruction (as-set-instruction pushtype))
+      (type/attach-instruction (conj-set-instruction pushtype))
+      (type/attach-instruction (in-set?-instruction pushtype))
+      (type/attach-instruction (toset-instruction pushtype))
+      (type/attach-instruction (intoset-instruction pushtype))
       (assoc :attributes (conj (:attributes pushtype) :set-able))))
 
 
@@ -47,12 +49,12 @@
   :pushtype-max instructions to its :instructions collection"
   [pushtype]
   (-> pushtype
-      (t/attach-instruction (lessthan?-instruction pushtype))
-      (t/attach-instruction (lessthanorequal?-instruction pushtype))
-      (t/attach-instruction (greaterthan?-instruction pushtype))
-      (t/attach-instruction (greaterthanorequal?-instruction pushtype))
-      (t/attach-instruction (min-instruction pushtype))
-      (t/attach-instruction (max-instruction pushtype))
+      (type/attach-instruction (lessthan?-instruction pushtype))
+      (type/attach-instruction (lessthanorequal?-instruction pushtype))
+      (type/attach-instruction (greaterthan?-instruction pushtype))
+      (type/attach-instruction (greaterthanorequal?-instruction pushtype))
+      (type/attach-instruction (min-instruction pushtype))
+      (type/attach-instruction (max-instruction pushtype))
       (assoc :attributes (conj (:attributes pushtype) :comparable))))
 
 
@@ -63,8 +65,8 @@
   :instructions collection"
   [pushtype]
   (-> pushtype
-      (t/attach-instruction (equal?-instruction pushtype))
-      (t/attach-instruction (notequal?-instruction pushtype))
+      (type/attach-instruction (equal?-instruction pushtype))
+      (type/attach-instruction (notequal?-instruction pushtype))
       (assoc :attributes (conj (:attributes pushtype) :equatable))))
 
 
@@ -73,20 +75,20 @@
   "takes a PushType and adds the :movable attribute, and the :pushtype-againlater, :pushtype-dup, :pushtype-flush, :pushtype-later, :pushtype-pop, :pushtype-rotate, :pushtype-shove, :pushtype-swap, :pushtype-yank and :pushtype-yankdup instructions to its :instructions collection"
   [pushtype]
   (-> pushtype
-      (t/attach-instruction (againlater-instruction pushtype))
-      (t/attach-instruction (cutflip-instruction pushtype))
-      (t/attach-instruction (cutstack-instruction pushtype))
-      (t/attach-instruction (dup-instruction pushtype))
-      (t/attach-instruction (flipstack-instruction pushtype))
-      (t/attach-instruction (flush-instruction pushtype))
-      (t/attach-instruction (later-instruction pushtype))
-      (t/attach-instruction (liftstack-instruction pushtype))
-      (t/attach-instruction (pop-instruction pushtype))
-      (t/attach-instruction (rotate-instruction pushtype))
-      (t/attach-instruction (shove-instruction pushtype))
-      (t/attach-instruction (swap-instruction pushtype))
-      (t/attach-instruction (yank-instruction pushtype))
-      (t/attach-instruction (yankdup-instruction pushtype))
+      (type/attach-instruction (againlater-instruction pushtype))
+      (type/attach-instruction (cutflip-instruction pushtype))
+      (type/attach-instruction (cutstack-instruction pushtype))
+      (type/attach-instruction (dup-instruction pushtype))
+      (type/attach-instruction (flipstack-instruction pushtype))
+      (type/attach-instruction (flush-instruction pushtype))
+      (type/attach-instruction (later-instruction pushtype))
+      (type/attach-instruction (liftstack-instruction pushtype))
+      (type/attach-instruction (pop-instruction pushtype))
+      (type/attach-instruction (rotate-instruction pushtype))
+      (type/attach-instruction (shove-instruction pushtype))
+      (type/attach-instruction (swap-instruction pushtype))
+      (type/attach-instruction (yank-instruction pushtype))
+      (type/attach-instruction (yankdup-instruction pushtype))
       (assoc :attributes (conj (:attributes pushtype) :movable))))
 
 
@@ -95,7 +97,7 @@
   "takes a PushType and adds the :printable attribute and the `:print-X` instruction"
   [pushtype]
   (-> pushtype
-      (t/attach-instruction (print-instruction pushtype))
+      (type/attach-instruction (print-instruction pushtype))
       (assoc :attributes (conj (:attributes pushtype) :printable))))
 
 
@@ -104,7 +106,7 @@
   "takes a PushType and adds the :quotable attribute, and the :pushtype->code instruction :instructions collection"
   [pushtype]
   (-> pushtype
-      (t/attach-instruction (tocode-instruction pushtype))
+      (type/attach-instruction (tocode-instruction pushtype))
       (assoc :attributes (conj (:attributes pushtype) :quotable))))
 
 
@@ -113,9 +115,9 @@
   :pushtype-echo instruction to its :instructions collection"
   [pushtype]
   (-> pushtype
-      (t/attach-instruction (echo-instruction pushtype))
-      (t/attach-instruction (echoall-instruction pushtype))
-      (t/attach-instruction (rerunall-instruction pushtype))
+      (type/attach-instruction (echo-instruction pushtype))
+      (type/attach-instruction (echoall-instruction pushtype))
+      (type/attach-instruction (rerunall-instruction pushtype))
       (assoc :attributes (conj (:attributes pushtype) :repeatable))))
 
 
@@ -125,9 +127,9 @@
   :pushtype-cycler, :pushtype-indexedcycler, :pushtype-items instructions to its :instructions collection"
   [pushtype]
   (-> pushtype
-      (t/attach-instruction (comprehension-instruction pushtype))
-      (t/attach-instruction (cycler-instruction pushtype))
-      (t/attach-instruction (sampler-instruction pushtype))
+      (type/attach-instruction (comprehension-instruction pushtype))
+      (type/attach-instruction (cycler-instruction pushtype))
+      (type/attach-instruction (sampler-instruction pushtype))
       (assoc :attributes (conj (:attributes pushtype) :cycling))))
 
 
@@ -136,8 +138,8 @@
   "takes a PushType and adds the :returnable attribute and the `:X-return` instruction"
   [pushtype]
   (-> pushtype
-      (t/attach-instruction (return-instruction pushtype))
-      (t/attach-instruction (return-pop-instruction pushtype))
+      (type/attach-instruction (return-instruction pushtype))
+      (type/attach-instruction (return-pop-instruction pushtype))
       (assoc :attributes (conj (:attributes pushtype) :returnable))))
 
 
@@ -146,10 +148,10 @@
   "takes a PushType and adds the :storable attribute and the associated instructions"
   [pushtype]
   (-> pushtype
-      (t/attach-instruction (save-instruction pushtype))
-      (t/attach-instruction (savestack-instruction pushtype))
-      (t/attach-instruction (store-instruction pushtype))
-      (t/attach-instruction (storestack-instruction pushtype))
+      (type/attach-instruction (save-instruction pushtype))
+      (type/attach-instruction (savestack-instruction pushtype))
+      (type/attach-instruction (store-instruction pushtype))
+      (type/attach-instruction (storestack-instruction pushtype))
       (assoc :attributes (conj (:attributes pushtype) :storable))))
 
 
@@ -158,8 +160,8 @@
   "takes a PushType and adds the :taggable attribute and the associated instructions"
   [pushtype]
   (-> pushtype
-      (t/attach-instruction (tag-instruction pushtype))
-      (t/attach-instruction (tagstack-instruction pushtype))
+      (type/attach-instruction (tag-instruction pushtype))
+      (type/attach-instruction (tagstack-instruction pushtype))
       (assoc :attributes (conj (:attributes pushtype) :taggable))))
 
 
@@ -169,7 +171,7 @@
   :pushtype->tagspacefloat and :pushtype->tagspace instructions to its :instructions collection"
   [pushtype]
   (-> pushtype
-      (t/attach-instruction (to-tagspace pushtype))
+      (type/attach-instruction (to-tagspace pushtype))
       (assoc :attributes (conj (:attributes pushtype) :to-tagspace))))
 
 
@@ -180,7 +182,6 @@
   :instructions collection"
   [pushtype]
   (-> pushtype
-      (t/attach-instruction (stackdepth-instruction pushtype))
-      (t/attach-instruction (empty?-instruction pushtype))
+      (type/attach-instruction (stackdepth-instruction pushtype))
+      (type/attach-instruction (empty?-instruction pushtype))
       (assoc :attributes (conj (:attributes pushtype) :visible))))
-

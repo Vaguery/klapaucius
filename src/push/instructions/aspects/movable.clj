@@ -1,8 +1,13 @@
 (ns push.instructions.aspects.movable
-  (:require [push.util.code-wrangling :as util]
-            [push.util.numerics :as num])
-  (:use [push.instructions.core :only (build-instruction)]
-        [push.instructions.dsl]))
+  (:require [push.util.code-wrangling
+              :as util
+              :refer [list! count-collection-points]]
+            [push.util.numerics
+              :as num
+              :refer [scalar-to-index]])
+  (:use     [push.instructions.core
+              :only (build-instruction)]
+            [push.instructions.dsl]))
 
 
 

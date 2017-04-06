@@ -1,9 +1,12 @@
 (ns push.instructions.aspects.taggable
-  (:require [push.util.code-wrangling :as fix])
-  (:use [push.instructions.core :only (build-instruction)]
-        [push.instructions.dsl]
-        [push.type.definitions.tagspace]
-        ))
+  (:require [push.util.code-wrangling
+              :as util
+              :refer [count-collection-points]])
+  (:use     [push.instructions.core
+              :only (build-instruction)]
+            [push.instructions.dsl]
+            [push.type.definitions.tagspace]
+            ))
 
 
 
@@ -24,8 +27,8 @@
       `(save-max-collection-size :as :max)
       `(calculate [:max :ts :arg]
         #(< %1
-            (+' (fix/count-collection-points %2)
-                (fix/count-collection-points %3))) :as :fail?)
+            (+' (util/count-collection-points %2)
+                (util/count-collection-points %3))) :as :fail?)
       `(calculate [:fail? :ts :arg :index]
         #(if %1
             %2

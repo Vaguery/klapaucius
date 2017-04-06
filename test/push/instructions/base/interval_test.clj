@@ -18,31 +18,31 @@
 
     :interval    (list (s/make-interval 2 3)
                        (s/make-interval 2 3))
-                             :interval-add    
+                             :interval-add
                                                  :interval  (list
                                                               (s/make-interval 4 6))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval 2 3)
                        (s/make-interval -3 -1))
-                             :interval-add    
+                             :interval-add
                                                  :interval  (list
                                                               (s/make-interval -1 2))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-open-interval 2 3)
                        (s/make-interval 2 3))
-                             :interval-add    
+                             :interval-add
                                                  :interval  (list
                                                               (s/make-open-interval 4 6))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-open-interval 2 3)
                        (s/make-interval -3 -2))
-                             :interval-add    
+                             :interval-add
                                                  :interval  (list
                                                               (s/make-open-interval -1 1))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval 3 3 :min-open? true)
                        (s/make-interval 2 2 :max-open? true))
-                             :interval-add    
+                             :interval-add
                                                  :interval  (list
                                                               (s/make-open-interval 5 5))
 
@@ -65,9 +65,9 @@
     :interval    (list (s/make-interval 3 4)
                        (s/make-interval 1 2))
 
-                             :interval-crossover 
+                             :interval-crossover
 
-                                                :exec   
+                                                :exec
                                                     (list
                                                       (list (s/make-interval 1 3)
                                                             (s/make-interval 1 4)
@@ -78,9 +78,9 @@
     :interval    (list (s/make-open-interval 3 4)
                        (s/make-interval 1 2))
 
-                             :interval-crossover 
-                             
-                                                :exec   
+                             :interval-crossover
+
+                                                :exec
                                                     (list
                                                       (list (s/make-interval 1 3
                                                                :max-open? true)
@@ -91,14 +91,14 @@
                                                             (s/make-interval 2 4
                                                                :max-open? true)
                                                             ))
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;    
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-open-interval 33 -12 )
                        (s/make-interval 1 2 :max-open? true))
                        ;; [1,2) x (-12,33)
 
-                             :interval-crossover 
-                             
-                                                :exec   
+                             :interval-crossover
+
+                                                :exec
                                                     (list
                                                       (list (s/make-interval -12 1
                                                                :max-open? true)
@@ -107,14 +107,14 @@
                                                             (s/make-open-interval -12 2)
                                                             (s/make-open-interval 2 33)
                                                             ))
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval 33 -12 :min-open? true)
                        (s/make-interval 1 2 :max-open? true))
                        ;; [1,2) x (-12,33]
 
-                             :interval-crossover 
-                             
-                                                :exec   
+                             :interval-crossover
+
+                                                :exec
                                                     (list
                                                       (list (s/make-interval -12 1
                                                               :max-open? true)
@@ -123,7 +123,7 @@
                                                             (s/make-interval 2 33
                                                               :min-open? true)
                                                             ))
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
 
 
@@ -139,13 +139,13 @@
 
     :interval    (list (s/make-interval 2 3)
                        (s/make-interval 2 3))
-                             :interval-divide    
+                             :interval-divide
                                                  :exec  (list
              (list (s/make-interval 2 3) (s/make-interval 1/3 1/2) :interval-multiply))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval 2 3)
                        (s/make-interval -2 -4))
-                             :interval-divide    
+                             :interval-divide
                                                  :exec  (list
              (list (s/make-interval -2 -4) (s/make-interval 1/3 1/2) :interval-multiply))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -164,13 +164,13 @@
 
     :interval    (list (s/make-interval -2 0)
                        (s/make-interval 2 3))
-                             :interval-divide    
+                             :interval-divide
                                                  :exec  (list
              (list (s/make-interval 2 3) (s/make-interval -∞ -1/2) :interval-multiply))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval 0 3)
                        (s/make-interval -2 -4))
-                             :interval-divide    
+                             :interval-divide
                                                  :exec  (list
              (list (s/make-interval -2 -4) (s/make-interval 1/3 ∞) :interval-multiply))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -188,7 +188,7 @@
 
     :interval    (list (s/make-interval -2 3)
                        (s/make-interval 2 3))
-                             :interval-divide    
+                             :interval-divide
                                                  :exec  (list
             (list
               (s/make-interval 2 3)
@@ -234,49 +234,49 @@
 
     :interval    (list (s/make-interval 2 3)
                        (s/make-interval 2 3))
-                             :interval-hull    
+                             :interval-hull
                                                  :interval  (list
                                                               (s/make-interval 2 3))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval 2 3)
                        (s/make-interval 1 3))
-                             :interval-hull    
+                             :interval-hull
                                                  :interval  (list
                                                               (s/make-interval 1 3))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval 2 3)
                        (s/make-interval 12 13))
-                             :interval-hull    
+                             :interval-hull
                                                  :interval  (list
                                                               (s/make-interval 2 13))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-open-interval 2 3)
                        (s/make-interval 2 3))
-                             :interval-hull    
+                             :interval-hull
                                                  :interval  (list
                                                               (s/make-interval 2 3))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-open-interval 2 3)
                        (s/make-open-interval 2 3))
-                             :interval-hull    
+                             :interval-hull
                                                  :interval  (list
                                                               (s/make-open-interval 2 3))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-open-interval -2 -3)
                        (s/make-open-interval 2 3))
-                             :interval-hull    
+                             :interval-hull
                                                  :interval  (list
                                                               (s/make-open-interval -3 3))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-open-interval -2 -2)
                        (s/make-open-interval 2 3))
-                             :interval-hull    
+                             :interval-hull
                                                  :interval  (list
                                                               (s/make-open-interval -2 3))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval 2 3 :max-open? true)
                        (s/make-open-interval 2 3))
-                             :interval-hull    
+                             :interval-hull
                                                  :interval  (list
                                                               (s/make-interval 2 3 :max-open? true))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -327,47 +327,47 @@
 
     :interval    (list (s/make-interval 2 3)
                        (s/make-interval 2 3))
-                             :interval-intersection    
+                             :interval-intersection
                                                  :interval  (list
                                                               (s/make-interval 2 3))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval 2 3)
                        (s/make-interval 1 3))
-                             :interval-intersection    
+                             :interval-intersection
                                                  :interval  (list
                                                               (s/make-interval 2 3))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval 2 3)
                        (s/make-interval 12 13))
-                             :interval-intersection    
+                             :interval-intersection
                                                  :interval  '()
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-open-interval 2 3)
                        (s/make-interval 2 3))
-                             :interval-intersection    
+                             :interval-intersection
                                                  :interval  (list
                                                               (s/make-open-interval 2 3))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-open-interval 2 3)
                        (s/make-open-interval 2 3))
-                             :interval-intersection    
+                             :interval-intersection
                                                  :interval  (list
                                                               (s/make-open-interval 2 3))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-open-interval -2 -3)
                        (s/make-open-interval 2 3))
-                             :interval-intersection    
+                             :interval-intersection
                                                  :interval  '()
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval 1 3)
                        (s/make-interval 3 4))
-                             :interval-intersection    
+                             :interval-intersection
                                                  :interval  (list
                                                               (s/make-interval 3 3))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval 2 3 :max-open? true)
                        (s/make-open-interval 2 3))
-                             :interval-intersection    
+                             :interval-intersection
                                                  :interval  (list
                                                               (s/make-open-interval 2 3))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -385,15 +385,15 @@
     ?set-stack  ?items       ?instruction        ?get-stack     ?expected
 
     :interval    (list (s/make-interval 7 9))
-                             :interval-min    
+                             :interval-min
                                                  :scalar  '(7)
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval -27 9))
-                             :interval-min    
+                             :interval-min
                                                  :scalar  '(-27)
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval -∞ 9))
-                             :interval-min    
+                             :interval-min
                                                  :scalar  (list -∞)
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
@@ -409,15 +409,15 @@
     ?set-stack  ?items       ?instruction        ?get-stack     ?expected
 
     :interval    (list (s/make-interval 7 9))
-                             :interval-max    
+                             :interval-max
                                                  :scalar  '(9)
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval -27 9))
-                             :interval-max    
+                             :interval-max
                                                  :scalar  '(9)
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval ∞ 9))
-                             :interval-max    
+                             :interval-max
                                                  :scalar  (list ∞)
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
@@ -436,44 +436,44 @@
 
     :interval    (list (s/make-interval 2 3)
                        (s/make-interval 2 3))
-                             :interval-multiply    
+                             :interval-multiply
                                                  :interval  (list
                                                               (s/make-interval 4 9))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval 2 3)
                        (s/make-interval -3 -1))
-                             :interval-multiply    
+                             :interval-multiply
                                                  :interval  (list
                                                               (s/make-interval -9 -2))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-open-interval 2 3)
                        (s/make-interval 2 3))
-                             :interval-multiply    
+                             :interval-multiply
                                                  :interval  (list
                                                               (s/make-open-interval 4 9))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-open-interval 2 3)
                        (s/make-interval -3 -2))
-                             :interval-multiply    
+                             :interval-multiply
                                                  :interval  (list
                                                               (s/make-open-interval -9 -4))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval 1 2 :min-open? true)
                        (s/make-interval 3 4 :max-open? true))
-                             :interval-multiply    
+                             :interval-multiply
                                                  :interval  (list
                                                               (s/make-open-interval 3 8))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval 1 2 :max-open? true)
                        (s/make-interval 3 4 :max-open? true))
-                             :interval-multiply    
+                             :interval-multiply
                                                  :interval  (list
                                                               (s/make-interval 3 8
                                                                 :max-open? true))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval 1 2)
                        (s/make-interval 3 4 :min-open? true))
-                             :interval-multiply    
+                             :interval-multiply
                                                  :interval  (list
                                                               (s/make-interval 3 8
                                                                 :min-open? true))
@@ -491,13 +491,13 @@
 
     :interval    (list (s/make-interval 3 4)
                        (s/make-interval 1 1 :max-open? true))
-                             :interval-multiply    
+                             :interval-multiply
                                                  :interval  (list
                                                               (s/make-interval 3 4))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval 3 4)
                        (s/make-interval 1 1 :min-open? true))
-                             :interval-multiply    
+                             :interval-multiply
                                                  :interval  (list
                                                               (s/make-interval 3 4))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -551,22 +551,22 @@
     ?new-stacks                ?instruction             ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:interval (list (s/make-interval 2 3))
-     :boolean  '(false false)}  
+     :boolean  '(false false)}
                               :interval-rebracket    {:interval
                                                       (list (s/make-interval 2 3))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:interval (list (s/make-interval 2 3))
-     :boolean  '(false true)}  
+     :boolean  '(false true)}
                               :interval-rebracket    {:interval
                                                       (list (s/make-interval 2 3 :min-open? true))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:interval (list (s/make-interval 2 3))
-     :boolean  '(true true)}  
+     :boolean  '(true true)}
                               :interval-rebracket    {:interval
                                                       (list (s/make-open-interval 2 3 ))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:interval (list (s/make-interval 2 3))
-     :boolean  '(true false)}  
+     :boolean  '(true false)}
                               :interval-rebracket    {:interval
                                                       (list (s/make-interval 2 3 :max-open? true))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -628,17 +628,17 @@
     ?set-stack  ?items       ?instruction        ?get-stack     ?expected
 
     :interval    (list (s/make-interval 7 9))
-                             :interval-recenter    
+                             :interval-recenter
                                                  :interval  (list
                                                           (s/make-interval -1 1))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval -4 -3))
-                             :interval-recenter    
+                             :interval-recenter
                                                  :interval  (list
                                                           (s/make-interval -1/2 1/2))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval 20 20))
-                             :interval-recenter    
+                             :interval-recenter
                                                  :interval  (list
                                                           (s/make-interval 0 0))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -654,12 +654,12 @@
     ?set-stack  ?items       ?instruction        ?get-stack     ?expected
 
     :interval    (list (s/make-open-interval 7 9))
-                             :interval-recenter    
+                             :interval-recenter
                                                  :interval  (list
                                                           (s/make-open-interval -1 1))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval -4 -3 :min-open? true))
-                             :interval-recenter    
+                             :interval-recenter
                                                  :interval  (list
                                                           (s/make-interval -1/2 1/2
                                                             :min-open? true))
@@ -678,7 +678,7 @@
     ?set-stack  ?items       ?instruction        ?get-stack     ?expected
 
     :interval    (list (s/make-interval 7 ∞))
-                             :interval-recenter    
+                             :interval-recenter
                                                  :interval  (list
                                                           (s/make-interval
                                                             -∞
@@ -698,12 +698,12 @@
     ?set-stack  ?items       ?instruction        ?get-stack     ?expected
 
     :interval    (list (s/make-interval 3 4))
-                             :interval-reciprocal    
+                             :interval-reciprocal
                                                  :exec  (list
                                                           (s/make-interval 1/4 1/3))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval -4 -3))
-                             :interval-reciprocal    
+                             :interval-reciprocal
                                                  :exec  (list
                                                           (s/make-interval -1/3 -1/4))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -721,12 +721,12 @@
     ?set-stack  ?items       ?instruction        ?get-stack     ?expected
 
     :interval    (list (s/make-interval 3 4 :min-open? true))
-                             :interval-reciprocal    
+                             :interval-reciprocal
                                                  :exec  (list
                                                           (s/make-interval 1/4 1/3 :max-open? true))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval -4 -3 :min-open? true))
-                             :interval-reciprocal    
+                             :interval-reciprocal
                                                  :exec  (list
                                                           (s/make-interval -1/3 -1/4 :max-open? true))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -744,20 +744,20 @@
     ?set-stack  ?items       ?instruction        ?get-stack     ?expected
 
     :interval    (list (s/make-interval 0 0))
-                             :interval-reciprocal    
+                             :interval-reciprocal
                                                  :exec  (list
                                                           (s/make-interval -∞ ∞))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval 0 10))
-                             :interval-reciprocal    
+                             :interval-reciprocal
                                                  :exec  (list
                                                           (s/make-interval 1/10 ∞))
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval 0 -10))
-                             :interval-reciprocal    
+                             :interval-reciprocal
                                                  :exec  (list
                                                           (s/make-interval -∞ -1/10))
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
 
 
@@ -771,14 +771,14 @@
     ?set-stack  ?items       ?instruction        ?get-stack     ?expected
 
     :interval    (list (s/make-interval -2 2))
-                             :interval-reciprocal    
+                             :interval-reciprocal
                                                  :exec  (list
                                                           (list
                                                           (s/make-interval -∞ -1/2)
                                                           (s/make-interval 1/2 ∞)))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval 0 0))
-                             :interval-reciprocal    
+                             :interval-reciprocal
                                                  :exec  (list
                                                           (s/make-interval -∞ ∞))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -795,12 +795,12 @@
     ?set-stack  ?items       ?instruction        ?get-stack     ?expected
 
     :interval    (list (s/make-interval -2 3))
-                             :interval-reflect    
+                             :interval-reflect
                                                  :interval  (list
                                                               (s/make-interval -3 2))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval -2 3 :max-open? true))
-                             :interval-reflect    
+                             :interval-reflect
                                                  :interval  (list
                                                               (s/make-interval -3 2
                                                                 :min-open? true))
@@ -819,17 +819,17 @@
     ?new-stacks                ?instruction             ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:interval (list (s/make-interval 2 3))
-     :scalar  '(11)}  
+     :scalar  '(11)}
                               :interval-scale    {:interval
                                                       (list (s/make-interval 22 33))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:interval (list (s/make-interval -2 3))
-     :scalar  '(1/2)}  
+     :scalar  '(1/2)}
                               :interval-scale    {:interval
                                                       (list (s/make-interval -1 3/2))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:interval (list (s/make-interval -2 5))
-     :scalar  '(0.1)}  
+     :scalar  '(0.1)}
                               :interval-scale    {:interval
                                                       (list (s/make-interval -0.2 0.5))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -845,24 +845,24 @@
     ?new-stacks                ?instruction             ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:interval (list (s/make-interval 2 3))
-     :scalar  '(-1)}  
+     :scalar  '(-1)}
                               :interval-scale    {:interval
                                                       (list (s/make-interval -3 -2))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:interval (list (s/make-interval 2 3 :min-open? true))
-     :scalar  '(-1)}  
+     :scalar  '(-1)}
                               :interval-scale    {:interval
                                                       (list (s/make-interval -3 -2
                                                             :max-open? true))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:interval (list (s/make-interval 2 3 :max-open? true))
-     :scalar  '(-1)}  
+     :scalar  '(-1)}
                               :interval-scale    {:interval
                                                       (list (s/make-interval -3 -2
                                                             :min-open? true))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:interval (list (s/make-interval ∞ 7 :min-open? true))
-     :scalar  '(-1)}  
+     :scalar  '(-1)}
                               :interval-scale    {:interval
                                                       (list (s/make-interval -∞ -7
                                                             :max-open? true))}
@@ -879,17 +879,17 @@
     ?new-stacks                ?instruction             ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:interval (list (s/make-interval 2 3))
-     :scalar  '(11)}  
+     :scalar  '(11)}
                               :interval-shift    {:interval
                                                       (list (s/make-interval 13 14))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:interval (list (s/make-interval -2 3))
-     :scalar  (list 1/2)}  
+     :scalar  (list 1/2)}
                               :interval-shift    {:interval
                                                       (list (s/make-interval -3/2 7/2))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:interval (list (s/make-interval -2 5))
-     :scalar  '(0.25)}  
+     :scalar  '(0.25)}
                               :interval-shift    {:interval
                                                       (list (s/make-interval -1.75 5.25))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -936,43 +936,43 @@
 
     :interval    (list (s/make-interval 2 2)
                        (s/make-interval 2 2))
-                             :interval-subtract    
+                             :interval-subtract
                                                  :interval  (list
                                                               (s/make-interval 0 0))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval 2 3)
                        (s/make-interval 2 3))
-                             :interval-subtract    
+                             :interval-subtract
                                                  :interval  (list
                                                               (s/make-interval -1 1))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval 2 3)
                        (s/make-interval -3 -2))
-                             :interval-subtract    
+                             :interval-subtract
                                                  :interval  (list
                                                               (s/make-interval -6 -4))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-open-interval 2 3)
                        (s/make-interval 2 3))
-                             :interval-subtract    
+                             :interval-subtract
                                                  :interval  (list
                                                               (s/make-open-interval -1 1))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-open-interval 2 3)
                        (s/make-interval -3 -2))
-                             :interval-subtract    
+                             :interval-subtract
                                                  :interval  (list
                                                               (s/make-open-interval -6 -4))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval 1 2 :min-open? true)
                        (s/make-interval 2 3 :max-open? true))
-                             :interval-subtract    
+                             :interval-subtract
                                                  :interval  (list
                                                               (s/make-interval 0 2 :max-open? true))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval 1 2 :max-open? true)
                        (s/make-interval 2 3 :min-open? true))
-                             :interval-subtract    
+                             :interval-subtract
                                                  :interval  (list
                                                               (s/make-interval 0 2 :min-open? true))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -992,21 +992,21 @@
 
     :interval    (list (s/make-interval 2 3)
                        (s/make-interval 2 3))
-                             :interval-union    
+                             :interval-union
                                                  :exec  (list
                                                           (list
                                                             (s/make-interval 2 3)))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval 2 3)
                        (s/make-interval 1 3))
-                             :interval-union    
+                             :interval-union
                                                  :exec  (list
-                                                          (list 
+                                                          (list
                                                             (s/make-interval 1 3)))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval 2 3)
                        (s/make-interval 12 13))
-                             :interval-union    
+                             :interval-union
                                                  :exec  (list
                                                           (list
                                                             (s/make-interval 12 13)
@@ -1015,28 +1015,28 @@
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-open-interval 2 3)
                        (s/make-interval 2 3))
-                             :interval-union    
+                             :interval-union
                                                  :exec  (list
                                                           (list
                                                             (s/make-interval 2 3)))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-open-interval 2 3)
                        (s/make-open-interval 2 3))
-                             :interval-union    
+                             :interval-union
                                                  :exec  (list
                                                           (list
                                                             (s/make-open-interval 2 3)))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval 1 3)
                        (s/make-interval 3 4))
-                             :interval-union    
+                             :interval-union
                                                  :exec  (list
                                                           (list
                                                             (s/make-interval 1 4)))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval 2 3 :max-open? true)
                        (s/make-interval 3 4))
-                             :interval-union    
+                             :interval-union
                                                  :exec  (list
                                                           (list
                                                             (s/make-interval 2 4)))
@@ -1051,16 +1051,17 @@
 
 
 (tabular
-  (fact ":interval-make is created by the buildable aspect"
+  (fact ":interval-construct is created by the buildable aspect"
     (check-instruction-with-all-kinds-of-stack-stuff
         ?new-stacks interval-type ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction             ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(8 2)
-     :boolean  '(true false)}  
-                              :interval-make      {:interval
-                                                      (list 
+     :boolean  '(true false)}
+                              :interval-construct
+                                                    {:interval
+                                                      (list
                                                         (s/make-interval 2 8
                                                           :max-open? true))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1077,7 +1078,7 @@
 
     ?new-stacks                ?instruction             ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:interval (list (s/make-interval 13 14 :min-open? true))} 
+    {:interval (list (s/make-interval 13 14 :min-open? true))}
                               :interval-parts      {:exec '((false true 14 13))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )

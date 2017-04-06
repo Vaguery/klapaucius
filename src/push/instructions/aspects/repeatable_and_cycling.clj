@@ -1,9 +1,13 @@
 (ns push.instructions.aspects.repeatable-and-cycling
-  (:require [push.util.code-wrangling :as util]
-            [push.type.definitions.generator :as g])
-  (:use [push.instructions.core :only (build-instruction)]
-        [push.instructions.dsl]))
-
+  (:require [push.util.code-wrangling
+              :as util
+              :refer [list! count-collection-points]]
+            [push.type.definitions.generator
+              :as g
+              :refer [make-generator]])
+  (:use     [push.instructions.core
+              :only (build-instruction)]
+            [push.instructions.dsl]))
 
 
 ;; SUPPORT FOR CYCLERS

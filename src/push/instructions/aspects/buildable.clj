@@ -1,5 +1,6 @@
 (ns push.instructions.aspects.buildable
-  (:use [push.instructions.core :only (build-instruction)]
+  (:use [push.instructions.core
+          :only (build-instruction)]
         [push.instructions.dsl]))
 
 
@@ -46,15 +47,15 @@
 
 
 
-(defn make-instruction
-  "returns a new x-make instruction for a PushType"
+(defn construct-instruction
+  "returns a new x-construct instruction for a PushType"
   [pushtype]
   (let [typename (:name pushtype)
-        instruction-name (str (name typename) "-make")
+        instruction-name (str (name typename) "-construct")
         manifest (:manifest pushtype)
         manifesttring (component-list pushtype)]
     (if (or (nil? manifest) (nil? (:builder pushtype)))
-      (throw (Exception. "a make instruction cannot be constructed for a type lacking a :manifest or :builder value"))
+      (throw (Exception. "a construct instruction cannot be constructed for a type lacking a :manifest or :builder value"))
       (eval
         (concat
           (list

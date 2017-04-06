@@ -1,5 +1,6 @@
 (ns push.instructions.aspects.set-able
-  (:use [push.instructions.core :only (build-instruction)]
+  (:use [push.instructions.core
+          :only (build-instruction)]
         [push.instructions.dsl]))
 
 
@@ -101,4 +102,3 @@
       `(consume-top-of ~typename :as :arg)
       `(calculate [:arg] #(conj #{} %1) :as :s)
       `(push-onto :set :s)))))
-
