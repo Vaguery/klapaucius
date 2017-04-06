@@ -153,7 +153,7 @@
 
 
 (fact "run some workers in parallel"
-  :danger :parallel
+  :slow :parallel
   (launch-some-workers
     my-interpreter
     sample-bindings

@@ -1,6 +1,7 @@
 (ns push.core
-  (:require [push.interpreter.core :as i]
-            [push.interpreter.templates.one-with-everything :as owe]))
+  (:require [push.interpreter.core                          :as i]
+            [push.interpreter.templates.one-with-everything :as owe]
+            ))
 
 
 ;; functions that need to be exposed
