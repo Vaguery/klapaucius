@@ -1,9 +1,9 @@
 (ns push.util.exotics
   (:require [clojure.math.numeric-tower :as nt]
-            [push.util.numerics :as num]
-            [push.util.exceptions :as oops]
-            [push.util.code-wrangling :as fix]
-    ))
+            [push.util.numerics         :as num]
+            [push.util.exceptions       :as oops]
+            [push.util.code-wrangling   :as util]
+            ))
 
 
 (defn char-to-digits
@@ -17,7 +17,7 @@
   (loop [extended items
          n 0]
     (if (>= (count extended) target)
-      (fix/list! extended)
+      (util/list! extended)
       (recur (concat extended (list (nth extended n)))
              (inc n)))))
 

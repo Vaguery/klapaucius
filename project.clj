@@ -10,4 +10,6 @@
                  [dire                           "0.5.4"]]
   :deploy-repositories [["releases" :clojars]
                         ["snapshots" :clojars]]
-  :profiles {:dev {:dependencies [[midje "1.8.3"]]}})
+  :profiles {:dev {:dependencies
+                    [[midje "1.8.3"]]
+                    }})

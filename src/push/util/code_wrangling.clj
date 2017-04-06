@@ -1,6 +1,6 @@
 (ns push.util.code-wrangling
-  (:require [clojure.zip :as zip]
-            [push.util.numerics :as num]
+  (:require [push.util.numerics :as num]
+            [clojure.zip        :as zip]
             ))
 
 

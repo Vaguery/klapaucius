@@ -1,11 +1,10 @@
 (ns push.util.test-helpers
   (:use midje.sweet)
-  (:require [push.util.stack-manipulation :as u]
-            [push.interpreter.core :as i]
+  (:require [push.interpreter.core              :as i]
             [push.interpreter.templates.minimum :as m]
-            [push.core :as push]
-            )
-  )
+            [push.util.stack-manipulation       :as u]
+            [push.core                          :as push]
+            ))
 
 
 ;; convenience functions for testing

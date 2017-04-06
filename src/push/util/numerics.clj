@@ -1,6 +1,6 @@
 (ns push.util.numerics
-  (:require [clojure.math.numeric-tower :as nt])
-  )
+  (:require [clojure.math.numeric-tower :as nt]
+            ))
 
 
 (def ∞ Double/POSITIVE_INFINITY)
