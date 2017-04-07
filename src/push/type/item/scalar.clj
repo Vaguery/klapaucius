@@ -377,7 +377,7 @@
 (def scalar-few
   (i/build-instruction
     scalar-few
-    "`:scalar-few` pops the top `:scalar` value, and calculates `(mod 10 x)`."
+    "`:scalar-few` pops the top `:scalar` value, and calculates `(mod x 10)`."
     :tags #{:numeric}
     (d/consume-top-of :scalar :as :arg)
     (d/calculate [:arg] #(mod %1 10) :as :scaled)
@@ -388,7 +388,7 @@
 (def scalar-lots
   (i/build-instruction
     scalar-lots
-    "`:scalar-lots` pops the top `:scalar` value, and pushes `(mod 10000 x)`."
+    "`:scalar-lots` pops the top `:scalar` value, and pushes `(mod x 10000)`."
     :tags #{:numeric}
     (d/consume-top-of :scalar :as :arg)
     (d/calculate [:arg] #(mod %1 10000) :as :scaled)
@@ -399,7 +399,7 @@
 (def scalar-many
   (i/build-instruction
     scalar-many
-    "`:scalar-many` pops the top `:scalar` value, and calculates `(mod 1000 x)`."
+    "`:scalar-many` pops the top `:scalar` value, and calculates `(mod x 1000)`."
     :tags #{:numeric}
     (d/consume-top-of :scalar :as :arg)
     (d/calculate [:arg] #(mod %1 1000) :as :scaled)
@@ -410,7 +410,7 @@
 (def scalar-some
   (i/build-instruction
     scalar-some
-    "`:scalar-some` pops the top `:scalar` value, and calculates `(mod 100 x)`."
+    "`:scalar-some` pops the top `:scalar` value, and calculates `(mod x 100)`."
     :tags #{:numeric}
     (d/consume-top-of :scalar :as :arg)
     (d/calculate [:arg] #(mod %1 100) :as :scaled)

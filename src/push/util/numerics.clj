@@ -39,19 +39,16 @@
           (max idx 0)))))
 
 
-
 (defn within-1?
   "predicate returns true if the absolute difference between two numbers is 1.0 or smaller"
   [num1 num2]
   (<= (nt/abs (-' num1 num2)) 1))
 
 
-
 (defn bigdecimal?
   "predicate returns true if the argument is a Clojure `bigdec` item"
   [n]
   (instance? java.math.BigDecimal n))
-
 
 
 (defn integerish?
@@ -61,12 +58,30 @@
     (zero? r)))
 
 
-
-
-
 (defn index-maker
   "takes a count, a start scalar and a step size, and produces a non-lazy collection of numerical values"
   [howmany start delta]
   (map
     #(+' start (*' %1 delta))
     (range 0 howmany)))
+
+
+(defn few
+  "Takes a scalar value, and returns that number `rem` 10. NOTE that his will return a value between -10 and 10. No error checking is done that the argument is finite and not `NaN`."
+  [x]
+  (rem x 10))
+
+(defn bunch
+  "Takes a scalar value, and returns that number `rem` 100. NOTE that his will return a value between -100 and 100. No error checking is done that the argument is finite and not `NaN`."
+  [x]
+  (rem x 100))
+
+(defn many
+  "Takes a scalar value, and returns that number `rem` 1000. NOTE that his will return a value between -1000 and 1000. No error checking is done that the argument is finite and not `NaN`."
+  [x]
+  (rem x 1000))
+
+(defn lots
+  "Takes a scalar value, and returns that number `rem` 10000. NOTE that his will return a value between -10000 and 10000. No error checking is done that the argument is finite and not `NaN`."
+  [x]
+  (rem x 10000))
