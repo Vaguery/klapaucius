@@ -31,6 +31,28 @@
     (d/push-onto :exec :continuation)))
 
 
+(def exec-do*countabunch
+  (i/build-instruction
+    exec-do*countabunch
+    "`:exec-do*countabunch` pops the top item of `:exec` and the top `:scalar`. The `scalar` is brought down to the range `[-100,100]` using push.util.numerics/bunch. It constructs a continuation depending on whether the `:scalar` is non-negative:
+
+      - `[s]` positive?: `(0 [s] :exec-do*range [item])`
+      - `[s]` zero or negative?: `([s] [item])`
+
+    This continuation is pushed to the `:exec` stack."
+    :tags #{:complex :base}
+    (d/consume-top-of :exec :as :do-this)
+    (d/consume-top-of :scalar :as :counter)
+    (d/calculate [:counter] n/bunch :as :scaled-counter)
+    (d/calculate [:scaled-counter]
+      #((complement pos?) %1) :as :done?)
+    (d/calculate
+      [:do-this :scaled-counter :done?]
+      #(if %3
+        (list (dec %2) %1)
+        (list 0 %2 :exec-do*range %1)) :as :continuation)
+    (d/push-onto :exec :continuation)))
+
 
 (def exec-do*range
   (i/build-instruction
@@ -205,6 +227,7 @@
         aspects/make-taggable
         aspects/make-visible
         (t/attach-instruction , exec-do*count)
+        (t/attach-instruction , exec-do*countabunch)
         (t/attach-instruction , exec-do*range)
         (t/attach-instruction , exec-do*times)
         (t/attach-instruction , exec-k)

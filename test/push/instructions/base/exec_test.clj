@@ -16,29 +16,50 @@
 
     {:exec     '(:foo :bar)
      :scalar  '(0)}         :exec-do*count    {:exec ' ((-1 :foo) :bar)
-                                                :scalar '()} 
+                                                :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec     '(:foo :bar)
      :scalar  '(1/3)}       :exec-do*count    {:exec '((0 1/3 :exec-do*range :foo) :bar)
-                                                :scalar '()} 
+                                                :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec     '(:foo :bar)
      :scalar  '(2)}        :exec-do*count     {:exec '((0 2 :exec-do*range :foo) :bar)
-                                                :scalar '()} 
+                                                :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec     '(:foo :bar)
      :scalar  '(-10)}        :exec-do*count    {:exec '((-11 :foo) :bar)
-                                                :scalar '()} 
+                                                :scalar '()}
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ; ; ;; missing arguments
     {:exec     '()
      :scalar  '(-2 -10)}      :exec-do*count     {:exec '()
-                                                   :scalar '(-2 -10)} 
+                                                   :scalar '(-2 -10)}
     ; ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec     '(:foo)
      :scalar  '()}      :exec-do*count     {:exec '(:foo)
                                                    :scalar '()} )
 
+
+(tabular
+  (fact ":exec-do*countabunch does complicated things involving continuations (see tests)"
+    (check-instruction-with-all-kinds-of-stack-stuff
+      ?new-stacks exec-module ?instruction) => (contains ?expected))
+
+     ?new-stacks                ?instruction             ?expected
+
+     {:exec     '(:foo :bar)
+      :scalar  '(0)}         :exec-do*countabunch    {:exec ' ((-1 :foo) :bar)
+                                                      :scalar '()}
+     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     {:exec     '(:foo :bar)
+      :scalar  '(1/3)}       :exec-do*countabunch    {:exec '((0 1/3 :exec-do*range :foo) :bar)
+                                                 :scalar '()}
+     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     {:exec     '(:foo :bar)
+      :scalar  '(12312.5M)}  :exec-do*countabunch     {:exec '((0 12.5M :exec-do*range :foo) :bar)
+                                                 :scalar '()}
+     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+)
 
 
 (tabular
@@ -50,20 +71,20 @@
 
     {:exec     '(:foo :bar)
      :scalar   '(0)}         :exec-do*times    {:exec '(:foo :bar)
-                                                :scalar  '()} 
+                                                :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec     '(:foo :bar)
      :scalar   '(2)}        :exec-do*times     {:exec '((:foo (1 :exec-do*times :foo)) :bar)
-                                                :scalar  '()} 
+                                                :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec     '(:foo :bar)
      :scalar   '(-10)}        :exec-do*times    {:exec '(:foo :bar)
-                                                :scalar  '()} 
+                                                :scalar  '()}
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ; ; ;; missing arguments
     {:exec     '()
      :scalar   '(-2 -10)}      :exec-do*times     {:exec '()
-                                                   :scalar  '(-2 -10)} 
+                                                   :scalar  '(-2 -10)}
     ; ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec     '(:foo)
      :scalar   '()}      :exec-do*times     {:exec '(:foo)
@@ -78,38 +99,38 @@
 
     {:exec     '(:foo :bar)
      :scalar   '(4 2)}        :exec-do*range     {:exec '((2 :foo (3 4 :exec-do*range :foo)) :bar)
-                                                   :scalar  '()} 
+                                                   :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec     '(:foo :bar)
      :scalar   '(4.9 5/2)}    :exec-do*range     {:exec '((5/2 :foo (7/2 4.9 :exec-do*range :foo)) :bar)
-                                                   :scalar  '()} 
+                                                   :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec     '(:foo :bar)
      :scalar   '(3 3)}         :exec-do*range     {:exec '((3 :foo) :bar)
-                                                     :scalar  '()} 
+                                                     :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec     '(:foo :bar)
      :scalar   '(3.5 11/3)}    :exec-do*range     {:exec '((8/3 :foo) :bar)
-                                                     :scalar  '()} 
+                                                     :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec     '(:foo :bar)
      :scalar   '(2 10)}        :exec-do*range     {:exec '((10 :foo
                                                       (9 2 :exec-do*range :foo)) :bar)
-                                                   :scalar  '()} 
+                                                   :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec     '(:foo :bar)
      :scalar   '(10 10)}        :exec-do*range     {:exec '((10 :foo) :bar)
-                                                     :scalar  '()} 
+                                                     :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec     '(:foo :bar)
-     :scalar   '(-2 -10)}      :exec-do*range     {:exec '((-10 :foo 
+     :scalar   '(-2 -10)}      :exec-do*range     {:exec '((-10 :foo
                                                       (-9 -2 :exec-do*range :foo)) :bar)
-                                                   :scalar  '()} 
+                                                   :scalar  '()}
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ; ;; missing arguments
     {:exec     '()
      :scalar   '(-2 -10)}      :exec-do*range     {:exec '()
-                                                   :scalar  '(-2 -10)} 
+                                                   :scalar  '(-2 -10)}
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec     '(:foo)
      :scalar   '(-2)}      :exec-do*range     {:exec '(:foo)
@@ -127,7 +148,7 @@
 
     {:exec     '(:foo :bar)
      :scalar   '(4M 2/3)}        :exec-do*range   {:exec '(:bar)
-                                                   :error  '({:item "Non-terminating decimal expansion; no exact representable decimal result.", :step 0} {:item "Non-terminating decimal expansion; no exact representable decimal result.", :step 0})} 
+                                                   :error  '({:item "Non-terminating decimal expansion; no exact representable decimal result.", :step 0} {:item "Non-terminating decimal expansion; no exact representable decimal result.", :step 0})}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
 
@@ -141,16 +162,16 @@
 
     {:exec '(1 2 3)
      :boolean '(false)}           :exec-if            {:exec '(2 3)
-                                                    :boolean '()} 
+                                                    :boolean '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec '(1 2 3)
      :boolean '(true)}            :exec-if            {:exec '(1 3)
-                                                    :boolean '()} 
+                                                    :boolean '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;; missing arguments
     {:exec '(1)
      :boolean '(true)}            :exec-if            {:exec '(1)
-                                                    :boolean '(true)} 
+                                                    :boolean '(true)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec '(1 2 3)
      :boolean '()}                :exec-if            {:exec '(1 2 3)
@@ -164,9 +185,9 @@
 
     ?set-stack  ?items         ?instruction      ?get-stack     ?expected
     ;; not the second one
-    :exec    '(1.1 2.2 (3.3))    :exec-k          :exec         '(1.1 (3.3)) 
+    :exec    '(1.1 2.2 (3.3))    :exec-k          :exec         '(1.1 (3.3))
     ;; missing arguments
-    :exec    '(1.0)              :exec-k          :exec         '(1.0)     
+    :exec    '(1.0)              :exec-k          :exec         '(1.0)
     :exec    '()                 :exec-k          :exec         '())
 
 
@@ -177,8 +198,8 @@
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; nothing happens
-    :exec    '(1.1 2.2)          :exec-noop          :exec         '(1.1 2.2) 
-    :exec    '(1.0)              :exec-noop          :exec         '(1.0)     
+    :exec    '(1.1 2.2)          :exec-noop          :exec         '(1.1 2.2)
+    :exec    '(1.0)              :exec-noop          :exec         '(1.0)
     :exec    '()                 :exec-noop          :exec         '())
 
 
@@ -189,8 +210,8 @@
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; forever
-    :exec    '(1.1 2.2 3.3 4.4)  :exec-s          :exec         '(1.1 3.3 (2.2 3.3) 4.4) 
-    :exec    '(1.1 2.2)          :exec-s          :exec         '(1.1 2.2)     
+    :exec    '(1.1 2.2 3.3 4.4)  :exec-s          :exec         '(1.1 3.3 (2.2 3.3) 4.4)
+    :exec    '(1.1 2.2)          :exec-s          :exec         '(1.1 2.2)
     :exec    '()                 :exec-s          :exec         '())
 
 
@@ -203,11 +224,11 @@
 
     {:exec     '(:foo :bar)
      :boolean  '(true)}         :exec-do*while    {:exec '((:foo :exec-while :foo) :bar)
-                                                :boolean '(true)} 
+                                                :boolean '(true)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec     '(:foo :bar)
      :boolean  '(false)}        :exec-do*while    {:exec '((:foo :exec-while :foo) :bar)
-                                                :boolean '(false)} 
+                                                :boolean '(false)}
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ; ; ; ;; missing arguments
     {:exec     '()
@@ -224,16 +245,16 @@
 
     {:exec     '(:foo :bar)
      :boolean  '(true)}         :exec-when    {:exec '(:foo :bar)
-                                               :boolean '()} 
+                                               :boolean '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec     '(:foo :bar)
      :boolean  '(false)}        :exec-when    {:exec '(:bar)
-                                               :boolean '()} 
+                                               :boolean '()}
     ; ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ; ; ; ; ;; missing arguments
     {:exec     '()
      :boolean  '(true)}         :exec-when    {:exec '()
-                                               :boolean '(true)} 
+                                               :boolean '(true)}
     ; ; ; ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec     '(:foo :bar)
      :boolean  '()}             :exec-when    {:exec '(:foo :bar)
@@ -249,16 +270,16 @@
 
     {:exec     '(:foo :bar)
      :boolean  '(true)}         :exec-while    {:exec '((:foo :exec-while :foo) :bar)
-                                                :boolean '()} 
+                                                :boolean '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec     '(:foo :bar)
      :boolean  '(false)}        :exec-while    {:exec '(() :bar)
-                                                :boolean '()} 
+                                                :boolean '()}
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ; ; ; ;; missing arguments
     {:exec     '()
      :boolean  '(true)}         :exec-while    {:exec '()
-                                                :boolean '(true)} 
+                                                :boolean '(true)}
     ; ; ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec     '(:foo :bar)
      :boolean  '()}             :exec-while    {:exec '(:foo :bar)
@@ -279,7 +300,7 @@
     :exec    '(1.1 2.2 3.3)      :exec-stackdepth   :scalar      '(3)
     :exec    '(1.0)              :exec-stackdepth   :scalar      '(1)
     :exec    '()                 :exec-stackdepth   :scalar      '(0))
-   
+
 
 (tabular
   (fact ":exec-empty? returns the true (to :boolean stack) if the stack is empty"
@@ -305,7 +326,7 @@
     :exec    '((1 2) (3 4))     :exec-equal?      :boolean        '(false)
     :exec    '((3 4) (1 2))     :exec-equal?      :boolean        '(false)
     :exec    '((1 2) (1 2))     :exec-equal?      :boolean        '(true)
-    ;; missing args     
+    ;; missing args
     :exec    '((3 4))           :exec-equal?      :boolean        '()
     :exec    '((3 4))           :exec-equal?      :exec           '((3 4))
     :exec    '()                :exec-equal?      :boolean        '()
@@ -322,7 +343,7 @@
     :exec    '((1) (88))       :exec-notequal?      :boolean      '(true)
     :exec    '((88) (1))       :exec-notequal?      :boolean      '(true)
     :exec    '((1) (1))        :exec-notequal?      :boolean      '(false)
-    ;; missing args    
+    ;; missing args
     :exec    '((88))           :exec-notequal?      :boolean      '()
     :exec    '((88))           :exec-notequal?      :exec         '((88))
     :exec    '()               :exec-notequal?      :boolean      '()
@@ -337,7 +358,3 @@
     ?set-stack  ?items     ?instruction    ?get-stack     ?expected
     :exec    '(1 2 3)      :exec-laterloop   :exec     '(2 3 (1 :exec-laterloop 1))
     :exec    '(1)          :exec-laterloop   :exec      '(1))
-
-
-
-
