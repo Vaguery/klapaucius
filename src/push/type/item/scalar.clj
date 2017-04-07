@@ -399,21 +399,21 @@
 (def scalar-many
   (i/build-instruction
     scalar-many
-    "`:scalar-many` pops the top `:scalar` value, and calculates `(mod x 1000)`."
+    "`:scalar-many` pops the top `:scalar` value, and pushes `(rem x 1000)`."
     :tags #{:numeric}
     (d/consume-top-of :scalar :as :arg)
-    (d/calculate [:arg] #(mod %1 1000) :as :scaled)
+    (d/calculate [:arg] #(math/many %1) :as :scaled)
     (d/push-onto :scalar :scaled)))
 
 
 
-(def scalar-some
+(def scalar-bunch
   (i/build-instruction
-    scalar-some
-    "`:scalar-some` pops the top `:scalar` value, and calculates `(mod x 100)`."
+    scalar-bunch
+    "`:scalar-bunch` pops the top `:scalar` value, and pushes `(rem x 100)`."
     :tags #{:numeric}
     (d/consume-top-of :scalar :as :arg)
-    (d/calculate [:arg] #(mod %1 100) :as :scaled)
+    (d/calculate [:arg] #(math/bunch %1) :as :scaled)
     (d/push-onto :scalar :scaled)))
 
 
@@ -548,6 +548,7 @@
         (t/attach-instruction , scalar-arcsine)
         (t/attach-instruction , scalar-arctangent)
         (t/attach-instruction , scalar-bigdec?)
+        (t/attach-instruction , scalar-bunch)
         (t/attach-instruction , scalar-ceiling)
         (t/attach-instruction , scalar-cosine)
         (t/attach-instruction , scalar-dec)
@@ -574,7 +575,6 @@
         (t/attach-instruction , scalar-round)
         (t/attach-instruction , scalar-sign)
         (t/attach-instruction , scalar-sine)
-        (t/attach-instruction , scalar-some)
         (t/attach-instruction , scalar-sqrt)
         (t/attach-instruction , scalar-subtract)
         (t/attach-instruction , scalar-tangent)
