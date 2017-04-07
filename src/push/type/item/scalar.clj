@@ -377,11 +377,12 @@
 (def scalar-few
   (i/build-instruction
     scalar-few
-    "`:scalar-few` pops the top `:scalar` value, and calculates `(mod x 10)`."
+    "`:scalar-few` pops the top `:scalar` value, and calculates `(rem x 10)`."
     :tags #{:numeric}
     (d/consume-top-of :scalar :as :arg)
-    (d/calculate [:arg] #(mod %1 10) :as :scaled)
-    (d/push-onto :scalar :scaled)))
+    (d/calculate [:arg] #(math/few %1) :as :scaled)
+    (d/push-onto :scalar :scaled)
+    ))
 
 
 

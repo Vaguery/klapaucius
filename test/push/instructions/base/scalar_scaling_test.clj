@@ -3,34 +3,34 @@
   (:use midje.sweet)
   (:use [push.util.test-helpers])
   (:use [push.type.item.scalar])
-  (:use [push.util.numerics :only [∞,-∞]])
+  (:require [push.util.numerics :as num :refer [∞,-∞]])
   )
 
 ;; fixtures
 
-(def cljNaN  (Math/sin ∞))
+(def cljNaN  (Math/sin num/∞))
 (def maxDouble  (Double/MAX_VALUE))
 
 
 
 (tabular
-  (fact ":scalar-few  reduces the top :scalar mod 10000"
+  (fact ":scalar-few reduces the top :scalar rem 10"
     (register-type-and-check-instruction
       ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack   ?items      ?instruction    ?get-stack   ?expected
     :scalar     '(32677)     :scalar-few     :scalar       '(7)
-    :scalar     '(-22212)    :scalar-few     :scalar       '(8)
+    :scalar     '(-22212)    :scalar-few     :scalar       '(-2)
     :scalar     '(79)        :scalar-few     :scalar       '(9)
     :scalar     '(0)         :scalar-few     :scalar       '(0)
 
     :scalar     '(32677.5)   :scalar-few     :scalar       '(7.5)
-    :scalar     '(-22212.5)  :scalar-few     :scalar       '(7.5)
+    :scalar     '(-22212.5)  :scalar-few     :scalar       '(-2.5)
     :scalar     '(79.5)      :scalar-few     :scalar       '(9.5)
     :scalar     '(0.5)       :scalar-few     :scalar       '(0.5)
 
     :scalar     '(32677/2)   :scalar-few     :scalar       '(17/2)
-    :scalar     '(-22213/2)  :scalar-few     :scalar       '(7/2)
+    :scalar     '(-22213/2)  :scalar-few     :scalar       '(-13/2)
     :scalar     '(79/2)      :scalar-few     :scalar       '(19/2)
     :scalar     '(0/2)       :scalar-few     :scalar       '(0)
 
@@ -46,11 +46,22 @@
                              :scalar-few     :scalar       '(7)
     :scalar     (list (bigint Double/MIN_VALUE))
                              :scalar-few     :scalar       '(0N)
-
     :scalar     (list (inc (bigint 1e872M)))
                              :scalar-few     :scalar       '(1N)
     )
 
+
+(tabular
+  (fact ":scalar-few produces an :error when the arg is infinite or NaN"
+    (register-type-and-check-instruction
+      ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack   ?items        ?instruction    ?get-stack   ?expected
+    :scalar     (list num/∞)   :scalar-few     :scalar       '()
+    :scalar     (list num/∞)   :scalar-few     :error        '({:item "Infinite or NaN", :step 0})
+    :scalar     (list cljNaN)  :scalar-few     :scalar       '()
+    :scalar     (list cljNaN)  :scalar-few     :error        '({:item "Infinite or NaN", :step 0})
+    )
 
 
 (tabular
@@ -102,11 +113,11 @@
     ?set-stack   ?items      ?instruction    ?get-stack   ?expected
     :scalar     (list maxDouble)
                              :scalar-lots    :scalar       '(0.0)
-    :scalar     (list ∞)     :scalar-lots    :scalar       '()
-    :scalar     (list ∞)     :scalar-lots    :error        '({:item "Infinite or NaN",
+    :scalar     (list num/∞)     :scalar-lots    :scalar       '()
+    :scalar     (list num/∞)     :scalar-lots    :error        '({:item "Infinite or NaN",
                                                               :step 0})
-    :scalar     (list -∞)    :scalar-lots    :scalar       '()
-    :scalar     (list -∞)    :scalar-lots    :error        '({:item "Infinite or NaN",
+    :scalar     (list num/-∞)    :scalar-lots    :scalar       '()
+    :scalar     (list num/-∞)    :scalar-lots    :error        '({:item "Infinite or NaN",
                                                               :step 0})
     )
 
@@ -157,11 +168,11 @@
       ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack   ?items      ?instruction    ?get-stack   ?expected
-    :scalar     (list ∞)     :scalar-many    :scalar       '()
-    :scalar     (list ∞)     :scalar-many    :error        '({:item "Infinite or NaN",
+    :scalar     (list num/∞)     :scalar-many    :scalar       '()
+    :scalar     (list num/∞)     :scalar-many    :error        '({:item "Infinite or NaN",
                                                               :step 0})
-    :scalar     (list -∞)    :scalar-many    :scalar       '()
-    :scalar     (list -∞)    :scalar-many    :error        '({:item "Infinite or NaN",
+    :scalar     (list num/-∞)    :scalar-many    :scalar       '()
+    :scalar     (list num/-∞)    :scalar-many    :error        '({:item "Infinite or NaN",
                                                               :step 0})
     )
 
