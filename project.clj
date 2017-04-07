@@ -13,5 +13,11 @@
   :deploy-repositories [["releases" :clojars]
                         ["snapshots" :clojars]
                         ]
-  :profiles {:dev {:dependencies [[midje "1.8.3"]]
-                                  }})
+  :profiles {:dev {:dependencies [[midje "1.8.3"]]}}
+  :hiera  {:path "target/ns-hierarchy.png"
+           :vertical false
+           :show-external true
+           :cluster-depth 2
+           :trim-ns-prefix true
+           :ignore-ns #{}}
+           )
