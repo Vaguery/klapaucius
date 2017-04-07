@@ -377,7 +377,7 @@
 (def scalar-few
   (i/build-instruction
     scalar-few
-    "`:scalar-few` pops the top `:scalar` value, and calculates `(rem x 10)`."
+    "`:scalar-few` pops the top `:scalar` value, and pushes `(rem x 10)`."
     :tags #{:numeric}
     (d/consume-top-of :scalar :as :arg)
     (d/calculate [:arg] #(math/few %1) :as :scaled)
@@ -385,14 +385,13 @@
     ))
 
 
-
 (def scalar-lots
   (i/build-instruction
     scalar-lots
-    "`:scalar-lots` pops the top `:scalar` value, and pushes `(mod x 10000)`."
+    "`:scalar-lots` pops the top `:scalar` value, and pushes `(rem x 10000)`."
     :tags #{:numeric}
     (d/consume-top-of :scalar :as :arg)
-    (d/calculate [:arg] #(mod %1 10000) :as :scaled)
+    (d/calculate [:arg] #(math/lots %1) :as :scaled)
     (d/push-onto :scalar :scaled)))
 
 

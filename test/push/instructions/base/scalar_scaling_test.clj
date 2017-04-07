@@ -65,23 +65,23 @@
 
 
 (tabular
-  (fact ":scalar-lots reduces the top :scalar mod 10000"
+  (fact ":scalar-lots reduces the top :scalar rem 10000"
     (register-type-and-check-instruction
       ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack   ?items      ?instruction    ?get-stack   ?expected
     :scalar     '(32677)     :scalar-lots    :scalar       '(2677)
-    :scalar     '(-22212)    :scalar-lots    :scalar       '(7788)
+    :scalar     '(-22212)    :scalar-lots    :scalar       '(-2212)
     :scalar     '(79)        :scalar-lots    :scalar       '(79)
     :scalar     '(0)         :scalar-lots    :scalar       '(0)
 
     :scalar     '(32677.5)   :scalar-lots    :scalar       '(2677.5)
-    :scalar     '(-22212.5)  :scalar-lots    :scalar       '(7787.5)
+    :scalar     '(-22212.5)  :scalar-lots    :scalar       '(-2212.5)
     :scalar     '(79.5)      :scalar-lots    :scalar       '(79.5)
     :scalar     '(0.5)       :scalar-lots    :scalar       '(0.5)
 
     :scalar     '(32677/2)   :scalar-lots    :scalar       '(12677/2)
-    :scalar     '(-22213/2)  :scalar-lots    :scalar       '(17787/2)
+    :scalar     '(-22213/2)  :scalar-lots    :scalar       '(-2213/2)
     :scalar     '(79/2)      :scalar-lots    :scalar       '(79/2)
     :scalar     '(0/2)       :scalar-lots    :scalar       '(0)
 
@@ -110,15 +110,12 @@
     (register-type-and-check-instruction
       ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
 
-    ?set-stack   ?items      ?instruction    ?get-stack   ?expected
-    :scalar     (list maxDouble)
-                             :scalar-lots    :scalar       '(0.0)
-    :scalar     (list num/∞)     :scalar-lots    :scalar       '()
-    :scalar     (list num/∞)     :scalar-lots    :error        '({:item "Infinite or NaN",
-                                                              :step 0})
-    :scalar     (list num/-∞)    :scalar-lots    :scalar       '()
-    :scalar     (list num/-∞)    :scalar-lots    :error        '({:item "Infinite or NaN",
-                                                              :step 0})
+    ?set-stack   ?items         ?instruction    ?get-stack   ?expected
+    :scalar     (list cljNaN)    :scalar-lots    :scalar    '()
+    :scalar     (list num/∞)     :scalar-lots    :scalar    '()
+    :scalar     (list num/∞)     :scalar-lots    :error     '({:item "Infinite or NaN", :step 0})
+    :scalar     (list num/-∞)    :scalar-lots    :scalar    '()
+    :scalar     (list num/-∞)    :scalar-lots    :error     '({:item "Infinite or NaN", :step 0})
     )
 
 
