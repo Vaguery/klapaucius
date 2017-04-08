@@ -31,10 +31,10 @@
     (d/push-onto :exec :continuation)))
 
 
-(def exec-do*countabunch
+(def exec-doabunch*count
   (i/build-instruction
-    exec-do*countabunch
-    "`:exec-do*countabunch` pops the top item of `:exec` and the top `:scalar`. The `scalar` is brought down to the range `[-100,100]` using push.util.numerics/bunch. It constructs a continuation depending on whether the `:scalar` is non-negative:
+    exec-doabunch*count
+    "`:exec-doabunch*count` pops the top item of `:exec` and the top `:scalar`. The `scalar` is brought down to the range `[-100,100]` using push.util.numerics/bunch. It constructs a continuation depending on whether the `:scalar` is non-negative:
 
       - `[s]` positive?: `(0 [s] :exec-do*range [item])`
       - `[s]` zero or negative?: `([s] [item])`
@@ -51,6 +51,29 @@
       #(if %3
         (list (dec %2) %1)
         (list 0 %2 :exec-do*range %1)) :as :continuation)
+    (d/push-onto :exec :continuation)))
+
+
+(def exec-doafew*count
+  (i/build-instruction
+    exec-doafew*count
+    "`:exec-doafew*count` pops the top item of `:exec` and the top `:scalar`. The `scalar` is brought down to the range `[-10,10]` using push.util.numerics/few. It constructs a continuation depending on whether the `:scalar` is non-negative:
+
+      - `[s]` positive?: `(0 [s] :exec-do*range [item])`
+      - `[s]` zero or negative?: `([s] [item])`
+
+    This continuation is pushed to the `:exec` stack."
+    :tags #{:complex :base}
+    (d/consume-top-of :exec :as :do-this)
+    (d/consume-top-of :scalar :as :counter)
+    (d/calculate [:counter] n/few :as :scaled-counter)
+    (d/calculate [:scaled-counter]
+      #((complement pos?) %1) :as :done?)
+    (d/calculate
+      [:do-this :scaled-counter :done?]
+      #(if %3
+        (list (dec %2) %1)
+        (list 0 %2 :exec-doafew*range %1)) :as :continuation)
     (d/push-onto :exec :continuation)))
 
 
@@ -82,6 +105,39 @@
         %5 (list %4 %1)
         :else
            (list %2 %1 (list %4 %3 :exec-do*range %1))) :as :continuation)
+    (d/push-onto :exec :continuation)))
+
+
+(def exec-doafew*range
+  (i/build-instruction
+    exec-doafew*range
+      "`:exec-doafew*range` pops the top item of `:exec` and the top two `:scalar` values (call them `end` and `start`, respectively). The first thing it does is scale `start` and `end` to fall in the range `[-10,10]`. Then it constructs a continuation depending on whether the relation between `start` and `end`, which will (when interpreted) send the current `start` value to the `:scalar` stack, execute the `:exec` item, send updated indices to the `:scalar` stack, and then repeat the loop:
+
+      - `start` < `end` and more than 1 different:
+        `'([start] [item] ([start+1] [end] :exec-doafew*range [item]))`
+      - `start` > `end` and more than 1 different:
+        `'([start] [item] ([start-1] [end] :exec-doafew*range [item]))`
+      - `start` within 1 of `end`:
+        `'([end] [item])`
+
+    This continuation is pushed to the `:exec` stack. "
+    :tags #{:complex :base}
+    (d/consume-top-of :exec :as :do-this)
+    (d/consume-top-of :scalar :as :end)
+    (d/consume-top-of :scalar :as :start)
+    (d/calculate [:start] n/few :as :start)
+    (d/calculate [:end] n/few :as :end)
+    (d/calculate [:start :end]
+      #(n/within-1? %1 %2) :as :done?)
+    (d/calculate [:start :end]  #(+' %1 (compare %2 %1)) :as :next)
+    (d/calculate
+      [:do-this :start :end :next :done?]
+      #(cond
+        (nil? %4) nil
+        (nil? %5) nil
+        %5 (list %4 %1)
+        :else
+           (list %2 %1 (list %4 %3 :exec-doafew*range %1))) :as :continuation)
     (d/push-onto :exec :continuation)))
 
 
@@ -227,9 +283,11 @@
         aspects/make-taggable
         aspects/make-visible
         (t/attach-instruction , exec-do*count)
-        (t/attach-instruction , exec-do*countabunch)
         (t/attach-instruction , exec-do*range)
         (t/attach-instruction , exec-do*times)
+        (t/attach-instruction , exec-doabunch*count)
+        (t/attach-instruction , exec-doafew*count)
+        (t/attach-instruction , exec-doafew*range)
         (t/attach-instruction , exec-k)
         (t/attach-instruction , exec-laterloop)
         (t/attach-instruction , exec-noop)

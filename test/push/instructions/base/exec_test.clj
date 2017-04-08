@@ -41,25 +41,47 @@
 
 
 (tabular
-  (fact ":exec-do*countabunch does complicated things involving continuations (see tests)"
+  (fact ":exec-doabunch*count does complicated things involving continuations (see tests)"
     (check-instruction-with-all-kinds-of-stack-stuff
       ?new-stacks exec-module ?instruction) => (contains ?expected))
 
      ?new-stacks                ?instruction             ?expected
 
      {:exec     '(:foo :bar)
-      :scalar  '(0)}         :exec-do*countabunch    {:exec ' ((-1 :foo) :bar)
+      :scalar  '(0)}         :exec-doabunch*count    {:exec ' ((-1 :foo) :bar)
                                                       :scalar '()}
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      {:exec     '(:foo :bar)
-      :scalar  '(1/3)}       :exec-do*countabunch    {:exec '((0 1/3 :exec-do*range :foo) :bar)
+      :scalar  '(1/3)}       :exec-doabunch*count    {:exec '((0 1/3 :exec-do*range :foo) :bar)
                                                  :scalar '()}
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      {:exec     '(:foo :bar)
-      :scalar  '(12312.5M)}  :exec-do*countabunch     {:exec '((0 12.5M :exec-do*range :foo) :bar)
+      :scalar  '(12312.5M)}  :exec-doabunch*count     {:exec '((0 12.5M :exec-do*range :foo) :bar)
                                                  :scalar '()}
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-)
+     )
+
+
+(tabular
+  (fact ":exec-doafew*count does complicated things involving continuations (see tests)"
+    (check-instruction-with-all-kinds-of-stack-stuff
+      ?new-stacks exec-module ?instruction) => (contains ?expected))
+
+     ?new-stacks                ?instruction             ?expected
+
+     {:exec     '(:foo :bar)
+      :scalar  '(0)}          :exec-doafew*count    {:exec ' ((-1 :foo) :bar)
+                                                      :scalar '()}
+     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     {:exec     '(:foo :bar)
+      :scalar  '(-111/7)}     :exec-doafew*count    {:exec '((-48/7 :foo) :bar)
+                                                      :scalar '()}
+     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     {:exec     '(:foo :bar)
+      :scalar  '(12312.5M)}   :exec-doafew*count     {:exec '((0 2.5M :exec-doafew*range :foo) :bar)
+                                                 :scalar '()}
+     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     )
 
 
 (tabular
@@ -89,6 +111,12 @@
     {:exec     '(:foo)
      :scalar   '()}      :exec-do*times     {:exec '(:foo)
                                                    :scalar  '()} )
+
+
+
+
+
+
 
 (tabular
   (fact ":exec-do*range does complicated things involving continuations (see tests)"
@@ -136,6 +164,27 @@
      :scalar   '(-2)}      :exec-do*range     {:exec '(:foo)
                                                    :scalar  '(-2)} )
 
+
+(tabular
+  (fact ":exec-doafew*range does complicated things involving continuations (see tests)"
+    (check-instruction-with-all-kinds-of-stack-stuff
+      ?new-stacks exec-module ?instruction) => (contains ?expected))
+
+     ?new-stacks                ?instruction             ?expected
+
+     {:exec    '(:foo :bar)
+      :scalar  '(4.9M 5/2)}       :exec-doafew*range  {:exec '((5/2 :foo (7/2 4.9M :exec-doafew*range :foo)) :bar)
+                                                      :scalar '()}
+     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     {:exec    '(:foo :bar)
+      :scalar  '(124.9M -125/2)}  :exec-doafew*range  {:exec '((-5/2 :foo (-3/2 4.9M :exec-doafew*range :foo)) :bar)
+                                                      :scalar '()}
+     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     {:exec    '(:foo :bar)
+      :scalar  '(-124.9M 111N)}  :exec-doafew*range  {:exec '((1N :foo (0N -4.9M :exec-doafew*range :foo)) :bar)
+                                                      :scalar '()}
+     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     )
 
 
 
