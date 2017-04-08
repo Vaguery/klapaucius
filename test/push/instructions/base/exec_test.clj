@@ -52,11 +52,11 @@
                                                       :scalar '()}
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      {:exec     '(:foo :bar)
-      :scalar  '(1/3)}       :exec-doabunch*count    {:exec '((0 1/3 :exec-do*range :foo) :bar)
+      :scalar  '(1/3)}       :exec-doabunch*count    {:exec '((0 1/3 :exec-doabunch*range :foo) :bar)
                                                  :scalar '()}
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      {:exec     '(:foo :bar)
-      :scalar  '(12312.5M)}  :exec-doabunch*count     {:exec '((0 12.5M :exec-do*range :foo) :bar)
+      :scalar  '(12312.5M)}  :exec-doabunch*count     {:exec '((0 12.5M :exec-doabunch*range :foo) :bar)
                                                  :scalar '()}
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      )
@@ -113,9 +113,48 @@
                                                    :scalar  '()} )
 
 
+(tabular
+ (fact ":exec-doafew*times does complicated things involving continuations (see tests)"
+   (check-instruction-with-all-kinds-of-stack-stuff
+     ?new-stacks exec-module ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction             ?expected
+
+    {:exec    '(:foo :bar)
+     :scalar  '(4.9M)}       :exec-doafew*times     {:exec '((:foo (3.9M :exec-doafew*times :foo)) :bar)
+                                                     :scalar '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec    '(:foo :bar)
+     :scalar  '(124.9M)}     :exec-doafew*times     {:exec '((:foo (3.9M :exec-doafew*times :foo)) :bar)
+                                                     :scalar '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec    '(:foo :bar)
+     :scalar  '(111N)}       :exec-doafew*times     {:exec '((:foo (0N :exec-doafew*times :foo)) :bar)
+                                                     :scalar '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
 
 
+(tabular
+ (fact ":exec-doabunch*times does complicated things involving continuations (see tests)"
+   (check-instruction-with-all-kinds-of-stack-stuff
+     ?new-stacks exec-module ?instruction) => (contains ?expected))
 
+    ?new-stacks                ?instruction             ?expected
+
+    {:exec    '(:foo :bar)
+     :scalar  '(121014.9M)}  :exec-doabunch*times   {:exec '((:foo (13.9M :exec-doabunch*times :foo)) :bar)
+                                                     :scalar '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec    '(:foo :bar)
+     :scalar  '(124.9M)}     :exec-doabunch*times   {:exec '((:foo (23.9M :exec-doabunch*times :foo)) :bar)
+                                                     :scalar '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec    '(:foo :bar)
+     :scalar  '(111N)}       :exec-doabunch*times   {:exec '((:foo (10N :exec-doabunch*times :foo)) :bar)
+                                                     :scalar '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
 
 
 (tabular
@@ -185,6 +224,28 @@
                                                       :scalar '()}
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      )
+
+
+(tabular
+ (fact ":exec-doabunch*range does complicated things involving continuations (see tests)"
+   (check-instruction-with-all-kinds-of-stack-stuff
+     ?new-stacks exec-module ?instruction) => (contains ?expected))
+
+    ?new-stacks                ?instruction             ?expected
+
+    {:exec    '(:foo :bar)
+     :scalar  '(4.9M 117215/2)}       :exec-doabunch*range  {:exec '((15/2 :foo (13/2 4.9M :exec-doabunch*range :foo)) :bar)
+                                                     :scalar '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec    '(:foo :bar)
+     :scalar  '(124.9M -125/2)}  :exec-doabunch*range  {:exec '((-125/2 :foo (-123/2 24.9M :exec-doabunch*range :foo)) :bar)
+                                                     :scalar '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec    '(:foo :bar)
+     :scalar  '(-124.9M 111N)}  :exec-doabunch*range  {:exec '((11N :foo (10N -24.9M :exec-doabunch*range :foo)) :bar)
+                                                     :scalar '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
 
 
 

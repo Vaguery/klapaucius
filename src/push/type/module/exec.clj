@@ -50,7 +50,7 @@
       [:do-this :scaled-counter :done?]
       #(if %3
         (list (dec %2) %1)
-        (list 0 %2 :exec-do*range %1)) :as :continuation)
+        (list 0 %2 :exec-doabunch*range %1)) :as :continuation)
     (d/push-onto :exec :continuation)))
 
 
@@ -141,6 +141,38 @@
     (d/push-onto :exec :continuation)))
 
 
+(def exec-doabunch*range
+  (i/build-instruction
+    exec-doabunch*range
+      "`:exec-doabunch*range` pops the top item of `:exec` and the top two `:scalar` values (call them `end` and `start`, respectively). The first thing it does is scale `start` and `end` to fall in the range `[-10,10]`. Then it constructs a continuation depending on whether the relation between `start` and `end`, which will (when interpreted) send the current `start` value to the `:scalar` stack, execute the `:exec` item, send updated indices to the `:scalar` stack, and then repeat the loop:
+
+      - `start` < `end` and more than 1 different:
+        `'([start] [item] ([start+1] [end] :exec-doabunch*range [item]))`
+      - `start` > `end` and more than 1 different:
+        `'([start] [item] ([start-1] [end] :exec-doabunch*range [item]))`
+      - `start` within 1 of `end`:
+        `'([end] [item])`
+
+    This continuation is pushed to the `:exec` stack. "
+    :tags #{:complex :base}
+    (d/consume-top-of :exec :as :do-this)
+    (d/consume-top-of :scalar :as :end)
+    (d/consume-top-of :scalar :as :start)
+    (d/calculate [:start] n/bunch :as :start)
+    (d/calculate [:end] n/bunch :as :end)
+    (d/calculate [:start :end]
+      #(n/within-1? %1 %2) :as :done?)
+    (d/calculate [:start :end]  #(+' %1 (compare %2 %1)) :as :next)
+    (d/calculate
+      [:do-this :start :end :next :done?]
+      #(cond
+        (nil? %4) nil
+        (nil? %5) nil
+        %5 (list %4 %1)
+        :else
+           (list %2 %1 (list %4 %3 :exec-doabunch*range %1))) :as :continuation)
+    (d/push-onto :exec :continuation)))
+
 
 (def exec-do*times
   (i/build-instruction
@@ -164,6 +196,52 @@
            (list %1 (list %3 :exec-do*times %1))) :as :continuation)
     (d/push-onto :exec :continuation)))
 
+
+(def exec-doafew*times
+  (i/build-instruction
+    exec-doafew*times
+      "`:exec-doafew*times` pops the top item of `:exec` and the top `:scalar` value (call it `counter`). It first scales `counter` to fall in the range [-10,10] with push.util.numerics/few. It constructs a continuation depending on whether the `counter` is positive, negative or zero, which is pushed to `:exec`:
+
+        - negative: `item` (not in a codeblock)
+        - zero:     `item` (not in a codeblock)
+        - positive: `(item ([counter-1] :exec-doafew*times item))`
+        "
+
+    :tags #{:complex :base}
+    (d/consume-top-of :exec :as :do-this)
+    (d/consume-top-of :scalar :as :counter)
+    (d/calculate [:counter] #(n/few %1) :as :counter)
+    (d/calculate [:counter] #((complement pos?) %1) :as :done?)
+    (d/calculate [:counter] #(+ %1 (compare 0 %1)) :as :next)
+    (d/calculate
+      [:do-this :counter :next :done?]
+      #(if %4
+           %1
+           (list %1 (list %3 :exec-doafew*times %1))) :as :continuation)
+    (d/push-onto :exec :continuation)))
+
+(def exec-doabunch*times
+  (i/build-instruction
+    exec-doabunch*times
+      "`:exec-doabunch*times` pops the top item of `:exec` and the top `:scalar` value (call it `counter`). It first scales `counter` to fall in the range [-10,10] with push.util.numerics/few. It constructs a continuation depending on whether the `counter` is positive, negative or zero, which is pushed to `:exec`:
+
+        - negative: `item` (not in a codeblock)
+        - zero:     `item` (not in a codeblock)
+        - positive: `(item ([counter-1] :exec-doabunch*times item))`
+        "
+
+    :tags #{:complex :base}
+    (d/consume-top-of :exec :as :do-this)
+    (d/consume-top-of :scalar :as :counter)
+    (d/calculate [:counter] #(n/bunch %1) :as :counter)
+    (d/calculate [:counter] #((complement pos?) %1) :as :done?)
+    (d/calculate [:counter] #(+ %1 (compare 0 %1)) :as :next)
+    (d/calculate
+      [:do-this :counter :next :done?]
+      #(if %4
+           %1
+           (list %1 (list %3 :exec-doabunch*times %1))) :as :continuation)
+    (d/push-onto :exec :continuation)))
 
 (def exec-if
   (i/build-instruction
@@ -286,8 +364,11 @@
         (t/attach-instruction , exec-do*range)
         (t/attach-instruction , exec-do*times)
         (t/attach-instruction , exec-doabunch*count)
+        (t/attach-instruction , exec-doabunch*range)
+        (t/attach-instruction , exec-doabunch*times)
         (t/attach-instruction , exec-doafew*count)
         (t/attach-instruction , exec-doafew*range)
+        (t/attach-instruction , exec-doafew*times)
         (t/attach-instruction , exec-k)
         (t/attach-instruction , exec-laterloop)
         (t/attach-instruction , exec-noop)
