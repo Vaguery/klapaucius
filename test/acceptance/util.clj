@@ -86,9 +86,6 @@
   (rand-nth
     (concat
       (keys (:bindings interpreter))
-      (keys (:bindings interpreter))
-      (keys (:bindings interpreter))
-      (keys (:bindings interpreter))
       all-the-variable-names)))
 
 
@@ -118,20 +115,20 @@
       (some-interval (* 100 scale))
       (vector-of-stuff some-long (* 10 scale) (rand-int scale))
       (vector-of-stuff some-double (* 10 scale) (rand-int scale))
-      (some-codeblock (dec scale) erc-prob interpreter)
-      (qc/push-quote (some-codeblock (dec scale) erc-prob interpreter))
+      (some-codeblock (max 1 (dec scale)) erc-prob interpreter)
+      (qc/push-quote (some-codeblock (max 1 (dec scale)) erc-prob interpreter))
       ])
-    (if (< (rand) erc-prob)
-      (some-ref interpreter all-the-variable-names)
+    (if (< erc-prob (rand))
       (some-instruction interpreter)
+      (some-ref interpreter all-the-variable-names)
       )))
 
 
 (defn some-codeblock
   [scale erc-prob interpreter]
-  (take
-    (rand-int scale)
-    (repeatedly #(some-item scale erc-prob interpreter))
+  (repeatedly
+    (max 1 (rand-int scale))
+    #(some-item (max 1 (rand-int scale)) erc-prob interpreter)
     ))
 
 
@@ -148,46 +145,46 @@
   [how-many scale erc-prob interpreter]
   (zipmap
       (take how-many all-the-variable-names)
-      (repeatedly #(some-item scale erc-prob interpreter))
+      (repeatedly #(list (some-item scale erc-prob interpreter)))
       ))
 
 
 (defn preloaded-stacks
-  [interpreter how-many scale erc-prob]
+  [how-many scale erc-prob interpreter]
   {
-    ; :boolean (repeatedly how-many some-boolean)
-    ; :booleans (repeatedly how-many
-    ;             #(into []
-    ;               (repeatedly (rand-int how-many) some-boolean)))
-    ; :char (repeatedly how-many some-ascii)
-    ; :chars (repeatedly how-many
-    ;         #(into []
-    ;           (repeatedly (rand-int how-many) some-ascii)))
-    :code (repeatedly 3
-            #(some-codeblock (inc (rand-int how-many)) erc-prob interpreter))
-    ; :complex (repeatedly how-many
-    ;           #(complex/complexify (some-long scale) (some-rational scale)))
-    ; :complexes (repeatedly how-many
-    ;             (fn []
-    ;               (into [] (repeatedly (inc (rand-int how-many))
-    ;                         #(complex/complexify (some-rational scale)
-    ;                           (some-double scale))))))
-    ; :ref (repeatedly how-many
-    ;       #(some-ref interpreter all-the-variable-names))
-    ; ; ; :refs '()
-    ; :scalar (repeatedly how-many #(some-long (* 10 scale)))
-    ; :scalars (repeatedly how-many
-    ;           (fn [] (into [] (repeatedly (rand-int how-many)
-    ;             #(some-long (* 10 scale))))))
-    ; ; :set '()
-    ; :string (repeatedly how-many #(some-string scale))
-    ; :strings (repeatedly how-many
-    ;             (fn [] (into [] (repeatedly (rand-int how-many) #(some-string scale)))))
+    :boolean (repeatedly how-many some-boolean)
+    :booleans (repeatedly how-many
+                #(into []
+                  (repeatedly (rand-int how-many) some-boolean)))
+    :char (repeatedly how-many some-ascii)
+    :chars (repeatedly how-many
+            #(into []
+              (repeatedly (rand-int how-many) some-ascii)))
+    :code (repeatedly how-many
+            #(some-codeblock (max 1 (dec how-many)) erc-prob interpreter))
+    :complex (repeatedly how-many
+              #(complex/complexify (some-long scale) (some-rational scale)))
+    :complexes (repeatedly how-many
+                (fn []
+                  (into [] (repeatedly (inc (rand-int how-many))
+                            #(complex/complexify (some-rational scale)
+                              (some-double scale))))))
+    :ref (repeatedly how-many
+          #(some-ref interpreter all-the-variable-names))
+    ; ; :refs '()
+    :scalar (repeatedly how-many #(some-long (* 10 scale)))
+    :scalars (repeatedly how-many
+              (fn [] (into [] (repeatedly (rand-int how-many)
+                #(some-long (* 10 scale))))))
+    ; :set '()
+    :string (repeatedly how-many #(some-string scale))
+    :strings (repeatedly how-many
+                (fn [] (into [] (repeatedly (rand-int how-many) #(some-string scale)))))
     :vector (repeatedly how-many
               (fn []
                 (into []
-                  (repeatedly (max how-many 1)
-                    #(some-codeblock (inc (rand-int how-many)) erc-prob interpreter)))))
+                  (repeatedly 3
+                    #(some-codeblock 2 erc-prob interpreter)))))
     }
   )
 
