@@ -1,7 +1,9 @@
 (ns push.instructions.standard.vectorized_test
   (:require [push.interpreter.core :as i]
             [push.type.core :as t]
-            [push.core :as push])
+            [push.core :as push]
+            [push.instructions.aspects  :as aspects]
+            )
   (:use midje.sweet)
   (:use [push.util.test-helpers])
   (:use [push.type.item.vectorized])
@@ -10,9 +12,11 @@
 
 ;; fixtures
 
-(def foo-type (t/make-type :foo
+(def foo-type (-> (t/make-type :foo
                            :recognized-by number?
-                           :attributes #{:foo}))
+                           :attributes #{:foo})
+                  aspects/make-comparable , ))
+
 
 (def foos-type (build-vectorized-type foo-type))
 
@@ -662,6 +666,23 @@
     )
 
 
+(tabular
+  (fact "`foos-sort` sorts the top :foos item"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks foos-type ?instruction) => (contains ?expected))
+
+    ?new-stacks             ?instruction     ?expected
+
+    {:foos   '([3 2 1])}          :foos-sort       {:foos '([1 2 3])}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos   '([2 2 1 1 8 2])}    :foos-sort       {:foos '([1 1 2 2 2 8])}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos   '( [1.1 2.2 -9e77])} :foos-sort       {:foos '([-9.0E77 1.1 2.2])}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos   '([])}               :foos-sort       {:foos '([])}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
 
 (tabular
   (fact "`foos-remove` pops the top :foos and :foo items, pushing the former purged of all appearances of the latter"
@@ -837,6 +858,7 @@
                                                :foo '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
+
 
 
 

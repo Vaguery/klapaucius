@@ -638,6 +638,21 @@
       ))))
 
 
+(defn x-sort-instruction
+  [typename rootname]
+  (let [instruction-name (str (name typename) "-sort")]
+    (eval (list
+      `i/build-instruction
+      instruction-name
+      (str "`" typename "-sort` pops the top `" typename "` item and sorts the elements before returning it to the stack. NOTE: this depends on the intrinsic ability of `" rootname "` to be sorted by Clojure.")
+      :tags #{:vector}
+
+      `(d/consume-top-of ~typename :as :arg1)
+      `(d/calculate [:arg1] #(into [] (sort %1)) :as :sorted)
+      `(d/push-onto ~typename :sorted)
+      ))))
+
+
 
 (defn x-take-instruction
   [typename]
@@ -782,4 +797,10 @@
           (t/attach-instruction , (x-vfilter-instruction typename))
           (t/attach-instruction , (x-vremove-instruction typename))
           (t/attach-instruction , (x-vsplit-instruction typename))
+
+          (t/conditional-attach-instruction ,
+            (some #(= % :comparable) (:attributes content-type))
+            (x-sort-instruction typename rootname))
+
+
           )))

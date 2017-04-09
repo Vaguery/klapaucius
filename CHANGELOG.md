@@ -2,6 +2,8 @@
 
 ## current work
 
+- Added `:x-sort-instruction` to the `:vectorized` types. This is _only_ added to vector types where the underlying item type has the `:comparable` attribute.
+- Added `push.type.core/conditional-attach-instruction`, which only attaches a given instruction to a type if a predicate value is `true`, and otherwise returns the type unchanged.
 - modified the way all index lookups are done with non-integer scalar values. Now they round "up and around" when picking the index of a collection. The value is first reduced using `(mod x (count coll))`, as before. However, now its `ceiling` is taken, where before its `floor` was used. Thus, item `0.1` of a collection is the _second_, item `1.1` the third, and so on. The "wrapping" comes in when we exceed the count of the collection: For a collection of five items, item `4` is the last one (as normal), but item `4.1` is the first one. Item `-0.1` is also the first one; both `-1` and also `-1.1` refer to the last item.
 - modified `:tagspace` lookup process. It now "wraps around" (see next item). First, the range of the (max-min) tagspace keys is calculated (returns 0 if either is infinite, or there is only one). Then the _average_ size of gaps between keys is calculated. This average is added to the range, and this value is used to reduce the lookup value. For example, if the keys are `[1 2 7 13]`, the range is `12` and the average gap is `12/3=4`. Lookup values are reduced `mod 16`. This "modded index" is then used for lookup as was the case:
   - `(1,2] => key 2`

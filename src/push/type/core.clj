@@ -46,6 +46,14 @@
       (merge old-instructions (hash-map new-key instruction)))))
 
 
+(defn conditional-attach-instruction
+  "attaches an instruction to a pushtype only if the predicate is `true`"
+  [pushtype predicate instruction]
+  (if predicate
+    (attach-instruction pushtype instruction)
+    pushtype
+    ))
+
 ;;;; Modules (like PushTypes, but not about the stack items)
 
 

@@ -1,5 +1,6 @@
 (ns push.type.extra.vectorized_test
-  (:require [push.type.item.scalar :as s])
+  (:require [push.type.item.scalar :as s]
+            [push.type.item.complex :as cplx])
   (:use midje.sweet)
   (:require [push.type.core :as core])
   (:use [push.util.test-helpers])
@@ -8,6 +9,7 @@
 
 
 (def vector-of-scalars (build-vectorized-type s/scalar-type))
+(def vector-of-complexes (build-vectorized-type cplx/complex-type))
 
 
 
@@ -61,3 +63,8 @@
   (replacefirst [1 2 3 4 3 2 7] 7 [6 6]) => [1 2 3 4 3 2 [6 6]] ;; it's generic
   )
 
+
+(fact "x-sort-instruction only gets to non-sortable root types"
+  (keys (:instructions vector-of-scalars)) => (contains :scalars-sort)
+  (keys (:instructions vector-of-complexes)) =not=> (contains :complexes-sort)
+  )
