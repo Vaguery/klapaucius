@@ -17,28 +17,41 @@
 
 (fact "scalar-to-index"
   (scalar-to-index 9 2) => 1
-  (scalar-to-index 9.1 2) => 1.0
-  (scalar-to-index 9.9 2) => 1.0
-  (scalar-to-index 10.9 2) => 0
+  (scalar-to-index 9.1 2) => 0
+  (scalar-to-index 9.9 2) => 0
+  (scalar-to-index 10.9 2) => 1.0
 
   (scalar-to-index -9 2) => 1
-  (scalar-to-index -9.1 2) => 0
-  (scalar-to-index -10.9 2) => 1.0
+  (scalar-to-index -9.1 2) => 1.0
+  (scalar-to-index -10.9 2) => 0
+
+  (scalar-to-index -1.1 5) => 4.0
+  (scalar-to-index -0.1 5) => 0
+  (scalar-to-index 0 5) => 0
+  (scalar-to-index 0.1 5) => 1.0
+  (scalar-to-index 1.1 5) => 2.0
+  (scalar-to-index 2.1 5) => 3.0
+  (scalar-to-index 3.1 5) => 4.0
+  (scalar-to-index 4.1 5) => 0
+  (scalar-to-index 5.1 5) => 1.0
+  (scalar-to-index 6.1 5) => 2.0
+  (scalar-to-index 7.1 5) => 3.0
+
 
   (scalar-to-index 0 99) => 0
-  (scalar-to-index 1/3 99) => 0N
-  (scalar-to-index 97/3 99) => 32N
-  (scalar-to-index 100/3 99) => 33N
-  (scalar-to-index 199/2 99) => 0N
-  (scalar-to-index -199/2 99) => 98N
-  (scalar-to-index -97/3 99) => 66N
-  (scalar-to-index -100/3 99) => 65N
-  (scalar-to-index -1/3 99) => 98N
+  (scalar-to-index 1/3 99) => 1N
+  (scalar-to-index 97/3 99) => 33N
+  (scalar-to-index 100/3 99) => 34N
+  (scalar-to-index 199/2 99) => 1N
+  (scalar-to-index -199/2 99) => 0
+  (scalar-to-index -97/3 99) => 67N
+  (scalar-to-index -100/3 99) => 66N
+  (scalar-to-index -1/3 99) => 0
 
   (scalar-to-index 1.0M 99) => 1
-  (scalar-to-index 1.1M 99) => 1N
-  (scalar-to-index 2.1M 99) => 2N
-  (scalar-to-index 99.1M 99) => 0N
+  (scalar-to-index 1.1M 99) => 2N
+  (scalar-to-index 2.1M 99) => 3N
+  (scalar-to-index 99.1M 99) => 1N
   (scalar-to-index 99M 99) => 0
 
 

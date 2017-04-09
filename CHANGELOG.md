@@ -2,6 +2,12 @@
 
 ## current work
 
+- modified the way all index lookups are done with non-integer scalar values. Now they round "up and around" when picking the index of a collection. The value is first reduced using `(mod x (count coll))`, as before. However, now its `ceiling` is taken, where before its `floor` was used. Thus, item `0.1` of a collection is the _second_, item `1.1` the third, and so on. The "wrapping" comes in when we exceed the count of the collection: For a collection of five items, item `4` is the last one (as normal), but item `4.1` is the first one. Item `-0.1` is also the first one; both `-1` and also `-1.1` refer to the last item.
+- modified `:tagspace` lookup process. It now "wraps around" (see next item). First, the range of the (max-min) tagspace keys is calculated (returns 0 if either is infinite, or there is only one). Then the _average_ size of gaps between keys is calculated. This average is added to the range, and this value is used to reduce the lookup value. For example, if the keys are `[1 2 7 13]`, the range is `12` and the average gap is `12/3=4`. Lookup values are reduced `mod 16`. This "modded index" is then used for lookup as was the case:
+  - `(1,2] => key 2`
+  - `(2,7] => key 7`
+  - `(7,13] => key 13`
+  - `(13,16] => key 1`
 - modified `push.interpreter.core/handle-item` to write the current item being processed to the `:current-item` entry of the `Interpreter` record (technically not part of the record, just an annotation). This enables _much_ more informative error reporting, and potentially more detailed and straightforward tracing of program execution.
 - added size limits for `push.instructions.dsl/bind-item` based on stack size limits: if the sum of the count-collection-points(item) and count(binding stack) is too large, it balks and adds an `:error` item to that stack
 - fixed a bug in `push.instructions.dsl/bind-item` that saved the scratch ref, not the value stored in it

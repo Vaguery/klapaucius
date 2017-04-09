@@ -23,17 +23,17 @@
 
 
 (defn scalar-to-index
-  "Takes an arbitrary :scalar value and the size of a collection, and returns an index falling in the range of the collection's size; assumes the count is 1 or larger. An index value of ∞ or -∞ always produces index 0. NOTE: due to a bug in Clojure's mod function, it's possible for very small scalar values to produce out-of-bounds results. This function explicitly checks those bounds while the bug is in place."
+  "Takes an arbitrary :scalar value and the size (count) of a collection, and returns an index falling in the range of the collection's size; assumes the count is 1 or larger. An index value of ∞ or -∞ always produces index 0. NOTE: due to a bug in Clojure's mod function, it's possible for very small scalar values to produce out-of-bounds results. This function explicitly checks those bounds while the bug is in place. NOTE ALSO: Unlike the way Clojure handles non-integer index lookups, this one will round _up_ and around. That is, if the count is 8 items, 8.1 will point to the FIRST item, not the LAST one."
   [value howmany]
   (cond
     (zero? howmany)
-      (throw (Exception. "scalar-to-index requires a strictly positive argument"))
+      (throw (Exception. "scalar-to-index requires a strictly positive count"))
     (infinite? value)
       0
     (Double/isNaN value)
       0
     :else
-      (let [idx (nt/floor (mod value howmany))]
+      (let [idx (nt/ceil (mod value howmany))]
         (if (>= idx howmany)
           0
           (max idx 0)))))

@@ -15,7 +15,7 @@
 (tabular
   (fact "`vector-butlast` pushes the butlast of the first :vector back onto :vector"
     (check-instruction-with-all-kinds-of-stack-stuff
-      ?new-stacks standard-vector-type ?instruction) => 
+      ?new-stacks standard-vector-type ?instruction) =>
     (contains ?expected))
 
     ?new-stacks                ?instruction     ?expected
@@ -39,7 +39,7 @@
 (tabular
   (fact "`vector-concat` concatenates the top two vectors"
     (register-type-and-check-instruction
-      ?set-stack ?items standard-vector-type ?instruction ?get-stack) => 
+      ?set-stack ?items standard-vector-type ?instruction ?get-stack) =>
     ?expected)
 
     ?set-stack  ?items                 ?instruction      ?get-stack   ?expected
@@ -54,7 +54,7 @@
 (tabular
   (fact "`vector-conj` conjes the top :foo item onto the top :vector"
     (check-instruction-with-all-kinds-of-stack-stuff
-      ?new-stacks standard-vector-type ?instruction) => 
+      ?new-stacks standard-vector-type ?instruction) =>
     (contains ?expected))
 
     ?new-stacks                ?instruction     ?expected
@@ -78,7 +78,7 @@
 (tabular
   (fact "`vector-contains?` pushes `true` if the top :code item is present in the top :vector vector"
     (check-instruction-with-all-kinds-of-stack-stuff
-      ?new-stacks standard-vector-type ?instruction) => 
+      ?new-stacks standard-vector-type ?instruction) =>
     (contains ?expected))
 
     ?new-stacks                ?instruction     ?expected
@@ -109,7 +109,7 @@
 (tabular
   (fact "`vector-do*each` constructs a complex continuation (see below)"
     (check-instruction-with-all-kinds-of-stack-stuff
-      ?new-stacks standard-vector-type ?instruction) => 
+      ?new-stacks standard-vector-type ?instruction) =>
     (contains ?expected))
 
     ?new-stacks             ?instruction    ?expected
@@ -139,7 +139,7 @@
 (tabular
   (fact "`vector-emptyitem?` pushes an true to :boolean if the top :vector is empty"
     (check-instruction-with-all-kinds-of-stack-stuff
-      ?new-stacks standard-vector-type ?instruction) => 
+      ?new-stacks standard-vector-type ?instruction) =>
     (contains ?expected))
 
     ?new-stacks              ?instruction     ?expected
@@ -158,7 +158,7 @@
 (tabular
   (fact "`vector-first` pushes the first item of the top :vector onto :code"
     (check-instruction-with-all-kinds-of-stack-stuff
-      ?new-stacks standard-vector-type ?instruction) => 
+      ?new-stacks standard-vector-type ?instruction) =>
     (contains ?expected))
 
     ?new-stacks                ?instruction     ?expected
@@ -181,7 +181,7 @@
 (tabular
   (fact "`vector-byexample` pops a :vector and builds a new one from :code items, of the same length"
     (check-instruction-with-all-kinds-of-stack-stuff
-      ?new-stacks standard-vector-type ?instruction) => 
+      ?new-stacks standard-vector-type ?instruction) =>
     (contains ?expected))
 
     ?new-stacks             ?instruction             ?expected
@@ -205,7 +205,7 @@
 (tabular
   (fact "`vector-indexof` pushes a :scalar indicating where :code is in :vector (or -1)"
     (check-instruction-with-all-kinds-of-stack-stuff
-      ?new-stacks standard-vector-type ?instruction) => 
+      ?new-stacks standard-vector-type ?instruction) =>
     (contains ?expected))
 
     ?new-stacks             ?instruction         ?expected
@@ -229,7 +229,7 @@
 (tabular
   (fact "`vector-last` pushes the last item of the top :vector onto :code"
     (check-instruction-with-all-kinds-of-stack-stuff
-      ?new-stacks standard-vector-type ?instruction) => 
+      ?new-stacks standard-vector-type ?instruction) =>
     (contains ?expected))
 
     ?new-stacks                ?instruction     ?expected
@@ -252,7 +252,7 @@
 (tabular
   (fact "`vector-length` pushes the length of the top :vector onto :scalar"
     (check-instruction-with-all-kinds-of-stack-stuff
-      ?new-stacks standard-vector-type ?instruction) => 
+      ?new-stacks standard-vector-type ?instruction) =>
     (contains ?expected))
 
     ?new-stacks                ?instruction     ?expected
@@ -276,7 +276,7 @@
 (tabular
   (fact "`vector-new` pushes an empty :vector"
     (check-instruction-with-all-kinds-of-stack-stuff
-      ?new-stacks standard-vector-type ?instruction) => 
+      ?new-stacks standard-vector-type ?instruction) =>
     (contains ?expected))
 
     ?new-stacks              ?instruction     ?expected
@@ -291,7 +291,7 @@
 (tabular
   (fact "`vector-nth` pops a :scalar to index the position in the nth :vector item to push to :code"
     (check-instruction-with-all-kinds-of-stack-stuff
-      ?new-stacks standard-vector-type ?instruction) => 
+      ?new-stacks standard-vector-type ?instruction) =>
     (contains ?expected))
 
     ?new-stacks                ?instruction     ?expected
@@ -314,12 +314,12 @@
     {:vector   '([1 2 3 4 5 6 7])
      :scalar  '(11/5)
      :code     '()}           :vector-nth       {:vector '()
-                                                 :code  '(3)}
+                                                 :code  '(4)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:vector   '([1 2 3 4 5 6 7])
      :scalar  '(1.2)
      :code     '()}           :vector-nth       {:vector '()
-                                                 :code  '(2)}
+                                                 :code  '(3)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:vector   '([])
      :scalar  '(2)
@@ -332,7 +332,7 @@
 (tabular
   (fact "`vector-occurrencesof` pushes a :scalar how many copies of the top :code item occur in :vector"
     (check-instruction-with-all-kinds-of-stack-stuff
-      ?new-stacks standard-vector-type ?instruction) => 
+      ?new-stacks standard-vector-type ?instruction) =>
     (contains ?expected))
 
     ?new-stacks             ?instruction             ?expected
@@ -388,7 +388,7 @@
 (tabular
   (fact "`vector-refilter` pushes the first :vector onto :exec"
     (check-instruction-with-all-kinds-of-stack-stuff
-        ?new-stacks standard-vector-type ?instruction) => 
+        ?new-stacks standard-vector-type ?instruction) =>
     (contains ?expected))
 
     ?new-stacks                ?instruction     ?expected
@@ -411,14 +411,14 @@
 (tabular
   (fact "`vector-refilterall` pushes the entire :vector stack onto :exec"
     (check-instruction-with-all-kinds-of-stack-stuff
-        ?new-stacks standard-vector-type ?instruction) => 
+        ?new-stacks standard-vector-type ?instruction) =>
     (contains ?expected))
 
     ?new-stacks                ?instruction              ?expected
 
     {:vector '([1 2 3] [4 5])
      :exec   '(6 7 8)}        :vector-refilterall      {:vector  '()
-                                                        :exec    '([1 2 3] 
+                                                        :exec    '([1 2 3]
                                                           [4 5] 6 7 8)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:vector '([])
@@ -436,7 +436,7 @@
 (tabular
   (fact "`vector-shatter` pushes the items from the first :vector onto :code"
     (check-instruction-with-all-kinds-of-stack-stuff
-      ?new-stacks standard-vector-type ?instruction) => 
+      ?new-stacks standard-vector-type ?instruction) =>
     (contains ?expected))
 
     ?new-stacks             ?instruction        ?expected
@@ -446,7 +446,7 @@
                                                 :code  '(1 2 3 9.9)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:vector  '([])
-     :code    '(9.9)}       :vector-shatter    {:vector '()   
+     :code    '(9.9)}       :vector-shatter    {:vector '()
                                                 :code  '(9.9)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:vector  '([1 2 3])
@@ -460,7 +460,7 @@
 (tabular
   (fact "`vector-remove` pops the top :vector and :code items, pushing the former purged of all appearances of the latter"
     (check-instruction-with-all-kinds-of-stack-stuff
-      ?new-stacks standard-vector-type ?instruction) => 
+      ?new-stacks standard-vector-type ?instruction) =>
     (contains ?expected))
 
     ?new-stacks                  ?instruction     ?expected
@@ -542,7 +542,7 @@
 (tabular
   (fact "`vector-rest` pushes the rest of the first :vector vector back onto :vector"
     (check-instruction-with-all-kinds-of-stack-stuff
-      ?new-stacks standard-vector-type ?instruction) => 
+      ?new-stacks standard-vector-type ?instruction) =>
     (contains ?expected))
 
     ?new-stacks            ?instruction     ?expected
@@ -566,7 +566,7 @@
 (tabular
   (fact "`vector-reverse` pushes the reverse of the first :vector back onto :vector"
     (check-instruction-with-all-kinds-of-stack-stuff
-      ?new-stacks standard-vector-type ?instruction) => 
+      ?new-stacks standard-vector-type ?instruction) =>
     (contains ?expected))
 
     ?new-stacks                ?instruction          ?expected
@@ -576,7 +576,7 @@
                                                       :code    '(9.9)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:vector  '([])
-     :code    '(9.9)}          :vector-reverse       {:vector  '([])  
+     :code    '(9.9)}          :vector-reverse       {:vector  '([])
                                                       :code    '(9.9)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
@@ -585,7 +585,7 @@
 (tabular
   (fact "`vector-set` pops a :scalar to index the position in the top :vector item to replace with the top :code"
     (check-instruction-with-all-kinds-of-stack-stuff
-      ?new-stacks standard-vector-type ?instruction) => 
+      ?new-stacks standard-vector-type ?instruction) =>
     (contains ?expected))
 
     ?new-stacks             ?instruction         ?expected
@@ -628,7 +628,7 @@
 (tabular
   (fact "`vector-take` pops a :scalar to index the position in the top :vector item to trim to"
     (check-instruction-with-all-kinds-of-stack-stuff
-      ?new-stacks standard-vector-type ?instruction) => 
+      ?new-stacks standard-vector-type ?instruction) =>
     (contains ?expected))
 
     ?new-stacks                ?instruction         ?expected

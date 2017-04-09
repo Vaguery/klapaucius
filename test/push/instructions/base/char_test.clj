@@ -65,7 +65,7 @@
 
 
 (tabular
-  (fact ":scalar->asciichar drops the top :scalar into [0..128] and pushes that ASCII character"
+  (fact ":scalar->asciichar mods the top :scalar into [0..128] and pushes that ASCII character"
     (register-type-and-check-instruction
         ?set-stack ?items char-type ?instruction ?get-stack) => ?expected)
 
@@ -81,20 +81,20 @@
     :scalar    '(256)        :scalar->asciichar   :char         (list (char 0))
     :scalar    '(-128)       :scalar->asciichar   :char         (list (char 0))
 
-    :scalar    '(88.9)       :scalar->asciichar   :char         (list (char 88))
-    :scalar    '(37.2)       :scalar->asciichar   :char         (list (char 37))
-    :scalar    '(-37.9)      :scalar->asciichar   :char         (list (char 90))
-    :scalar    '(200.2)      :scalar->asciichar   :char         (list (char 72))
+    :scalar    '(88.9)       :scalar->asciichar   :char         (list (char 89))
+    :scalar    '(37.2)       :scalar->asciichar   :char         (list (char 38))
+    :scalar    '(-37.9)      :scalar->asciichar   :char         (list (char 91))
+    :scalar    '(200.2)      :scalar->asciichar   :char         (list (char 73))
 
-    :scalar    '(828/5)       :scalar->asciichar   :char        (list (char 37))
-    :scalar    '(373/2)       :scalar->asciichar   :char        (list (char 58))
-    :scalar    '(-37/2)       :scalar->asciichar   :char        (list (char 109))
-    :scalar    '(200/6)       :scalar->asciichar   :char        (list (char 33))
+    :scalar    '(828/5)       :scalar->asciichar   :char        (list (char 38))
+    :scalar    '(373/2)       :scalar->asciichar   :char        (list (char 59))
+    :scalar    '(-37/2)       :scalar->asciichar   :char        (list (char 110))
+    :scalar    '(200/6)       :scalar->asciichar   :char        (list (char 34))
     ;; edge cases
-    :scalar    '(0.2)        :scalar->asciichar   :char         (list (char 0))
-    :scalar    '(128.2)      :scalar->asciichar   :char         (list (char 0))
-    :scalar    '(256.2)      :scalar->asciichar   :char         (list (char 0))
-    :scalar    '(-128.2)     :scalar->asciichar   :char         (list (char 127))
+    :scalar    '(0.2)        :scalar->asciichar   :char         (list (char 1))
+    :scalar    '(128.2)      :scalar->asciichar   :char         (list (char 1))
+    :scalar    '(256.2)      :scalar->asciichar   :char         (list (char 1))
+    :scalar    '(-128.2)     :scalar->asciichar   :char         (list (char 0))
 
     ;; missing args
     :scalar    '()           :scalar->asciichar   :char         '())
@@ -120,15 +120,15 @@
     ;; missing args
     :scalar    '()           :scalar->char   :char         '()
 
-    :scalar    '(88.9)         :scalar->char   :char         (list (char 88))
-    :scalar    '(37.2)         :scalar->char   :char         (list (char 37))
-    :scalar    '(-22771.9)     :scalar->char   :char         (list (char 42763))
-    :scalar    '(200.2)        :scalar->char   :char         (list (char 200))
+    :scalar    '(88.9)         :scalar->char   :char         (list (char 89))
+    :scalar    '(37.2)         :scalar->char   :char         (list (char 38))
+    :scalar    '(-22771.9)     :scalar->char   :char         (list (char 42764))
+    :scalar    '(200.2)        :scalar->char   :char         (list (char 201))
 
-    :scalar    '(0.2)          :scalar->char   :char         (list (char 0))
-    :scalar    '(65535.3)      :scalar->char   :char         (list (char 0))
-    :scalar    '(256.9)        :scalar->char   :char         (list (char 256))
-    :scalar    '(-128.2)       :scalar->char   :char         (list (char 65406))
+    :scalar    '(0.2)          :scalar->char   :char         (list (char 1))
+    :scalar    '(65535.3)      :scalar->char   :char         (list (char 1))
+    :scalar    '(256.9)        :scalar->char   :char         (list (char 257))
+    :scalar    '(-128.2)       :scalar->char   :char         (list (char 65407))
     ;; bounds for internal typecast (huge bigint mod 65535 -> 0)
     :scalar    '(1.1e88M)      :scalar->char   :char         '(\뗖)
     :scalar    '(111111111111111111111111111111111111111.0M)
@@ -292,7 +292,7 @@
     :char    '(\r \s)       :char-equal?      :boolean        '(false)
     :char    '(\s \r)       :char-equal?      :boolean        '(false)
     :char    '(\r \r)       :char-equal?      :boolean        '(true)
-    ;; missing args    
+    ;; missing args
     :char    '(\s)          :char-equal?      :boolean        '()
     :char    '(\s)          :char-equal?      :char           '(\s)
     :char    '()            :char-equal?      :boolean        '()
@@ -309,7 +309,7 @@
     :char    '(\r \s)       :char-notequal?      :boolean        '(true)
     :char    '(\s \r)       :char-notequal?      :boolean        '(true)
     :char    '(\r \r)       :char-notequal?      :boolean        '(false)
-    ;; missing args    
+    ;; missing args
     :char    '(\s)          :char-notequal?      :boolean        '()
     :char    '(\s)          :char-notequal?      :char           '(\s)
     :char    '()            :char-notequal?      :boolean        '()
@@ -329,7 +329,7 @@
     :char    '(\r \s)       :char<?      :boolean        '(false)
     :char    '(\s \r)       :char<?      :boolean        '(true)
     :char    '(\r \r)       :char<?      :boolean        '(false)
-    ;; missing args    
+    ;; missing args
     :char    '(\s)          :char<?      :boolean        '()
     :char    '(\s)          :char<?      :char           '(\s)
     :char    '()            :char<?      :boolean        '()
@@ -346,7 +346,7 @@
     :char    '(\r \s)       :char≤?      :boolean        '(false)
     :char    '(\s \r)       :char≤?      :boolean        '(true)
     :char    '(\r \r)       :char≤?      :boolean        '(true)
-    ;; missing args    
+    ;; missing args
     :char    '(\s)          :char≤?      :boolean        '()
     :char    '(\s)          :char≤?      :char           '(\s)
     :char    '()            :char≤?      :boolean        '()
@@ -363,7 +363,7 @@
     :char    '(\r \s)       :char≥?      :boolean        '(true)
     :char    '(\s \r)       :char≥?      :boolean        '(false)
     :char    '(\r \r)       :char≥?      :boolean        '(true)
-    ;; missing args    
+    ;; missing args
     :char    '(\s)          :char≥?      :boolean        '()
     :char    '(\s)          :char≥?      :char           '(\s)
     :char    '()            :char≥?      :boolean        '()
@@ -380,7 +380,7 @@
     :char    '(\r \s)       :char>?      :boolean        '(true)
     :char    '(\s \r)       :char>?      :boolean        '(false)
     :char    '(\r \r)       :char>?      :boolean        '(false)
-    ;; missing args    
+    ;; missing args
     :char    '(\s)          :char>?      :boolean        '()
     :char    '(\s)          :char>?      :char           '(\s)
     :char    '()            :char>?      :boolean        '()
@@ -397,7 +397,7 @@
     :char    '(\r \s)       :char-max      :char        '(\s)
     :char    '(\s \r)       :char-max      :char        '(\s)
     :char    '(\r \r)       :char-max      :char        '(\r)
-    ; ;; missing args    
+    ; ;; missing args
     :char    '(\s)          :char-max      :char        '(\s)
     :char    '()            :char-max      :char        '()
     )
@@ -413,7 +413,7 @@
     :char    '(\r \s)       :char-min      :char        '(\r)
     :char    '(\s \r)       :char-min      :char        '(\r)
     :char    '(\r \r)       :char-min      :char        '(\r)
-    ; ;; missing args    
+    ; ;; missing args
     :char    '(\s)          :char-min      :char        '(\s)
     :char    '()            :char-min      :char        '()
     )

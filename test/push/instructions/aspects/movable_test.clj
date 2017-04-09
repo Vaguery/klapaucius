@@ -12,12 +12,12 @@
 
 ;; support functions
 
-(fact "scalar-to-index returns a valid index"
+(fact "scalar-to-index returns a valid index (rounding up!)"
   (scalar-to-index 10 7) => 3
   (scalar-to-index -10 7) => 4
-  (scalar-to-index -10.5 7) => 3.0
-  (scalar-to-index 87/7 6) => 0N
-  (scalar-to-index 94/7 6) => 1N
+  (scalar-to-index -10.5 7) => 4.0
+  (scalar-to-index 87/7 6) => 1N
+  (scalar-to-index 94/7 6) => 2N
   (scalar-to-index 87/7 1) => 0N
   (scalar-to-index 77777777777777777777777777777777777777777M 8) => 1N
   (scalar-to-index 77777777777777777777777777777777777777777N 8) => 1N
@@ -171,7 +171,7 @@
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(:a :b :c :d :e) :scalar '(387/13)}) foo-shove)
         :foo-shove)
-      :foo) => '(:b :c :d :e :a)    
+      :foo) => '(:b :c :d :e :a)
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(:a :b :c :d :e) :scalar '(7.71753612845e612M)}) foo-shove)
