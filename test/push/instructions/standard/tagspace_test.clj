@@ -1,6 +1,7 @@
 (ns push.instructions.standard.tagspace-test
   (:require [push.interpreter.core :as i]
-            [push.type.core :as t])
+            [push.type.core :as t]
+            [push.util.numerics :as n])
   (:use midje.sweet)
   (:use [push.util.test-helpers])
   (:use [push.type.definitions.tagspace])
@@ -23,7 +24,7 @@
 
 
 
-(let 
+(let
   [taggy (make-tagspace {6 5 -4 3 2 1})]
 (tabular
   (fact "`:tagspace-count` pushes the number of stored items to :exec"
@@ -34,7 +35,7 @@
     {:tagspace (list taggy)}  :tagspace-count   {:exec  (list (list 3 taggy))
                                                  :tagspace '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:tagspace (list (make-tagspace))}   
+    {:tagspace (list (make-tagspace))}
                               :tagspace-count   {:exec
                                                  (list (list 0 (make-tagspace)))
                                                 :tagspace '()}
@@ -44,7 +45,7 @@
 
 
 
-(let 
+(let
   [taggy (make-tagspace {6 5 -4 3 2 1})]
 (tabular
   (fact "`:tagspace-keys` pushes the keys and tagspace to exec"
@@ -56,7 +57,7 @@
       (list taggy)}     :tagspace-keys     {:exec  (list (list '(-4 2 6) taggy))
                                             :tagspace '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:tagspace (list (make-tagspace))}   
+    {:tagspace (list (make-tagspace))}
                         :tagspace-keys     {:exec  (list (list '() (make-tagspace)))
                                             :tagspace '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -65,7 +66,7 @@
 
 
 
-(let 
+(let
   [taggy (make-tagspace {6 5 -4 3 2 1})]
 (tabular
   (fact "`:tagspace-keyset` pushes the keys (as a set) and tagspace to exec"
@@ -77,7 +78,7 @@
       (list taggy)}     :tagspace-keyset     {:exec  (list (list #{-4 2 6} taggy))
                                             :tagspace '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:tagspace (list (make-tagspace))}   
+    {:tagspace (list (make-tagspace))}
                         :tagspace-keyset     {:exec  (list (list #{} (make-tagspace)))
                                             :tagspace '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -86,7 +87,7 @@
 
 
 
-(let 
+(let
   [taggy (make-tagspace {6 5 -4 3 2 1})]
 (tabular
   (fact "`:tagspace-keyvector` pushes the keys (as a vector) and tagspace to exec"
@@ -98,7 +99,7 @@
       (list taggy)}     :tagspace-keyvector     {:exec  (list (list [-4 2 6] taggy))
                                             :tagspace '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:tagspace (list (make-tagspace))}   
+    {:tagspace (list (make-tagspace))}
                         :tagspace-keyvector     {:exec  (list (list [] (make-tagspace)))
                                             :tagspace '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -108,7 +109,7 @@
 
 
 
-(let 
+(let
   [taggy (make-tagspace {8 1 6 5 -4 3 2 1})]
 (tabular
   (fact "`:tagspace-valuefilter` retains values present in a set"
@@ -118,19 +119,19 @@
     ?new-stacks                ?instruction           ?expected
 
     {:tagspace (list taggy)
-     :set '(#{1 5})}          :tagspace-valuefilter 
+     :set '(#{1 5})}          :tagspace-valuefilter
                                                        {:tagspace
                                                         (list
                                                           (make-tagspace {2 1, 6 5, 8 1}))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:tagspace (list taggy)
-     :set '(#{:a :b})}        :tagspace-valuefilter 
+     :set '(#{:a :b})}        :tagspace-valuefilter
                                                        {:tagspace
                                                         (list
                                                           (make-tagspace))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:tagspace (list taggy)
-     :set '(#{})}             :tagspace-valuefilter 
+     :set '(#{})}             :tagspace-valuefilter
                                                        {:tagspace
                                                         (list
                                                           (make-tagspace))}
@@ -142,7 +143,7 @@
 
 
 
-(let 
+(let
   [taggy (make-tagspace {8 1 6 5 -4 3 2 1})]
 (tabular
   (fact "`:tagspace-valueremove` removes values present in a set"
@@ -152,20 +153,20 @@
     ?new-stacks                ?instruction           ?expected
 
     {:tagspace (list taggy)
-     :set '(#{2 3 4})}          :tagspace-valueremove 
+     :set '(#{2 3 4})}          :tagspace-valueremove
                                                        {:tagspace
                                                         (list
                                                           (make-tagspace {2 1,6 5,8 1}))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:tagspace (list taggy)
-     :set '(#{:a})}          :tagspace-valueremove 
+     :set '(#{:a})}             :tagspace-valueremove
                                                        {:tagspace
                                                         (list taggy)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:tagspace (list taggy)
-     :set '(#{1})}          :tagspace-valueremove 
+     :set '(#{1})}              :tagspace-valueremove
                                                        {:tagspace
-                                                        (list 
+                                                        (list
                                                           (make-tagspace {-4 3, 6 5}))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ))
@@ -173,7 +174,7 @@
 
 
 
-(let 
+(let
   [taggy (make-tagspace {8 1 6 5 -4 3 2 1})]
 (tabular
   (fact "`:tagspace-valuesplit` returns two :tagspaces"
@@ -183,19 +184,19 @@
     ?new-stacks                ?instruction           ?expected
 
     {:tagspace (list taggy)
-     :set '(#{2 3 4})}      :tagspace-valuesplit 
+     :set '(#{2 3 4})}      :tagspace-valuesplit
                                                       {:exec (list (list
                                                         (make-tagspace {-4 3})
                                                         (make-tagspace {2 1,6 5,8 1})))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:tagspace (list taggy)
-     :set '(#{1})}          :tagspace-valuesplit 
+     :set '(#{1})}          :tagspace-valuesplit
                                                       {:exec (list (list
                                                         (make-tagspace {8 1,2 1})
                                                         (make-tagspace {6 5,-4 3})))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:tagspace (list taggy)
-     :set '(#{:foo})}          :tagspace-valuesplit 
+     :set '(#{:foo})}          :tagspace-valuesplit
                                                       {:exec (list (list
                                                         (make-tagspace)
                                                         taggy))}
@@ -205,7 +206,7 @@
 
 
 
-(let 
+(let
   [taggy (make-tagspace {6 5 -4 3 2 1})]
 (tabular
   (fact "`:tagspace-values` pushes the values and tagspace to exec"
@@ -217,7 +218,7 @@
     {:tagspace (list taggy)}  :tagspace-values   {:exec (list (list '(3 1 5) taggy))
                                                   :tagspace '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:tagspace (list (make-tagspace))}   
+    {:tagspace (list (make-tagspace))}
                               :tagspace-values   {:exec (list (list '()
                                                           (make-tagspace)))
                                                   :tagspace '()}
@@ -227,7 +228,7 @@
 
 
 
-(let 
+(let
   [taggy (make-tagspace {6 5 -4 3 2 1})]
 (tabular
   (fact "`:tagspace-valueset` pushes the values and tagspace to exec"
@@ -239,7 +240,7 @@
     {:tagspace (list taggy)}  :tagspace-valueset   {:exec (list (list #{3 1 5} taggy))
                                                   :tagspace '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:tagspace (list (make-tagspace))}   
+    {:tagspace (list (make-tagspace))}
                               :tagspace-valueset   {:exec (list (list #{}
                                                           (make-tagspace)))
                                                   :tagspace '()}
@@ -248,7 +249,7 @@
 
 
 
-(let 
+(let
   [taggy (make-tagspace {6 5 -4 3 2 1})]
 (tabular
   (fact "`:tagspace-valuevector` pushes the values and tagspace to exec"
@@ -260,7 +261,7 @@
     {:tagspace (list taggy)}  :tagspace-valuevector   {:exec (list (list [3 1 5] taggy))
                                                   :tagspace '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:tagspace (list (make-tagspace))}   
+    {:tagspace (list (make-tagspace))}
                               :tagspace-valuevector   {:exec (list (list []
                                                           (make-tagspace)))
                                                   :tagspace '()}
@@ -270,7 +271,7 @@
 
 
 
-(let 
+(let
   [taggy (make-tagspace {1 2 3 4 5 6})]
 (tabular
   (fact "`:tagspace-lookup` pops a :scalar and a :tagspace and retrieves the indicated item"
@@ -285,14 +286,32 @@
                                                       :tagspace (list taggy)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec '()
-     :scalar '(33)
+     :scalar '(6)
      :tagspace (list taggy)}    :tagspace-lookup     {:exec '(2)
+                                                      :scalar  '()
+                                                      :tagspace (list taggy)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec '()
+     :scalar '(9.1)
+     :tagspace (list taggy)}    :tagspace-lookup     {:exec '(6)
                                                       :scalar  '()
                                                       :tagspace (list taggy)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec '()
      :scalar '(5/2)
      :tagspace (list taggy)}    :tagspace-lookup     {:exec '(4)
+                                                      :scalar  '()
+                                                      :tagspace (list taggy)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec '()
+     :scalar (list n/∞)
+     :tagspace (list taggy)}    :tagspace-lookup     {:exec '(2)
+                                                      :scalar  '()
+                                                      :tagspace (list taggy)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec '()
+     :scalar (list n/-∞)
+     :tagspace (list taggy)}    :tagspace-lookup     {:exec '(2)
                                                       :scalar  '()
                                                       :tagspace (list taggy)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -304,7 +323,7 @@
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec '()
      :scalar '(133)
-     :tagspace (list (make-tagspace))}  
+     :tagspace (list (make-tagspace))}
                                 :tagspace-lookup     {:exec '()
                                                       :scalar '()
                                                       :tagspace
@@ -315,7 +334,7 @@
 
 
 
-(let 
+(let
   [taggy (make-tagspace {1 2 3 4 5 6})]
 (tabular
   (fact "`:tagspace-lookupscalars` pops a :scalars and a :tagspace and retrieves ALL the indicated items"
@@ -326,20 +345,20 @@
 
     {:exec '()
      :scalars '([-3 0 3 6 9])
-     :tagspace (list taggy)}    :tagspace-lookupscalars  {:exec     '((2 2 4 2 2))
+     :tagspace (list taggy)}    :tagspace-lookupscalars  {:exec     '((4 2 4 2 4))
                                                           :scalars  '()
                                                           :tagspace (list taggy)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec '()
      :scalars '([])
-     :tagspace (list taggy)}    :tagspace-lookupscalars      {:exec     '(())
+     :tagspace (list taggy)}    :tagspace-lookupscalars  {:exec     '(())
                                                           :scalars  '()
                                                           :tagspace (list taggy)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec '()
-     :scalars '([1 8])
-     :tagspace (list (make-tagspace))}  
-                                :tagspace-lookupscalars      {:exec     '(())
+     :scalars '([-3 0 3 6 9])
+     :tagspace (list (make-tagspace))}
+                                :tagspace-lookupscalars  {:exec     '(())
                                                           :scalars  '()
                                                           :tagspace (list (make-tagspace))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -349,7 +368,7 @@
 
 
 
-(let 
+(let
   [taggy (make-tagspace {1M 2 3M 4})]
 (tabular
   (fact "`:tagspace-lookupscalars` bebefits unusually from the safety of `find-in-tagspace` stability"
@@ -364,46 +383,62 @@
                                                           :scalars  '()
                                                           :tagspace (list taggy)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec '()
+     :scalars (list [13/3 n/∞])
+     :tagspace (list taggy)}    :tagspace-lookupscalars  {:exec     '((2 2))
+                                                          :scalars  '()
+                                                          :tagspace (list taggy)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ))
 
 
 
 
-(let 
-  [taggy (make-tagspace {1 2 3 4 5 6})]
+(let
+  [taggy (make-tagspace {1 2.2 3 4.4 5 6.6})]
 (tabular
-  (fact "`:tagspace-lookupvector` pops an :vector and a :tagspace and retrieves ALL the indicated items"
+  (fact "`:tagspace-lookupvector` pops an :vector and a :tagspace and retrieves ALL the indicated items if they are numbers; non-numeric items are retained"
     (check-instruction-with-all-kinds-of-stack-stuff
         ?new-stacks tagspace-type ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction              ?expected
 
     {:exec '()
-     :vector '([-3.2 :foo 3 6 9])
-     :tagspace (list taggy)}    :tagspace-lookupvector  {:exec     '((2 :foo 4 2 2))
+     :vector '([-11 1 3 5 7 11 22])
+     :tagspace (list taggy)}    :tagspace-lookupvector  {:exec     '((2.2 2.2 4.4 6.6 2.2 6.6 6.6))
                                                           :vector  '()
                                                           :tagspace (list taggy)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec '()
-     :vector '([-3 :foo \g :scalar-add [6.2] 11/8])
-     :tagspace (list taggy)}    :tagspace-lookupvector   {:exec 
-                                                            '((2 :foo \g :scalar-add [6.2] 4))
+     :vector '([-11 :foo 1 :bar 3 [5 7 11 22]])
+     :tagspace (list taggy)}    :tagspace-lookupvector  {:exec     '((2.2 :foo 2.2 :bar 4.4 [5 7 11 22]))
                                                           :vector  '()
                                                           :tagspace (list taggy)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec '()
-     :vector '([1 8])
-     :tagspace (list (make-tagspace))}  
-                                :tagspace-lookupvector   {:exec     '(())
+     :vector '([:foo :bar :baz])
+     :tagspace (list taggy)}    :tagspace-lookupvector  {:exec     '((:foo :bar :baz))
                                                           :vector  '()
-                                                          :tagspace (list (make-tagspace))}
+                                                          :tagspace (list taggy)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec '()
+     :vector (list [n/∞ n/-∞])
+     :tagspace (list taggy)}    :tagspace-lookupvector  {:exec     '((2.2 2.2))
+                                                          :vector  '()
+                                                          :tagspace (list taggy)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:exec '()
+     :vector '([])
+     :tagspace (list taggy)}    :tagspace-lookupvector  {:exec     '(())
+                                                          :vector  '()
+                                                          :tagspace (list taggy)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ))
 
 
 
 
-(let 
+(let
   [taggy1  (make-tagspace {1 2 3 4 5 6})
    taggy2  (make-tagspace {1 -2 3 -4 5.5 6.6})]
 
@@ -429,7 +464,7 @@
 
 
 
-(let 
+(let
   [taggy1  (make-tagspace {1M 2})
    taggy2  (make-tagspace {1/3 2/3})]
 
@@ -447,7 +482,7 @@
 
 
 
-(let 
+(let
   [foo-type     (make-taggable (t/make-type :foo))
    taggy        (make-tagspace)]
 
@@ -462,7 +497,7 @@
      :tagspace (list taggy)}    :foo-tag     {:foo '()
                                               :scalar  '()
                                               :tagspace (list
-                                                (assoc-in taggy 
+                                                (assoc-in taggy
                                                           [:contents 71.71]
                                                           "bar"))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -477,7 +512,7 @@
 
 
 
-(let 
+(let
   [foo-type     (make-taggable (t/make-type :foo))]
 
 (tabular
@@ -508,7 +543,7 @@
 
 
 
-(let 
+(let
   [foo-type     (make-taggable (t/make-type :foo))
    taggy        (make-tagspace {1M 2})]
 
@@ -531,7 +566,7 @@
 
 
 
-(let 
+(let
   [foo-type     (make-taggable (t/make-type :foo))
    giant-foo    (take 130000 (repeat 1))
    taggy        (make-tagspace {0 giant-foo})
@@ -555,7 +590,7 @@
 
 
 
-(let 
+(let
   [taggy (make-tagspace {6 5 -4 3 2 1})]
 (tabular
   (fact "`:tagspace-max` pushes the smallest key to :exec"
@@ -567,7 +602,7 @@
     {:tagspace (list taggy)}    :tagspace-max  {:exec  (list (list 6 taggy))
                                                 :tagspace '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:tagspace (list (make-tagspace))}   
+    {:tagspace (list (make-tagspace))}
                                 :tagspace-max  {:exec  (list (make-tagspace))
                                                 :tagspace '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -576,7 +611,7 @@
 
 
 
-(let 
+(let
   [taggy (make-tagspace {6 5 -4 3 2 1})]
 (tabular
   (fact "`:tagspace-min` pushes the smallest key to :exec"
@@ -588,7 +623,7 @@
     {:tagspace (list taggy)}    :tagspace-min    {:exec (list (list -4 taggy))
                                                   :tagspace '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:tagspace (list (make-tagspace))}   
+    {:tagspace (list (make-tagspace))}
                                 :tagspace-min    {:exec (list (make-tagspace))
                                                   :tagspace '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -597,7 +632,7 @@
 
 
 
-(let 
+(let
   [taggy (make-tagspace {1 2 3 4 5 6})]
 (tabular
   (fact "`:tagspace-offset` pops a :scalar and a :tagspace and moves the keys"
@@ -637,7 +672,7 @@
 
 
 
-(let 
+(let
   [taggy (make-tagspace {1/3 2 3/5 4 5/7 6})]
 (tabular
   (fact "`:tagspace-offset` creates an `:error` if the arguments cause a runtime error"
@@ -655,7 +690,7 @@
 
 
 
-(let 
+(let
   [taggy (make-tagspace {1 2 3 4 5 6})]
 (tabular
   (fact "`:tagspace-scale` pops a :scalar and a :tagspace and scales all the keys"
@@ -693,7 +728,7 @@
 
 
 
-(let 
+(let
   [taggy (make-tagspace {1/3 2 3/7 4 5/9 6})]
 (tabular
   (fact "`:tagspace-scale` catches runtime errors"
@@ -710,7 +745,7 @@
 
 
 
-(let 
+(let
   [taggy (make-tagspace {1 2 3 4 5 6})]
 (tabular
   (fact "`:tagspace-cutoff` pops a :scalar and a :tagspace and produces two new tagspaces (pushed to :exec)"
@@ -754,7 +789,7 @@
 
 
 
-(let 
+(let
   [taggy (make-tagspace {1M 2})]
 (tabular
   (fact "`:tagspace-cutoff` consumes arguments but captures runtime errors if they occur"
@@ -771,7 +806,7 @@
 
 
 
-(let 
+(let
   [taggy (make-tagspace {1 2 3 4 5 6})]
 (tabular
   (fact "`:tagspace-tidy` pops two :scalars and a :tagspace and cleans up the keys"
@@ -808,7 +843,7 @@
 
 
 
-(let 
+(let
   [taggy (make-tagspace {1 2 3 4 5 6})]
 (tabular
   (fact "`:tagspace-tidy` consumes arguments but reports runtime errors if they occur"
@@ -826,7 +861,7 @@
 
 
 
-(let 
+(let
   [taggy (make-tagspace {1 2 3 4 5 6})]
 (tabular
   (fact "`:tagspace-normalize` pops a :tagspace and cleans up the keys by setting the first to 0, and the rest to the following integer values"
@@ -834,17 +869,15 @@
         ?new-stacks tagspace-type ?instruction) => (contains ?expected))
 
     ?new-stacks                 ?instruction      ?expected
-    {:tagspace (list taggy)}    :tagspace-normalize  
+    {:tagspace (list taggy)}    :tagspace-normalize
                                                  {:scalar  '()
                                                   :tagspace (list (make-tagspace
                                                     {0 2, 1 4, 2 6}))}
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:tagspace (list (make-tagspace {9 2 17 4 -2 6}))}    
-                                :tagspace-normalize  
+    {:tagspace (list (make-tagspace {9 2 17 4 -2 6}))}
+                                :tagspace-normalize
                                                  {:scalar  '()
                                                   :tagspace (list (make-tagspace
                                                     {0 6, 1 2, 2 4}))}
 
     ))
-
-
