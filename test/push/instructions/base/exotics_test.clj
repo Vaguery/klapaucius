@@ -42,3 +42,12 @@
   (vector->order [#{1 2} #{2 3} #{}]) => (throws)
   (vector->order []) => []
   )
+
+
+(fact "resample-vector"
+  (resample-vector [9 3 1] [0 2 4 6 8 10 12]) => [9 1 3 9 1 3 9]
+  (resample-vector [0 1 2] [-12.2 1 1e66 19.2 num/∞]) => [0 1 0 2 0]
+  (resample-vector [0 1 2] []) => []
+  (resample-vector [] [1 4 3]) => []
+  (resample-vector [] []) => []
+  )

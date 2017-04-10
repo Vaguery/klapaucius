@@ -2,6 +2,7 @@
   (:require [push.interpreter.core :as i]
             [push.type.core :as t]
             [push.core :as push]
+            [push.util.numerics :as num]
             [push.instructions.aspects  :as aspects]
             )
   (:use midje.sweet)
@@ -704,6 +705,31 @@
                                                :scalars '([0 6 4 0 1 3 5 2])}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
+
+(tabular
+  (fact "`foos-resample` constructs a :scalars vector by resampling the top :foos item"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks foos-type ?instruction) => (contains ?expected))
+
+    ?new-stacks             ?instruction     ?expected
+
+    {:foos    '([:a :B :a :a])
+     :scalars '([0 1 2 3 4 5 6 7 8 9])}
+                            :foos-resample    {:foos    '([:a :B :a :a :a :B :a :a :a :B])
+                                               :scalars '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos    '([1 2 3 4 5])
+     :scalars '([-12 -14 -16 10 12 14 16])}
+                            :foos-resample    {:foos    '([4 2 5 1 3 5 2])
+                                               :scalars '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos    '([1 2 3 4 5])
+     :scalars (list [num/∞ num/-∞ 1827172813.8888M 1e-88M 78648712N])}
+                            :foos-resample    {:foos    '([1 1 5 2 3])
+                                               :scalars '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
 
 
 (tabular

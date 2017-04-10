@@ -664,8 +664,25 @@
       :tags #{:vector}
 
       `(d/consume-top-of ~typename :as :arg1)
-      `(d/calculate [:arg1] #(into [] (exotic/vector->order %1)) :as :sorted)
-      `(d/push-onto :scalars :sorted)
+      `(d/calculate [:arg1] #(into [] (exotic/vector->order %1)) :as :order)
+      `(d/push-onto :scalars :order)
+      ))))
+
+
+
+(defn x-resample-instruction
+  [typename]
+  (let [instruction-name (str (name typename) "-resample")]
+    (eval (list
+      `i/build-instruction
+      instruction-name
+      (str "`" typename "-resample` pops the top `" typename "` item and the top `:scalars` item. The `:scalars` vector is used as a sequence of indices to construct a new `" typename "` item, which is pushed.")
+      :tags #{:vector}
+
+      `(d/consume-top-of ~typename :as :arg1)
+      `(d/consume-top-of :scalars :as :arg2)
+      `(d/calculate [:arg1 :arg2] exotic/resample-vector :as :resampled)
+      `(d/push-onto ~typename :resampled)
       ))))
 
 
@@ -806,6 +823,7 @@
           (t/attach-instruction , (x-remove-instruction typename rootname))
           (t/attach-instruction , (x-replace-instruction typename rootname))
           (t/attach-instruction , (x-replacefirst-instruction typename rootname))
+          (t/attach-instruction , (x-resample-instruction typename))
           (t/attach-instruction , (x-rest-instruction typename))
           (t/attach-instruction , (x-set-instruction typename rootname))
           (t/attach-instruction , (x-take-instruction typename))

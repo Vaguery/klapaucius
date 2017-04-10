@@ -86,3 +86,16 @@
       #(conj %1 (first (indices-of-item-in-vector sorted %2)))
       []
       v)))
+
+
+(defn resample-vector
+  "Takes a collection and a vector of numbers. Resamples the collection into a vector, using the numbers as indices (in Push robust modulo style)"
+  [stuff indices]
+  (let [s (count stuff)]
+    (if (zero? s)
+      []
+      (reduce
+        #(conj %1 (nth stuff (num/scalar-to-index %2 s)))
+        []
+        indices)
+        )))
