@@ -66,3 +66,23 @@
                     )))))
     :else []
     ))
+
+
+(defn indices-of-item-in-vector
+  "inspired by Stack Overflow http://stackoverflow.com/questions/4830900/how-do-i-find-the-index-of-an-item-in-a-vector"
+  [v item]
+  (map first
+    (filter
+      #(= (second %) item)
+      (map-indexed vector v))
+      ))
+
+
+(defn vector->order
+  "takes a vector of sortable items, and returns a vector of the same length, where the items are the sort-order of the original vector's items"
+  [v]
+  (let [sorted (sort (distinct v))]
+    (reduce
+      #(conj %1 (first (indices-of-item-in-vector sorted %2)))
+      []
+      v)))

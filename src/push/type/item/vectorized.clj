@@ -7,6 +7,7 @@
             [inflections.core           :as inflect]
             [clojure.math.numeric-tower :as nt]
             [push.util.numerics         :as num]
+            [push.util.exotics          :as exotic]
             ))
 
 
@@ -653,6 +654,21 @@
       ))))
 
 
+(defn x-order-instruction
+  [typename rootname]
+  (let [instruction-name (str (name typename) "-order")]
+    (eval (list
+      `i/build-instruction
+      instruction-name
+      (str "`" typename "-order` pops the top `" typename "` item and produces a new `:scalar` item containing a contextual order over the items. For example, the `:scalars` vector `[9 3 -2.1 -2.1 9 0]` would produce the order vector `[3 2 0 0 3 1]`. NOTE: this depends on the intrinsic ability of `" rootname "` to be sorted by Clojure.")
+      :tags #{:vector}
+
+      `(d/consume-top-of ~typename :as :arg1)
+      `(d/calculate [:arg1] #(into [] (exotic/vector->order %1)) :as :sorted)
+      `(d/push-onto :scalars :sorted)
+      ))))
+
+
 
 (defn x-take-instruction
   [typename]
@@ -801,6 +817,10 @@
           (t/conditional-attach-instruction ,
             (some #(= % :comparable) (:attributes content-type))
             (x-sort-instruction typename rootname))
+
+          (t/conditional-attach-instruction ,
+            (some #(= % :comparable) (:attributes content-type))
+            (x-order-instruction typename rootname))
 
 
           )))

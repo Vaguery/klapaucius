@@ -685,6 +685,28 @@
 
 
 (tabular
+  (fact "`foos-order` constructs a :scalars vector of indices from the top :foos item"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks foos-type ?instruction) => (contains ?expected))
+
+    ?new-stacks             ?instruction     ?expected
+
+    {:foos    '([3 2 1])
+     :scalars '()}          :foos-order       {:foos    '()
+                                               :scalars '([2 1 0])}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos    '([3 9 1 3 9 1])
+     :scalars '()}          :foos-order       {:foos    '()
+                                               :scalars '([1 2 0 1 2 0])}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos    '([:a :i :f :a :b :baz :foo :bar])
+     :scalars '()}          :foos-order       {:foos    '()
+                                               :scalars '([0 6 4 0 1 3 5 2])}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+(tabular
   (fact "`foos-remove` pops the top :foos and :foo items, pushing the former purged of all appearances of the latter"
     (check-instruction-with-all-kinds-of-stack-stuff
         ?new-stacks foos-type ?instruction) => (contains ?expected))
