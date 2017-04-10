@@ -73,9 +73,4 @@
   (keys (:instructions vector-of-scalars)) => (contains :scalars-order)
   (keys (:instructions vector-of-complexes)) =not=> (contains :complexes-order)
   )
-
-
-(fact "x-max-instruction only gets added to sortable root types"
-  (keys (:instructions vector-of-scalars)) => (contains :scalars-max)
-  (keys (:instructions vector-of-complexes)) =not=> (contains :complexes-max)
-  )
+  

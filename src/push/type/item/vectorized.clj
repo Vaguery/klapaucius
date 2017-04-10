@@ -654,36 +654,6 @@
       ))))
 
 
-(defn x-max-instruction
-  [typename rootname]
-  (let [instruction-name (str (name typename) "-max")]
-    (eval (list
-      `i/build-instruction
-      instruction-name
-      (str "`" typename "-max` pops the top `" typename "` item pushes the highest-valued item in it onto the `" rootname "` stack. NOTE: this depends on the intrinsic ability of `" rootname "` to be sorted by Clojure.")
-      :tags #{:vector}
-
-      `(d/consume-top-of ~typename :as :arg1)
-      `(d/calculate [:arg1] #(when-not (empty? %1) (apply max %1)) :as :biggest)
-      `(d/push-onto ~rootname :biggest)
-      ))))
-
-
-(defn x-min-instruction
-  [typename rootname]
-  (let [instruction-name (str (name typename) "-min")]
-    (eval (list
-      `i/build-instruction
-      instruction-name
-      (str "`" typename "-min` pops the top `" typename "` item pushes the lowest-valued item in it onto the `" rootname "` stack. NOTE: this depends on the intrinsic ability of `" rootname "` to be sorted by Clojure.")
-      :tags #{:vector}
-
-      `(d/consume-top-of ~typename :as :arg1)
-      `(d/calculate [:arg1] #(when-not (empty? %1) (apply min %1)) :as :biggest)
-      `(d/push-onto ~rootname :biggest)
-      ))))
-
-
 
 (defn x-order-instruction
   [typename rootname]
@@ -886,13 +856,6 @@
             (some #(= % :comparable) (:attributes content-type))
             (x-order-instruction typename rootname))
 
-          (t/conditional-attach-instruction ,
-            (some #(= % :comparable) (:attributes content-type))
-            (x-max-instruction typename rootname))
-
-          (t/conditional-attach-instruction ,
-            (some #(= % :comparable) (:attributes content-type))
-            (x-min-instruction typename rootname))
 
 
           )))
