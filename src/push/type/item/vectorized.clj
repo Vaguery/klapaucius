@@ -654,6 +654,37 @@
       ))))
 
 
+(defn x-max-instruction
+  [typename rootname]
+  (let [instruction-name (str (name typename) "-max")]
+    (eval (list
+      `i/build-instruction
+      instruction-name
+      (str "`" typename "-max` pops the top `" typename "` item pushes the highest-valued item in it onto the `" rootname "` stack. NOTE: this depends on the intrinsic ability of `" rootname "` to be sorted by Clojure.")
+      :tags #{:vector}
+
+      `(d/consume-top-of ~typename :as :arg1)
+      `(d/calculate [:arg1] #(when-not (empty? %1) (apply max %1)) :as :biggest)
+      `(d/push-onto ~rootname :biggest)
+      ))))
+
+
+(defn x-min-instruction
+  [typename rootname]
+  (let [instruction-name (str (name typename) "-min")]
+    (eval (list
+      `i/build-instruction
+      instruction-name
+      (str "`" typename "-min` pops the top `" typename "` item pushes the lowest-valued item in it onto the `" rootname "` stack. NOTE: this depends on the intrinsic ability of `" rootname "` to be sorted by Clojure.")
+      :tags #{:vector}
+
+      `(d/consume-top-of ~typename :as :arg1)
+      `(d/calculate [:arg1] #(when-not (empty? %1) (apply min %1)) :as :biggest)
+      `(d/push-onto ~rootname :biggest)
+      ))))
+
+
+
 (defn x-order-instruction
   [typename rootname]
   (let [instruction-name (str (name typename) "-order")]
@@ -685,6 +716,21 @@
       `(d/push-onto ~typename :resampled)
       ))))
 
+
+(defn x-permute-instruction
+  [typename]
+  (let [instruction-name (str (name typename) "-permute")]
+    (eval (list
+      `i/build-instruction
+      instruction-name
+      (str "`" typename "-permute` pops the top `" typename "` item and the top `:scalars` item. The `:scalars` vector is used as a sequence of indices to construct a new `" typename "` item by removing each indexed item in turn and appending it to a new vector, which is then pushed.")
+      :tags #{:vector}
+
+      `(d/consume-top-of ~typename :as :arg1)
+      `(d/consume-top-of :scalars :as :arg2)
+      `(d/calculate [:arg1 :arg2] exotic/permute-with-scalars :as :resampled)
+      `(d/push-onto ~typename :resampled)
+      ))))
 
 
 (defn x-take-instruction
@@ -728,7 +774,6 @@
           #(filter-vector-with-vector %1 %2) :as :result)
       `(d/push-onto ~typename :result)
       ))))
-
 
 
 (defn remove-vector-with-vector
@@ -817,6 +862,7 @@
           (t/attach-instruction , (x-new-instruction typename))
           (t/attach-instruction , (x-nth-instruction typename rootname))
           (t/attach-instruction , (x-occurrencesof-instruction typename rootname))
+          (t/attach-instruction , (x-permute-instruction typename))
           (t/attach-instruction , (x-portion-instruction typename))
           (t/attach-instruction , (x-pt-crossover-instruction typename))
           (t/attach-instruction , (x-shatter-instruction typename rootname))
@@ -839,6 +885,14 @@
           (t/conditional-attach-instruction ,
             (some #(= % :comparable) (:attributes content-type))
             (x-order-instruction typename rootname))
+
+          (t/conditional-attach-instruction ,
+            (some #(= % :comparable) (:attributes content-type))
+            (x-max-instruction typename rootname))
+
+          (t/conditional-attach-instruction ,
+            (some #(= % :comparable) (:attributes content-type))
+            (x-min-instruction typename rootname))
 
 
           )))

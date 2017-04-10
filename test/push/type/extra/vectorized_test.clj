@@ -64,12 +64,18 @@
   )
 
 
-(fact "x-sort-instruction only gets to non-sortable root types"
+(fact "x-sort-instruction only gets added to sortable root types"
   (keys (:instructions vector-of-scalars)) => (contains :scalars-sort)
   (keys (:instructions vector-of-complexes)) =not=> (contains :complexes-sort)
   )
 
-(fact "x-order-instruction only gets to non-sortable root types"
+(fact "x-order-instruction only gets added to sortable root types"
   (keys (:instructions vector-of-scalars)) => (contains :scalars-order)
   (keys (:instructions vector-of-complexes)) =not=> (contains :complexes-order)
+  )
+
+
+(fact "x-max-instruction only gets added to sortable root types"
+  (keys (:instructions vector-of-scalars)) => (contains :scalars-max)
+  (keys (:instructions vector-of-complexes)) =not=> (contains :complexes-max)
   )

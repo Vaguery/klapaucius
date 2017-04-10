@@ -51,3 +51,16 @@
   (resample-vector [] [1 4 3]) => []
   (resample-vector [] []) => []
   )
+
+
+(fact "permute-with-scalars"
+  (permute-with-scalars [1 2 3 4 5] [3]) => [4 5 1 3 2]
+  (permute-with-scalars [1 2 3 4 5] [2]) => [3 4 5 1 2]
+  (permute-with-scalars [1 2 3 4 5] [1]) => [2 3 4 5 1]
+  (permute-with-scalars [1 2 3 4 5] [0]) => [1 2 3 4 5]
+  (permute-with-scalars [1 2 3 4 5] [1 2]) => [2 4 3 1 5]
+  (permute-with-scalars [1 2 3 4 5] [-91.6 num/∞]) => [5 1 4 2 3]
+  (permute-with-scalars [1 2 3] []) => [1 2 3]
+  (permute-with-scalars [] []) => []
+  (permute-with-scalars [] [1 2 3]) => []
+  )

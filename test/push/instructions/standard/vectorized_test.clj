@@ -731,6 +731,40 @@
     )
 
 
+(tabular
+  (fact "`foos-permute` sorts the top :foos item"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks foos-type ?instruction) => (contains ?expected))
+
+    ?new-stacks              ?instruction     ?expected
+
+    {:foos    '([1 2 3 4 5 6 7])
+     :scalars '([3])}        :foos-permute        {:foos    '([4 5 6 7 1 3 2])
+                                                   :scalars '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos    '([1 2 3 4 5 6 7])
+     :scalars '([-1.3])}     :foos-permute        {:foos    '([7 6 5 4 3 2 1])
+                                                   :scalars '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos    '([1 2 3 4 5 6 7])
+     :scalars '([-1.3 3])}   :foos-permute        {:foos    '([7 4 6 5 3 2 1])
+                                                   :scalars '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos    '([1 2 3 4 5 6 7])
+     :scalars (list [2 num/∞])}   :foos-permute   {:foos    '([3 1 5 2 7 4 6])
+                                                   :scalars '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos    '([])
+     :scalars '([8 7])}       :foos-permute       {:foos  '([])
+                                                   :scalars '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos    '([8 7])
+     :scalars '([])}          :foos-permute       {:foos  '([8 7])
+                                                   :scalars '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
 
 (tabular
   (fact "`foos-remove` pops the top :foos and :foo items, pushing the former purged of all appearances of the latter"
@@ -1108,5 +1142,42 @@
                                                      :foo  '()
                                                      :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
 
+
+(tabular
+  (fact "`foos-max` pushes the largest element of the top :foos item"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks foos-type ?instruction) => (contains ?expected))
+
+    ?new-stacks             ?instruction     ?expected
+
+    {:foos   '([3 2 1])}    :foos-max       {:foo '(3)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos   '([-3 2 -3])}  :foos-max       {:foo '(2)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos   '([])}         :foos-max       {:foo '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos   (list [num/∞ num/-∞])}
+                            :foos-max       {:foo (list num/∞)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+(tabular
+  (fact "`foos-min` pushes the largest element of the top :foos item"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks foos-type ?instruction) => (contains ?expected))
+
+    ?new-stacks             ?instruction     ?expected
+
+    {:foos   '([3 2 1])}    :foos-min       {:foo '(1)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos   '([-3 2 -3])}  :foos-min       {:foo '(-3)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos   '([])}         :foos-min       {:foo '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos   (list [num/∞ num/-∞])}
+                            :foos-min       {:foo (list num/-∞)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )

@@ -99,3 +99,21 @@
         []
         indices)
         )))
+
+
+(defn permute-with-scalars
+  "Takes an ordered collection and a vector of scalars. Using the vector of scalars as a (cycling) series of indices, it removes the nth items from the collection and appends them one at a time to a new vector. If the `:scalars` vector is empty, the original collection is returned unchanged."
+  [stuff indices]
+  (if (empty? indices)
+    stuff
+    (let [which (take (count stuff) (cycle indices)) ]
+      (loop [result []
+             remains stuff
+             numbers which]
+        (if (empty? remains)
+          result
+          (let [idx (num/scalar-to-index (first numbers) (count remains))]
+          (recur  (conj result (nth remains idx))
+                  (concat (take idx remains) (drop (inc idx) remains))
+                  (drop 1 numbers))
+                  ))))))
