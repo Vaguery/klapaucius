@@ -13,7 +13,6 @@ This is the core documentation site for the Klapaucius interpreter, written in C
 
 ### Basic Push syntax
 
-
 ### Types and modules
 
 #### Numeric
