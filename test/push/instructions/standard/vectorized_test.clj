@@ -22,7 +22,9 @@
 (def foos-type (build-vectorized-type foo-type))
 
 (def teeny (-> (push/interpreter :config {:max-collection-size 9})
-               (i/register-type , foos-type)))
+               (i/register-type , foos-type)
+
+                 ))
 
 ;; tests
 
@@ -1141,5 +1143,54 @@
                              :foos-cyclevector       {:foos '([])
                                                      :foo  '()
                                                      :scalar '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+
+(tabular
+  (fact "`foos-min` pushes the smallest :foo in the top :foos vector"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks foos-type ?instruction) => (contains ?expected))
+
+    ?new-stacks             ?instruction     ?expected
+
+    {:foos    '([3 2 1])
+     :foo '()}             :foos-min         {:foos    '()
+                                              :foo '(1)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos    '([-12 9 2 1])
+     :foo '()}             :foos-min         {:foos    '()
+                                              :foo '(-12)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos    '([])
+     :foo '()}             :foos-min         {:foos    '()
+                                              :foo     '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos    '(["foo" "bar" "baz"])
+     :foo '()}             :foos-min         {:foos    '()
+                                              :foo     '("bar")}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
+
+
+(tabular
+  (fact "`foos-max` pushes the smallest :foo in the top :foos vector"
+    (check-instruction-with-all-kinds-of-stack-stuff
+        ?new-stacks foos-type ?instruction) => (contains ?expected))
+
+    ?new-stacks             ?instruction     ?expected
+
+    {:foos    '([3 2 1])
+     :foo '()}             :foos-max         {:foos    '()
+                                              :foo '(3)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos    '([-12 9 2 1])
+     :foo '()}             :foos-max         {:foos    '()
+                                              :foo '(9)}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foos    '([\e \a \t \2 \b \a])
+     :foo '()}             :foos-max         {:foos    '()
+                                              :foo     '(\t)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )

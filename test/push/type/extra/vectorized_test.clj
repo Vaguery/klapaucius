@@ -1,5 +1,7 @@
 (ns push.type.extra.vectorized_test
   (:require [push.type.item.scalar :as s]
+            [push.type.item.string :as string]
+            [push.type.item.char :as char]
             [push.type.item.complex :as cplx])
   (:use midje.sweet)
   (:require [push.type.core :as core])
@@ -9,6 +11,8 @@
 
 
 (def vector-of-scalars (build-vectorized-type s/scalar-type))
+(def vector-of-chars (build-vectorized-type char/char-type))
+(def vector-of-strings (build-vectorized-type string/string-type))
 (def vector-of-complexes (build-vectorized-type cplx/complex-type))
 
 
@@ -73,4 +77,17 @@
   (keys (:instructions vector-of-scalars)) => (contains :scalars-order)
   (keys (:instructions vector-of-complexes)) =not=> (contains :complexes-order)
   )
-  
+
+(fact "x-min-instruction only gets added to sortable root types"
+  (keys (:instructions vector-of-scalars)) => (contains :scalars-min)
+  (keys (:instructions vector-of-chars)) => (contains :chars-min)
+  (keys (:instructions vector-of-strings)) => (contains :strings-min)
+  (keys (:instructions vector-of-complexes)) =not=> (contains :complexes-min)
+  )
+
+(fact "x-max-instruction only gets added to sortable root types"
+  (keys (:instructions vector-of-scalars)) => (contains :scalars-max)
+  (keys (:instructions vector-of-chars)) => (contains :chars-max)
+  (keys (:instructions vector-of-strings)) => (contains :strings-max)
+  (keys (:instructions vector-of-complexes)) =not=> (contains :complexes-max)
+  )

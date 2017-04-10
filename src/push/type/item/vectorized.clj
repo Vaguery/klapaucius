@@ -702,6 +702,37 @@
       `(d/push-onto ~typename :resampled)
       ))))
 
+(defn x-min-instruction
+  [typename rootname]
+  (let [instruction-name (str (name typename) "-min")]
+    (eval (list
+      `i/build-instruction
+      instruction-name
+      (str "`" typename "-min` pops the top `" typename "` item and places the minimum-valued item in that vector onto `" rootname "`. NOTE: this depends on the intrinsic ability of `" rootname "` to be sorted by Clojure.")
+      :tags #{:vector}
+
+      `(d/consume-top-of ~typename :as :arg1)
+      `(d/calculate [:arg1] #(first (sort %1)) :as :smallest)
+      `(d/push-onto ~rootname :smallest)
+      ))))
+
+
+(defn x-max-instruction
+  [typename rootname]
+  (let [instruction-name (str (name typename) "-max")]
+    (eval (list
+      `i/build-instruction
+      instruction-name
+      (str "`" typename "-max` pops the top `" typename "` item and places the largest-valued item in that vector onto `" rootname "`. NOTE: this depends on the intrinsic ability of `" rootname "` to be sorted by Clojure.")
+      :tags #{:vector}
+
+      `(d/consume-top-of ~typename :as :arg1)
+      `(d/calculate [:arg1] #(last (sort %1)) :as :biggest)
+      `(d/push-onto ~rootname :biggest)
+      ))))
+
+
+
 
 (defn x-take-instruction
   [typename]
@@ -856,6 +887,12 @@
             (some #(= % :comparable) (:attributes content-type))
             (x-order-instruction typename rootname))
 
+          (t/conditional-attach-instruction ,
+            (some #(= % :comparable) (:attributes content-type))
+            (x-min-instruction typename rootname))
 
+          (t/conditional-attach-instruction ,
+            (some #(= % :comparable) (:attributes content-type))
+            (x-max-instruction typename rootname))
 
-          )))
+            )))
