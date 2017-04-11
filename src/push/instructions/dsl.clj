@@ -9,18 +9,17 @@
             ))
 
 
-;;;; a "PushDSL blob" is just a vector containing an interpreter and a hashmap
-;; utilities
 
+;; The PushDSL uses the :scratch map in an Interpreter record
 
 (defn get-max-collection-size
   "returns the current :max-collection-size setting from the Interpreter"
   [interpreter]
-  (get-in interpreter [:config :max-collection-size]))
+  (get-in interpreter [:config :max-collection-size] 0))
 
 
 (defn index-from-scratch-ref
-  "Takes a keyword and a scratch hashmap. If an integer is stored under that key in the hashmap, it's returned. Otherwise raises an exception."
+  "Takes a keyword and a scratch hashmap. If an numeric value is stored under that key in the hashmap, it's returned. Otherwise raises an exception."
   [k locals]
   (let [stored (k locals)]
     (if (number? stored)
@@ -28,7 +27,7 @@
       (oops/throw-invalid-index-exception (k locals)))))
 
 
-(defn- valid-DSL-index
+(defn valid-DSL-index
   "Takes an item (presumably part of a DSL function requiring an :at index) and a hashmap, and returns an integer index value, or an integer from the hashmap if a keyword. Blows up informatively if neither of those is possible."
   [item scratch]
   (cond
@@ -38,7 +37,7 @@
     :else (oops/throw-invalid-index-exception item)))
 
 
-(defn- get-nth-of
+(defn get-nth-of
   "Abstract function invoked by all the X-nth-of DSL functions. Takes a PushDSL blob, a stackname, an :at index (integer or keyword) (but no :as keyword), and returns the index and the item at that index, raising any argument exceptions it finds."
   [[interpreter scratch] stackname & {:keys [at]}]
   (let [old-stack (stack/get-stack interpreter stackname)]
@@ -63,6 +62,18 @@
         t (:counter interpreter)
         new-error {:step t :item item}]
     (i/push-item interpreter :error new-error)))
+
+
+(defn scratch-read
+  "returns whatever is stored under the named key in the Interpreter's :scratch map"
+  [interpreter key]
+  (get-in interpreter [:scratch key]))
+
+
+(defn scratch-write
+  "stores whatever if passed in under the named key in the Interpreter's scratch map"
+  [interpreter key item]
+  (assoc-in interpreter [:scratch key] item))
 
 
 ;; DSL instructions

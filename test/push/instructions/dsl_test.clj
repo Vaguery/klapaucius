@@ -30,6 +30,21 @@
     :stacks {:code (range 1 20)}))
 
 
+;; scratch map
+
+(fact "reading from Interpreter scratch map"
+  (scratch-read nada :foo) => nil
+  (scratch-read (assoc-in nada [:scratch :foo] 99) :foo) => 99
+  )
+
+
+(fact "writing to Interpreter scratch map"
+  (:scratch (scratch-write nada :foo 99)) => {:foo 99}
+  (:scratch
+    (scratch-write
+      (scratch-write nada :foo 99)
+      :bar 88)) => {:foo 99 :bar 88}
+  )
 ;; max-collection-size
 
 (fact "I can read the max-collection-size"
