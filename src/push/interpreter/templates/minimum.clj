@@ -47,10 +47,10 @@
   ; [program types router stacks bindings instructions config counter done?]
 
   [& {:keys
-        [program types router stacks bindings instructions config counter done?]
+        [program types routers stacks bindings instructions config counter done?]
       :or {program []
            types '()
-           router []
+           routers []
            stacks {}
            bindings {}
            instructions {}
@@ -59,15 +59,15 @@
            done? false}}]
   (let [all-stacks (merge minimal-stacks stacks)]
     (-> (d/make-interpreter
-          program
-          '()            ;; types are registered below
-          router         ;; router
-          (merge minimal-stacks stacks)
-          {}             ;; inputs are registered below
-          instructions   ;; instructions
-          (merge interpreter-default-config config)
-          counter
-          done?)
+          :program program
+          :types (list)
+          :routers routers
+          :stacks (merge minimal-stacks stacks)
+          :bindings {}
+          :instructions instructions
+          :config (merge interpreter-default-config config)
+          :counter counter
+          :done? done?)
         (i/register-types  , types)
         (i/bind-inputs , bindings)
   )))

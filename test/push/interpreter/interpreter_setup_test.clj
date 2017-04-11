@@ -49,10 +49,10 @@
 
 
 
-; a fixture or two 
+; a fixture or two
 
 
-(def foo-type 
+(def foo-type
   (-> (types/make-type :foo :recognized-by integer?)
       aspects/make-visible
       aspects/make-comparable
@@ -63,15 +63,15 @@
 (fact "foo-type knows some things (just checking)"
   (keys (:instructions foo-type)) =>
     (contains
-      [:foo-againlater :foo-stackdepth :foo-empty? :foo<? 
-      :foo≤? :foo>? :foo≥? :foo-min :foo-max 
-      :foo-equal? :foo-notequal? :foo-dup :foo-flush 
-      :foo-pop :foo-rotate :foo-shove :foo-swap 
+      [:foo-againlater :foo-stackdepth :foo-empty? :foo<?
+      :foo≤? :foo>? :foo≥? :foo-min :foo-max
+      :foo-equal? :foo-notequal? :foo-dup :foo-flush
+      :foo-pop :foo-rotate :foo-shove :foo-swap
       :foo-yank :foo-yankdup] :gaps-ok :in-any-order)
     (:name foo-type) => :foo)
 
 
-(def bar-type 
+(def bar-type
   (-> (types/make-type :bar :recognized-by keyword?)
       aspects/make-visible
       aspects/make-equatable
@@ -81,8 +81,8 @@
 (fact "bar-type knows some things (also just checking)"
   (keys (:instructions bar-type)) =>
     (contains
-      '(:bar-againlater :bar-notequal? :bar-dup :bar-swap :bar-rotate 
-        :bar-flush :bar-stackdepth :bar-equal? :bar-empty? 
+      '(:bar-againlater :bar-notequal? :bar-dup :bar-swap :bar-rotate
+        :bar-flush :bar-stackdepth :bar-equal? :bar-empty?
         :bar-pop :bar-yank :bar-yankdup :bar-shove) :gaps-ok :in-any-order)
     (:name bar-type) => :bar)
 
@@ -97,15 +97,15 @@
   (:routers just-basic) => [])
 
 
-(fact "a :router table can be added manually"
-  (:routers (m/basic-interpreter :router [[integer? :code]])) => [[integer? :code]])
+(fact "a :routers table can be added manually"
+  (:routers (m/basic-interpreter :routers [[integer? :code]])) => [[integer? :code]])
 
 
 ;; register-type
 
 
 (fact "`register-type` adds the type passed in to an Interpreter"
-  (:types (register-type just-basic foo-type)) => 
+  (:types (register-type just-basic foo-type)) =>
     (contains foo-type))
 
 
@@ -114,16 +114,16 @@
 
 
 (fact "`register-type` adds any instructions attached to the type to the Interpreter"
-  (keys (:instructions (register-type just-basic foo-type))) => 
+  (keys (:instructions (register-type just-basic foo-type))) =>
     (contains [:foo-rotate :foo-equal? :foo>? :foo-stackdepth :foo-notequal?
-                :foo<? :foo-pop :foo-flush :foo-empty? :foo-dup :foo-min :foo≥? 
+                :foo<? :foo-pop :foo-flush :foo-empty? :foo-dup :foo-min :foo≥?
                 :foo-swap :foo-max :foo-shove :foo≤? :foo-yankdup :foo-yank] :gaps-ok :in-any-order))
 
 
 (fact "`register-type` adds the type's :router to the Interpreter's :router collection"
   (map :name (:routers just-basic)) => []
   (map :name (:routers (register-type just-basic foo-type))) =>[:foo]
-  (map :name (:routers (->  just-basic 
+  (map :name (:routers (->  just-basic
                 (register-type foo-type)
                 (register-type bar-type)))) => [:foo :bar]
   )
@@ -158,7 +158,7 @@
 
 
 (fact "`register-module` adds any instructions attached to the module to the Interpreter"
-  (keys (:instructions 
+  (keys (:instructions
     (register-module just-basic foo-module))) => '(:foo-barbaz :foo-barqux))
 
 
@@ -166,7 +166,7 @@
 
 
 (fact "`register-types` will register a collection of PushTypes"
-  (:types (register-types just-basic [foo-type bar-type])) => 
+  (:types (register-types just-basic [foo-type bar-type])) =>
     (contains [foo-type bar-type] :in-any-order))
 
 
@@ -177,12 +177,12 @@
 
 (fact "`register-types` adds all the instructions"
   (keys (:instructions (register-types just-basic
-                                        [foo-type bar-type]))) => 
-    (contains [:bar-againlater :bar-dup :bar-empty? :bar-equal? :bar-flush :bar-notequal? 
-      :bar-pop :bar-rotate :bar-shove :bar-stackdepth :bar-swap 
-      :bar-yank :bar-yankdup :foo-againlater :foo-dup :foo-empty? :foo-equal? 
-      :foo-flush :foo-max :foo-min :foo-notequal? :foo-pop :foo-rotate 
-      :foo-shove :foo-stackdepth :foo-swap :foo-yank :foo-yankdup 
+                                        [foo-type bar-type]))) =>
+    (contains [:bar-againlater :bar-dup :bar-empty? :bar-equal? :bar-flush :bar-notequal?
+      :bar-pop :bar-rotate :bar-shove :bar-stackdepth :bar-swap
+      :bar-yank :bar-yankdup :foo-againlater :foo-dup :foo-empty? :foo-equal?
+      :foo-flush :foo-max :foo-min :foo-notequal? :foo-pop :foo-rotate
+      :foo-shove :foo-stackdepth :foo-swap :foo-yank :foo-yankdup
       :foo<? :foo>? :foo≤? :foo≥?] :gaps-ok :in-any-order))
 
 
@@ -204,7 +204,7 @@
 
 (fact "`register-modules` adds all the instructions"
   (sort (keys (:instructions (register-modules just-basic
-                                               [foo-module bar-module])))) => 
+                                               [foo-module bar-module])))) =>
     '(:bar-barbaz :foo-barbaz :foo-barqux))
 
 
@@ -212,9 +212,9 @@
 
 
 (fact "a list of PushTypes can be passed into `basic-interpreter` and are added to :types"
-  (map :name (:types (m/basic-interpreter :types [foo-type]))) => 
+  (map :name (:types (m/basic-interpreter :types [foo-type]))) =>
     '(:foo)
-  (map :name (:types (m/basic-interpreter :types [foo-type bar-type]))) => 
+  (map :name (:types (m/basic-interpreter :types [foo-type bar-type]))) =>
     (just [:bar :foo]))
 
 
@@ -225,9 +225,9 @@
 
 (fact "if a PushType is passed into `basic-interpreter`, its instructions are registered"
   (keys (:instructions (m/basic-interpreter :types [foo-type]))) =>
-    (contains [:foo-rotate :foo-equal? :foo>? :foo-stackdepth :foo-notequal? 
-               :foo<? :foo-pop :foo-flush :foo-empty? :foo-dup :foo-min 
-               :foo≥? :foo-swap :foo-max :foo-shove :foo≤? :foo-yankdup 
+    (contains [:foo-rotate :foo-equal? :foo>? :foo-stackdepth :foo-notequal?
+               :foo<? :foo-pop :foo-flush :foo-empty? :foo-dup :foo-min
+               :foo≥? :foo-swap :foo-max :foo-shove :foo≤? :foo-yankdup
                :foo-yank] :gaps-ok :in-any-order))
 
 
@@ -242,16 +242,16 @@
 
 (fact "registering a new type in an Interpreter with stuff defined still leaves that stuff intact"
   (let [knows-foo (m/basic-interpreter :types [foo-type])]
-    (map :name (:types (register-type knows-foo bar-type))) => 
+    (map :name (:types (register-type knows-foo bar-type))) =>
         '(:bar :foo)
     (keys (:stacks (register-type knows-foo bar-type))) =>
         (contains [ :foo :bar] :in-any-order :gaps-ok)
     (keys (:instructions (register-type knows-foo bar-type))) =>
-        (contains [:bar-notequal? :foo-rotate :foo-equal? :foo>? :bar-dup 
-                  :foo-stackdepth :bar-swap :foo-notequal? :bar-rotate :foo<? 
-                  :foo-pop :bar-flush :foo-flush :foo-empty? :bar-stackdepth 
-                  :foo-dup :foo-min :foo≥? :bar-equal? :bar-empty? :foo-swap 
-                  :foo-max :foo-shove :foo≤? :bar-pop :foo-yankdup :bar-yank 
+        (contains [:bar-notequal? :foo-rotate :foo-equal? :foo>? :bar-dup
+                  :foo-stackdepth :bar-swap :foo-notequal? :bar-rotate :foo<?
+                  :foo-pop :bar-flush :foo-flush :foo-empty? :bar-stackdepth
+                  :foo-dup :foo-min :foo≥? :bar-equal? :bar-empty? :foo-swap
+                  :foo-max :foo-shove :foo≤? :bar-pop :foo-yankdup :bar-yank
                   :bar-yankdup :bar-shove :foo-yank] :gaps-ok :in-any-order)))
 
 
@@ -287,9 +287,8 @@
     (contains {:foo 8}))
 
 
-
 (fact "all new Interpreters should have a :max-collection-size 131072"
-  (:config (record/make-interpreter [] [] [] {} {} {} {} 0 false)) => 
+  (:config (record/make-interpreter)) =>
     (contains {:max-collection-size 131072}))
 
 
@@ -322,7 +321,7 @@
                                     :code
                                     :snapshot
                                     :error
-                                    :exec 
+                                    :exec
                                     :scalar
                                     :log
                                     :print
@@ -355,7 +354,7 @@
 
 (fact "register-instruction adds an Instruction to the registry in a specified Interpreter"
   (let [foo (i/make-instruction :foo)]
-    (keys (:instructions 
+    (keys (:instructions
       (register-instruction just-basic foo))) => '(:foo)
     (:foo (:instructions (register-instruction just-basic foo))) => foo))
 
@@ -370,9 +369,9 @@
 
 (fact "forget-instruction drops the indicated instruction from the Interpreter"
   (keys (:instructions supreme)) => (contains :scalar-add)
-  (keys (:instructions 
+  (keys (:instructions
     (forget-instruction supreme :scalar-add))) =not=> (contains :scalar-add)
-  (keys (:instructions 
+  (keys (:instructions
     (forget-instruction supreme :foo-bar))) => (keys (:instructions supreme)))
 
 
@@ -434,7 +433,7 @@
 (fact "execute-instruction will add an :error message if the needs aren't met"
   (let [foo (i/make-instruction :foo :needs {:bar 3} :transaction (fn [a] [99]))
         he-knows-foo (register-instruction just-basic foo)]
-    (u/get-stack (execute-instruction he-knows-foo :foo) :error) => 
+    (u/get-stack (execute-instruction he-knows-foo :foo) :error) =>
       '({:step 0 :item ":foo missing arguments"})
     (execute-instruction
       (u/set-stack he-knows-foo :bar '(1 2 3 4)) :foo) => 99
@@ -488,7 +487,7 @@
 
 (fact "push-item pushes the specified item to the stack, returning the updated Interpreter"
   (u/get-stack (push-item just-basic :bar 9) :bar) => '(9)
-  (u/get-stack (push-item 
+  (u/get-stack (push-item
     (m/basic-interpreter :stacks {:bar '(1 2 3)}) :bar 9) :bar) => '(9 1 2 3))
 
 
@@ -512,10 +511,8 @@
 
 (fact "reconfigure merges its argument hash with the interpreter's current :config"
   (let [some-config (m/basic-interpreter :config {:lenient? true :foo 8})]
-    (:config some-config) => 
+    (:config some-config) =>
       {:foo 8, :lenient? true, :max-collection-size 131072, :step-limit 0}
-      
+
     (:config (reconfigure some-config {:foo nil :bar 888})) =>
       {:bar 888, :foo nil, :lenient? true, :max-collection-size 131072, :step-limit 0}))
-
-

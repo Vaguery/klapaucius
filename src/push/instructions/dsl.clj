@@ -1,17 +1,12 @@
 (ns push.instructions.dsl
-  (:require [push.util.stack-manipulation
-              :as stack]
-            [push.util.code-wrangling
-              :as util]
-            [push.util.exceptions
-              :as oops]
-            [push.interpreter.core
-              :as i]
-            [push.type.definitions.snapshot
-              :as snap]
-            [dire.core
-              :refer [with-handler!]]
-              ))
+  (:require
+            [push.util.stack-manipulation   :as stack]
+            [push.util.code-wrangling       :as util]
+            [push.util.exceptions           :as oops]
+            [push.interpreter.core          :as i]
+            [push.type.definitions.snapshot :as snap]
+            [dire.core                      :as dire   :refer [with-handler!]]
+            ))
 
 
 ;;;; a "PushDSL blob" is just a vector containing an interpreter and a hashmap
@@ -97,7 +92,7 @@
 
 
 
-(with-handler! #'save-snapshot
+(dire/with-handler! #'save-snapshot
   "Handles oversize errors in `save-snapshot`"
   #(re-find #"snapshot is over size limit" (.getMessage %))
   (fn
@@ -140,7 +135,7 @@
           )))))
 
 
-(with-handler! #'bind-item
+(dire/with-handler! #'bind-item
   "Handles oversize errors in `bind-item`"
   #(re-find #"binding is over size limit" (.getMessage %))
   (fn [e [interpreter scratch] item & {:keys [into]} ]
@@ -271,7 +266,7 @@
             )))
 
 
-(with-handler! #'insert-as-nth-of
+(dire/with-handler! #'insert-as-nth-of
   "Handles attempts to add an over-large item to a stack"
   #(re-find #"tried to push an overized item to" (.getMessage %))
   (fn
@@ -298,7 +293,7 @@
         [(stack/set-stack interpreter stackname new-stack) scratch])))
 
 
-(with-handler! #'push-onto
+(dire/with-handler! #'push-onto
   "Handles attempts to add an over-large item to a stack"
   #(re-find #"tried to push an overized item to" (.getMessage %))
   (fn
@@ -323,7 +318,7 @@
         [(stack/set-stack interpreter stackname new-stack) scratch]))))
 
 
-(with-handler! #'push-these-onto
+(dire/with-handler! #'push-these-onto
   "Handles attempts to add an over-large collections of items to a stack"
   #(re-find #"tried to push an overized item to" (.getMessage %))
   (fn
@@ -524,7 +519,7 @@
       [interpreter (assoc scratch as result)])))
 
 
-(with-handler! #'calculate
+(dire/with-handler! #'calculate
   "Handles Div0 errors in `calculate`"
   #(re-find #"Divide by zero" (.getMessage %))
   (fn
@@ -534,7 +529,7 @@
        ))
 
 
-(with-handler! #'calculate
+(dire/with-handler! #'calculate
   "Handles bigdec vs rational errors in `calculate`"
   #(re-find #"Non-terminating decimal expansion" (.getMessage %))
   (fn
@@ -544,7 +539,7 @@
        ))
 
 
-(with-handler! #'calculate
+(dire/with-handler! #'calculate
   "Handles bad result (Infinite or NaN) runtime errors in `calculate`"
   #(re-find #"Infinite or NaN" (.getMessage %))
   (fn
@@ -554,7 +549,7 @@
        ))
 
 
-(with-handler! #'calculate
+(dire/with-handler! #'calculate
   "Handles bad result (Infinite or NaN) runtime errors in `calculate`"
   java.lang.NullPointerException
   (fn
@@ -564,13 +559,13 @@
      ))
 
 
-(with-handler! #'calculate
+(dire/with-handler! #'calculate
   "pre-defined REAL crashes due to mal-formed DSL syntax; this handler passes the exceptions out to the system (avoiding getting caught in the general case, below)"
   #(re-find #"Wrong number of args" (.getMessage %))
   (fn [e & args] (throw e)))
 
 
-(with-handler! #'calculate
+(dire/with-handler! #'calculate
   "Handles unknown and mysterious exceptions from `calculate`"
   java.lang.RuntimeException
   (fn

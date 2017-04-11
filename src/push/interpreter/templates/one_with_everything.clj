@@ -113,15 +113,15 @@
            done? false}}]
   (let [all-stacks (merge m/minimal-stacks stacks)]
     (-> (defs/make-interpreter
-          program
-          '()        ;; types
-          []         ;; router
-          all-stacks
-          {}         ;; inputs
-          {}         ;; instructions
-          (merge m/interpreter-default-config config)
-          counter
-          done?)
+          :program program
+          :types (list)
+          :routers []
+          :stacks all-stacks
+          :bindings {}
+          :instructions {}
+          :config (merge m/interpreter-default-config config)
+          :counter counter
+          :done? done?)
         (i/register-types all-kinds-of-types)
         (i/register-modules all-kinds-of-modules)
         (i/bind-inputs bindings)
