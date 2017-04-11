@@ -64,8 +64,7 @@
       (count-of [lots {}] :code :as :foo)) => 19)
 
 
-  (fact "`count-of` returns 0 when the stack doesn't exist"
-    (count-of [nada {}] :foo :as :c) => [nada {:c 0}])
+  (future-fact "`count-of` returns 0 when the stack doesn't exist")
 
 
   (fact "`count-of` throws an Exception when no local is specified"
@@ -316,9 +315,6 @@
     (get-local-from-dslblob :foo
       (save-stack [afew {:foo false}] :scalar :as :foo)) => '(1 2 3))
 
-
-  (fact "`save-stack` does not cause problems if you ask for an undefined stack"
-    (save-stack [afew {:foo 99}] :grault :as :foo) => [afew {:foo '()}])
 
 
   (fact "`save-stack` throws up if you leave out the :as argument"

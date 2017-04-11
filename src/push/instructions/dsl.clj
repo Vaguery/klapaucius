@@ -82,10 +82,12 @@
 (defn save-max-collection-size
   "stores the current max-collection-size in a named scratch variable"
   [[interpreter scratch] & {:keys [as]}]
-  (let [value (get-in interpreter [:config :max-collection-size])]
+  (let [value (get-max-collection-size interpreter)]
     (if (nil? as)
       (oops/throw-missing-key-exception :as)
-      [interpreter (assoc scratch as value)])))
+      [ (scratch-write interpreter as value)
+        (assoc scratch as value)]
+        )))
 
 
 
@@ -170,8 +172,12 @@
   (let [old-stack (stack/get-stack interpreter stackname)]
     (if (nil? as)
       (oops/throw-missing-key-exception :as)
-      [(stack/clear-stack interpreter stackname)
-        (assoc scratch as old-stack)])))
+      [ (scratch-write
+          (stack/clear-stack interpreter stackname)
+          as
+          old-stack)
+        (assoc scratch as old-stack)]
+        )))
 
 
 
@@ -196,7 +202,8 @@
   [[interpreter scratch] stackname & {:keys [as]}]
   (if-let [scratch-var as]
     (let [stack (stack/get-stack interpreter stackname)]
-      [interpreter (assoc scratch scratch-var (count stack))])
+      [ (scratch-write interpreter scratch-var (count stack))
+        (assoc scratch scratch-var (count stack))])
     (oops/throw-missing-key-exception :as)))
 
 
@@ -394,7 +401,9 @@
   (let [v (i/peek-at-binding interpreter (which scratch))]
     (if (nil? as)
       (oops/throw-missing-key-exception ":as")
-      [interpreter (assoc scratch as v)])))
+      [ (scratch-write interpreter as v)
+        (assoc scratch as v)]
+        )))
 
 
 (defn save-binding-stack
@@ -404,7 +413,9 @@
           (get-in interpreter [:bindings (which scratch)] '())]
     (if (nil? as)
       (oops/throw-missing-key-exception :as)
-      [interpreter (assoc scratch as binding-name)])))
+      [ (scratch-write interpreter as binding-name)
+        (assoc scratch as binding-name)]
+        )))
 
 
 
@@ -413,7 +424,8 @@
   [[interpreter scratch] stackname & {:keys [as]}]
   (let [old-stack (stack/get-stack interpreter stackname)]
     (if (some? as)
-      [interpreter (assoc scratch as old-stack)]
+      [ (scratch-write interpreter as old-stack)
+        (assoc scratch as old-stack)]
       (oops/throw-missing-key-exception :as))))
 
 
@@ -425,7 +437,9 @@
     (if (nil? as)
       (oops/throw-missing-key-exception :as)
       (let [saved-item (nth old-stack idx)]
-        [interpreter (assoc scratch as saved-item)]))))
+        [ (scratch-write interpreter as saved-item)
+          (assoc scratch as saved-item)]
+          ))))
 
 
 (defn save-top-of
@@ -435,7 +449,9 @@
     (cond (empty? old-stack) (oops/throw-empty-stack-exception stackname)
           (nil? as) (oops/throw-missing-key-exception ":as")
           :else (let [top-item (first old-stack)]
-                     [interpreter (assoc scratch as top-item)]))))
+                     [ (scratch-write interpreter as top-item)
+                       (assoc scratch as top-item)]
+                       ))))
 
 
 (defn save-bindings
@@ -444,7 +460,9 @@
   (let [varnames (sort (keys (:bindings interpreter)))]
     (if (nil? as)
           (oops/throw-missing-key-exception :as)
-       [interpreter (assoc scratch as varnames)])))
+       [ (scratch-write interpreter as varnames)
+         (assoc scratch as varnames)]
+         )))
 
 
 (defn save-instructions
@@ -453,7 +471,9 @@
   (let [fxns (set (keys (:instructions interpreter)))]
     (if (nil? as)
           (oops/throw-missing-key-exception :as)
-       [interpreter (assoc scratch as fxns)])))
+       [ (scratch-write interpreter as fxns)
+         (assoc scratch as fxns)]
+         )))
 
 
 (defn save-counter
@@ -462,7 +482,9 @@
   (let [c (:counter interpreter)]
     (if (nil? as)
           (oops/throw-missing-key-exception :as)
-       [interpreter (assoc scratch as c)])))
+       [ (scratch-write interpreter as c)
+         (assoc scratch as c)]
+         )))
 
 
 
