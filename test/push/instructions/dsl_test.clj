@@ -45,6 +45,31 @@
       (scratch-write nada :foo 99)
       :bar 88)) => {:foo 99 :bar 88}
   )
+
+(fact "forgetting things in Interpreter scratch map"
+  (:scratch
+    (scratch-forget
+      (scratch-replace nada {:foo 99 :bar 88})
+      :foo)) => {:bar 88}
+      )
+
+(fact "replacing the Interpreter scratch map"
+  (:scratch
+    (scratch-replace nada {:foo 99 :bar 88})) => {:foo 99 :bar 88}
+    )
+
+(fact "storing items in ARGS"
+  (:scratch
+    (scratch-save-arg nada 99)) => {:ARGS '(99)}
+  (:scratch
+    (scratch-save-arg nada [1 2 3])) => {:ARGS '([1 2 3])}
+  (:scratch
+    (scratch-save-arg
+      (scratch-save-arg nada 99)
+      88)) => {:ARGS '(88 99)}
+      )
+
+
 ;; max-collection-size
 
 (fact "I can read the max-collection-size"
@@ -146,10 +171,7 @@
       (consume-stack [afew {}] :boolean :as :foo)) => '() )
 
 
-  (fact "`consume-stack` returns an empty list (and creates a stack) when the stack isn't defined"
-    (consume-stack [afew {}] :quux :as :foo) =>
-      [(assoc-in afew [:stacks :quux] '())
-        {:foo '()}])
+  (future-fact "`consume-stack` returns an empty list (and creates a stack) when the stack isn't defined")
 
 
   (fact "`consume-stack` throws an Exception when no local is specified"

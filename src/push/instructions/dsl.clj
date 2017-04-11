@@ -9,7 +9,6 @@
             ))
 
 
-
 ;; The PushDSL uses the :scratch map in an Interpreter record
 
 (defn get-max-collection-size
@@ -63,57 +62,7 @@
         new-error {:step t :item item}]
     (i/push-item interpreter :error new-error)))
 
-
-(defn scratch-read
-  "returns whatever is stored under the named key in the Interpreter's :scratch map"
-  [interpreter key]
-  (get-in interpreter [:scratch key]))
-
-
-(defn scratch-write
-  "stores whatever if passed in under the named key in the Interpreter's scratch map"
-  [interpreter key item]
-  (assoc-in interpreter [:scratch key] item))
-
-
-;; DSL instructions
-
-
-(defn save-max-collection-size
-  "stores the current max-collection-size in a named scratch variable"
-  [[interpreter scratch] & {:keys [as]}]
-  (let [value (get-max-collection-size interpreter)]
-    (if (nil? as)
-      (oops/throw-missing-key-exception :as)
-      [ (scratch-write interpreter as value)
-        (assoc scratch as value)]
-        )))
-
-
-
-(defn save-snapshot
-  "Creates a `:snapshot` item which contains ALL the current :stacks, :bindings and :config hashes. Does not change any of the stack contents. Produces an `:error` instead of a snapshot if snapshot image being saved is oversized (per max-collection-size)."
-  [[interpreter scratch]]
-  (let [old-env (or (stack/get-stack interpreter :snapshot) '())
-        snap    (snap/snapshot interpreter)
-        bigness (util/count-collection-points snap)
-        limit   (get-max-collection-size interpreter)]
-    [ (if (< limit bigness)
-        (oops/throw-snapshot-oversize-exception)
-        (stack/set-stack interpreter :snapshot (util/list! (conj old-env snap))))
-      scratch]))
-
-
-
-(dire/with-handler! #'save-snapshot
-  "Handles oversize errors in `save-snapshot`"
-  #(re-find #"snapshot is over size limit" (.getMessage %))
-  (fn
-    [e [interpreter scratch]]
-      [(add-error-message! interpreter (.getMessage e))
-       scratch]
-    ))
-
+;; working with bindings
 
 (defn oversized-binding?
   "Returns `true` if adding the item to the binding's stack would push it over the interpreter's max-collection-size limit, or false if it would be OK. NOTE: Counts the items in the stack and the _program points_ in the item."
@@ -122,6 +71,7 @@
         binding-size (count (get-in interpreter [:bindings binding-name] '()))
         limit (get-max-collection-size interpreter)]
     (< limit (+' item-size binding-size))))
+
 
 
 (defn bind-item
@@ -147,6 +97,77 @@
           (oops/throw-invalid-binding-key into)
           )))))
 
+;; scratch map IO
+
+(defn scratch-read
+  "returns whatever is stored under the named key in the Interpreter's :scratch map"
+  [interpreter key]
+  (get-in interpreter [:scratch key]))
+
+
+(defn scratch-write
+  "stores whatever if passed in under the named key in the Interpreter's scratch map"
+  [interpreter key item]
+  (assoc-in interpreter [:scratch key] item))
+
+
+(defn scratch-forget
+  "sets the value indicated in the Interpreter's :scratch map to nil"
+  [interpreter key]
+  (update-in interpreter [:scratch] dissoc key))
+
+
+(defn scratch-replace
+  "convenience function that sets the whole :scratch map for an Interpreter"
+  [interpreter new-map]
+  (assoc interpreter :scratch new-map))
+
+
+(defn scratch-save-arg
+  "appends an item to the :ARGS collection in the Interpreter's :scratch map"
+  [interpreter item]
+  (update-in interpreter [:scratch :ARGS] conj item))
+
+;; DSL instructions
+
+
+(defn save-max-collection-size
+  "stores the current max-collection-size in a named scratch variable"
+  [[interpreter scratch] & {:keys [as]}]
+  (let [value (get-max-collection-size interpreter)]
+    (if (nil? as)
+      (oops/throw-missing-key-exception :as)
+      [ (scratch-write interpreter as value)
+        (assoc scratch as value)]
+        )))
+
+
+(defn save-snapshot
+  "Creates a `:snapshot` item which contains ALL the current :stacks, :bindings and :config hashes. Does not change any of the stack contents. Produces an `:error` instead of a snapshot if snapshot image being saved is oversized (per max-collection-size)."
+  [[interpreter scratch]]
+  (let [old-env (or (stack/get-stack interpreter :snapshot) '())
+        snap    (snap/snapshot interpreter)
+        bigness (util/count-collection-points snap)
+        limit   (get-max-collection-size interpreter)]
+    [ (if (< limit bigness)
+        (oops/throw-snapshot-oversize-exception)
+        (stack/set-stack interpreter :snapshot (util/list! (conj old-env snap))))
+      scratch]
+      ))
+
+
+
+(dire/with-handler! #'save-snapshot
+  "Handles oversize errors in `save-snapshot`"
+  #(re-find #"snapshot is over size limit" (.getMessage %))
+  (fn
+    [e [interpreter scratch]]
+      [(add-error-message! interpreter (.getMessage e))
+       scratch]
+       ))
+
+
+
 
 (dire/with-handler! #'bind-item
   "Handles oversize errors in `bind-item`"
@@ -162,7 +183,8 @@
   (let [binding-name (kwd scratch)]
     (if (some #{binding-name} (keys (:bindings interpreter)))
       [(assoc-in interpreter [:bindings binding-name] '()) scratch]
-      [interpreter scratch])))
+      [interpreter scratch]
+      )))
 
 
 
@@ -190,10 +212,13 @@
     (cond (empty? old-stack) (oops/throw-empty-stack-exception stackname)
           (nil? as) (oops/throw-missing-key-exception :as)
           :else (let [top-item (first old-stack)]
-                  [(stack/set-stack interpreter stackname (rest old-stack))
+                  [(-> (stack/set-stack interpreter stackname (rest old-stack))
+                       (scratch-save-arg , top-item)
+                       (scratch-write , as top-item))
                    (-> scratch
                        (save-ARG , top-item)
-                       (assoc , as top-item)) ]))))
+                       (assoc , as top-item)) ]
+                       ))))
 
 
 
@@ -217,7 +242,9 @@
       (oops/throw-missing-key-exception :as)
       (let [new-stack (util/delete-nth old-stack idx)
             saved-item (nth old-stack idx)]
-        [(stack/set-stack interpreter stackname new-stack)
+        [(-> (stack/set-stack interpreter stackname new-stack)
+             (scratch-save-arg , saved-item)
+             (scratch-write , :as saved-item))
          (-> scratch
              (save-ARG , saved-item)
              (assoc , as saved-item))]))))
@@ -291,7 +318,7 @@
     [e [interpreter scratch] stackname kwd & {:keys [as at]}]
       [(add-error-message! interpreter (.getMessage e))
        scratch]
-    ))
+       ))
 
 
 
@@ -318,7 +345,7 @@
     [e [interpreter scratch] stackname kwd & {:keys [as at]}]
       [(add-error-message! interpreter (.getMessage e))
        scratch]
-    ))
+       ))
 
 
 (defn push-these-onto
@@ -333,7 +360,8 @@
                         (util/list! (into old-stack (remove nil? new-items))))]
       (if too-big?
         (oops/throw-stack-oversize-exception instruction stackname)
-        [(stack/set-stack interpreter stackname new-stack) scratch]))))
+        [(stack/set-stack interpreter stackname new-stack) scratch]
+        ))))
 
 
 (dire/with-handler! #'push-these-onto
@@ -343,7 +371,7 @@
     [e [interpreter scratch] stackname kwd & {:keys [as at]}]
       [(add-error-message! interpreter (.getMessage e))
        scratch]
-    ))
+       ))
 
 
 (defn quote-all-bindings
@@ -549,7 +577,9 @@
                   (oops/throw-function-argument-exception args))]
     (if (nil? as)
       (oops/throw-missing-key-exception :as)
-      [interpreter (assoc scratch as result)])))
+      [ (scratch-write interpreter as result)
+        (assoc scratch as result)]
+        )))
 
 
 (dire/with-handler! #'calculate
