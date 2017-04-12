@@ -11,16 +11,11 @@
 (def interval-add
   (i/build-instruction
     interval-add
-    "`:interval-add` pops the top two `:interval` items and pushes a new `:interval` which is the sum of the two. If either `:min` (or `:max`) is open, the result `:min` (or `:max`) is also open."
+    "`:interval-add` pops the top two `:interval` items and pushes a new `:interval` which is the sum of the two. The result's min is the smallest sum of any of the four pairs of extremes, and its max is the largest of any pair. An extreme in the sum is open if either addend is open. If both arguments are empty, there is no result. If one is empty, the other is returned unchanged."
     :tags #{:interval}
     (d/consume-top-of :interval :as :i2)
     (d/consume-top-of :interval :as :i1)
-    (d/calculate [:i1 :i2]
-        #(interval/make-interval
-            (+' (:min %1) (:min %2))
-            (+' (:max %1) (:max %2))
-            :min-open? (or (:min-open? %1) (:min-open? %2))
-            :max-open? (or (:max-open? %1) (:max-open? %2))) :as :result)
+    (d/calculate [:i1 :i2] interval/interval-add :as :result)
     (d/push-onto :interval :result)))
 
 
@@ -65,7 +60,7 @@
 (def interval-divide
   (i/build-instruction
     interval-divide
-    "`:interval-divide` pops the top two `:interval` items (call them `B` and `A`, respectively) and pushes a continuation that will calculate their quotient(s) `A÷B` onto `:exec`. If `B` strictly covers zero, then two continuations are pushed: one for the positive and one for the negative regions."
+    "`:interval-divide` pops the top two `:interval` items (call them `B` and `A`, respectively) and pushes a continuation that will calculate their quotient(s) `A÷B` onto `:exec` (by taking the reciprocal of B). If `B` strictly covers zero, then two continuations are pushed: one for the positive and one for the negative regions."
     :tags #{:interval}
     (d/consume-top-of :interval :as :divisor)
     (d/consume-top-of :interval :as :dividend)
@@ -215,7 +210,7 @@
 (def interval-overlap?
   (i/build-instruction
     interval-overlap?
-    "`:interval-overlap?` pops the top two `:interval` items and pushes `true` if they overlap, even in a single point: that is, if their union is non-empty, taking into account which ends are open"
+    "`:interval-overlap?` pops the top two `:interval` items and pushes `true` if they overlap, even in a single point: that is, if their intersection is non-empty, taking into account which ends are open"
     :tags #{:interval}
     (d/consume-top-of :interval :as :arg2)
     (d/consume-top-of :interval :as :arg1)
@@ -324,17 +319,13 @@
 (def interval-subtract
   (i/build-instruction
     interval-subtract
-    "`:interval-subtract` pops the top two `:interval` items and pushes a new `:interval` which is the difference of the two. If either `:min` (or `:max`) is open, the result `:min` (or `:max`) is also open."
+    "`:interval-subtract` pops the top two `:interval` items (call them `B` and `A` respectively) and pushes a continuation form onto `:exec` that will calculate the sum of `A` plus the negative of `B`."
     :tags #{:interval}
-    (d/consume-top-of :interval :as :i2)
-    (d/consume-top-of :interval :as :i1)
-    (d/calculate [:i1 :i2]
-        #(interval/make-interval
-            (-' (:min %1) (:max %2))
-            (-' (:max %1) (:min %2))
-            :min-open? (or (:min-open? %1) (:max-open? %2))
-            :max-open? (or (:max-open? %1) (:min-open? %2))) :as :result)
-    (d/push-onto :interval :result)))
+    (d/consume-top-of :interval :as :b)
+    (d/consume-top-of :interval :as :a)
+    (d/calculate [:a :b]
+      #(list %1 (interval/interval-negate %2) :interval-add) :as :result)
+    (d/push-onto :exec :result)))
 
 
 

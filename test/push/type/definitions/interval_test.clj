@@ -304,7 +304,7 @@
 
 
 (fact "interval-union works as expected with overlapping arguments"
-  (interval-union (make-interval 2 4) 
+  (interval-union (make-interval 2 4)
                   (make-interval 2 4)) => (list (make-interval 2 4))
 
   (interval-union (make-open-interval 2 4)
@@ -340,3 +340,90 @@
   )
 
 
+(fact "interval-multiply produces a new interval with bounds equal to the product of the arguments' bounds"
+  (interval-multiply
+    (make-interval 1 2)
+    (make-interval 3 4)) => (make-interval 3 8)
+  (interval-multiply
+    (make-interval -1 2)
+    (make-interval 3 -4)) => (make-interval -8 6)
+    )
+
+(fact "interval-multiply returns nil if either argument is empty"
+  (interval-multiply
+    (make-interval 1 2)
+    (make-open-interval 3 3)) => nil
+  (interval-multiply
+    (make-interval 1 2)
+    (make-interval 3 3 :min-open? true)) => nil
+  (interval-multiply
+    (make-interval 1 2)
+    (make-interval 3 3 :max-open? true)) => nil
+  (interval-multiply
+    (make-open-interval 2 2)
+    (make-open-interval 3 3)) => nil
+    )
+
+
+(fact "interval-add"
+  (interval-add
+    (make-interval 1 2)
+    (make-interval -3 3)) => (make-interval -2 5)
+  (interval-add
+    (make-interval 1 2)
+    (make-interval -3 3 :min-open? true)) => (make-interval -2 5 :min-open? true)
+  (interval-add
+    (make-interval 1 2)
+    (make-interval -3 3 :max-open? true)) => (make-interval -2 5 :max-open? true)
+  (interval-add
+    (make-interval 1 2 :max-open? true)
+    (make-interval -3 3 :max-open? true)) => (make-interval -2 5 :max-open? true)
+  (interval-add
+    (make-open-interval 1 2)
+    (make-open-interval 2 1)) => (make-open-interval 2 4)
+    )
+
+
+(fact "interval-add is identity if just one argument is empty"
+  (interval-add
+    (make-interval 1 2)
+    (make-open-interval 4 4)) => (make-interval 1 2)
+  (interval-add
+    (make-interval 1 2)
+    (make-interval 4 4 :max-open? true)) => (make-interval 1 2)
+  (interval-add
+    (make-interval 1 2)
+    (make-interval 4 4 :min-open? true)) => (make-interval 1 2)
+    )
+
+
+(fact "inteval-add produces nil if both arguments are empty"
+  (interval-add
+    (make-open-interval 3 3)
+    (make-open-interval 4 4)) => nil
+    )
+
+
+(fact "interval-add acts as if empty intervals were zero"
+  (interval-add
+    (make-interval 1 2)
+    (make-open-interval 3 3)) => (make-interval 1 2)
+  (interval-add
+    (make-interval 1 2)
+    (make-interval 3 3 :min-open? true)) => (make-interval 1 2)
+  (interval-add
+    (make-interval 1 2)
+    (make-interval 3 3 :max-open? true)) => (make-interval 1 2)
+    )
+
+
+(fact "interval-negate"
+  (interval-negate
+    (make-interval 1 2)) => (make-interval -2 -1)
+  (interval-negate
+    (make-interval 1 2 :max-open? true)) => (make-interval -2 -1 :min-open? true)
+  (interval-negate
+    (make-interval 1 2 :min-open? true)) => (make-interval -2 -1 :max-open? true)
+  (interval-negate
+    (make-open-interval 1 2)) => (make-open-interval -2 -1)
+    )

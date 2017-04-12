@@ -230,8 +230,48 @@
         (list i1 i2))))
 
 
+(defn disjunction-of-bounds-from-pair
+  "helper function for interval arithmetic, which takes two [number, open?] tuples and returns the OR of the openness values"
+  [t1 t2]
+  (or (second t1) (second t2)))
 
 
+(defn sum-of-bounds-from-pair
+  "helper function for interval-add, which takes two [number, open?] tuples and returns the sum of the number values"
+  [t1 t2]
+  (+' (first t1) (first t2)))
+
+
+(defn interval-add
+  "Takes two Interval records, and returns their sum (in interval arithmetc terms). That is, the new `:min` is the _smallest_ of all possible four sums of extremes, and the new `:max` is the _largest_ of all possible four products of extremes. A given end is open if either of the ends multiplied to obtain it were open. If both arguments are `empty`, then the result is `nil`; if only one is empty, then the result is the other argument unchanged."
+  [i1 i2]
+  (let [no1 (interval-empty? i1)
+        no2 (interval-empty? i2)]
+  (cond
+    (and no1 no2)
+      nil
+    no1
+      i2
+    no2
+      i1
+    :else
+      (let [a     [(:min i1) (:min-open? i1)]
+            b     [(:max i1) (:max-open? i1)]
+            c     [(:min i2) (:min-open? i2)]
+            d     [(:max i2) (:max-open? i2)]
+            pairs [[a c] [a d] [b c] [b d]]
+            min-choice (apply min-key
+                        (fn [x] (apply sum-of-bounds-from-pair x))
+                        pairs)
+            max-choice (apply max-key
+                        (fn [x] (apply sum-of-bounds-from-pair x))
+                        pairs)]
+        (make-interval
+          (apply sum-of-bounds-from-pair min-choice)
+          (apply sum-of-bounds-from-pair max-choice)
+          :min-open? (apply disjunction-of-bounds-from-pair min-choice)
+          :max-open? (apply disjunction-of-bounds-from-pair max-choice))
+        ))))
 
 
 (defn product-of-bounds-from-pair
@@ -240,31 +280,36 @@
   (*' (first t1) (first t2)))
 
 
-
-(defn disjunction-of-bounds-from-pair
-  "helper function for interval-multiply, which takes two [number, open?] tuples and returns the OR of the openness values"
-  [t1 t2]
-  (or (second t1) (second t2)))
-
-
-
 (defn interval-multiply
-  "Takes two Interval records, and returns their product"
+  "Takes two Interval records, and returns their product (in interval arithmetc terms). That is, the new `:min` is the _smallest_ of all possible four products of extremes, and the new `:max` is the _largest_ of all possible four products of extremes. A given end is open if either of the ends multiplied to obtain it were open. If either argument is `empty`, then the result is `nil`."
   [i1 i2]
-   (let [a     [(:min i1) (:min-open? i1)]
-         b     [(:max i1) (:max-open? i1)]
-         c     [(:min i2) (:min-open? i2)]
-         d     [(:max i2) (:max-open? i2)]
-         pairs [[a c] [a d] [b c] [b d]]
-         min-choice (apply min-key
+  (if (or (interval-empty? i1) (interval-empty? i2))
+    nil
+    (let [a     [(:min i1) (:min-open? i1)]
+          b     [(:max i1) (:max-open? i1)]
+          c     [(:min i2) (:min-open? i2)]
+          d     [(:max i2) (:max-open? i2)]
+          pairs [[a c] [a d] [b c] [b d]]
+          min-choice (apply min-key
                       (fn [x] (apply product-of-bounds-from-pair x))
                       pairs)
-        max-choice (apply max-key
+          max-choice (apply max-key
                       (fn [x] (apply product-of-bounds-from-pair x))
                       pairs)]
-    (make-interval
-      (apply product-of-bounds-from-pair min-choice)
-      (apply product-of-bounds-from-pair max-choice)
-      :min-open? (apply disjunction-of-bounds-from-pair min-choice)
-      :max-open? (apply disjunction-of-bounds-from-pair max-choice))
+      (make-interval
+        (apply product-of-bounds-from-pair min-choice)
+        (apply product-of-bounds-from-pair max-choice)
+        :min-open? (apply disjunction-of-bounds-from-pair min-choice)
+        :max-open? (apply disjunction-of-bounds-from-pair max-choice))
+      )))
+
+
+(defn interval-negate
+  "Takes an interval and returns it flipped around the y-axis. The enclosure is also reversed. NOTE does not check to see if the result is empty."
+  [interval]
+  (make-interval
+    (*' -1 (:max interval))
+    (*' -1 (:min interval))
+    :max-open? (:min-open? interval)
+    :min-open? (:max-open? interval)
     ))

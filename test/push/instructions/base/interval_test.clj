@@ -8,7 +8,6 @@
   )
 
 
-
 (tabular
   (fact ":interval-add returns the sum of two intervals"
     (register-type-and-check-instruction
@@ -28,6 +27,12 @@
                                                  :interval  (list
                                                               (s/make-interval -1 2))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-interval -2 3)
+                       (s/make-interval -3 2))
+                             :interval-add
+                                                 :interval  (list
+                                                              (s/make-interval -5 5))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-open-interval 2 3)
                        (s/make-interval 2 3))
                              :interval-add
@@ -43,12 +48,25 @@
     :interval    (list (s/make-interval 3 3 :min-open? true)
                        (s/make-interval 2 2 :max-open? true))
                              :interval-add
-                                                 :interval  (list
-                                                              (s/make-open-interval 5 5))
+                                                 :interval  (list)
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
 
+(tabular
+  (fact ":interval-add treats empty intervals as if they were zero"
+    (register-type-and-check-instruction
+        ?set-stack ?items interval-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items       ?instruction        ?get-stack     ?expected
+
+    :interval    (list (s/make-interval 2 3)
+                       (s/make-interval 2 2 :min-open? true))
+                             :interval-add
+                                                 :interval  (list
+                                                              (s/make-interval 2 3))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    )
 
 
 
@@ -428,7 +446,7 @@
 
 
 (tabular
-  (fact ":interval-multiply returns the sum of two intervals"
+  (fact ":interval-multiply returns the product of two intervals' endpoints"
     (register-type-and-check-instruction
         ?set-stack ?items interval-type ?instruction ?get-stack) => ?expected)
 
@@ -483,7 +501,7 @@
 
 
 (tabular
-  (future-fact ":interval-multiply makes sense with choices of bounds"
+  (fact ":interval-multiply returns `nil` if either argument is empty"
     (register-type-and-check-instruction
         ?set-stack ?items interval-type ?instruction ?get-stack) => ?expected)
 
@@ -492,14 +510,12 @@
     :interval    (list (s/make-interval 3 4)
                        (s/make-interval 1 1 :max-open? true))
                              :interval-multiply
-                                                 :interval  (list
-                                                              (s/make-interval 3 4))
+                                                 :interval  (list)
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval 3 4)
                        (s/make-interval 1 1 :min-open? true))
                              :interval-multiply
-                                                 :interval  (list
-                                                              (s/make-interval 3 4))
+                                                 :interval  (list)
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
 
@@ -937,44 +953,66 @@
     :interval    (list (s/make-interval 2 2)
                        (s/make-interval 2 2))
                              :interval-subtract
-                                                 :interval  (list
-                                                              (s/make-interval 0 0))
+                                                 :exec  (list (list
+                                                          (s/make-interval 2 2)
+                                                          (s/make-interval -2 -2)
+                                                          :interval-add))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval 2 3)
                        (s/make-interval 2 3))
                              :interval-subtract
-                                                 :interval  (list
-                                                              (s/make-interval -1 1))
+                                                 :exec  (list (list
+                                                          (s/make-interval 2 3)
+                                                          (s/make-interval -2 -3)
+                                                          :interval-add))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval 2 3)
                        (s/make-interval -3 -2))
                              :interval-subtract
-                                                 :interval  (list
-                                                              (s/make-interval -6 -4))
+                                                 :exec  (list (list
+                                                          (s/make-interval -2 -3)
+                                                          (s/make-interval -2 -3)
+                                                          :interval-add))
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :interval    (list (s/make-interval 1 2)
+                       (s/make-interval 3 4))
+                             :interval-subtract
+                                                 :exec  (list (list
+                                                          (s/make-interval 3 4)
+                                                          (s/make-interval -1 -2)
+                                                          :interval-add))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-open-interval 2 3)
                        (s/make-interval 2 3))
                              :interval-subtract
-                                                 :interval  (list
-                                                              (s/make-open-interval -1 1))
+                                                 :exec  (list (list
+                                                          (s/make-interval 2 3)
+                                                          (s/make-open-interval -2 -3)
+                                                          :interval-add))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-open-interval 2 3)
                        (s/make-interval -3 -2))
                              :interval-subtract
-                                                 :interval  (list
-                                                              (s/make-open-interval -6 -4))
+                                                 :exec  (list (list
+                                                          (s/make-interval -2 -3)
+                                                          (s/make-open-interval -2 -3)
+                                                          :interval-add))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval 1 2 :min-open? true)
                        (s/make-interval 2 3 :max-open? true))
                              :interval-subtract
-                                                 :interval  (list
-                                                              (s/make-interval 0 2 :max-open? true))
+                                                 :exec  (list (list
+                                                          (s/make-interval 2 3 :max-open? true)
+                                                          (s/make-interval -1 -2 :max-open? true)
+                                                          :interval-add))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval 1 2 :max-open? true)
                        (s/make-interval 2 3 :min-open? true))
                              :interval-subtract
-                                                 :interval  (list
-                                                              (s/make-interval 0 2 :min-open? true))
+                                                 :exec  (list (list
+                                                          (s/make-interval 2 3 :min-open? true)
+                                                          (s/make-interval -1 -2 :min-open? true)
+                                                          :interval-add))
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
 
