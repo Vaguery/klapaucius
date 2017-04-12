@@ -80,3 +80,10 @@
         with-stacks (assoc setup :stacks (merge old-stacks new-stacks))
         after (i/execute-instruction with-stacks instruction-token)]
     (:stacks after)))
+
+
+
+(defn config-read
+  "returns the value in the Interpreter's `:config` map under the indicated keyword"
+  [interpreter keyword]
+  (get-in interpreter [:config keyword]))

@@ -131,5 +131,3 @@
         (p/register-instructions
           (p/interpreter)
           [(assoc foo-pop :token :scalar-add)])))) => (:docstring foo-pop))
-
-

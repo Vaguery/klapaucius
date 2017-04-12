@@ -1,8 +1,6 @@
 (ns push.instructions.core
-  (:require [push.util.exceptions
-              :as oops]
-            [push.util.general
-              :as util])
+  (:require [push.util.exceptions :as oops]
+            [push.util.general    :as util])
   (:use     [push.instructions.dsl]
             ))
 
@@ -110,10 +108,10 @@
   def-function-from-dsl
   [& transactions]
   (let [interpreter (gensym 'interpreter)
-       words &form]
+       words        &form]
     (do
     `(fn [~interpreter]
-      (-> [~interpreter {:ARGS '()}] ~@transactions)))))
+      (-> (scratch-replace ~interpreter {:ARGS '()}) ~@transactions)))))
 
 
 (defrecord Instruction [token docstring tags needs products transaction])
