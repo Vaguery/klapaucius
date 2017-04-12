@@ -3,5 +3,6 @@
                                      (not (:danger %1))
                                      (not (:parallel %1))
                                      )
-                  :visible-future false
+                  :visible-future true
+                  :print-level :print-namespaces
                  )
