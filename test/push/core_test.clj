@@ -48,7 +48,9 @@
 
 
 (fact "I can run a Push program and get a named stack"
-  (p/get-stack (p/run (p/interpreter) [88 99 :scalar-add] 100) :scalar) => '(187))
+  (p/get-stack
+    (p/run (p/interpreter) [88 99 :scalar-add] 100) 
+    :scalar) => '(187))
 
 
 

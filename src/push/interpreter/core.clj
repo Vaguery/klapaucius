@@ -3,6 +3,7 @@
             [push.util.code-wrangling     :as util]
             [push.util.exceptions         :as oops]
             [push.router.core             :as router]
+            [push.util.scratch            :as scratch]
             [push.util.type-checkers      :as types   :refer [pushcode?]]
             ))
 
@@ -201,13 +202,8 @@
 (defn apply-instruction
   "Takes an interpreter and a token. Returns the interpreter. If the `:store-args?` value is `true` in the interpreter's `:config`, the arguments will be saved onto the `:ARGS` binding. If the `:cycle-args?` value is `true` in the interpreter's `:config`, the arguments will (also) be appended to the tail of `:exec`. NOTE: returns ONLY the interpreter, not the state tuple."
   [interpreter token]
-  (let [applied ((:transaction (get-instruction interpreter token)) interpreter)
-                ;; ^^ this executes the instruction on the interpreter, returns tuple
-                ;; of [interpreter scratch]
-        updated (first applied)
-                ;; just the modified interpreter resulting from the instruction
-        args    (:ARGS (second applied))
-        ]
+  (let [updated ((:transaction (get-instruction interpreter token)) interpreter)
+        args    (scratch/scratch-read updated :ARGS)]
     (-> updated
         (store-item-in-ARGS , args)
         (append-item-to-exec , args)

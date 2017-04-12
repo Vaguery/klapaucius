@@ -1,53 +1,15 @@
 (ns push.instructions.dsl
-  (:require
-            [push.util.stack-manipulation   :as stack]
+  (:require [push.util.stack-manipulation   :as stack]
             [push.util.code-wrangling       :as util]
             [push.util.numerics             :as num]
             [push.util.exceptions           :as oops]
             [push.interpreter.core          :as i]
             [push.type.definitions.snapshot :as snap]
+            [push.util.scratch              :as sc]
             [dire.core                      :as dire   :refer [with-handler!]]
             ))
 
-
 ;; The PushDSL uses the :scratch map in an Interpreter record
-
-;; scratch map IO
-
-(defn scratch-read
-  "returns whatever is stored under the named key in the Interpreter's :scratch map"
-  [interpreter key]
-  (get-in interpreter [:scratch key]))
-
-
-(defn scratch-write
-  "stores whatever if passed in under the named key in the Interpreter's scratch map"
-  [interpreter key item]
-  (assoc-in interpreter [:scratch key] item))
-
-
-(defn scratch-forget
-  "sets the value indicated in the Interpreter's :scratch map to nil"
-  [interpreter key]
-  (update-in interpreter [:scratch] dissoc key))
-
-
-(defn scratch-replace
-  "convenience function that sets the whole :scratch map for an Interpreter"
-  [interpreter new-map]
-  (assoc interpreter :scratch new-map))
-
-
-(defn scratch-save-arg
-  "appends an item to the :ARGS collection in the Interpreter's :scratch map"
-  [interpreter item]
-  (update-in interpreter [:scratch :ARGS] conj item))
-
-
-(defn scratch-ARGS
-  "returns the :ARGS collection from the Interpreter's scratch map"
-  [interpreter]
-  (get-in interpreter [:scratch :ARGS] '()))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn get-max-collection-size
@@ -104,8 +66,8 @@
   [interpreter stackname raw-index new-name]
   (let [item (nth-item-of-stack interpreter stackname raw-index)]
     (-> interpreter
-        (scratch-write , new-name item)
-        (scratch-save-arg , item)
+        (sc/scratch-write , new-name item)
+        (sc/scratch-save-arg , item)
         (delete-nth-item-of-stack , stackname raw-index)
         )))
 
@@ -160,16 +122,16 @@
 (defn valid-binding-key
   [interpreter scratch-key]
   (if (or (nil? scratch-key)
-          (nil? (scratch-read interpreter scratch-key)))
+          (nil? (sc/scratch-read interpreter scratch-key)))
     (keyword (gensym "ref!"))
-    (scratch-read interpreter scratch-key)
+    (sc/scratch-read interpreter scratch-key)
     ))
 
 
 (defn bind-item
   "?"
   [interpreter item-key & {:keys [into]}]
-  (let [item        (scratch-read interpreter item-key)
+  (let [item        (sc/scratch-read interpreter item-key)
         binding-key (valid-binding-key interpreter into)]
     (if (keyword? binding-key)
       (if (oversized-binding? interpreter binding-key item)
@@ -221,7 +183,7 @@
   (let [value (get-max-collection-size interpreter)]
     (if (nil? as)
       (oops/throw-missing-key-exception :as)
-      (scratch-write interpreter as value)
+      (sc/scratch-write interpreter as value)
       )))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
@@ -259,7 +221,7 @@
 (defn clear-binding
   "?"
   [interpreter kwd]
-  (let [binding-name (scratch-read interpreter kwd)]
+  (let [binding-name (sc/scratch-read interpreter kwd)]
     (if (some #{binding-name} (keys (:bindings interpreter)))
       (assoc-in interpreter [:bindings binding-name] '())
       interpreter
@@ -273,7 +235,7 @@
   (let [old-stack (stack/get-stack interpreter stackname)]
     (if (nil? as)
       (oops/throw-missing-key-exception :as)
-      (scratch-write
+      (sc/scratch-write
         (stack/clear-stack interpreter stackname) as old-stack)
         )))
 
@@ -283,7 +245,7 @@
   "?"
   [interpreter stackname & {:keys [as]}]
   (let [old-stack (stack/get-stack interpreter stackname)
-        old-args (scratch-ARGS interpreter)]
+        old-args (sc/scratch-ARGS interpreter)]
     (cond (empty? old-stack)
             (oops/throw-empty-stack-exception stackname)
           (nil? as)
@@ -291,8 +253,8 @@
           :else
             (let [top-item (first old-stack)]
               (-> (stack/set-stack interpreter stackname (rest old-stack))
-                   (scratch-save-arg , top-item)
-                   (scratch-write , as top-item))
+                   (sc/scratch-save-arg , top-item)
+                   (sc/scratch-write , as top-item))
                    ))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
@@ -302,7 +264,7 @@
   [interpreter stackname & {:keys [as]}]
   (if-let [scratch-var as]
     (let [stack (stack/get-stack interpreter stackname)]
-      (scratch-write interpreter scratch-var (count stack)))
+      (sc/scratch-write interpreter scratch-var (count stack)))
     (oops/throw-missing-key-exception :as)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
@@ -318,7 +280,7 @@
     (number? at)
       (consume-nth-as interpreter stackname at as)
     :else
-      (let [raw-index (scratch-read interpreter at)]
+      (let [raw-index (sc/scratch-read interpreter at)]
         (if (number? raw-index)
           (consume-nth-as interpreter stackname raw-index as)
           (oops/throw-invalid-index-exception raw-index)
@@ -335,7 +297,7 @@
     (number? at)
       (delete-nth-item-of-stack interpreter stackname at)
     :else
-      (let [raw-index (scratch-read interpreter at)]
+      (let [raw-index (sc/scratch-read interpreter at)]
         (if (number? raw-index)
           (delete-nth-item-of-stack interpreter stackname raw-index)
           (oops/throw-invalid-index-exception raw-index)
@@ -346,7 +308,7 @@
 (defn forget-binding
   "?"
   [interpreter kwd]
-  (let [binding-name (scratch-read interpreter kwd)
+  (let [binding-name (sc/scratch-read interpreter kwd)
         old-bindings (:bindings interpreter)]
     (assoc interpreter :bindings (dissoc old-bindings binding-name))
     ))
@@ -356,14 +318,14 @@
 (defn insert-as-nth-of
   "?"
   [interpreter stackname kwd & {:keys [at]}]
-  (let [item (scratch-read interpreter kwd)]
+  (let [item (sc/scratch-read interpreter kwd)]
     (cond
       (nil? at)
         (oops/throw-missing-key-exception :at)
       (number? at)
         (insert-as-nth interpreter stackname item at)
       :else
-        (let [raw-index (scratch-read interpreter at)]
+        (let [raw-index (sc/scratch-read interpreter at)]
           (if (number? raw-index)
             (insert-as-nth interpreter stackname item raw-index)
             (oops/throw-invalid-index-exception raw-index)
@@ -384,7 +346,7 @@
   "?"
   [interpreter stackname kwd]
   (let [old-stack   (stack/get-stack interpreter stackname)
-        new-item    (scratch-read interpreter kwd)
+        new-item    (sc/scratch-read interpreter kwd)
         too-big?    (oversized-stack? interpreter old-stack new-item)
         counter     (:counter interpreter)
         instruction (:current-item interpreter)
@@ -411,7 +373,7 @@
   "?"
   [interpreter stackname keywords]
   (let [old-stack     (stack/get-stack interpreter stackname)]
-    (let [new-items   (map #(scratch-read interpreter %) keywords)
+    (let [new-items   (map #(sc/scratch-read interpreter %) keywords)
           too-big?    (oversized-stack? interpreter old-stack new-items)
           instruction (:current-item interpreter)
           new-stack   (if (or (nil? new-items) too-big?)
@@ -451,10 +413,10 @@
 (defn replace-binding
   "?"
   [interpreter item & {:keys [into]}]
-  (let [new-item (scratch-read interpreter item)
+  (let [new-item (sc/scratch-read interpreter item)
         where    (if (nil? into)
                     (keyword (gensym "ref!"))
-                    (scratch-read interpreter into)) ]
+                    (sc/scratch-read interpreter into)) ]
     (cond
       (not (keyword? where))
         (oops/throw-invalid-binding-key where)
@@ -471,7 +433,7 @@
 (defn replace-stack
   "?"
   [interpreter stackname kwd]
-  (let [replacement (scratch-read interpreter kwd)
+  (let [replacement (sc/scratch-read interpreter kwd)
         new-stack (cond (nil? replacement) (list)
                         (seq? replacement) replacement
                         :else (list replacement))]
@@ -485,7 +447,7 @@
   [interpreter & {:keys [using]}]
   (if (nil? using)
     (oops/throw-missing-key-exception using)
-    (stack/merge-snapshot interpreter (scratch-read interpreter using))
+    (stack/merge-snapshot interpreter (sc/scratch-read interpreter using))
     ))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
@@ -493,11 +455,11 @@
 (defn save-top-of-binding
   "?"
   [interpreter which & {:keys [as]}]
-  (let [variable (scratch-read interpreter which)
+  (let [variable (sc/scratch-read interpreter which)
         value    (i/peek-at-binding interpreter variable)]
     (if (nil? as)
       (oops/throw-missing-key-exception ":as")
-      (scratch-write interpreter as value)
+      (sc/scratch-write interpreter as value)
       )))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
@@ -506,10 +468,10 @@
   "?"
   [interpreter which & {:keys [as]}]
   (let [binding-name
-          (get-in interpreter [:bindings (scratch-read interpreter which)] '())]
+          (get-in interpreter [:bindings (sc/scratch-read interpreter which)] '())]
     (if (nil? as)
       (oops/throw-missing-key-exception :as)
-      (scratch-write interpreter as binding-name)
+      (sc/scratch-write interpreter as binding-name)
       )))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
@@ -519,7 +481,7 @@
   [interpreter stackname & {:keys [as]}]
   (let [old-stack (stack/get-stack interpreter stackname)]
     (if (some? as)
-      (scratch-write interpreter as old-stack)
+      (sc/scratch-write interpreter as old-stack)
       (oops/throw-missing-key-exception :as)
       )))
 
@@ -534,12 +496,12 @@
     (nil? at)
       (oops/throw-missing-key-exception :at)
     (number? at)
-      (scratch-write interpreter as
+      (sc/scratch-write interpreter as
         (nth-item-of-stack interpreter stackname at))
     :else ;; keyword
-      (scratch-write interpreter as
+      (sc/scratch-write interpreter as
         (nth-item-of-stack interpreter stackname
-          (scratch-read interpreter at)))
+          (sc/scratch-read interpreter at)))
           ))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
@@ -555,7 +517,7 @@
         (oops/throw-missing-key-exception ":as")
       :else
         (let [top-item (first old-stack)]
-          (scratch-write interpreter as top-item)
+          (sc/scratch-write interpreter as top-item)
           ))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
@@ -566,7 +528,7 @@
   (let [varnames (sort (keys (:bindings interpreter)))]
     (if (nil? as)
       (oops/throw-missing-key-exception :as)
-      (scratch-write interpreter as varnames)
+      (sc/scratch-write interpreter as varnames)
       )))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
@@ -577,7 +539,7 @@
   (let [fxns (set (keys (:instructions interpreter)))]
     (if (nil? as)
       (oops/throw-missing-key-exception :as)
-      (scratch-write interpreter as fxns)
+      (sc/scratch-write interpreter as fxns)
       )))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
@@ -588,7 +550,7 @@
   (let [c (:counter interpreter)]
     (if (nil? as)
       (oops/throw-missing-key-exception :as)
-      (scratch-write interpreter as c)
+      (sc/scratch-write interpreter as c)
       )))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
@@ -632,7 +594,7 @@
         old-err (stack/get-stack interpreter :error)]
     (if (nil? from)
       (oops/throw-missing-key-exception :from)
-      (let [msg (scratch-read interpreter from)]
+      (let [msg (sc/scratch-read interpreter from)]
         (if (nil? msg)
           interpreter
           (let [err-item {:step c :item msg}
@@ -649,13 +611,13 @@
 (defn calculate
   "?"
   [interpreter args fxn & {:keys [as]}]
-  (let [locals (map #(scratch-read interpreter %) args)
+  (let [locals (map #(sc/scratch-read interpreter %) args)
         result (if (vector? args)
                   (apply fxn locals)
                   (oops/throw-function-argument-exception args))]
     (if (nil? as)
       (oops/throw-missing-key-exception :as)
-      (scratch-write interpreter as result)
+      (sc/scratch-write interpreter as result)
       )))
 
 (dire/with-handler! #'calculate

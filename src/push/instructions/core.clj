@@ -1,6 +1,8 @@
 (ns push.instructions.core
   (:require [push.util.exceptions :as oops]
-            [push.util.general    :as util])
+            [push.util.general    :as util]
+            [push.util.scratch    :as scratch]
+            )
   (:use     [push.instructions.dsl]
             ))
 
@@ -111,7 +113,9 @@
        words        &form]
     (do
     `(fn [~interpreter]
-      (-> (scratch-replace ~interpreter {:ARGS '()}) ~@transactions)))))
+      (-> (scratch/scratch-replace ~interpreter {:ARGS '()})
+          ~@transactions
+          )))))
 
 
 (defrecord Instruction [token docstring tags needs products transaction])
@@ -125,14 +129,15 @@
           tags #{}
           needs {}
           products {}
-          transaction #(vector % {}) }}]
+          transaction (fn [interpreter] interpreter) }}]
   (with-meta (->Instruction
-                  token
-                  docstring
-                  tags
-                  needs
-                  products
-                  transaction) {:doc docstring}))
+                token
+                docstring
+                tags
+                needs
+                products
+                transaction) {:doc docstring}
+                ))
 
 
 (defmacro build-instruction

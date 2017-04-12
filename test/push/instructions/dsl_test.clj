@@ -8,6 +8,7 @@
             [push.interpreter.templates.minimum :as m])
   (:use midje.sweet)
   (:use push.instructions.dsl)
+  (:use push.util.scratch)
   (:use push.util.test-helpers)
   )
 
