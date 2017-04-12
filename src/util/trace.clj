@@ -35,7 +35,7 @@
 
 (defn yaml-from-interpreter-stacks
   [interpreter]
-  (let [s (dissoc (:stacks interpreter) :log)
+  (let [s (:stacks interpreter)
         b (:bindings interpreter)]
     (str (print-whole-map s) (print-whole-map b))
     ))
