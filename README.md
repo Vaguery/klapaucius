@@ -40,7 +40,7 @@ Using `leiningen`, add the following dependency to your `project.clj`
 ```clojure
 (defproject my-new-project "0.0.1-SNAPSHOT"
   :dependencies [[org.clojure/clojure "1.8.0"]
-                 [klapaucius "0.1.25-SNAPSHOT"]
+                 [klapaucius "0.1.25"]
                  ;; ... your other dependencies here ...
                  ]
   :profiles {:dev
