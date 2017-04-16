@@ -13,7 +13,6 @@
   :deploy-repositories [["releases" :clojars]
                         ["snapshots" :clojars]
                         ]
-  :signing {:gpg-key "D1D470C016D0F24F"}
   :profiles {:dev {:dependencies [[midje "1.8.3"]]}}
   :hiera  {:path "target/ns-hierarchy.png"
            :vertical false
