@@ -9,6 +9,10 @@
 
 (From [Lem's _The Cyberiad_](https://en.wikipedia.org/wiki/The_Cyberiad). [Non-Polish speakers may appreciate this recording of correct pronunciation of the character's name](./klapaucius.m4a), kindly provided by [Krzysztof Krawiec](http://www.cs.put.poznan.pl/kkrawiec/) and colleagues.)
 
+## Project website
+
+Docs are getting finished up now at [the project website](http://vaguery.github.io/klapaucius).
+
 ## About
 
 This library includes a clean, fully tested, extensible and maintainable Push language interpreter. Push is a simple and robust programming language designed to be _evolved_ rather than hand-composed by human programmers, which originated in the [Hampshire College Computational Intelligence Lab](http://sites.hampshire.edu/ci-lab/). You may have run across it by way of [Lee Spector's Clojush](https://github.com/lspector/Clojush) project.
