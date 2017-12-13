@@ -19,10 +19,10 @@
             ?expected)
 
     ?set-stack  ?items             ?instruction  ?get-stack   ?expected
-    :set        '(#{1 2} #{3 4})   :set-union    :set        '(#{1 2 3 4})
-    :set        '(#{1 2} #{2 4})   :set-union    :set        '(#{1 2 4})
-    :set        '(#{1 2} #{1 2})   :set-union    :set        '(#{1 2})
-    :set        '(#{} #{1})        :set-union    :set        '(#{1})
+    :set        '(#{1 2} #{3 4})   :set-union    :exec       '(#{1 2 3 4})
+    :set        '(#{1 2} #{2 4})   :set-union    :exec       '(#{1 2 4})
+    :set        '(#{1 2} #{1 2})   :set-union    :exec       '(#{1 2})
+    :set        '(#{} #{1})        :set-union    :exec       '(#{1})
     :set        '(#{1 2})          :set-union    :set        '(#{1 2})
     )
 
@@ -35,13 +35,13 @@
 
     ?set-stack  ?items             ?instruction  ?get-stack   ?expected
     :set        '(#{1 2} #{3 4})   :set-intersection
-                                                  :set        '(#{})
+                                                  :exec        '(#{})
     :set        '(#{1 2} #{2 4})   :set-intersection
-                                                  :set        '(#{2})
+                                                  :exec        '(#{2})
     :set        '(#{1 2} #{1 2})   :set-intersection
-                                                  :set        '(#{1 2})
+                                                  :exec        '(#{1 2})
     :set        '(#{} #{})        :set-intersection
-                                                  :set        '(#{})
+                                                  :exec        '(#{})
     :set        '(#{1 2})          :set-intersection
                                                   :set        '(#{1 2})
     )
@@ -56,13 +56,13 @@
 
     ?set-stack  ?items             ?instruction  ?get-stack   ?expected
     :set        '(#{1 2} #{3 4})   :set-difference
-                                                  :set        '(#{3 4})
+                                                  :exec        '(#{3 4})
     :set        '(#{1 2} #{2 4})   :set-difference
-                                                  :set        '(#{4})
+                                                  :exec        '(#{4})
     :set        '(#{1 2} #{1 2})   :set-difference
-                                                  :set        '(#{})
+                                                  :exec        '(#{})
     :set        '(#{} #{})         :set-difference
-                                                  :set        '(#{})
+                                                  :exec        '(#{})
     :set        '(#{1 2})          :set-difference
                                                   :set        '(#{1 2})
     )
@@ -130,5 +130,3 @@
                                                    :boolean  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
-
-

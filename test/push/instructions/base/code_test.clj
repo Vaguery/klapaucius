@@ -101,16 +101,16 @@
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; stick 'em together
-    :code    '(8 (8 9))          :code-container        :code        '((8 9))
-    :code    '(2 2)              :code-container        :code        '(())
-    :code    '(2 (1 (2 (3))))    :code-container        :code        '((2 (3)))
-    :code    '(() (()))          :code-container        :code        '((()))
+    :code    '(8 (8 9))          :code-container        :exec        '((8 9))
+    :code    '(2 2)              :code-container        :exec        '(())
+    :code    '(2 (1 (2 (3))))    :code-container        :exec        '((2 (3)))
+    :code    '(() (()))          :code-container        :exec        '((()))
     :code    '((3) (0 ((1 2) ((3) 4))))
-                                 :code-container        :code        '(((3) 4))
+                                 :code-container        :exec        '(((3) 4))
     :code    '((3) (0 ((1 (3)) ((3) 4))))
-                                 :code-container        :code        '((1 (3)))
+                                 :code-container        :exec        '((1 (3)))
     :code    '((1 (2)) (1 (2) 3))
-                                 :code-container        :code        '(())
+                                 :code-container        :exec        '(())
     :code    '(2)                :code-container        :code        '(2)
     )
 
@@ -431,17 +431,18 @@
 
 
 (tabular
-  (fact ":code-first pushes the first item of the top :code item, if it's a list"
+  (fact ":code-first pushes the first item of the top :code item, if it's a non-empty list"
     (register-type-and-check-instruction
         ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
-    :code    '((1.1) (8 9))       :code-first        :code        '(1.1 (8 9))
-    :code    '((2 3))             :code-first        :code        '(2)
-    :code    '(() 3)              :code-first        :code        '(3)
-    :code    '(2)                 :code-first        :code        '(2)
-    :code    '(((3)))             :code-first        :code        '((3))
-    :code    '()                  :code-first        :code        '())
+    :code    '((1.1) (8 9))       :code-first        :exec        '(1.1)
+    :code    '((2 3))             :code-first        :exec        '(2)
+    :code    '(() 3)              :code-first        :exec        '()
+    :code    '(2)                 :code-first        :exec        '(2)
+    :code    '(((3)))             :code-first        :exec        '((3))
+    :code    '()                  :code-first        :exec        '()
+    )
 
 
 (tabular
@@ -450,8 +451,8 @@
         ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
-    :code    '([1 2 3])           :code-first        :code        '([1 2 3])
-    :code    '({:a 8 :b 7})       :code-first        :code        '({:a 8 :b 7})
+    :code    '([1 2 3])           :code-first        :exec        '([1 2 3])
+    :code    '({:a 8 :b 7})       :code-first        :exec        '({:a 8 :b 7})
     )
 
 
@@ -839,12 +840,12 @@
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; what's left for me now?
-    :code    '((1 2 3) (8 9))     :code-rest        :code        '((2 3) (8 9))
-    :code    '((2))               :code-rest        :code        '(())
-    :code    '(() 3)              :code-rest        :code        '(() 3)
-    :code    '(2)                 :code-rest        :code        '(())
-    :code    '((2 (3)))           :code-rest        :code        '(((3)))
-    :code    '()                  :code-rest        :code        '())
+    :code    '((1 2 3) (8 9))     :code-rest        :exec        '((2 3))
+    :code    '((2))               :code-rest        :exec        '(())
+    :code    '(() 3)              :code-rest        :exec        '(())
+    :code    '(2)                 :code-rest        :exec        '(())
+    :code    '((2 (3)))           :code-rest        :exec        '(((3)))
+    :code    '()                  :code-rest        :exec        '())
 
 
 
@@ -941,9 +942,9 @@
 
     ?set-stack  ?items         ?instruction      ?get-stack     ?expected
     ;; wrap
-    :code    '(1)               :code-wrap      :code        '((1))
-    :code    '((3 4))           :code-wrap      :code        '(((3 4)))
-    :code    '(())              :code-wrap      :code        '((()))
+    :code    '(1)               :code-wrap      :exec        '((1))
+    :code    '((3 4))           :code-wrap      :exec        '(((3 4)))
+    :code    '(())              :code-wrap      :exec        '((()))
     ;; missing args
     :code    '()                :code-wrap      :code          '())
 

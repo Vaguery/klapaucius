@@ -43,17 +43,19 @@
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(1 2)}) foo-dup)
         :foo-dup)
-      :foo) => '(1 1 2)
+      :exec) => '((1 1))
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(11)}) foo-dup)
         :foo-dup)
-      :foo) => '(11 11)
+      :exec) => '((11 11))
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '()}) foo-dup)
         :foo-dup)
-      :foo) => '()))
+      :exec) => '()
+      ))
+
 
 
 (fact "flush-instruction returns an Instruction with the correct stuff"

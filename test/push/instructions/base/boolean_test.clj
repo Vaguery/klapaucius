@@ -344,10 +344,10 @@
 
     ?set-stack  ?items         ?instruction    ?get-stack     ?expected
     ;; just shifting things
-    :boolean    '(false true)   :boolean-dup    :boolean       '(false false true)
-    :boolean    '(true)         :boolean-dup    :boolean       '(true true)
+    :boolean    '(false true)   :boolean-dup    :exec      '((false false))
+    :boolean    '(true)         :boolean-dup    :exec      '((true true))
     ;; missing args
-    :boolean    '()             :boolean-dup    :boolean       '())
+    :boolean    '()             :boolean-dup    :exec      '())
 
 
 (tabular

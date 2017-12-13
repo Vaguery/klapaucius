@@ -20,22 +20,22 @@
         ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction        ?get-stack     ?expected
-    :scalar     '(92M)          :scalar-abs           :scalar        '(92M)
-    :scalar     '(-92M)         :scalar-abs           :scalar        '(92M)
-    :scalar     '(0)            :scalar-abs           :scalar        '(0)
-    :scalar     '(-0)           :scalar-abs           :scalar        '(0)
-    :scalar     '(92)           :scalar-abs           :scalar        '(92)
-    :scalar     '(-92)          :scalar-abs           :scalar        '(92)
-    :scalar     '(9.2)          :scalar-abs           :scalar        '(9.2)
-    :scalar     '(-9.2)         :scalar-abs           :scalar        '(9.2)
-    :scalar     '(92N)          :scalar-abs           :scalar        '(92N)
-    :scalar     '(-92N)         :scalar-abs           :scalar        '(92N)
-    :scalar     '(9/2)          :scalar-abs           :scalar        '(9/2)
-    :scalar     '(-9/2)         :scalar-abs           :scalar        '(9/2)
+    :scalar     '(92M)          :scalar-abs           :exec         '(92M)
+    :scalar     '(-92M)         :scalar-abs           :exec         '(92M)
+    :scalar     '(0)            :scalar-abs           :exec         '(0)
+    :scalar     '(-0)           :scalar-abs           :exec         '(0)
+    :scalar     '(92)           :scalar-abs           :exec         '(92)
+    :scalar     '(-92)          :scalar-abs           :exec         '(92)
+    :scalar     '(9.2)          :scalar-abs           :exec         '(9.2)
+    :scalar     '(-9.2)         :scalar-abs           :exec         '(9.2)
+    :scalar     '(92N)          :scalar-abs           :exec         '(92N)
+    :scalar     '(-92N)         :scalar-abs           :exec         '(92N)
+    :scalar     '(9/2)          :scalar-abs           :exec         '(9/2)
+    :scalar     '(-9/2)         :scalar-abs           :exec         '(9/2)
 
-    :scalar     (list ∞)        :scalar-abs           :scalar        (list ∞)
-    :scalar     (list -∞)       :scalar-abs           :scalar        (list ∞)
-    :scalar     '()             :scalar-abs           :scalar        '()
+    :scalar     (list ∞)        :scalar-abs           :exec         (list ∞)
+    :scalar     (list -∞)       :scalar-abs           :exec         (list ∞)
+    :scalar     '()             :scalar-abs           :exec         '()
     )
 
 
@@ -112,7 +112,7 @@
 
 
     :scalar     '(-2)     :scalar-arccosine   :scalar      '()
-    :scalar     '(-2)     :scalar-arccosine   :error       (list {:step 0, 
+    :scalar     '(-2)     :scalar-arccosine   :error       (list {:step 0,
                                                                   :item ":scalar-arccosine bad argument"})
 
     :scalar     (list ∞)  :scalar-arccosine   :scalar      '()
@@ -141,7 +141,7 @@
 
 
     :scalar     '(-2)     :scalar-arcsine     :scalar      '()
-    :scalar     '(-2)     :scalar-arcsine     :error       (list {:step 0, 
+    :scalar     '(-2)     :scalar-arcsine     :error       (list {:step 0,
                                                                   :item ":scalar-arcsine bad argument"})
 
     :scalar     (list ∞)  :scalar-arcsine     :scalar      '()
@@ -159,21 +159,21 @@
         ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items    ?instruction        ?get-stack   ?expected
-    :scalar     '(0.0)    :scalar-arctangent  :scalar      '(0.0)
+    :scalar     '(0.0)    :scalar-arctangent  :exec       '(0.0)
     :scalar     '(1)
-                          :scalar-arctangent  :scalar      '(0.7853981633974483)
+                          :scalar-arctangent  :exec       '(0.7853981633974483)
     :scalar     '(-1)
-                          :scalar-arctangent  :scalar      '(-0.7853981633974483)
+                          :scalar-arctangent  :exec      '(-0.7853981633974483)
     :scalar     '(1/17)
-                          :scalar-arctangent  :scalar      '(0.0587558227157227)
+                          :scalar-arctangent  :exec       '(0.0587558227157227)
     :scalar     '(0.00000000000000000001M)
-                          :scalar-arctangent  :scalar      (list (Math/asin 0.00000000000000000001M))
+                          :scalar-arctangent  :exec       (list (Math/asin 0.00000000000000000001M))
 
-    :scalar     '(-2)     :scalar-arctangent  :scalar     '(-1.1071487177940904)
+    :scalar     '(-2)     :scalar-arctangent  :exec      '(-1.1071487177940904)
     :scalar     (list Math/PI)
-                          :scalar-arctangent  :scalar     '(1.2626272556789115)
+                          :scalar-arctangent  :exec     '(1.2626272556789115)
 
-    :scalar     '()       :scalar-arctangent     :scalar      '()
+    :scalar     '()       :scalar-arctangent  :exec      '()
     )
 
 
@@ -186,20 +186,20 @@
         ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items     ?instruction      ?get-stack  ?expected
-    :scalar     '(0)       :scalar-ceiling     :scalar    '(0)
-    :scalar     '(-1.0)    :scalar-ceiling     :scalar    '(-1.0)
-    :scalar     '(-1.0M)   :scalar-ceiling     :scalar    '(-1N)
-    :scalar     '(300.1M)  :scalar-ceiling     :scalar    '(301N)
-    :scalar     '(-300.1M) :scalar-ceiling     :scalar    '(-300N)
-    :scalar     '(300N)    :scalar-ceiling     :scalar    '(300N)
-    :scalar     '(1.7e83)  :scalar-ceiling     :scalar    '(1.7E83)
-    :scalar     '(7/3)     :scalar-ceiling     :scalar    '(3N)
-    
+    :scalar     '(0)       :scalar-ceiling     :exec     '(0)
+    :scalar     '(-1.0)    :scalar-ceiling     :exec     '(-1.0)
+    :scalar     '(-1.0M)   :scalar-ceiling     :exec     '(-1N)
+    :scalar     '(300.1M)  :scalar-ceiling     :exec     '(301N)
+    :scalar     '(-300.1M) :scalar-ceiling     :exec     '(-300N)
+    :scalar     '(300N)    :scalar-ceiling     :exec     '(300N)
+    :scalar     '(1.7e83)  :scalar-ceiling     :exec     '(1.7E83)
+    :scalar     '(7/3)     :scalar-ceiling     :exec     '(3N)
+
     :scalar     '(1.7e837M)
-                           :scalar-ceiling     :scalar    (list (bigint 1.7e837M))
-    :scalar     (list ∞)   :scalar-ceiling     :scalar    (list ∞)
-    :scalar     (list -∞)  :scalar-ceiling     :scalar    (list -∞)
-    :scalar     '()        :scalar-ceiling     :scalar    '()
+                           :scalar-ceiling     :exec    (list (bigint 1.7e837M))
+    :scalar     (list ∞)   :scalar-ceiling     :exec    (list ∞)
+    :scalar     (list -∞)  :scalar-ceiling     :exec    (list -∞)
+    :scalar     '()        :scalar-ceiling     :exec    '()
     )
 
 
@@ -210,17 +210,17 @@
         ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items    ?instruction      ?get-stack  ?expected
-    :scalar     '(0)      :scalar-cosine     :scalar    '(1.0)
-    :scalar     '(-1.0)   :scalar-cosine     :scalar    '(0.5403023058681398)
-    :scalar     '(-1.0M)  :scalar-cosine     :scalar    '(0.5403023058681398)
-    :scalar     '(300.1M) :scalar-cosine     :scalar    '(0.07782281308912051)
-    :scalar     '(300M)   :scalar-cosine     :scalar    '(-0.022096619278683942)
-    :scalar     '(300N)   :scalar-cosine     :scalar    '(-0.022096619278683942)
-    :scalar     '(1.7e83) :scalar-cosine     :scalar    '(-0.020932220708646424)
-    :scalar     '(7/3)    :scalar-cosine     :scalar    '(-0.6907581397498761)
+    :scalar     '(0)      :scalar-cosine     :exec     '(1.0)
+    :scalar     '(-1.0)   :scalar-cosine     :exec     '(0.5403023058681398)
+    :scalar     '(-1.0M)  :scalar-cosine     :exec     '(0.5403023058681398)
+    :scalar     '(300.1M) :scalar-cosine     :exec     '(0.07782281308912051)
+    :scalar     '(300M)   :scalar-cosine     :exec     '(-0.022096619278683942)
+    :scalar     '(300N)   :scalar-cosine     :exec     '(-0.022096619278683942)
+    :scalar     '(1.7e83) :scalar-cosine     :exec     '(-0.020932220708646424)
+    :scalar     '(7/3)    :scalar-cosine     :exec     '(-0.6907581397498761)
     :scalar     (list Math/PI)
-                          :scalar-cosine     :scalar    '(-1.0)
-    :scalar     '()       :scalar-cosine     :scalar    '()
+                          :scalar-cosine     :exec     '(-1.0)
+    :scalar     '()       :scalar-cosine     :exec     '()
     )
 
 
@@ -231,23 +231,23 @@
         ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items      ?instruction         ?get-stack     ?expected
-    :scalar     '(92M)      :scalar-dec           :scalar        '(91M)
-    :scalar     '(-92M)     :scalar-dec           :scalar        '(-93M)
-    :scalar     '(0)        :scalar-dec           :scalar        '(-1)
-    :scalar     '(-0)       :scalar-dec           :scalar        '(-1)
-    :scalar     '(92)       :scalar-dec           :scalar        '(91)
-    :scalar     '(-92)      :scalar-dec           :scalar        '(-93)
-    :scalar     '(9.2)      :scalar-dec           :scalar        '(8.2)
-    :scalar     '(-9.2)     :scalar-dec           :scalar        '(-10.2)
-    :scalar     '(92N)      :scalar-dec           :scalar        '(91N)
-    :scalar     '(-92N)     :scalar-dec           :scalar        '(-93N)
-    :scalar     '(9/2)      :scalar-dec           :scalar        '(7/2)
-    :scalar     '(-9/2)     :scalar-dec           :scalar        '(-11/2)
+    :scalar     '(92M)      :scalar-dec           :exec         '(91M)
+    :scalar     '(-92M)     :scalar-dec           :exec         '(-93M)
+    :scalar     '(0)        :scalar-dec           :exec         '(-1)
+    :scalar     '(-0)       :scalar-dec           :exec         '(-1)
+    :scalar     '(92)       :scalar-dec           :exec         '(91)
+    :scalar     '(-92)      :scalar-dec           :exec         '(-93)
+    :scalar     '(9.2)      :scalar-dec           :exec         '(8.2)
+    :scalar     '(-9.2)     :scalar-dec           :exec         '(-10.2)
+    :scalar     '(92N)      :scalar-dec           :exec         '(91N)
+    :scalar     '(-92N)     :scalar-dec           :exec         '(-93N)
+    :scalar     '(9/2)      :scalar-dec           :exec         '(7/2)
+    :scalar     '(-9/2)     :scalar-dec           :exec         '(-11/2)
 
 
-    :scalar     (list ∞)    :scalar-dec           :scalar        (list ∞)
-    :scalar     (list -∞)   :scalar-dec           :scalar        (list -∞)
-    :scalar     '()         :scalar-dec           :scalar        '()
+    :scalar     (list ∞)    :scalar-dec           :exec         (list ∞)
+    :scalar     (list -∞)   :scalar-dec           :exec         (list -∞)
+    :scalar     '()         :scalar-dec           :exec         '()
     )
 
 
@@ -260,42 +260,42 @@
     ?new-stacks                ?instruction             ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(92 8)}       :scalar-divide     {:scalar '(2/23)
-                                                   :error '()} 
+                                                   :error '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(92 0)}       :scalar-divide     {:scalar '(0)
-                                                   :error '()} 
+                                                   :error '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(0 92)}       :scalar-divide     {:scalar '()
-                                                   :error '({:item "Divide by zero", :step 0})} 
+                                                   :error '({:item "Divide by zero", :step 0})}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(92 -11/12)}  :scalar-divide     {:scalar '(-11/1104)
-                                                   :error '()} 
+                                                   :error '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(2/3 6/7)}    :scalar-divide     {:scalar '(9/7)
-                                                   :error '()} 
+                                                   :error '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(0/3 1/2)}    :scalar-divide     {:scalar '()
-                                                   :error '({:item "Divide by zero", :step 0})} 
+                                                   :error '({:item "Divide by zero", :step 0})}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(9.2 -11/12)} :scalar-divide     {:scalar (list (/ -11/12 9.2))
-                                                   :error '()} 
+                                                   :error '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(2N 6/7)}     :scalar-divide     {:scalar '(3/7)
-                                                   :error '()} 
+                                                   :error '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(0N 8)}       :scalar-divide     {:scalar '()
-                                                   :error '({:item "Divide by zero", :step 0})} 
+                                                   :error '({:item "Divide by zero", :step 0})}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(0M 0N)}       :scalar-divide     {:scalar '()
-                                                   :error '({:item "Divide by zero", :step 0})} 
+                                                   :error '({:item "Divide by zero", :step 0})}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(2M 3M)}       :scalar-divide     {:scalar '(1.5M)
-                                                   :error '()} 
+                                                   :error '()}
 
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   (list ∞ 3M)}    :scalar-divide     {:scalar '(0.0)
-                                                   :error '()} 
+                                                   :error '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   (list 3M ∞)}    :scalar-divide     {:scalar (list ∞)
                                                    :error '()}
@@ -346,22 +346,22 @@
         ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items     ?instruction      ?get-stack  ?expected
-    :scalar     '(0)       :scalar-floor     :scalar    '(0)
-    :scalar     '(-1.0)    :scalar-floor     :scalar    '(-1.0)
-    :scalar     '(-1.0M)   :scalar-floor     :scalar    '(-1N)
-    :scalar     '(300.1M)  :scalar-floor     :scalar    '(300N)
-    :scalar     '(-300.1M) :scalar-floor     :scalar    '(-301N)
-    :scalar     '(300N)    :scalar-floor     :scalar    '(300N)
-    :scalar     '(1.7e83)  :scalar-floor     :scalar    '(1.7E83)
-    :scalar     '(7/3)     :scalar-floor     :scalar    '(2N)
-    
+    :scalar     '(0)       :scalar-floor     :exec       '(0)
+    :scalar     '(-1.0)    :scalar-floor     :exec       '(-1.0)
+    :scalar     '(-1.0M)   :scalar-floor     :exec       '(-1N)
+    :scalar     '(300.1M)  :scalar-floor     :exec       '(300N)
+    :scalar     '(-300.1M) :scalar-floor     :exec       '(-301N)
+    :scalar     '(300N)    :scalar-floor     :exec       '(300N)
+    :scalar     '(1.7e83)  :scalar-floor     :exec       '(1.7E83)
+    :scalar     '(7/3)     :scalar-floor     :exec       '(2N)
+
     :scalar     (list (+ 0.1M (bigint 1.7e837M)))
-                           :scalar-floor     :scalar    (list (bigint 1.7e837M))
+                           :scalar-floor     :exec    (list (bigint 1.7e837M))
     :scalar     (list (+ 0.1 (bigint 1.7e837M)))
-                           :scalar-floor     :scalar    (list ∞)
-    :scalar     (list ∞)   :scalar-floor     :scalar    (list ∞)
-    :scalar     (list -∞)  :scalar-floor     :scalar    (list -∞)
-    :scalar     '()        :scalar-floor     :scalar    '()
+                           :scalar-floor     :exec      (list ∞)
+    :scalar     (list ∞)   :scalar-floor     :exec      (list ∞)
+    :scalar     (list -∞)  :scalar-floor     :exec      (list -∞)
+    :scalar     '()        :scalar-floor     :exec      '()
     )
 
 
@@ -378,7 +378,7 @@
     :scalar     '(-11.25) :scalar-fractional     :scalar    '(0.25)
     :scalar     '(1e-2)   :scalar-fractional     :scalar    '(0.01)
     :scalar     '(-1e-2)  :scalar-fractional     :scalar    '(0.01)
-    
+
     :scalar     '(1/3)    :scalar-fractional     :scalar    '(1/3)
     :scalar     '(11/3)   :scalar-fractional     :scalar    '(2/3)
     :scalar     '(-4/3)   :scalar-fractional     :scalar    '(1/3)
@@ -400,24 +400,24 @@
         ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items      ?instruction         ?get-stack     ?expected
-    :scalar     '(92M)      :scalar-inc           :scalar        '(93M)
-    :scalar     '(-92M)     :scalar-inc           :scalar        '(-91M)
-    :scalar     '(0)        :scalar-inc           :scalar        '(1)
-    :scalar     '(-0)       :scalar-inc           :scalar        '(1)
-    :scalar     '(92)       :scalar-inc           :scalar        '(93)
-    :scalar     '(-92)      :scalar-inc           :scalar        '(-91)
-    :scalar     '(9.2)      :scalar-inc           :scalar        '(10.2)
-    :scalar     '(-9.2)     :scalar-inc           :scalar        '(-8.2)
-    :scalar     '(92N)      :scalar-inc           :scalar        '(93N)
-    :scalar     '(-92N)     :scalar-inc           :scalar        '(-91N)
-    :scalar     '(9/2)      :scalar-inc           :scalar        '(11/2)
-    :scalar     '(-9/2)     :scalar-inc           :scalar        '(-7/2)
+    :scalar     '(92M)      :scalar-inc           :exec         '(93M)
+    :scalar     '(-92M)     :scalar-inc           :exec         '(-91M)
+    :scalar     '(0)        :scalar-inc           :exec         '(1)
+    :scalar     '(-0)       :scalar-inc           :exec         '(1)
+    :scalar     '(92)       :scalar-inc           :exec         '(93)
+    :scalar     '(-92)      :scalar-inc           :exec         '(-91)
+    :scalar     '(9.2)      :scalar-inc           :exec         '(10.2)
+    :scalar     '(-9.2)     :scalar-inc           :exec         '(-8.2)
+    :scalar     '(92N)      :scalar-inc           :exec         '(93N)
+    :scalar     '(-92N)     :scalar-inc           :exec         '(-91N)
+    :scalar     '(9/2)      :scalar-inc           :exec         '(11/2)
+    :scalar     '(-9/2)     :scalar-inc           :exec         '(-7/2)
 
 
 
-    :scalar     (list ∞)    :scalar-inc           :scalar        (list ∞)
-    :scalar     (list -∞)   :scalar-inc           :scalar        (list -∞)
-    :scalar     '()         :scalar-inc           :scalar        '()
+    :scalar     (list ∞)    :scalar-inc           :exec         (list ∞)
+    :scalar     (list -∞)   :scalar-inc           :exec         (list -∞)
+    :scalar     '()         :scalar-inc           :exec         '()
     )
 
 
@@ -430,40 +430,40 @@
     ?new-stacks                ?instruction             ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(92 8)}       :scalar-modulo     {:scalar '(8)
-                                                   :error '()} 
+                                                   :error '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(8 93)}       :scalar-modulo     {:scalar '(5)
-                                                   :error '()} 
+                                                   :error '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(0 92)}       :scalar-modulo     {:scalar '()
-                                                   :error '({:item "Divide by zero", :step 0})} 
+                                                   :error '({:item "Divide by zero", :step 0})}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(1 21/12)}  :scalar-modulo     {:scalar '(3/4)
-                                                   :error '()} 
+                                                   :error '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(2/3 6/7)}    :scalar-modulo     {:scalar '(4/21)
-                                                   :error '()} 
+                                                   :error '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(0/3 1/2)}    :scalar-modulo     {:scalar '()
-                                                   :error '({:item "Divide by zero", :step 0})} 
+                                                   :error '({:item "Divide by zero", :step 0})}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(0.25 -11/8)} :scalar-modulo     {:scalar '(0.125)
-                                                   :error '()} 
+                                                   :error '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(6/7 2N)}     :scalar-modulo     {:scalar '(2/7)
-                                                   :error '()} 
+                                                   :error '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(2/3 3N)}     :scalar-modulo     {:scalar '(1/3)
-                                                   :error '()} 
+                                                   :error '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(0N 8)}       :scalar-modulo     {:scalar '()
-                                                   :error '({:item "Divide by zero", :step 0})} 
+                                                   :error '({:item "Divide by zero", :step 0})}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(0M 0N)}       :scalar-modulo     {:scalar '()
-                                                   :error '({:item "Divide by zero", :step 0})} 
+                                                   :error '({:item "Divide by zero", :step 0})}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar   '(1.2M 32M)}    :scalar-modulo  {:scalar '(0.8M)
-                                                   :error '()} 
+                                                   :error '()}
                                                    )
 
 
@@ -510,9 +510,9 @@
 
     :scalar     '(0)      :scalar-ln        :scalar      '()
     :scalar     '(0)      :scalar-ln        :error       '({:step 0, :item ":scalar-ln bad argument"})
-    :scalar     '(-2712893)      
+    :scalar     '(-2712893)
                           :scalar-ln        :scalar      '()
-    :scalar     '(-2712893)      
+    :scalar     '(-2712893)
                           :scalar-ln        :error       '({:step 0, :item ":scalar-ln bad argument"})
 
     :scalar     '()       :scalar-ln        :scalar      '()
@@ -541,9 +541,9 @@
 
     :scalar     '(-1)      :scalar-ln1p        :scalar      '()
     :scalar     '(-1)      :scalar-ln1p        :error       '({:step 0, :item ":scalar-ln1p bad argument"})
-    :scalar     '(-2712893)      
+    :scalar     '(-2712893)
                           :scalar-ln1p        :scalar      '()
-    :scalar     '(-2712893)      
+    :scalar     '(-2712893)
                           :scalar-ln1p        :error       '({:step 0, :item ":scalar-ln1p bad argument"})
 
     :scalar     '()       :scalar-ln1p        :scalar      '()
@@ -567,9 +567,9 @@
 
     :scalar     '(0)      :scalar-log10        :scalar      '()
     :scalar     '(0)      :scalar-log10        :error       '({:step 0, :item ":scalar-log10 bad argument"})
-    :scalar     '(-2712893)      
+    :scalar     '(-2712893)
                           :scalar-log10        :scalar      '()
-    :scalar     '(-2712893)      
+    :scalar     '(-2712893)
                           :scalar-log10        :error       '({:step 0, :item ":scalar-log10 bad argument"})
 
     :scalar     '()       :scalar-log10        :scalar      '()
@@ -633,23 +633,23 @@
     ?new-stacks           ?instruction     ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar '(2 8)}       :scalar-power     {:scalar '(64)
-                                              :error '()} 
+                                              :error '()}
     {:scalar '(3 3/7)}     :scalar-power     {:scalar '(27/343)
-                                              :error '()} 
+                                              :error '()}
     {:scalar '(1/2 100.0)} :scalar-power     {:scalar '(10.0)
-                                              :error '()} 
+                                              :error '()}
     {:scalar '(0.5 100.0)} :scalar-power     {:scalar '(10.0)
-                                              :error '()} 
+                                              :error '()}
     {:scalar '(3/7 100)}   :scalar-power     {:scalar '(7.196856730011521)
-                                              :error '()} 
+                                              :error '()}
     {:scalar '(1/2 0)}     :scalar-power     {:scalar '(0.0)
-                                              :error '()} 
+                                              :error '()}
     {:scalar '(-2.8 100)}  :scalar-power     {:scalar '(2.5118864315095823E-6)
-                                              :error '()} 
+                                              :error '()}
     {:scalar '(-1/2 100)}  :scalar-power     {:scalar '(0.1)
-                                              :error '()} 
+                                              :error '()}
     {:scalar '(-2 100)}    :scalar-power     {:scalar '(1/10000)
-                                              :error '()} 
+                                              :error '()}
 
 
 
@@ -675,7 +675,7 @@
     ?new-stacks           ?instruction     ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar '(2 8)}       :scalar-power     {:scalar '(64)
-                                              :error '()} 
+                                              :error '()}
     {:scalar '(33334 111121213M)}
                            :scalar-power     {:scalar '()
                                               :error '({:item ":scalar-power out of bounds", :step 0})}
@@ -706,28 +706,28 @@
         ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items     ?instruction      ?get-stack  ?expected
-    :scalar     '(0)       :scalar-round     :scalar    '(0)
-    :scalar     '(0.4)     :scalar-round     :scalar    '(0)
-    :scalar     '(0.6)     :scalar-round     :scalar    '(1)
-    :scalar     '(0.5)     :scalar-round     :scalar    '(1)
-    :scalar     '(1.5)     :scalar-round     :scalar    '(2)
-    :scalar     '(-1.1)    :scalar-round     :scalar    '(-1)
-    :scalar     '(-1.5)    :scalar-round     :scalar    '(-1)
-    :scalar     '(-1.0M)   :scalar-round     :scalar    '(-1N)
-    :scalar     '(300.1M)  :scalar-round     :scalar    '(300N)
-    :scalar     '(-300.1M) :scalar-round     :scalar    '(-300N)
-    :scalar     '(300M)    :scalar-round     :scalar    '(300N)
-    :scalar     '(1.7e83)  :scalar-round     :scalar    '(9223372036854775807)
-    :scalar     '(1.7e83M) :scalar-round     :scalar    (list (bigint 1.7e83M))
-    :scalar     '(7/3)     :scalar-round     :scalar    '(2N)
-    
+    :scalar     '(0)       :scalar-round     :exec       '(0)
+    :scalar     '(0.4)     :scalar-round     :exec       '(0)
+    :scalar     '(0.6)     :scalar-round     :exec       '(1)
+    :scalar     '(0.5)     :scalar-round     :exec       '(1)
+    :scalar     '(1.5)     :scalar-round     :exec       '(2)
+    :scalar     '(-1.1)    :scalar-round     :exec       '(-1)
+    :scalar     '(-1.5)    :scalar-round     :exec       '(-1)
+    :scalar     '(-1.0M)   :scalar-round     :exec       '(-1N)
+    :scalar     '(300.1M)  :scalar-round     :exec       '(300N)
+    :scalar     '(-300.1M) :scalar-round     :exec       '(-300N)
+    :scalar     '(300M)    :scalar-round     :exec       '(300N)
+    :scalar     '(1.7e83)  :scalar-round     :exec       '(9223372036854775807)
+    :scalar     '(1.7e83M) :scalar-round     :exec       (list (bigint 1.7e83M))
+    :scalar     '(7/3)     :scalar-round     :exec       '(2N)
+
     :scalar     (list (+ 0.1M (bigint 1.7e837M)))
-                           :scalar-round     :scalar    (list (bigint 1.7e837M))
+                           :scalar-round     :exec     (list (bigint 1.7e837M))
     :scalar     (list (+ 0.1 (bigint 1.7e837M)))
-                           :scalar-round     :scalar    '(9223372036854775807)
-    :scalar     (list ∞)   :scalar-round     :scalar    '(9223372036854775807)
-    :scalar     (list -∞)  :scalar-round     :scalar    '(-9223372036854775808)
-    :scalar     '()        :scalar-round     :scalar    '()
+                           :scalar-round     :exec       '(9223372036854775807)
+    :scalar     (list ∞)   :scalar-round     :exec       '(9223372036854775807)
+    :scalar     (list -∞)  :scalar-round     :exec       '(-9223372036854775808)
+    :scalar     '()        :scalar-round     :exec       '()
     )
 
 
@@ -740,19 +740,19 @@
         ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items      ?instruction         ?get-stack     ?expected
-    :scalar     '(92M)      :scalar-sign           :scalar        '(1)
-    :scalar     '(-92M)     :scalar-sign           :scalar        '(-1)
-    :scalar     '(0)        :scalar-sign           :scalar        '(0)
-    :scalar     '(-0)       :scalar-sign           :scalar        '(0)
-    :scalar     '(92)       :scalar-sign           :scalar        '(1)
-    :scalar     '(-92)      :scalar-sign           :scalar        '(-1)
-    :scalar     '(9.2)      :scalar-sign           :scalar        '(1)
-    :scalar     '(-9.2)     :scalar-sign           :scalar        '(-1)
-    :scalar     '(92N)      :scalar-sign           :scalar        '(1)
-    :scalar     '(-92N)     :scalar-sign           :scalar        '(-1)
-    :scalar     '(9/2)      :scalar-sign           :scalar        '(1)
-    :scalar     '(-9/2)     :scalar-sign           :scalar        '(-1)
-    :scalar     '()         :scalar-sign           :scalar        '()
+    :scalar     '(92M)      :scalar-sign           :exec        '(1)
+    :scalar     '(-92M)     :scalar-sign           :exec        '(-1)
+    :scalar     '(0)        :scalar-sign           :exec        '(0)
+    :scalar     '(-0)       :scalar-sign           :exec        '(0)
+    :scalar     '(92)       :scalar-sign           :exec        '(1)
+    :scalar     '(-92)      :scalar-sign           :exec        '(-1)
+    :scalar     '(9.2)      :scalar-sign           :exec        '(1)
+    :scalar     '(-9.2)     :scalar-sign           :exec        '(-1)
+    :scalar     '(92N)      :scalar-sign           :exec        '(1)
+    :scalar     '(-92N)     :scalar-sign           :exec        '(-1)
+    :scalar     '(9/2)      :scalar-sign           :exec        '(1)
+    :scalar     '(-9/2)     :scalar-sign           :exec        '(-1)
+    :scalar     '()         :scalar-sign           :exec        '()
     )
 
 
@@ -764,17 +764,17 @@
         ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items    ?instruction      ?get-stack  ?expected
-    :scalar     '(0)      :scalar-sine       :scalar    (list (Math/sin 0))
-    :scalar     '(-1.0)   :scalar-sine       :scalar    (list (Math/sin -1.0))
-    :scalar     '(-1.0M)  :scalar-sine       :scalar    (list (Math/sin -1.0M))
-    :scalar     '(300.1M) :scalar-sine       :scalar    (list (Math/sin 300.1M))
-    :scalar     '(300M)   :scalar-sine       :scalar    (list (Math/sin 300M))
-    :scalar     '(300N)   :scalar-sine       :scalar    (list (Math/sin 300N))
-    :scalar     '(1.7e83) :scalar-sine       :scalar    (list (Math/sin 1.7e83))
-    :scalar     '(7/3)    :scalar-sine       :scalar    (list (Math/sin 7/3))
+    :scalar     '(0)      :scalar-sine       :exec    (list (Math/sin 0))
+    :scalar     '(-1.0)   :scalar-sine       :exec    (list (Math/sin -1.0))
+    :scalar     '(-1.0M)  :scalar-sine       :exec    (list (Math/sin -1.0M))
+    :scalar     '(300.1M) :scalar-sine       :exec    (list (Math/sin 300.1M))
+    :scalar     '(300M)   :scalar-sine       :exec    (list (Math/sin 300M))
+    :scalar     '(300N)   :scalar-sine       :exec    (list (Math/sin 300N))
+    :scalar     '(1.7e83) :scalar-sine       :exec    (list (Math/sin 1.7e83))
+    :scalar     '(7/3)    :scalar-sine       :exec    (list (Math/sin 7/3))
     :scalar     (list Math/PI)
-                          :scalar-sine       :scalar    (list (Math/sin Math/PI))
-    :scalar     '()       :scalar-sine       :scalar    '()
+                          :scalar-sine       :exec    (list (Math/sin Math/PI))
+    :scalar     '()       :scalar-sine       :exec    '()
     )
 
 
@@ -851,12 +851,12 @@
     :scalar     '(81N)      :scalar-reciprocal        :scalar      '(1/81)
     :scalar     '(10000.0)  :scalar-reciprocal        :scalar      '(0.0001)
     :scalar     '(0.64)     :scalar-reciprocal        :scalar      '(1.5625)
-  
+
     :scalar     '(8.1M)     :scalar-reciprocal        :scalar      '()
     :scalar     '(8.1M)     :scalar-reciprocal        :error      '({:item "Non-terminating decimal expansion; no exact representable decimal result.", :step 0})
     :scalar     '(0)        :scalar-reciprocal        :scalar      '()
     :scalar     '(0)        :scalar-reciprocal        :error      '({:item "Divide by zero", :step 0})
-  
+
     :scalar     '()         :scalar-reciprocal        :scalar      '()
     )
 
@@ -898,7 +898,7 @@
     ?set-stack  ?items    ?instruction       ?get-stack   ?expected
     :scalar     '(1)      :scalar-tangent     :scalar      (list (Math/tan 1))
     :scalar     '(0)      :scalar-tangent     :scalar      '(0.0)
-    
+
 
     :scalar     (list ∞)  :scalar-tangent     :scalar      '()
     :scalar     (list ∞)  :scalar-tangent     :error       '({:step 0, :item ":scalar-tangent bad argument"})
@@ -917,13 +917,13 @@
     ?set-stack  ?items    ?instruction             ?get-stack     ?expected
     :scalar     '(1182)     :integer-totalistic3   :scalar       '(114)
     :scalar     '(-39812M)  :integer-totalistic3   :scalar       '(-8164)
-    :scalar     '(235235235)       
+    :scalar     '(235235235)
                             :integer-totalistic3   :scalar       '(0)
-    :scalar     (list Long/MIN_VALUE)       
+    :scalar     (list Long/MIN_VALUE)
                             :integer-totalistic3   :scalar       '(-3783295979768903679)
-    :scalar     '(123456788161617/826317623) 
+    :scalar     '(123456788161617/826317623)
                             :integer-totalistic3   :scalar       '(473960)
-    :scalar     '(-123456788161617.826317623) 
+    :scalar     '(-123456788161617.826317623)
                             :integer-totalistic3   :scalar       '(-692581375838490)
     )
 

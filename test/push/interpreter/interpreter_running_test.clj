@@ -663,12 +663,15 @@
 
 
 (fact "`run-n` produces a log"
-    (u/get-stack (run-n simple-things 177) :log) => '({:item ":boolean-or", :step 6}
-                                                    {:item "true", :step 5}
-                                                    {:item ":scalar-add", :step 4}
-                                                    {:item "false", :step 3}
-                                                    {:item "2", :step 2}
-                                                    {:item "1", :step 1}))
+    (u/get-stack (run-n simple-things 177) :log) => '(
+      {:item "true" :step 7}
+      {:item ":boolean-or", :step 6}
+      {:item "true", :step 5}
+      {:item ":scalar-add", :step 4}
+      {:item "false", :step 3}
+      {:item "2", :step 2}
+      {:item "1", :step 1}
+      ))
 
 
 ;; entire-run
@@ -685,7 +688,7 @@
 
 
 (fact "`last-changed-step` returns the last point at which an interpreter stack contents change, within the specified number of steps, when running the specified program"
-  (:counter (last-changed-step simple-things 22000)) => 6
+  (:counter (last-changed-step simple-things 22000)) => 7
   (u/get-stack (last-changed-step simple-things 22000) :exec) => '()
 
   (:counter (last-changed-step forever-8 1000)) => 12

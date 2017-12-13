@@ -50,7 +50,7 @@
     (eval (list
       `build-instruction
       instruction-name
-      (str "`:" instruction-name "` takes an `:scalar` argument, makes that into an index modulo the `" typename "` stack size, takes the first [idx] items and reverses the order of that segment on the stack.")
+      (str "`:" instruction-name "` consumes a `:scalar` argument and the entire `" typename "` stack. It takes the first [idx] items of the stack and reverses the order of that segment. It returns a nested code block, containing two interior code blocks holding the 'remaining' part of the stack (reversed) and the 'flipped' part of the stack.")
       :tags #{:combinator}
 
       `(consume-top-of :scalar :as :where)
@@ -58,8 +58,11 @@
       `(calculate [:where :old-stack]
         #(if (empty? %2) 0 (num/scalar-to-index %1 (count %2))) :as :idx)
       `(calculate [:old-stack :idx]
-        #(util/list! (concat (reverse (take %2 %1)) (drop %2 %1))) :as :new)
-      `(replace-stack ~typename :new)
+        #(util/list! (take %2 %1)) :as :topchunk)
+      `(calculate [:old-stack :idx]
+        #(util/list! (reverse (drop %2 %1))) :as :leftovers)
+      `(calculate [:leftovers :topchunk] #(list %1 %2) :as :result)
+      `(push-onto :exec :result)
       ))))
 
 
@@ -80,8 +83,12 @@
       `(calculate [:where :old-stack]
         #(if (empty? %2) 0 (num/scalar-to-index %1 (count %2))) :as :idx)
       `(calculate [:old-stack :idx]
-        #(util/list! (concat (drop %2 %1) (take %2 %1))) :as :new)
-      `(replace-stack ~typename :new)))))
+        #(util/list! (reverse (take %2 %1))) :as :topchunk)
+      `(calculate [:old-stack :idx]
+        #(util/list! (reverse (drop %2 %1))) :as :leftovers)
+      `(calculate [:leftovers :topchunk] #(list %2 %1) :as :result)
+      `(push-onto :exec :result)
+      ))))
 
 
 
@@ -93,11 +100,13 @@
     (eval (list
       `build-instruction
       instruction-name
-      (str "`:" instruction-name "` examines the top `" typename "` item and pushes a duplicate to the same stack.")
+      (str "`:" instruction-name "` examines the top `" typename "` item and pushes a code block containing two copies to `:exec`.")
       :tags #{:combinator}
 
       `(save-top-of ~typename :as :arg1)
-      `(push-onto ~typename :arg1)))))
+      `(calculate [:arg1] #(list %1 %1) :as :duplicated)
+      `(push-onto :exec :duplicated)
+      ))))
 
 
 

@@ -121,12 +121,14 @@
 
 (fact "a generated code-fromX instruction has a reasonable docstring"
   (:docstring (simple-item-to-code-instruction :char)) =>
-    "`:char->code` pops the top `:char` item and pushes it to `:code`")
+    (contains "`:char->code`")
+    )
 
 
 (fact "a generated string-fromX instruction has a reasonable docstring"
   (:docstring (push.type.item.string/simple-item-to-string-instruction :foo)) =>
-    "`:foo->string` pops the top item from the `:foo` stack and converts it to a `:string` (using Clojure's `str` function)")
+    (contains "`:foo->string`")
+    )
 
 
 (def i-know-foo (t/make-type :foo :recognized-by integer?))
@@ -185,7 +187,8 @@
 
 (fact "a generated dup-instruction has a reasonable docstring"
   (:docstring (dup-instruction i-know-foo)) =>
-    "`:foo-dup` examines the top `:foo` item and pushes a duplicate to the same stack.")
+    (contains "`:foo-dup`")
+    )
 
 
 (fact "a generated flush-instruction has a reasonable docstring"
@@ -210,7 +213,8 @@
 
 (fact "a generated swap-instruction has a reasonable docstring"
   (:docstring (swap-instruction i-know-foo)) =>
-    "`:foo-swap` swaps the positions of the top two `:foo` items.")
+    (contains "`:foo-swap`")
+    )
 
 
 (fact "a generated yank-instruction has a reasonable docstring"
@@ -232,7 +236,7 @@
 
 (fact "I can map how instructions connect types (and stacks more generally)"
   (:needs (swap-instruction i-know-foo)) => {:foo 2}
-  (:products (swap-instruction i-know-foo)) => {:foo 2}
+  (:products (swap-instruction i-know-foo)) => {:exec 1}
 
   (:needs (yankdup-instruction i-know-foo)) => {:foo 1, :scalar 1}
   (:products (yankdup-instruction i-know-foo)) => {:foo 1}

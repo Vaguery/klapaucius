@@ -198,13 +198,13 @@
 
     ?set-stack  ?items         ?instruction  ?get-stack   ?expected
     ;; lost the tail
-    :string    '("foo")         :string-butlast  :string     '("fo")
-    :string    '(" foo ")       :string-butlast  :string     '(" foo")
-    :string    '("\n\t\t\n")    :string-butlast  :string     '("\n\t\t")
-    :string    '("\"\"")        :string-butlast  :string     '("\"")
-    :string    '("")            :string-butlast  :string     '("")
+    :string    '("foo")         :string-butlast  :exec     '("fo")
+    :string    '(" foo ")       :string-butlast  :exec     '(" foo")
+    :string    '("\n\t\t\n")    :string-butlast  :exec     '("\n\t\t")
+    :string    '("\"\"")        :string-butlast  :exec     '("\"")
+    :string    '("")            :string-butlast  :exec     '("")
     ;; missing args
-    :string    '()              :string-butlast  :string     '())
+    :string    '()              :string-butlast  :exec     '())
 
 
 (tabular
@@ -705,13 +705,13 @@
 
     ?set-stack  ?items         ?instruction  ?get-stack   ?expected
     ;; lost the head
-    :string    '("foo")         :string-rest  :string     '("oo")
-    :string    '(" foo ")       :string-rest  :string     '("foo ")
-    :string    '("\n\t\t\n")    :string-rest  :string     '("\t\t\n")
-    :string    '("\"\"")        :string-rest  :string     '("\"")
-    :string    '("")            :string-rest  :string     '("")
+    :string    '("foo")         :string-rest  :exec      '("oo")
+    :string    '(" foo ")       :string-rest  :exec      '("foo ")
+    :string    '("\n\t\t\n")    :string-rest  :exec      '("\t\t\n")
+    :string    '("\"\"")        :string-rest  :exec      '("\"")
+    :string    '("")            :string-rest  :exec      '("")
     ;; missing args
-    :string    '()              :string-rest  :string     '())
+    :string    '()              :string-rest  :exec      '())
 
 
 
@@ -723,15 +723,15 @@
 
     ?set-stack  ?items         ?instruction  ?get-stack   ?expected
     ;; backwards
-    :string    '("foo")         :string-reverse  :string     '("oof")
-    :string    '(" foo ")       :string-reverse  :string     '(" oof ")
-    :string    '("foo\n\t\t\n") :string-reverse  :string     '("\n\t\t\noof")
+    :string    '("foo")         :string-reverse  :exec     '("oof")
+    :string    '(" foo ")       :string-reverse  :exec     '(" oof ")
+    :string    '("foo\n\t\t\n") :string-reverse  :exec     '("\n\t\t\noof")
     :string    '("\u2665\u2666")
-                                :string-reverse  :string     '("\u2666\u2665")
+                                :string-reverse  :exec     '("\u2666\u2665")
     ;; because Java is weird enough to let you inline backspace characters
-    :string    '("\b8" )        :string-reverse  :string     '("8\b")
+    :string    '("\b8" )        :string-reverse  :exec     '("8\b")
     ;; missing args
-    :string    '()              :string-reverse  :string     '())
+    :string    '()              :string-reverse  :exec     '())
 
 
 
