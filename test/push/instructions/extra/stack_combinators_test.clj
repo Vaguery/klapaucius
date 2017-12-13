@@ -96,15 +96,16 @@
 
 
 (tabular
-  (fact ":foo-flipstack reverses the whole :foo stack"
+  (fact ":foo-flipstack reverses the whole :foo stack, pushing it to :exec"
     (register-type-and-check-instruction
         ?set-stack ?items foo-type ?instruction ?get-stack) => ?expected)
 
-    ?set-stack  ?items          ?instruction    ?get-stack         ?expected
-    :foo       '(1 2 3 4 5)    :foo-flipstack   :foo              '(5 4 3 2 1)
-    :foo       '(21)           :foo-flipstack   :foo              '(21)
+    ?set-stack  ?items          ?instruction    ?get-stack    ?expected
+    :foo       '(1 2 3 4 5)    :foo-flipstack   :exec         '((5 4 3 2 1))
+    :foo       '(21)           :foo-flipstack   :exec         '((21))
     ;; missing args
-    :foo       '()             :foo-flipstack   :foo              '())
+    :foo       '()             :foo-flipstack   :exec         '(())
+    )
 
 
 (tabular
@@ -210,43 +211,52 @@
 
 
 (tabular
-  (fact "`foo-liftstack` takes a :scalar, divides the stack into two parts at that index (measured from the top), and puts the top segment at the bottom"
+  (fact "`foo-liftstack` takes a :scalar, divides the stack into two parts at that index (measured from the top), and puts the top segment at the bottom; discards if there's an error!"
     (check-instruction-with-all-kinds-of-stack-stuff
         ?new-stacks foo-type ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction         ?expected
 
     {:foo      '(9 8 7 6 5 4)
-     :scalar  '(3)}             :foo-liftstack      {:foo    '(6 5 4 9 8 7 6 5 4)
-                                                     :scalar '()}
+     :scalar  '(3)}           :foo-liftstack   {:foo  '()
+                                                :exec '(((4 5 6 7 8 9) (4 5 6)))
+                                                :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foo      '(9 8 7 6 5 4)
-     :scalar  '(-2)}            :foo-liftstack      {:foo    '(5 4 9 8 7 6 5 4)
-                                                     :scalar '()}
+     :scalar  '(-2)}          :foo-liftstack   {:foo  '()
+                                                :exec '(((4 5 6 7 8 9) (4 5)))
+                                                :scalar '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foo     '(9 8 7 6 5 4)
+     :scalar  '(0)}           :foo-liftstack   {:foo  '()
+                                                :exec '(((4 5 6 7 8 9)
+                                                  (4 5 6 7 8 9)))
+                                                :scalar '()}
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foo     '(9 8 7 6 5 4)
+     :scalar  '(5)}           :foo-liftstack    {:foo    '()
+                                                :exec '(((4 5 6 7 8 9) (4)))
+                                                :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:foo      '(9 8 7 6 5 4)
-     :scalar  '(0)}             :foo-liftstack      {:foo  '(9 8 7 6 5 4 9 8 7 6 5 4)
-                                                     :scalar '()}
+    {:foo     '(9 8 7 6 5 4)
+     :scalar  '(11)}          :foo-liftstack    {:foo '()
+                                                 :exec '(((4 5 6 7 8 9) (4)))
+                                                 :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:foo      '(9 8 7 6 5 4)
-     :scalar  '(5)}             :foo-liftstack      {:foo    '(4 9 8 7 6 5 4)
-                                                     :scalar '()}
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:foo      '(9 8 7 6 5 4)
-     :scalar  '(11)}            :foo-liftstack      {:foo    '(4 9 8 7 6 5 4)
-                                                     :scalar '()}
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    {:foo      '(9 8 7 6 5 4)
-     :scalar  '(1e181)}         :foo-liftstack      {:foo    '(9 8 7 6 5 4 9 8 7 6 5 4)
-                                                     :scalar '()}
+    {:foo     '(9 8 7 6 5 4)
+     :scalar  '(1e181)}       :foo-liftstack    {:foo  '()
+                                               :exec '(((4 5 6 7 8 9) (4 5 6 7 8 9)))
+                                               :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foo      '()
-     :scalar  '(11)}            :foo-liftstack      {:foo    '()
-                                                     :scalar '()}
+     :scalar  '(11)}          :foo-liftstack   {:foo    '()
+                                                :exec '((() ()))
+                                               :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foo      '(2 3 4)
-     :scalar  '()}              :foo-liftstack      {:foo    '(2 3 4)
-                                                     :scalar '()}
+     :scalar  '()}            :foo-liftstack    {:foo    '(2 3 4)
+                                                 :exec '()
+                                                 :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
 
@@ -257,14 +267,23 @@
       ?new-stacks ?instruction) => (contains ?expected))
 
     ?new-stacks           ?instruction        ?expected
-    {:foo    '(1 2 3 4)
-     :scalar '(1)}       :foo-liftstack      {:foo    '(2 3 4 1 2 3 4)
-                                              :scalar '()
-                                              :error  '()}
-     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foo    '(1 2 3 4 5)
-     :scalar '(1)}       :foo-liftstack      {:foo    '(1 2 3 4 5)
+     :scalar '(1)}       :foo-liftstack      {:foo    '()
                                               :scalar '()
-                                              :error  '({:item "foo-liftstack produced stack overflow", :step 0})}
+                                              :exec '()
+                                              :error  '({:item ":foo-liftstack tried to push an overized item to :exec" :step 0})}
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foo    '(1 2 3 4)
+     :scalar '(3)}       :foo-liftstack      {:foo    '()
+                                              :scalar '()
+                                              :exec   '(((4 3 2 1) (4)))
+                                              :error  '()}
+     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    {:foo    '(1 2 3 4)
+     :scalar '(2)}       :foo-liftstack      {:foo    '()
+                                              :scalar '()
+                                              :exec   '(((4 3 2 1) (4 3)))
+                                              :error  '()}
+     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
      )

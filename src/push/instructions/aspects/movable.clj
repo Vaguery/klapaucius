@@ -118,12 +118,13 @@
     (eval (list
       `build-instruction
       instruction-name
-      (str "`:" instruction-name "` reverses the entire `" typename "` stack.")
+      (str "`:" instruction-name "` reverses the entire `" typename "` stack, pushing it as a code block onto `:exec`.")
       :tags #{:combinator}
 
       `(consume-stack ~typename :as :old)
-      `(calculate [:old] #(into '() %1) :as :new)
-      `(replace-stack ~typename :new)))))
+      `(calculate [:old] #(util/list! (reverse %1)) :as :new)
+      `(push-onto :exec :new)
+      ))))
 
 
 
@@ -138,7 +139,8 @@
       (str "`:" instruction-name "` discards all items from the `" typename "` stack.")
       :tags #{:combinator}
 
-      `(delete-stack ~typename)))))
+      `(delete-stack ~typename)
+      ))))
 
 
 
@@ -180,7 +182,7 @@
     (eval (list
       `build-instruction
       instruction-name
-      (str "`:" instruction-name "` takes an `:scalar` argument, makes that into an index modulo the `" typename "` stack size, 'cuts' the stack after the first [idx] items and _copies_ everything below that point onto the top of the stack. If the result would have more points (at any level) than `max-collection-size`, the change is undone and an :error is pushed.")
+      (str "`:" instruction-name "` takes an `:scalar` argument, makes that into an index modulo the `" typename "` stack size, 'cuts' the stack after the first [idx] items and _copies_ everything below that point onto the top of the stack. If the result would have more points (at any level) than `max-collection-size` the result is _discarded_ (!) and an :error is pushed.")
       :tags #{:combinator}
 
       `(consume-top-of :scalar :as :where)
@@ -188,17 +190,10 @@
       `(calculate [:old-stack :where]
         #(if (empty? %1) 0 (num/scalar-to-index %2 (count %1))) :as :idx)
       `(calculate [:old-stack :idx]
-        #(util/list! (concat (drop %2 %1) %1)) :as :new)
-      `(save-max-collection-size :as :limit)
-      `(calculate [:new :limit]
-        #(if (> (util/count-collection-points %1) %2) false true) :as :valid)
-      `(calculate [:valid :new :old-stack]
-        #(if %1 %2 %3) :as :new)
-      `(calculate [:valid]
-        #(if %1 nil (str ~instruction-name " produced stack overflow"))
-        :as :warning)
-      `(record-an-error :from :warning)
-      `(replace-stack ~typename :new)
+        #(util/list! (reverse (drop %2 %1))) :as :duplicated)
+      `(calculate [:old-stack :duplicated]
+        #(list (util/list! (reverse %1)) %2) :as :results)
+      `(push-onto :exec :results)
       ))))
 
 
