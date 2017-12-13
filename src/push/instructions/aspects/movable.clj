@@ -264,13 +264,14 @@
       `build-instruction
       instruction-name
       (str "`:" instruction-name "` swaps the positions of the top two `" typename
-        "` items.")
+        "` items, pushing the result to `:exec` as a code block.")
       :tags #{:combinator}
 
       `(consume-top-of ~typename :as :arg1)
       `(consume-top-of ~typename :as :arg2)
-      `(push-onto ~typename :arg1)
-      `(push-onto ~typename :arg2)))))
+      `(calculate [:arg1 :arg2] #(list %1 %2) :as :reversed)
+      `(push-onto :exec :reversed)
+      ))))
 
 
 

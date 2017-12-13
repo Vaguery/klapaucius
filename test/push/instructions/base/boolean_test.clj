@@ -81,26 +81,26 @@
         ?set-stack ?items boolean-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction           ?get-stack     ?expected
-    :scalar     '(0)         :scalar->boolean      :boolean       '(false)
-    :scalar     '(11)        :scalar->boolean      :boolean       '(true)
-    :scalar     '(-4)        :scalar->boolean      :boolean       '(true)
-    :scalar     '(0)         :scalarsign->boolean  :boolean       '(true)
-    :scalar     '(11)        :scalarsign->boolean  :boolean       '(true)
-    :scalar     '(-4)        :scalarsign->boolean  :boolean       '(false)
+    :scalar     '(0)         :scalar->boolean           :exec       '(false)
+    :scalar     '(11)        :scalar->boolean           :exec       '(true)
+    :scalar     '(-4)        :scalar->boolean           :exec       '(true)
+    :scalar     '(0)         :scalarsign->boolean       :exec       '(true)
+    :scalar     '(11)        :scalarsign->boolean       :exec       '(true)
+    :scalar     '(-4)        :scalarsign->boolean       :exec       '(false)
 
-    :scalar     '(0.0)       :scalar->boolean       :boolean       '(false)
-    :scalar     '(11.0)      :scalar->boolean       :boolean       '(true)
-    :scalar     '(-4.0)      :scalar->boolean       :boolean       '(true)
-    :scalar     '(0.0)       :scalarsign->boolean   :boolean       '(true)
-    :scalar     '(11.0)      :scalarsign->boolean   :boolean       '(true)
-    :scalar     '(-4.0)      :scalarsign->boolean   :boolean       '(false)
+    :scalar     '(0.0)       :scalar->boolean           :exec       '(false)
+    :scalar     '(11.0)      :scalar->boolean           :exec       '(true)
+    :scalar     '(-4.0)      :scalar->boolean           :exec       '(true)
+    :scalar     '(0.0)       :scalarsign->boolean       :exec       '(true)
+    :scalar     '(11.0)      :scalarsign->boolean       :exec       '(true)
+    :scalar     '(-4.0)      :scalarsign->boolean       :exec       '(false)
 
-    :scalar     '(0/7)       :scalar->boolean       :boolean       '(false)
-    :scalar     '(11/7)      :scalar->boolean       :boolean       '(true)
-    :scalar     '(-4/7)      :scalar->boolean       :boolean       '(true)
-    :scalar     '(0/7)       :scalarsign->boolean   :boolean       '(true)
-    :scalar     '(11/7)      :scalarsign->boolean   :boolean       '(true)
-    :scalar     '(-4/7)      :scalarsign->boolean   :boolean       '(false)
+    :scalar     '(0/7)       :scalar->boolean           :exec       '(false)
+    :scalar     '(11/7)      :scalar->boolean           :exec       '(true)
+    :scalar     '(-4/7)      :scalar->boolean           :exec       '(true)
+    :scalar     '(0/7)       :scalarsign->boolean       :exec       '(true)
+    :scalar     '(11/7)      :scalarsign->boolean       :exec       '(true)
+    :scalar     '(-4/7)      :scalarsign->boolean       :exec       '(false)
     )
 
 
@@ -128,10 +128,10 @@
 
     ?set-stack  ?items         ?instruction  ?get-stack   ?expected
     ;; anding
-    :boolean    '(false false)  :boolean-and   :boolean     '(false)
-    :boolean    '(false true)   :boolean-and   :boolean     '(false)
-    :boolean    '(true false)   :boolean-and   :boolean     '(false)
-    :boolean    '(true true)    :boolean-and   :boolean     '(true)
+    :boolean    '(false false)  :boolean-and   :exec        '(false)
+    :boolean    '(false true)   :boolean-and   :exec        '(false)
+    :boolean    '(true false)   :boolean-and   :exec        '(false)
+    :boolean    '(true true)    :boolean-and   :exec        '(true)
     ;; missing args
     :boolean    '(false)        :boolean-and   :boolean     '(false)
     :boolean    '()             :boolean-and   :boolean     '())
@@ -144,8 +144,8 @@
 
     ?set-stack  ?items         ?instruction  ?get-stack   ?expected
     ;; anding
-    :boolean    '(false false)  :boolean-not   :boolean     '(true false)
-    :boolean    '(false true)   :boolean-not   :boolean     '(true true)
+    :boolean    '(false false)  :boolean-not   :exec        '(true)
+    :boolean    '(false true)   :boolean-not   :exec        '(true)
     ;; missing args
     :boolean    '()             :boolean-not   :boolean     '())
 
@@ -157,10 +157,10 @@
 
     ?set-stack  ?items         ?instruction  ?get-stack   ?expected
     ;; anding
-    :boolean    '(false false)  :boolean-or   :boolean     '(false)
-    :boolean    '(false true)   :boolean-or   :boolean     '(true)
-    :boolean    '(true false)   :boolean-or   :boolean     '(true)
-    :boolean    '(true true)    :boolean-or   :boolean     '(true)
+    :boolean    '(false false)  :boolean-or   :exec     '(false)
+    :boolean    '(false true)   :boolean-or   :exec     '(true)
+    :boolean    '(true false)   :boolean-or   :exec     '(true)
+    :boolean    '(true true)    :boolean-or   :exec     '(true)
     ;; missing args
     :boolean    '(false)        :boolean-or   :boolean     '(false)
     :boolean    '()             :boolean-or   :boolean     '())
@@ -173,13 +173,13 @@
 
     ?set-stack  ?items         ?instruction  ?get-stack   ?expected
     ;; anding
-    :boolean    '(false false)  :boolean-xor   :boolean     '(false)
-    :boolean    '(false true)   :boolean-xor   :boolean     '(true)
-    :boolean    '(true false)   :boolean-xor   :boolean     '(true)
-    :boolean    '(true true)    :boolean-xor   :boolean     '(false)
+    :boolean    '(false false)  :boolean-xor   :exec     '(false)
+    :boolean    '(false true)   :boolean-xor   :exec     '(true)
+    :boolean    '(true false)   :boolean-xor   :exec     '(true)
+    :boolean    '(true true)    :boolean-xor   :exec     '(false)
     ;; missing args
-    :boolean    '(false)        :boolean-xor   :boolean     '(false)
-    :boolean    '()             :boolean-xor   :boolean     '())
+    :boolean    '(false)        :boolean-xor   :boolean  '(false)
+    :boolean    '()             :boolean-xor   :boolean  '())
 
 
 
@@ -191,7 +191,7 @@
     ?new-stacks        ?instruction              ?expected
     {:scalar  '(3)
      :booleans '()}    :boolean-2bittable     {:scalar  '()
-                                               :booleans '([true true false false])}
+                                               :exec '([true true false false])}
     )
 
 
@@ -205,7 +205,7 @@
     {:scalar '(23)
      :booleans '()}
                           :boolean-3bittable     {:scalar '()
-                                                  :booleans '([true true true false true false false false])}
+                                                  :exec '([true true true false true false false false])}
     )
 
 
@@ -224,22 +224,22 @@
      :boolean '(true true)}
                ;  q    p
                               :boolean-arity2   {:scalar  '()
-                                                  :boolean '(false)}
+                                                  :exec '(false)}
     {:scalar  '(3)
      :boolean '(true false)}
                ;  q    p
                               :boolean-arity2   {:scalar  '()
-                                                  :boolean '(false)}
+                                                  :exec '(false)}
     {:scalar  '(3)
      :boolean '(false true)}
                ;  q    p
                               :boolean-arity2   {:scalar  '()
-                                                  :boolean '(true)}
+                                                  :exec '(true)}
     {:scalar  '(3)
      :boolean '(false false)}
                ;  q    p
                               :boolean-arity2   {:scalar  '()
-                                                  :boolean '(true)}
+                                                  :exec '(true)}
     )
 
 
@@ -253,22 +253,22 @@
      :boolean '(true true)}
                ;  q    p
                               :boolean-arity2   {:scalar  '()
-                                                  :boolean '(false)}
+                                                  :exec '(false)}
     {:scalar  (list num/∞)
      :boolean '(true false)}
                ;  q    p
                               :boolean-arity2   {:scalar  '()
-                                                  :boolean '(false)}
+                                                  :exec '(false)}
     {:scalar  (list num/-∞)
      :boolean '(false true)}
                ;  q    p
                               :boolean-arity2   {:scalar  '()
-                                                  :boolean '(false)}
+                                                  :exec '(false)}
     {:scalar  (list num/-∞)
      :boolean '(false false)}
                ;  q    p
                               :boolean-arity2   {:scalar  '()
-                                                  :boolean '(false)}
+                                                  :exec '(false)}
     )
 
 
@@ -287,22 +287,22 @@
      :boolean '(true true true)}
                ;  r    q    p
                                :boolean-arity3   {:scalar  '()
-                                                  :boolean '(false)}
+                                                  :exec '(false)}
     {:scalar  '(23)
      :boolean '(true false false)}
                ;  r    q    p
                                :boolean-arity3   {:scalar  '()
-                                                  :boolean '(true)}
+                                                  :exec '(true)}
     {:scalar  '(23)
      :boolean '(false true false)}
                ;  r    q    p
                                :boolean-arity3   {:scalar  '()
-                                                  :boolean '(true)}
+                                                  :exec '(true)}
     {:scalar  '(23)
      :boolean '(false false false)}
                ;  r    q    p
                                :boolean-arity3   {:scalar  '()
-                                                  :boolean '(true)}
+                                                  :exec '(true)}
     )
 
 (tabular
@@ -315,22 +315,22 @@
      :boolean '(true true true)}
                ;  r    q    p
                                :boolean-arity3   {:scalar  '()
-                                                  :boolean '(false)}
+                                                  :exec '(false)}
     {:scalar  (list num/∞)
      :boolean '(true false false)}
                ;  r    q    p
                                :boolean-arity3   {:scalar  '()
-                                                  :boolean '(false)}
+                                                  :exec '(false)}
     {:scalar  (list num/-∞)
      :boolean '(false true false)}
                ;  r    q    p
                                :boolean-arity3   {:scalar  '()
-                                                  :boolean '(false)}
+                                                  :exec '(false)}
     {:scalar  (list num/∞)
      :boolean '(false false false)}
                ;  r    q    p
                                :boolean-arity3   {:scalar  '()
-                                                  :boolean '(false)}
+                                                  :exec '(false)}
     )
 
 
@@ -344,10 +344,10 @@
 
     ?set-stack  ?items         ?instruction    ?get-stack     ?expected
     ;; just shifting things
-    :boolean    '(false true)   :boolean-dup      :boolean       '(false false true)
-    :boolean    '(true)         :boolean-dup      :boolean       '(true true)
+    :boolean    '(false true)   :boolean-dup    :boolean       '(false false true)
+    :boolean    '(true)         :boolean-dup    :boolean       '(true true)
     ;; missing args
-    :boolean    '()             :boolean-dup      :boolean       '())
+    :boolean    '()             :boolean-dup    :boolean       '())
 
 
 (tabular
@@ -397,9 +397,9 @@
     ?set-stack  ?items     ?instruction    ?get-stack     ?expected
     ;; just shifting things
     :boolean    '(false true true)
-                           :boolean-swap      :boolean       '(true false true)
+                           :boolean-swap      :exec       '((false true))
     :boolean    '(false true)
-                           :boolean-swap      :boolean       '(true false)
+                           :boolean-swap      :exec       '((false true))
     ;; missing args
     :boolean    '(false)   :boolean-swap      :boolean       '(false)
     :boolean    '()        :boolean-swap      :boolean       '())

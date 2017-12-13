@@ -190,12 +190,13 @@
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(:a :b :c)}) foo-swap)
         :foo-swap)
-      :foo) => '(:b :a :c)
+      :exec) => '((:a :b))
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(:a :b)}) foo-swap)
         :foo-swap)
-      :foo) => '(:b :a)))
+      :exec) => '((:a :b))
+      ))
 
 
 (fact "yank-instruction returns an Instruction with the correct stuff"

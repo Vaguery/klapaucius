@@ -165,7 +165,7 @@
 
 (defn simple-1-in-1-out-instruction
   "returns a standard :typed arity-1 function, where the output
-  and input are the same type"
+  and input are the same type; pushes the result to `:exec` in every case"
   [docstring type word operation]
   (let [stackname (keyword type)
         instruction-name (str (name stackname) "-" word)]
@@ -176,12 +176,12 @@
       :tags #{:arithmetic :base}
       `(consume-top-of ~stackname :as :arg1)
       `(calculate [:arg1] #(~operation %1) :as :result)
-      `(push-onto ~stackname :result)))))
+      `(push-onto :exec :result)))))
 
 
 (defn simple-2-in-1-out-instruction
-  "returns a standard :typed arity-2 function, where the output
-  and inputs are all the same type"
+  "defines a standard :typed arity-2 function, where the output
+  and inputs are all the same type; pushes the result to the `:exec` stack in every case"
   [docstring type word operation]
   (let [stackname (keyword type)
         instruction-name (str (name stackname) "-" word)]
@@ -193,7 +193,7 @@
       `(consume-top-of ~stackname :as :arg2)
       `(consume-top-of ~stackname :as :arg1)
       `(calculate [:arg1 :arg2] #(~operation %1 %2) :as :result)
-      `(push-onto ~stackname :result)))))
+      `(push-onto :exec :result)))))
 
 
 (defn simple-1-in-predicate

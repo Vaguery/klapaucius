@@ -19,7 +19,7 @@
     :tags #{:boolean :conversion}
     (d/consume-top-of :scalar :as :value)
     (d/calculate [:value] #(exotics/scalar-to-truth-table %1 2) :as :table)
-    (d/push-onto :booleans :table)))
+    (d/push-onto :exec :table)))
 
 
 (def boolean-3bittable
@@ -29,7 +29,7 @@
     :tags #{:boolean :conversion}
     (d/consume-top-of :scalar :as :value)
     (d/calculate [:value] #(exotics/scalar-to-truth-table %1 3) :as :table)
-    (d/push-onto :booleans :table)))
+    (d/push-onto :exec :table)))
 
 
 (def boolean-arity2
@@ -44,7 +44,7 @@
     (d/calculate [:p :q] #(+ (bit %1) (* 2 (bit %2))) :as :index)
     (d/calculate [:table :index]
       #(if (empty? %1) false (nth %1 %2)) :as :result)
-    (d/push-onto :boolean :result)))
+    (d/push-onto :exec :result)))
 
 
 
@@ -61,7 +61,7 @@
     (d/calculate [:p :q :r] #(+ (bit %1) (* 2 (bit %2)) (* 4 (bit %3))) :as :index)
     (d/calculate [:table :index]
       #(if (empty? %1) false (nth %1 %2)) :as :result)
-    (d/push-onto :boolean :result)))
+    (d/push-onto :exec :result)))
 
 
 
@@ -97,11 +97,11 @@
 (def scalar->boolean
   (i/build-instruction
     scalar->boolean
-    "`:scalar->boolean` pops the top `:scalar` item, and pushes `false` if it is zero.0, or `true` if it is any other value"
+    "`:scalar->boolean` pops the top `:scalar` item, and pushes `false` if it is zero, or `true` if it is any other value"
     :tags #{:boolean :conversion :base}
     (d/consume-top-of :scalar :as :arg)
     (d/calculate [:arg] #(not (zero? %1)) :as :result)
-    (d/push-onto :boolean :result)))
+    (d/push-onto :exec :result)))
 
 
 
@@ -112,7 +112,8 @@
     :tags #{:boolean :conversion :base}
     (d/consume-top-of :scalar :as :arg)
     (d/calculate [:arg] #(not (neg? %1)) :as :result)
-    (d/push-onto :boolean :result)))
+    (d/push-onto :exec :result)
+    ))
 
 
 (def boolean-type
