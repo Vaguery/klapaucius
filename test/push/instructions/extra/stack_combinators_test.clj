@@ -29,8 +29,8 @@
         ?set-stack ?items foo-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction    ?get-stack         ?expected
-    :foo       '(1 2 3 4 5)    :foo-againlater   :foo              '(1 2 3 4 5)
-    :foo       '(1 2 3 4 5)    :foo-againlater   :exec             '(1)
+    :foo       '(1 2 3 4 5)    :foo-againlater   :foo              '(2 3 4 5)
+    :foo       '(1 2 3 4 5)    :foo-againlater   :exec             '(1 () 1)
     ;; missing args
     :foo       '()             :foo-againlater   :exec              '())
 
@@ -44,8 +44,8 @@
 
     ?new-stacks           ?instruction        ?expected
     {:foo '([1 1] 2 3 4)
-     :exec '(99)}       :foo-againlater      {:foo '([1 1] 2 3 4)
-                                              :exec '(99 [1 1])
+     :exec '(99)}       :foo-againlater      {:foo '(2 3 4)
+                                              :exec '([1 1] (99) [1 1])
                                               :error '()}
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      {:foo '([1 1 1 1 1 1 1 1 1 1 1] 2 3 4)

@@ -19,24 +19,21 @@
     (eval (list
       `build-instruction
       instruction-name
-      (str "`:" instruction-name "` places a copy of the top `" typename "` item at the tail of the `:exec` stack. If the resulting `:exec` stack would be oversized, the item is discarded and an `:error` is pushed.")
+      (str "`:" instruction-name "` places a copy of the top `" typename "` items at both the head and tail of the `:exec` stack (and places the `:exec` stack itself in a code block). If the resulting `:exec` stack would be oversized, the item is discarded and an `:error` is pushed.")
       :tags #{:combinator}
 
       `(consume-top-of ~typename :as :item)
-      `(consume-stack :exec :as :oldstack)
+      `(consume-stack :exec :as :oldexecstack)
       `(save-max-collection-size :as :limit)
-      `(calculate [:oldstack :item]
-          #(util/list! (concat %1 (list %2))) :as :newstack)
-      `(calculate [:limit :newstack]
+      `(calculate [:oldexecstack :item] #(list %2 %1 %2) :as :newexecstack)
+      `(calculate [:limit :newexecstack]
         #(< %1 (util/count-collection-points %2)) :as :oversized)
-      `(calculate [:oversized :oldstack :newstack]
+      `(calculate [:oversized :oldexecstack :newexecstack]
         #(if %1 %2 %3) :as :finalstack)
       `(calculate [:oversized]
         #(when %1 (str ~instruction-name
                        " produced an oversized result")) :as :message)
-      `(calculate [:oversized :item] #(when-not %1 %2) :as :replacement)
       `(replace-stack :exec :finalstack)
-      `(push-onto ~typename :replacement)
       `(record-an-error :from :message)
       ))))
 
