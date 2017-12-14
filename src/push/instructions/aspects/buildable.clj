@@ -40,7 +40,7 @@
           ~argvector
           (fn ~argsymbols (apply ~maker ~argsymbols))
           :as :result)
-      `(push-onto ~typename :result)
+      `(push-onto :exec :result)
       )
     ))
 

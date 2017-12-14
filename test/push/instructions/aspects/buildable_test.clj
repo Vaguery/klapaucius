@@ -77,7 +77,7 @@
   (:token foo-maker) => :foo-construct
   (:docstring foo-maker) => "`:foo-construct` constructs a new `:foo` item from its components, {:scalar 2, :image 1, :rgb 1}."
   (:needs foo-maker) => {:image 1, :rgb 1, :scalar 2}
-  (:products foo-maker) => {:foo 1}
+  (:products foo-maker) => {:exec 1}
   )
 
 
@@ -93,7 +93,7 @@
   (:token simple-maker) => :simple-construct
   (:docstring simple-maker) => "`:simple-construct` constructs a new `:simple` item from its components, {:something 1}."
   (:needs simple-maker) => {:something 1}
-  (:products simple-maker) => {:simple 1}
+  (:products simple-maker) => {:exec 1}
   )
 
 
@@ -112,7 +112,7 @@
         (m/basic-interpreter :stacks {:something '(99) :simple '()})
         simple-maker)
       :simple-construct)
-    :simple) => '([99])
+    :exec) => '([99])
 )
 
 
@@ -124,7 +124,7 @@
           {:scalar '(11 33) :image '(22) :rgb '(-99)})
         foo-maker)
       :foo-construct)
-    :foo) => '({:A 33, :B 22, :C -99, :D 11})
+    :exec) => '({:A 33, :B 22, :C -99, :D 11})
   (get-stack
     (i/execute-instruction
       (i/register-instruction
@@ -144,7 +144,7 @@
       (push/interpreter
         :stacks {:scalar '(11 33) :boolean '(true true)})
       :interval-construct)
-    :interval) => (list (iv/make-open-interval 33 11 ))
+    :exec) => (list (iv/make-open-interval 33 11 ))
 )
 
 

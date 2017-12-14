@@ -1098,7 +1098,7 @@
     {:scalar   '(8 2)
      :boolean  '(true false)}
                               :interval-construct
-                                                    {:interval
+                                                    {:exec
                                                       (list
                                                         (s/make-interval 2 8
                                                           :max-open? true))}

@@ -392,5 +392,5 @@
 
     ?set-stack  ?items    ?instruction     ?get-stack     ?expected
     :scalar    '(9 12)
-                         :complex-construct :complex       (list (complexify 12 9))
+                         :complex-construct :exec       (list (complexify 12 9))
     )
