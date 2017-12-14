@@ -22,17 +22,17 @@
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(1 2)}) foo-lessthan)
         :foo<?)
-      :boolean) => '(false)
+      :exec) => '(false)
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(1 1)}) foo-lessthan)
         :foo<?)
-      :boolean) => '(false)
+      :exec) => '(false)
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(3 2)}) foo-lessthan)
         :foo<?)
-      :boolean) => '(true)))
+      :exec) => '(true)))
 
 
 
@@ -43,12 +43,12 @@
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(1M 2/3)}) foo-lessthan)
         :foo<?)
-      :boolean) => '()
+      :exec) => '()
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(1M 2/3)}) foo-lessthan)
         :foo<?)
-      :error) => '({:step 0, :item "Non-terminating decimal expansion; no exact representable decimal result."})    
+      :error) => '({:step 0, :item "Non-terminating decimal expansion; no exact representable decimal result."})
     ))
 
 
@@ -64,17 +64,17 @@
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(1 2)}) foo-lte)
         :foo≤?)
-      :boolean) => '(false)
+      :exec) => '(false)
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(1 1)}) foo-lte)
         :foo≤?)
-      :boolean) => '(true)
+      :exec) => '(true)
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(3 2)}) foo-lte)
         :foo≤?)
-      :boolean) => '(true)))
+      :exec) => '(true)))
 
 
 
@@ -85,12 +85,12 @@
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(1M 2/3)}) foo-lessthanorequal)
         :foo≤?)
-      :boolean) => '()
+      :exec) => '()
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(1M 2/3)}) foo-lessthanorequal)
         :foo≤?)
-      :error) => '({:step 0, :item "Non-terminating decimal expansion; no exact representable decimal result."})    
+      :error) => '({:step 0, :item "Non-terminating decimal expansion; no exact representable decimal result."})
     ))
 
 
@@ -105,17 +105,17 @@
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(1 2)}) foo-gte)
         :foo≥?)
-      :boolean) => '(true)
+      :exec) => '(true)
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(1 1)}) foo-gte)
         :foo≥?)
-      :boolean) => '(true)
+      :exec) => '(true)
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(3 2)}) foo-gte)
         :foo≥?)
-      :boolean) => '(false)))
+      :exec) => '(false)))
 
 
 
@@ -127,12 +127,12 @@
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(1M 2/3)}) foo-greaterthanorequal)
         :foo≥?)
-      :boolean) => '()
+      :exec) => '()
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(1M 2/3)}) foo-greaterthanorequal)
         :foo≥?)
-      :error) => '({:step 0, :item "Non-terminating decimal expansion; no exact representable decimal result."})    
+      :error) => '({:step 0, :item "Non-terminating decimal expansion; no exact representable decimal result."})
     ))
 
 
@@ -148,17 +148,17 @@
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(1 2)}) foo-gt)
         :foo>?)
-      :boolean) => '(true)
+      :exec) => '(true)
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(1 1)}) foo-gt)
         :foo>?)
-      :boolean) => '(false)
+      :exec) => '(false)
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(3 2)}) foo-gt)
         :foo>?)
-      :boolean) => '(false)))
+      :exec) => '(false)))
 
 
 
@@ -171,12 +171,12 @@
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(1M 2/3)}) foo-greaterthan)
         :foo>?)
-      :boolean) => '()
+      :exec) => '()
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(1M 2/3)}) foo-greaterthan)
         :foo>?)
-      :error) => '({:step 0, :item "Non-terminating decimal expansion; no exact representable decimal result."})    
+      :error) => '({:step 0, :item "Non-terminating decimal expansion; no exact representable decimal result."})
     ))
 
 
@@ -192,17 +192,18 @@
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(1 2)}) foo-min)
         :foo-min)
-      :foo) => '(1)
+      :exec) => '(1)
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(1 1)}) foo-min)
         :foo-min)
-      :foo) => '(1)
+      :exec) => '(1)
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(3 2)}) foo-min)
         :foo-min)
-      :foo) => '(2)))
+      :exec) => '(2)
+      ))
 
 
 
@@ -213,12 +214,12 @@
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(1M 2/3)}) foo-min)
         :foo-min)
-      :boolean) => '()
+      :exec) => '()
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(1M 2/3)}) foo-min)
         :foo-min)
-      :error) => '({:step 0, :item "Non-terminating decimal expansion; no exact representable decimal result."})    
+      :error) => '({:step 0, :item "Non-terminating decimal expansion; no exact representable decimal result."})
     ))
 
 
@@ -233,17 +234,18 @@
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(1 2)}) foo-max)
         :foo-max)
-      :foo) => '(2)
+      :exec) => '(2)
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(1 1)}) foo-max)
         :foo-max)
-      :foo) => '(1)
+      :exec) => '(1)
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(3 2)}) foo-max)
         :foo-max)
-      :foo) => '(3)))
+      :exec) => '(3)
+      ))
 
 
 
@@ -255,12 +257,12 @@
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(1M 2/3)}) foo-max)
         :foo-max)
-      :boolean) => '()
+      :exec) => '()
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(1M 2/3)}) foo-max)
         :foo-max)
-      :error) => '({:step 0, :item "Non-terminating decimal expansion; no exact representable decimal result."})    
+      :error) => '({:step 0, :item "Non-terminating decimal expansion; no exact representable decimal result."})
     ))
 
 

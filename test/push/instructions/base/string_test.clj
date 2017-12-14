@@ -982,20 +982,21 @@
 
     ?set-stack  ?items       ?instruction  ?get-stack     ?expected
     ;; string comparisons are pretty weird, actually
-    :string    '("abc" "def")       :string<?      :boolean        '(false)
-    :string    '("abd" "abc")       :string<?      :boolean        '(true)
-    :string    '("acc" "abc")       :string<?      :boolean        '(true)
-    :string    '("bbc" "abc")       :string<?      :boolean        '(true)
-    :string    '("def" "abc")       :string<?      :boolean        '(true)
-    :string    '("ab" "abc")        :string<?      :boolean        '(false)
-    :string    '("abc" "ab")        :string<?      :boolean        '(true)
-    :string    '("abc" "abc")       :string<?      :boolean        '(false)
-    :string    '("" "")             :string<?      :boolean        '(false)
+    :string    '("abc" "def")       :string<?      :exec         '(false)
+    :string    '("abd" "abc")       :string<?      :exec         '(true)
+    :string    '("acc" "abc")       :string<?      :exec         '(true)
+    :string    '("bbc" "abc")       :string<?      :exec         '(true)
+    :string    '("def" "abc")       :string<?      :exec         '(true)
+    :string    '("ab" "abc")        :string<?      :exec         '(false)
+    :string    '("abc" "ab")        :string<?      :exec         '(true)
+    :string    '("abc" "abc")       :string<?      :exec         '(false)
+    :string    '("" "")             :string<?      :exec         '(false)
     ;; missing args
-    :string    '("def")             :string<?      :boolean        '()
-    :string    '("def")             :string<?      :string         '("def")
-    :string    '()                  :string<?      :boolean        '()
-    :string    '()                  :string<?      :string         '())
+    :string    '("def")             :string<?      :exec        '()
+    :string    '("def")             :string<?      :string      '("def")
+    :string    '()                  :string<?      :exec        '()
+    :string    '()                  :string<?      :string      '()
+    )
 
 
 (tabular
@@ -1005,19 +1006,19 @@
 
     ?set-stack  ?items       ?instruction  ?get-stack     ?expected
     ;; string comparisons are pretty weird, actually
-    :string    '("abc" "def")       :string≤?      :boolean        '(false)
-    :string    '("abd" "abc")       :string≤?      :boolean        '(true)
-    :string    '("acc" "abc")       :string≤?      :boolean        '(true)
-    :string    '("bbc" "abc")       :string≤?      :boolean        '(true)
-    :string    '("def" "abc")       :string≤?      :boolean        '(true)
-    :string    '("ab" "abc")        :string≤?      :boolean        '(false)
-    :string    '("abc" "ab")        :string≤?      :boolean        '(true)
-    :string    '("abc" "abc")       :string≤?      :boolean        '(true)
-    :string    '("" "")             :string≤?      :boolean        '(true)
+    :string    '("abc" "def")       :string≤?      :exec         '(false)
+    :string    '("abd" "abc")       :string≤?      :exec         '(true)
+    :string    '("acc" "abc")       :string≤?      :exec         '(true)
+    :string    '("bbc" "abc")       :string≤?      :exec         '(true)
+    :string    '("def" "abc")       :string≤?      :exec         '(true)
+    :string    '("ab" "abc")        :string≤?      :exec         '(false)
+    :string    '("abc" "ab")        :string≤?      :exec         '(true)
+    :string    '("abc" "abc")       :string≤?      :exec         '(true)
+    :string    '("" "")             :string≤?      :exec         '(true)
     ;; missing args
-    :string    '("def")             :string≤?      :boolean        '()
+    :string    '("def")             :string≤?      :exec         '()
     :string    '("def")             :string≤?      :string         '("def")
-    :string    '()                  :string≤?      :boolean        '()
+    :string    '()                  :string≤?      :exec         '()
     :string    '()                  :string≤?      :string         '())
 
 
@@ -1029,19 +1030,19 @@
 
     ?set-stack  ?items       ?instruction  ?get-stack     ?expected
     ;; string comparisons are pretty weird, actually
-    :string    '("abc" "def")       :string≥?      :boolean        '(true)
-    :string    '("abd" "abc")       :string≥?      :boolean        '(false)
-    :string    '("acc" "abc")       :string≥?      :boolean        '(false)
-    :string    '("bbc" "abc")       :string≥?      :boolean        '(false)
-    :string    '("def" "abc")       :string≥?      :boolean        '(false)
-    :string    '("ab" "abc")        :string≥?      :boolean        '(true)
-    :string    '("abc" "ab")        :string≥?      :boolean        '(false)
-    :string    '("abc" "abc")       :string≥?      :boolean        '(true)
-    :string    '("" "")             :string≥?      :boolean        '(true)
+    :string    '("abc" "def")       :string≥?      :exec         '(true)
+    :string    '("abd" "abc")       :string≥?      :exec         '(false)
+    :string    '("acc" "abc")       :string≥?      :exec         '(false)
+    :string    '("bbc" "abc")       :string≥?      :exec         '(false)
+    :string    '("def" "abc")       :string≥?      :exec         '(false)
+    :string    '("ab" "abc")        :string≥?      :exec         '(true)
+    :string    '("abc" "ab")        :string≥?      :exec         '(false)
+    :string    '("abc" "abc")       :string≥?      :exec         '(true)
+    :string    '("" "")             :string≥?      :exec         '(true)
     ;; missing args
-    :string    '("def")             :string≥?      :boolean        '()
+    :string    '("def")             :string≥?      :exec         '()
     :string    '("def")             :string≥?      :string         '("def")
-    :string    '()                  :string≥?      :boolean        '()
+    :string    '()                  :string≥?      :exec         '()
     :string    '()                  :string≥?      :string         '())
 
 
@@ -1052,19 +1053,19 @@
 
     ?set-stack  ?items       ?instruction  ?get-stack     ?expected
     ;; string comparisons are pretty weird, actually
-    :string    '("abc" "def")       :string>?      :boolean        '(true)
-    :string    '("abd" "abc")       :string>?      :boolean        '(false)
-    :string    '("acc" "abc")       :string>?      :boolean        '(false)
-    :string    '("bbc" "abc")       :string>?      :boolean        '(false)
-    :string    '("def" "abc")       :string>?      :boolean        '(false)
-    :string    '("ab" "abc")        :string>?      :boolean        '(true)
-    :string    '("abc" "ab")        :string>?      :boolean        '(false)
-    :string    '("abc" "abc")       :string>?      :boolean        '(false)
-    :string    '("" "")             :string>?      :boolean        '(false)
+    :string    '("abc" "def")       :string>?      :exec         '(true)
+    :string    '("abd" "abc")       :string>?      :exec         '(false)
+    :string    '("acc" "abc")       :string>?      :exec         '(false)
+    :string    '("bbc" "abc")       :string>?      :exec         '(false)
+    :string    '("def" "abc")       :string>?      :exec         '(false)
+    :string    '("ab" "abc")        :string>?      :exec         '(true)
+    :string    '("abc" "ab")        :string>?      :exec         '(false)
+    :string    '("abc" "abc")       :string>?      :exec         '(false)
+    :string    '("" "")             :string>?      :exec         '(false)
     ;; missing args
-    :string    '("def")             :string>?      :boolean        '()
+    :string    '("def")             :string>?      :exec         '()
     :string    '("def")             :string>?      :string         '("def")
-    :string    '()                  :string>?      :boolean        '()
+    :string    '()                  :string>?      :exec         '()
     :string    '()                  :string>?      :string         '())
 
 
@@ -1075,12 +1076,12 @@
 
     ?set-stack  ?items          ?instruction  ?get-stack     ?expected
     ;; note: these use (compare A B), not (< A B)
-    :string    '("foo" "bar")   :string-max      :string        '("foo")
-    :string    '("bar" "foo")   :string-max      :string        '("foo")
-    :string    '("foo" "foo")   :string-max      :string        '("foo")
+    :string    '("foo" "bar")   :string-max      :exec         '("foo")
+    :string    '("bar" "foo")   :string-max      :exec         '("foo")
+    :string    '("foo" "foo")   :string-max      :exec         '("foo")
     ; ;; missing args
     :string    '("bar")         :string-max      :string        '("bar")
-    :string    '()              :string-max      :string        '()
+    :string    '()              :string-max      :exec         '()
     )
 
 
@@ -1091,12 +1092,12 @@
 
     ?set-stack  ?items           ?instruction  ?get-stack     ?expected
     ;; note: these use (compare A B), not (< A B)
-    :string    '("foo" "bar")    :string-min      :string        '("bar")
-    :string    '("bar" "foo")    :string-min      :string        '("bar")
-    :string    '("foo" "foo")    :string-min      :string        '("foo")
+    :string    '("foo" "bar")    :string-min      :exec         '("bar")
+    :string    '("bar" "foo")    :string-min      :exec         '("bar")
+    :string    '("foo" "foo")    :string-min      :exec         '("foo")
     ; ;; missing args
     :string    '("bar")          :string-min      :string        '("bar")
-    :string    '()               :string-min      :string        '()
+    :string    '()               :string-min      :exec         '()
     )
 
 ; ;; movable

@@ -326,14 +326,14 @@
 
     ?set-stack  ?items    ?instruction  ?get-stack     ?expected
     ;; note: these use (compare A B), not (< A B)
-    :char    '(\r \s)       :char<?      :boolean        '(false)
-    :char    '(\s \r)       :char<?      :boolean        '(true)
-    :char    '(\r \r)       :char<?      :boolean        '(false)
+    :char    '(\r \s)       :char<?      :exec         '(false)
+    :char    '(\s \r)       :char<?      :exec         '(true)
+    :char    '(\r \r)       :char<?      :exec         '(false)
     ;; missing args
-    :char    '(\s)          :char<?      :boolean        '()
-    :char    '(\s)          :char<?      :char           '(\s)
-    :char    '()            :char<?      :boolean        '()
-    :char    '()            :char<?      :char           '())
+    :char    '(\s)          :char<?      :exec         '()
+    :char    '(\s)          :char<?      :char         '(\s)
+    :char    '()            :char<?      :exec         '()
+    :char    '()            :char<?      :char         '())
 
 
 (tabular
@@ -343,13 +343,13 @@
 
     ?set-stack  ?items    ?instruction  ?get-stack     ?expected
     ;; note: these use (compare A B), not (< A B)
-    :char    '(\r \s)       :char≤?      :boolean        '(false)
-    :char    '(\s \r)       :char≤?      :boolean        '(true)
-    :char    '(\r \r)       :char≤?      :boolean        '(true)
+    :char    '(\r \s)       :char≤?      :exec         '(false)
+    :char    '(\s \r)       :char≤?      :exec         '(true)
+    :char    '(\r \r)       :char≤?      :exec         '(true)
     ;; missing args
-    :char    '(\s)          :char≤?      :boolean        '()
+    :char    '(\s)          :char≤?      :exec         '()
     :char    '(\s)          :char≤?      :char           '(\s)
-    :char    '()            :char≤?      :boolean        '()
+    :char    '()            :char≤?      :exec         '()
     :char    '()            :char≤?      :char           '())
 
 
@@ -360,13 +360,13 @@
 
     ?set-stack  ?items    ?instruction  ?get-stack     ?expected
     ;; note: these use (compare A B), not (< A B)
-    :char    '(\r \s)       :char≥?      :boolean        '(true)
-    :char    '(\s \r)       :char≥?      :boolean        '(false)
-    :char    '(\r \r)       :char≥?      :boolean        '(true)
+    :char    '(\r \s)       :char≥?      :exec         '(true)
+    :char    '(\s \r)       :char≥?      :exec         '(false)
+    :char    '(\r \r)       :char≥?      :exec         '(true)
     ;; missing args
-    :char    '(\s)          :char≥?      :boolean        '()
+    :char    '(\s)          :char≥?      :exec         '()
     :char    '(\s)          :char≥?      :char           '(\s)
-    :char    '()            :char≥?      :boolean        '()
+    :char    '()            :char≥?      :exec         '()
     :char    '()            :char≥?      :char           '())
 
 
@@ -377,13 +377,13 @@
 
     ?set-stack  ?items    ?instruction  ?get-stack     ?expected
     ;; note: these use (compare A B), not (< A B)
-    :char    '(\r \s)       :char>?      :boolean        '(true)
-    :char    '(\s \r)       :char>?      :boolean        '(false)
-    :char    '(\r \r)       :char>?      :boolean        '(false)
+    :char    '(\r \s)       :char>?      :exec         '(true)
+    :char    '(\s \r)       :char>?      :exec         '(false)
+    :char    '(\r \r)       :char>?      :exec         '(false)
     ;; missing args
-    :char    '(\s)          :char>?      :boolean        '()
+    :char    '(\s)          :char>?      :exec         '()
     :char    '(\s)          :char>?      :char           '(\s)
-    :char    '()            :char>?      :boolean        '()
+    :char    '()            :char>?      :exec         '()
     :char    '()            :char>?      :char           '())
 
 
@@ -394,9 +394,9 @@
 
     ?set-stack  ?items    ?instruction  ?get-stack     ?expected
     ;; note: these use (compare A B), not (< A B)
-    :char    '(\r \s)       :char-max      :char        '(\s)
-    :char    '(\s \r)       :char-max      :char        '(\s)
-    :char    '(\r \r)       :char-max      :char        '(\r)
+    :char    '(\r \s)       :char-max      :exec         '(\s)
+    :char    '(\s \r)       :char-max      :exec         '(\s)
+    :char    '(\r \r)       :char-max      :exec         '(\r)
     ; ;; missing args
     :char    '(\s)          :char-max      :char        '(\s)
     :char    '()            :char-max      :char        '()
@@ -410,9 +410,9 @@
 
     ?set-stack  ?items    ?instruction  ?get-stack     ?expected
     ;; note: these use (compare A B), not (< A B)
-    :char    '(\r \s)       :char-min      :char        '(\r)
-    :char    '(\s \r)       :char-min      :char        '(\r)
-    :char    '(\r \r)       :char-min      :char        '(\r)
+    :char    '(\r \s)       :char-min      :exec         '(\r)
+    :char    '(\s \r)       :char-min      :exec         '(\r)
+    :char    '(\r \r)       :char-min      :exec         '(\r)
     ; ;; missing args
     :char    '(\s)          :char-min      :char        '(\s)
     :char    '()            :char-min      :char        '()
