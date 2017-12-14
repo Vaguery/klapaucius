@@ -18,7 +18,8 @@
     :tags #{:generator}
     (d/consume-top-of :generator :as :arg)
     (d/calculate [:arg] #(list (:state %) %) :as :results)
-    (d/push-onto :exec :results)))
+    (d/push-onto :exec :results)
+    ))
 
 
 
@@ -29,7 +30,7 @@
     :tags #{:generator}
     (d/consume-top-of :scalar :as :arg)
     (d/calculate [:arg] #(g/make-generator %1 inc') :as :g)
-    (d/push-onto :generator :g)))
+    (d/push-onto :exec :g)))
 
 
 
@@ -47,7 +48,7 @@
           (iterate
             (fn [g] (when-not (nil? g) (g/step-generator g)))
             %1))) :as :result)
-    (d/push-onto :generator :result)))
+    (d/push-onto :exec :result)))
 
 
 
@@ -71,7 +72,7 @@
     :tags #{:generator}
     (d/consume-top-of :generator :as :arg)
     (d/calculate [:arg] #(g/make-generator (:origin %1) (:step-function %1)) :as :result)
-    (d/push-onto :generator :result)))
+    (d/push-onto :exec :result)))
 
 
 
@@ -83,7 +84,7 @@
     (d/consume-top-of :scalar :as :arg1)
     (d/consume-top-of :scalar :as :arg2)
     (d/calculate [:arg1 :arg2] #(g/make-generator %2 (partial +' %1)) :as :g)
-    (d/push-onto :generator :g)))
+    (d/push-onto :exec :g)))
 
 
 
@@ -99,7 +100,7 @@
       #(g/make-generator
         (bigint %1)
         (fn [x] (exotics/rewrite-digits x 3))) :as :g)
-    (d/push-onto :generator :g)))
+    (d/push-onto :exec :g)))
 
 
 

@@ -42,13 +42,13 @@
      :generator '()}
                             :generator-counter
                                                   {:scalar   '()
-                                                   :generator (list (make-generator 17 inc'))}
+                                                   :exec (list (make-generator 17 inc'))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar    '()
      :generator '()}
                             :generator-counter
                                                   {:scalar   '()
-                                                   :generator '()}
+                                                   :exec '()}
                                                    )
 
 
@@ -89,18 +89,18 @@
       (first
         (push.core/get-stack
           (i/execute-instruction gstep :generator-stepper)
-          :generator))) => -8
+          :exec))) => -8
     (:origin
       (first
         (push.core/get-stack
           (i/execute-instruction gstep :generator-stepper)
-          :generator))) => -8
+          :exec))) => -8
     (:state
       (step-generator
         (first
           (push.core/get-stack
             (i/execute-instruction gstep :generator-stepper)
-            :generator)))) => -5))
+            :exec)))) => -5))
 
 
 
@@ -136,7 +136,7 @@
         result  (first
                   (push.core/get-stack
                     (i/execute-instruction g :generator-reset)
-                    :generator))]
+                    :exec))]
         (:state result) => 351
         (:origin result) => 351
         ))
@@ -150,7 +150,7 @@
         result  (first
                   (push.core/get-stack
                     (i/execute-instruction g :generator-jumpsome)
-                    :generator))]
+                    :exec))]
         (:state result) => -4  ;; note the jump was (floor (mod 712.7 100)) = 12.0 steps
         (:origin result) => 351
         ))
@@ -196,6 +196,6 @@
                      (i/execute-instruction g :generator-jumpsome))]
     result => (contains {:scalar '()
                          :error '()})
-    (:origin (first (:generator result))) => 7
-    (:state (first (:generator result))) => 106
+    (:origin (first (:exec result))) => 7
+    (:state (first (:exec result))) => 106
     ))
