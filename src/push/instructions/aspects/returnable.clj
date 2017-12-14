@@ -21,7 +21,8 @@
       :tags #{:io}
 
       `(consume-top-of ~typename :as :arg1)
-      `(push-onto :return :arg1)))))
+      `(push-onto :return :arg1)
+      ))))
 
 
 
@@ -41,4 +42,5 @@
       `(consume-stack :return :as :old-stack)
       `(calculate [:old-stack]
           #(util/list! (concat %1 (list ~token))) :as :new-stack)
-      `(replace-stack :return :new-stack)))))
+      `(replace-stack :return :new-stack)
+      ))))

@@ -23,17 +23,17 @@
       (i/execute-instruction
         (i/register-instruction (push/interpreter :stacks {:foo '(11) :set '(#{99})}) foo-conj-set)
         :foo-conj-set)
-      :set) => '(#{99 11})
+      :exec) => '(#{99 11})
     (get-stack
       (i/execute-instruction
         (i/register-instruction (push/interpreter :stacks {:foo '([1 2 3]) :set '(#{99})}) foo-conj-set)
         :foo-conj-set)
-      :set) => '(#{99 1 2 3})
+      :exec) => '(#{99 1 2 3})
     (get-stack
       (i/execute-instruction
         (i/register-instruction (push/interpreter :stacks {:foo '({1 2 3 4}) :set '(#{99})}) foo-conj-set)
         :foo-conj-set)
-      :set) => '(#{99 {1 2 3 4}})
+      :exec) => '(#{99 {1 2 3 4}})
     ))
 
 
@@ -49,17 +49,17 @@
       (i/execute-instruction
         (i/register-instruction (push/interpreter :stacks {:foo '(11) :set '(#{99})}) foo-intoset)
         :foo-intoset)
-      :set) => '(#{99 11})
+      :exec) => '(#{99 11})
     (get-stack
       (i/execute-instruction
         (i/register-instruction (push/interpreter :stacks {:foo '([1 2 3]) :set '(#{99})}) foo-intoset)
         :foo-intoset)
-      :set) => '(#{99 [1 2 3]})
+      :exec) => '(#{99 [1 2 3]})
     (get-stack
       (i/execute-instruction
         (i/register-instruction (push/interpreter :stacks {:foo '({1 2 3 4}) :set '(#{99})}) foo-intoset)
         :foo-intoset)
-      :set) => '(#{99 {1 2 3 4}})
+      :exec) => '(#{99 {1 2 3 4}})
     ))
 
 
@@ -74,12 +74,12 @@
       (i/execute-instruction
         (i/register-instruction (push/interpreter :stacks {:foo '(11)}) foo-as-set)
         :foo-as-set)
-      :set) => '(#{11})
+      :exec) => '(#{11})
     (get-stack
       (i/execute-instruction
         (i/register-instruction (push/interpreter :stacks {:foo '([1 2 3])}) foo-as-set)
         :foo-as-set)
-      :set) => '(#{1 2 3})
+      :exec) => '(#{1 2 3})
     ))
 
 
@@ -92,12 +92,12 @@
       (i/execute-instruction
         (i/register-instruction (push/interpreter :stacks {:foo '(11)}) foo-toset)
         :foo->set)
-      :set) => '(#{11})
+      :exec) => '(#{11})
     (get-stack
       (i/execute-instruction
         (i/register-instruction (push/interpreter :stacks {:foo '([1 2 3])}) foo-toset)
         :foo->set)
-      :set) => '(#{[1 2 3]})
+      :exec) => '(#{[1 2 3]})
     ))
 
 
@@ -111,22 +111,22 @@
       (i/execute-instruction
         (i/register-instruction (push/interpreter :stacks {:foo '(11) :set '(#{22})}) foo-in-set?)
         :foo-in-set?)
-      :boolean) => '(false)
+      :exec) => '(false)
     (get-stack
       (i/execute-instruction
         (i/register-instruction (push/interpreter :stacks {:foo '(11) :set '(#{11 22 33})}) foo-in-set?)
         :foo-in-set?)
-      :boolean) => '(true)
+      :exec) => '(true)
     (get-stack
       (i/execute-instruction
         (i/register-instruction (push/interpreter :stacks {:foo '([11]) :set '(#{[11] 22 33})}) foo-in-set?)
         :foo-in-set?)
-      :boolean) => '(true)
+      :exec) => '(true)
     (get-stack
       (i/execute-instruction
         (i/register-instruction (push/interpreter :stacks {:foo '(11) :set '(#{[11] 22 33})}) foo-in-set?)
         :foo-in-set?)
-      :boolean) => '(false)
+      :exec) => '(false)
     ))
 
 
@@ -139,4 +139,3 @@
 (fact "`make-set-able` takes adds appropriate instructions to a PushType record"
   (keys (:instructions
     (make-set-able (make-type :foo)))) => (contains [:foo->set :foo-as-set] :in-any-order :gaps-ok))
-
