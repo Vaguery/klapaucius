@@ -265,9 +265,9 @@
         ?set-stack ?items char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items        ?instruction  ?get-stack     ?expected
-    :char    '(\r \e \l \p)  :char-stackdepth   :scalar     '(4)
-    :char    '(\R)           :char-stackdepth   :scalar     '(1)
-    :char    '()             :char-stackdepth   :scalar     '(0))
+    :char    '(\r \e \l \p)  :char-stackdepth   :exec       '(4)
+    :char    '(\R)           :char-stackdepth   :exec       '(1)
+    :char    '()             :char-stackdepth   :exec       '(0))
 
 
 (tabular
@@ -276,8 +276,8 @@
         ?set-stack ?items char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items        ?instruction  ?get-stack     ?expected
-    :char    '(\r \e \l \p)  :char-empty?   :boolean     '(false)
-    :char    '()             :char-empty?   :boolean     '(true))
+    :char    '(\r \e \l \p)  :char-empty?   :exec         '(false)
+    :char    '()             :char-empty?   :exec         '(true))
 
 
 ;; equatable

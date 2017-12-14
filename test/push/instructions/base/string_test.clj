@@ -920,9 +920,9 @@
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; how many?
-    :string    '("a" "" "b")   :string-stackdepth   :scalar      '(3)
-    :string    '("nn\tmm")     :string-stackdepth   :scalar      '(1)
-    :string    '()             :string-stackdepth   :scalar      '(0))
+    :string    '("a" "" "b")   :string-stackdepth   :exec          '(3)
+    :string    '("nn\tmm")     :string-stackdepth   :exec          '(1)
+    :string    '()             :string-stackdepth   :exec          '(0))
 
 
 (tabular
@@ -932,8 +932,8 @@
 
     ?set-stack  ?items          ?instruction  ?get-stack     ?expected
     ;; none?
-    :string    '("foo" "bar")  :string-empty?   :boolean     '(false)
-    :string    '()             :string-empty?   :boolean     '(true))
+    :string    '("foo" "bar")  :string-empty?   :exec        '(false)
+    :string    '()             :string-empty?   :exec        '(true))
 
 
 ; ;; equatable

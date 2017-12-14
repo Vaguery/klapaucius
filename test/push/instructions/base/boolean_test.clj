@@ -385,8 +385,8 @@
 
     ?set-stack  ?items               ?instruction            ?get-stack     ?expected
     ;; just shifting things
-    :boolean    '(false false false) :boolean-stackdepth      :scalar       '(3)
-    :boolean    '()                  :boolean-stackdepth      :scalar       '(0))
+    :boolean    '(false false false) :boolean-stackdepth      :exec       '(3)
+    :boolean    '()                  :boolean-stackdepth      :exec       '(0))
 
 
 (tabular

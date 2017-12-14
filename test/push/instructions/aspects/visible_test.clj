@@ -25,12 +25,12 @@
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(1 2)}) foo-depth)
         :foo-stackdepth)
-      :scalar) => '(2)
+      :exec) => '(2)
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(false [2] 3)}) foo-depth)
         :foo-stackdepth)
-      :scalar) => '(3)))
+      :exec) => '(3)))
 
 
 (fact "empty?-instruction returns an Instruction with the correct stuff"
@@ -42,12 +42,12 @@
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(1 2)}) foo-none?)
         :foo-empty?)
-      :boolean) => '(false)
+      :exec) => '(false)
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '()}) foo-none?)
         :foo-empty?)
-      :boolean) => '(true)))
+      :exec) => '(true)))
 
 
 (fact "`make-visible` takes adds a x-stackdepth and x-empty? instructions to a PushType record"

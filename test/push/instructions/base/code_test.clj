@@ -958,9 +958,9 @@
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; how many?
-    :code    '(1.1 2.2 3.3)      :code-stackdepth   :scalar      '(3)
-    :code    '(1.0)              :code-stackdepth   :scalar      '(1)
-    :code    '()                 :code-stackdepth   :scalar      '(0))
+    :code    '(1.1 2.2 3.3)      :code-stackdepth   :exec         '(3)
+    :code    '(1.0)              :code-stackdepth   :exec         '(1)
+    :code    '()                 :code-stackdepth   :exec         '(0))
 
 
 (tabular
@@ -970,8 +970,8 @@
 
     ?set-stack  ?items          ?instruction  ?get-stack     ?expected
     ;; none?
-    :code    '(0.2 1.3e7)        :code-empty?   :boolean     '(false)
-    :code    '()                 :code-empty?   :boolean     '(true))
+    :code    '(0.2 1.3e7)        :code-empty?   :exec        '(false)
+    :code    '()                 :code-empty?   :exec        '(true))
 
 
 ; ;; equatable

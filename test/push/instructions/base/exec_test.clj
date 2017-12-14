@@ -407,9 +407,10 @@
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; how many?
-    :exec    '(1.1 2.2 3.3)      :exec-stackdepth   :scalar      '(3)
-    :exec    '(1.0)              :exec-stackdepth   :scalar      '(1)
-    :exec    '()                 :exec-stackdepth   :scalar      '(0))
+    :exec    '(1.1 2.2 3.3)      :exec-stackdepth   :exec    '(3 1.1 2.2 3.3)
+    :exec    '(1.0)              :exec-stackdepth   :exec         '(1 1.0)
+    :exec    '()                 :exec-stackdepth   :exec         '(0)
+    )
 
 
 (tabular
@@ -419,8 +420,8 @@
 
     ?set-stack  ?items          ?instruction  ?get-stack     ?expected
     ;; none?
-    :exec    '(0.2 1.3e7)        :exec-empty?   :boolean     '(false)
-    :exec    '()                 :exec-empty?   :boolean     '(true))
+    :exec    '(0.2 1.3e7)        :exec-empty?   :exec       '(false 0.2 1.3e7)
+    :exec    '()                 :exec-empty?   :exec       '(true))
 
 
 ;; equatable
