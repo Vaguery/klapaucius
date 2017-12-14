@@ -2,19 +2,20 @@
   (:require [push.interpreter.core :as i])
   (:use midje.sweet)
   (:use [push.util.test-helpers])
+  (:use [push.type.definitions.quoted])
   (:use [push.type.item.char])  ;; sets up char-type
   )
 
 ;; quotable
 
 (tabular
-  (fact ":char->code move the top :char item to :code"
+  (fact ":char->code code-quotes the top :char item to :exec"
     (register-type-and-check-instruction
         ?set-stack ?items char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; move it!
-    :char       '(\y)           :char->code         :code        '(\y)
+    :char       '(\y)           :char->code         :exec        (list (push-quote \y))
     :char       '()             :char->code         :code        '()
     )
 

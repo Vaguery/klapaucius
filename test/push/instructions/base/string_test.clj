@@ -3,6 +3,7 @@
   (:use midje.sweet)
   (:use [push.util.test-helpers])
   (:use [push.type.item.string])
+  (:use [push.type.definitions.quoted])
   )
 
 
@@ -115,13 +116,13 @@
 ;; quotable
 
 (tabular
-  (fact ":string->code move the top :string item to :code"
+  (fact ":string->code code-quotes the top :string item (on :exec)"
     (register-type-and-check-instruction
         ?set-stack ?items string-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items       ?instruction      ?get-stack     ?expected
     ;; move it!
-    :string       '("92")    :string->code         :code       '("92")
+    :string       '("92")    :string->code         :exec       (list (push-quote "92"))
     :string       '()        :string->code         :code       '()
     )
 

@@ -4,6 +4,7 @@
   (:use midje.sweet)
   (:use [push.util.test-helpers])
   (:use push.util.exotics)
+  (:use [push.type.definitions.quoted])
   (:use push.type.item.boolean)  ;; sets up boolean-type
   )
 
@@ -107,13 +108,12 @@
 ;; quotable
 
 (tabular
-  (fact ":boolean->code move the top :boolean item to :code"
+  (fact ":boolean->code code-quotes the top :boolean item to :exec"
     (register-type-and-check-instruction
         ?set-stack ?items boolean-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
-    ;; move it!
-    :boolean    '(false)        :boolean->code      :code        '(false)
+    :boolean    '(false)        :boolean->code      :exec        (list (push-quote false))
     :boolean    '()             :boolean->code      :code        '()
     )
 

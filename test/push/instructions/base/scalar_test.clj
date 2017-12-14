@@ -2,6 +2,7 @@
   (:require [push.interpreter.core :as i])
   (:use midje.sweet)
   (:use [push.util.test-helpers])
+  (:use [push.type.definitions.quoted])
   (:use [push.type.item.scalar])
   )
 
@@ -9,13 +10,12 @@
 ;; conversions
 
 (tabular
-  (fact ":scalar->code move the top :scalar item to :code"
+  (fact ":scalar->code code-quotes the top :scalar item to :exec"
     (register-type-and-check-instruction
         ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction      ?get-stack     ?expected
-    ;; move it!
-    :scalar       '(92M)      :scalar->code         :code        '(92M)
+    :scalar       '(92M)      :scalar->code         :exec        (list (push-quote 92M))
     :scalar       '()         :scalar->code         :code        '()
     )
 
@@ -27,14 +27,14 @@
         ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction      ?get-stack     ?expected
-    ;; simple     
+    ;; simple
     :char    '(\0)           :char->integer      :scalar        '(48)
     :char    '(\r)           :char->integer      :scalar        '(114)
     :char    '(\newline)     :char->integer      :scalar        '(10)
     :char    '(\uF021)       :char->integer      :scalar        '(61473)
     ;; consumes arg
     :char    '(\0)           :char->integer      :char          '()
-    ;; missing args 
+    ;; missing args
     :char    '()             :char->integer      :scalar        '()
     :char    '()             :char->integer      :char          '())
 
@@ -111,5 +111,3 @@
     :scalar     '(3.2M)     :scalar-ratio?     :boolean        '(false)
     :scalar     '()         :scalar-ratio?     :boolean        '()
     )
-
-
