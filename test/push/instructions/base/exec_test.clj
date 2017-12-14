@@ -433,13 +433,11 @@
 
     ?set-stack  ?items         ?instruction      ?get-stack     ?expected
     ;; same?
-    :exec    '((1 2) (3 4))     :exec-equal?      :boolean        '(false)
-    :exec    '((3 4) (1 2))     :exec-equal?      :boolean        '(false)
-    :exec    '((1 2) (1 2))     :exec-equal?      :boolean        '(true)
+    :exec    '((1 2) (3 4))     :exec-equal?      :exec           '(false)
+    :exec    '((3 4) (1 2))     :exec-equal?      :exec           '(false)
+    :exec    '((1 2) (1 2))     :exec-equal?      :exec           '(true)
     ;; missing args
-    :exec    '((3 4))           :exec-equal?      :boolean        '()
     :exec    '((3 4))           :exec-equal?      :exec           '((3 4))
-    :exec    '()                :exec-equal?      :boolean        '()
     :exec    '()                :exec-equal?      :exec           '())
 
 
@@ -450,13 +448,11 @@
 
     ?set-stack  ?items           ?instruction      ?get-stack     ?expected
     ;; different
-    :exec    '((1) (88))       :exec-notequal?      :boolean      '(true)
-    :exec    '((88) (1))       :exec-notequal?      :boolean      '(true)
-    :exec    '((1) (1))        :exec-notequal?      :boolean      '(false)
+    :exec    '((1) (88))       :exec-notequal?      :exec        '(true)
+    :exec    '((88) (1))       :exec-notequal?      :exec        '(true)
+    :exec    '((1) (1))        :exec-notequal?      :exec        '(false)
     ;; missing args
-    :exec    '((88))           :exec-notequal?      :boolean      '()
     :exec    '((88))           :exec-notequal?      :exec         '((88))
-    :exec    '()               :exec-notequal?      :boolean      '()
     :exec    '()               :exec-notequal?      :exec         '())
 
 

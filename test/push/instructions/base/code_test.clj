@@ -984,17 +984,17 @@
 
     ?set-stack  ?items         ?instruction      ?get-stack     ?expected
     ;; same?
-    :code    '((1 2) (3 4))     :code-equal?      :boolean        '(false)
-    :code    '((3 4) (1 2))     :code-equal?      :boolean        '(false)
-    :code    '((1 2) (1 2))     :code-equal?      :boolean        '(true)
+    :code    '((1 2) (3 4))     :code-equal?      :exec         '(false)
+    :code    '((3 4) (1 2))     :code-equal?      :exec         '(false)
+    :code    '((1 2) (1 2))     :code-equal?      :exec         '(true)
 
     ;; note this depends on Clojure's 'eq function
     :code    '((1 2) (11/11 2.0))
-                                :code-equal?      :boolean        '(false)
+                                :code-equal?      :exec         '(false)
     ;; missing args
-    :code    '((3 4))           :code-equal?      :boolean        '()
+    :code    '((3 4))           :code-equal?      :exec         '()
     :code    '((3 4))           :code-equal?      :code           '((3 4))
-    :code    '()                :code-equal?      :boolean        '()
+    :code    '()                :code-equal?      :exec         '()
     :code    '()                :code-equal?      :code           '())
 
 
@@ -1005,13 +1005,13 @@
 
     ?set-stack  ?items           ?instruction      ?get-stack     ?expected
     ;; different
-    :code    '((1) (88))       :code-notequal?      :boolean      '(true)
-    :code    '((88) (1))       :code-notequal?      :boolean      '(true)
-    :code    '((1) (1))        :code-notequal?      :boolean      '(false)
+    :code    '((1) (88))       :code-notequal?      :exec       '(true)
+    :code    '((88) (1))       :code-notequal?      :exec       '(true)
+    :code    '((1) (1))        :code-notequal?      :exec       '(false)
     ;; missing args
-    :code    '((88))           :code-notequal?      :boolean      '()
+    :code    '((88))           :code-notequal?      :exec       '()
     :code    '((88))           :code-notequal?      :code         '((88))
-    :code    '()               :code-notequal?      :boolean      '()
+    :code    '()               :code-notequal?      :exec       '()
     :code    '()               :code-notequal?      :code         '())
 
 

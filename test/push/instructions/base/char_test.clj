@@ -289,13 +289,13 @@
 
     ?set-stack  ?items    ?instruction  ?get-stack     ?expected
     ;; identical
-    :char    '(\r \s)       :char-equal?      :boolean        '(false)
-    :char    '(\s \r)       :char-equal?      :boolean        '(false)
-    :char    '(\r \r)       :char-equal?      :boolean        '(true)
+    :char    '(\r \s)       :char-equal?      :exec         '(false)
+    :char    '(\s \r)       :char-equal?      :exec         '(false)
+    :char    '(\r \r)       :char-equal?      :exec         '(true)
     ;; missing args
-    :char    '(\s)          :char-equal?      :boolean        '()
+    :char    '(\s)          :char-equal?      :exec         '()
     :char    '(\s)          :char-equal?      :char           '(\s)
-    :char    '()            :char-equal?      :boolean        '()
+    :char    '()            :char-equal?      :exec         '()
     :char    '()            :char-equal?      :char           '())
 
 
@@ -306,13 +306,13 @@
 
     ?set-stack  ?items    ?instruction  ?get-stack     ?expected
     ;; different
-    :char    '(\r \s)       :char-notequal?      :boolean        '(true)
-    :char    '(\s \r)       :char-notequal?      :boolean        '(true)
-    :char    '(\r \r)       :char-notequal?      :boolean        '(false)
+    :char    '(\r \s)       :char-notequal?      :exec         '(true)
+    :char    '(\s \r)       :char-notequal?      :exec         '(true)
+    :char    '(\r \r)       :char-notequal?      :exec         '(false)
     ;; missing args
-    :char    '(\s)          :char-notequal?      :boolean        '()
+    :char    '(\s)          :char-notequal?      :exec         '()
     :char    '(\s)          :char-notequal?      :char           '(\s)
-    :char    '()            :char-notequal?      :boolean        '()
+    :char    '()            :char-notequal?      :exec         '()
     :char    '()            :char-notequal?      :char           '())
 
 

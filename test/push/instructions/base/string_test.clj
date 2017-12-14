@@ -945,13 +945,13 @@
 
     ?set-stack  ?items         ?instruction      ?get-stack     ?expected
     ;; same?
-    :string    '("o" "p")       :string-equal?      :boolean        '(false)
-    :string    '("p" "o")       :string-equal?      :boolean        '(false)
-    :string    '("o" "o")       :string-equal?      :boolean        '(true)
+    :string    '("o" "p")       :string-equal?      :exec           '(false)
+    :string    '("p" "o")       :string-equal?      :exec           '(false)
+    :string    '("o" "o")       :string-equal?      :exec           '(true)
     ;; missing args
-    :string    '("p")           :string-equal?      :boolean        '()
+    :string    '("p")           :string-equal?      :exec           '()
     :string    '("p")           :string-equal?      :string         '("p")
-    :string    '()              :string-equal?      :boolean        '()
+    :string    '()              :string-equal?      :exec           '()
     :string    '()              :string-equal?      :string         '())
 
 
@@ -962,13 +962,13 @@
 
     ?set-stack  ?items           ?instruction  ?get-stack     ?expected
     ;; different
-    :string    '("y" "z")       :string-notequal?      :boolean        '(true)
-    :string    '("z" "y")       :string-notequal?      :boolean        '(true)
-    :string    '("y" "y")       :string-notequal?      :boolean        '(false)
+    :string    '("y" "z")       :string-notequal?      :exec           '(true)
+    :string    '("z" "y")       :string-notequal?      :exec           '(true)
+    :string    '("y" "y")       :string-notequal?      :exec           '(false)
     ;; missing args
-    :string    '("z")           :string-notequal?      :boolean        '()
+    :string    '("z")           :string-notequal?      :exec           '()
     :string    '("z")           :string-notequal?      :string         '("z")
-    :string    '()              :string-notequal?      :boolean        '()
+    :string    '()              :string-notequal?      :exec           '()
     :string    '()              :string-notequal?      :string         '())
 
 

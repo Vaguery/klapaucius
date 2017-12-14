@@ -21,12 +21,12 @@
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(1 2)}) foo-equal)
         :foo-equal?)
-      :boolean) => '(false)
+      :exec) => '(false)
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(1 1)}) foo-equal)
         :foo-equal?)
-      :boolean) => '(true)))
+      :exec) => '(true)))
 
 
 
@@ -39,12 +39,12 @@
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(1 2)}) foo-notequal)
         :foo-notequal?)
-      :boolean) => '(true)
+      :exec) => '(true)
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(1 1)}) foo-notequal)
         :foo-notequal?)
-      :boolean) => '(false)))
+      :exec) => '(false)))
 
 
 
@@ -55,4 +55,3 @@
 (fact "`make-equatable` takes adds appropriate instructions to a PushType record"
   (keys (:instructions
     (make-equatable (make-type :foo)))) => '(:foo-equal? :foo-notequal?))
-
