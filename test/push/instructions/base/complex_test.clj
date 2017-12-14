@@ -21,9 +21,9 @@
 
     ?set-stack  ?items       ?instruction        ?get-stack     ?expected
     :complex    (list (->Complex 1 2) (->Complex 3 4))
-                             :complex-add        :complex       (list (->Complex 4 6))
+                             :complex-add        :exec      (list (->Complex 4 6))
     :complex    (list (->Complex 1M 2/3) (->Complex ∞ 4))
-                             :complex-add        :complex       (list (->Complex ∞ 14/3))
+                             :complex-add        :exec       (list (->Complex ∞ 14/3))
     )
 
 
@@ -36,12 +36,12 @@
     ?set-stack  ?items       ?instruction        ?get-stack     ?expected
 
     :complex    (list (->Complex 1M 2/3) (->Complex 3/7 4M))
-                             :complex-add        :complex       '()
+                             :complex-add        :exec       '()
     :complex    (list (->Complex 1M 2/3) (->Complex 3/7 4M))
                              :complex-add        :error         '({:item "Non-terminating decimal expansion; no exact representable decimal result.", :step 0})
 
     :complex    (list (->Complex -∞ 2/3) (->Complex ∞ 4N))
-                             :complex-add        :complex       '()
+                             :complex-add        :exec       '()
     :complex    (list (->Complex -∞ 2/3) (->Complex ∞ 4N))
                              :complex-add        :error       '({:item ":complex-add produced NaN", :step 0})
    )
@@ -56,9 +56,9 @@
 
     ?set-stack  ?items       ?instruction        ?get-stack     ?expected
     :complex    (list (->Complex 1 2))
-                             :complex-conjugate  :complex       (list (->Complex 1 -2))
+                             :complex-conjugate  :exec        (list (->Complex 1 -2))
     :complex    (list (->Complex 0 0))
-                             :complex-conjugate  :complex       (list (->Complex 0 0))
+                             :complex-conjugate  :exec        (list (->Complex 0 0))
     )
 
 
@@ -70,9 +70,9 @@
 
     ?set-stack  ?items       ?instruction        ?get-stack     ?expected
     :complex    (list (->Complex 1 2) (->Complex 3 4))
-                             :complex-divide        :complex       (list (->Complex 11/5 -2/5))
+                             :complex-divide        :exec       (list (->Complex 11/5 -2/5))
     :complex    (list (->Complex 1.3 2/3) (->Complex ∞ 4))
-                             :complex-divide        :complex       (list (->Complex ∞ -∞))
+                             :complex-divide        :exec       (list (->Complex ∞ -∞))
     )
 
 
@@ -85,19 +85,19 @@
     ?set-stack  ?items       ?instruction        ?get-stack     ?expected
 
     :complex    (list (->Complex 1M 2/3) (->Complex 3/7 4M))
-                             :complex-divide        :complex       '()
+                             :complex-divide        :exec       '()
     :complex    (list (->Complex 1M 2/3) (->Complex 3/7 4M))
                              :complex-divide        :error       '({:item "Non-terminating decimal expansion; no exact representable decimal result.", :step 0})
 
 
     :complex    (list (->Complex ∞ -∞) (->Complex -∞ -∞))
-                             :complex-divide        :complex       '()
+                             :complex-divide        :exec       '()
     :complex    (list (->Complex ∞ -∞) (->Complex ∞ -∞))
                              :complex-divide        :error       '({:item ":complex-divide produced NaN", :step 0})
 
 
     :complex    (list (->Complex 0 0) (->Complex 2 7))
-                             :complex-divide        :complex       '()
+                             :complex-divide        :exec       '()
     :complex    (list (->Complex 0 0) (->Complex 2 7))
                              :complex-divide        :error       '({:item "Divide by zero", :step 0})
    )
@@ -113,9 +113,9 @@
 
     ?set-stack  ?items       ?instruction        ?get-stack     ?expected
     :complex    (list (->Complex 1 2) (->Complex 3 4))
-                             :complex-multiply        :complex       (list (->Complex -5 10))
+                             :complex-multiply        :exec       (list (->Complex -5 10))
     :complex    (list (->Complex 1M 2/3) (->Complex ∞ 4))
-                             :complex-multiply        :complex       (list (->Complex ∞ ∞))
+                             :complex-multiply        :exec       (list (->Complex ∞ ∞))
     )
 
 
@@ -128,13 +128,13 @@
     ?set-stack  ?items       ?instruction        ?get-stack     ?expected
 
     :complex    (list (->Complex 1M 2/3) (->Complex 3/7 4M))
-                             :complex-multiply        :complex       '()
+                             :complex-multiply        :exec       '()
     :complex    (list (->Complex 1M 2/3) (->Complex 3/7 4M))
                              :complex-multiply        :error       '({:step 0, :item "Non-terminating decimal expansion; no exact representable decimal result."})
 
 
     :complex    (list (->Complex -∞ 1) (->Complex ∞ 3))
-                             :complex-multiply        :complex       '()
+                             :complex-multiply        :exec       '()
     :complex    (list (->Complex -∞ 1) (->Complex ∞ 3))
                              :complex-multiply        :error       '({:item ":complex-multiply produced NaN", :step 0})
    )
@@ -151,13 +151,13 @@
     ?set-stack  ?items       ?instruction        ?get-stack     ?expected
 
     :complex    (list (->Complex 3 4))
-                             :complex-norm        :scalar        '(5)
+                             :complex-norm        :exec        '(5)
     :complex    (list (->Complex 0 0))
-                             :complex-norm        :scalar        '(0)
+                             :complex-norm        :exec        '(0)
     :complex    (list (->Complex 3/7 4/7))
-                             :complex-norm        :scalar        '(5/7)
+                             :complex-norm        :exec        '(5/7)
     :complex    (list (->Complex -3/7 -4/7))
-                             :complex-norm        :scalar        '(5/7)
+                             :complex-norm        :exec        '(5/7)
     )
 
 
@@ -170,7 +170,7 @@
     ?set-stack  ?items       ?instruction        ?get-stack     ?expected
 
     :complex    (list (->Complex 1/3 4M))
-                             :complex-norm        :scalar        '()
+                             :complex-norm        :exec        '()
     :complex    (list (->Complex 1/3 4M))
                              :complex-norm        :error         '({:item "Non-terminating decimal expansion; no exact representable decimal result.", :step 0})
     )
@@ -187,10 +187,10 @@
     ?new-stacks                ?instruction             ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:complex (list (complexify 2 3))
-     :scalar  '(2)}           :complex-scale    {:complex (list (complexify 4 6))}
+     :scalar  '(2)}           :complex-scale    {:exec (list (complexify 4 6))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:complex (list (complexify 2M 3))
-     :scalar  '(3N)}           :complex-scale  {:complex (list (complexify 6M 9N))}
+     :scalar  '(3N)}           :complex-scale  {:exec (list (complexify 6M 9N))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
 
@@ -204,7 +204,7 @@
     ?new-stacks                ?instruction             ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:complex (list (complexify 2M 3M))
-     :scalar  '(2/3)}        :complex-scale    {:complex '()
+     :scalar  '(2/3)}        :complex-scale    {:exec '()
                                                 :error '({:item "Non-terminating decimal expansion; no exact representable decimal result.", :step 0})}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
@@ -219,10 +219,10 @@
     ?new-stacks                ?instruction             ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:complex (list (complexify 2 3))
-     :scalar  '(2)}           :complex-shift    {:complex (list (complexify 4 5))}
+     :scalar  '(2)}           :complex-shift    {:exec (list (complexify 4 5))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:complex (list (complexify 2M 3))
-     :scalar  '(3N)}           :complex-shift  {:complex (list (complexify 5M 6N))}
+     :scalar  '(3N)}           :complex-shift  {:exec (list (complexify 5M 6N))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
 
@@ -236,7 +236,7 @@
     ?new-stacks                ?instruction             ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:complex (list (complexify 2M 3M))
-     :scalar  '(2/3)}        :complex-shift    {:complex '()
+     :scalar  '(2/3)}        :complex-shift    {:exec '()
                                                 :error '({:item "Non-terminating decimal expansion; no exact representable decimal result.", :step 0})}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
@@ -251,9 +251,9 @@
 
     ?set-stack  ?items       ?instruction        ?get-stack     ?expected
     :complex    (list (->Complex 1 2) (->Complex 3 4))
-                             :complex-subtract        :complex       (list (->Complex 2 2))
+                             :complex-subtract        :exec       (list (->Complex 2 2))
     :complex    (list (->Complex 1M 2/3) (->Complex ∞ 4))
-                             :complex-subtract        :complex       (list (->Complex ∞ 10/3))
+                             :complex-subtract        :exec       (list (->Complex ∞ 10/3))
     )
 
 
@@ -265,14 +265,14 @@
 
     ?set-stack  ?items       ?instruction        ?get-stack     ?expected
     :complex    (list (->Complex 1M 2/3) (->Complex 3/7 4M))
-                         :complex-subtract        :complex       '()
+                         :complex-subtract        :exec       '()
     :complex    (list (->Complex 1M 2/3) (->Complex 3/7 4M))
                          :complex-subtract        :error       '({:step 0, :item "Non-terminating decimal expansion; no exact representable decimal result."})
 
 
 
     :complex    (list (->Complex ∞ 2/3) (->Complex ∞ 4M))
-                             :complex-subtract        :complex       '()
+                             :complex-subtract        :exec       '()
     :complex    (list (->Complex ∞ 2/3) (->Complex ∞ 4))
                              :complex-subtract        :error       '({:item ":complex-subtract produced NaN", :step 0})
    )
@@ -286,9 +286,9 @@
         ?set-stack ?items complex-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items       ?instruction     ?get-stack     ?expected
-    :scalar     '(1 2)    :scalar-complexify   :complex   (list (->Complex 1 0))
-    :scalar     '(9 0)    :scalar-complexify   :complex   (list (->Complex 9 0))
-    :scalar     '()       :scalar-complexify   :complex   (list )
+    :scalar     '(1 2)    :scalar-complexify   :exec    (list (->Complex 1 0))
+    :scalar     '(9 0)    :scalar-complexify   :exec    (list (->Complex 9 0))
+    :scalar     '()       :scalar-complexify   :exec    (list )
    )
 
 
@@ -298,7 +298,7 @@
         ?set-stack ?items complex-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items   ?instruction     ?get-stack     ?expected
-    :complex    '()      :complex-zero    :complex   (list (->Complex 0 0))
+    :complex    '()      :complex-zero    :exec   (list (->Complex 0 0))
    )
 
 
@@ -310,13 +310,13 @@
 
     ?set-stack  ?items    ?instruction     ?get-stack     ?expected
     :complex    (list (->Complex 1 1))
-                    :complex-reciprocal    :complex  (list (->Complex 1/2 -1/2))
+                    :complex-reciprocal    :exec  (list (->Complex 1/2 -1/2))
     :complex    (list (->Complex 1/3 1/4))
-                    :complex-reciprocal    :complex  (list (->Complex 48/25 -36/25))
+                    :complex-reciprocal    :exec  (list (->Complex 48/25 -36/25))
     :complex    (list (->Complex 0 1))
-                    :complex-reciprocal    :complex  (list (->Complex 0 -1))
+                    :complex-reciprocal    :exec  (list (->Complex 0 -1))
     :complex    (list (->Complex 1M 2M))
-                    :complex-reciprocal    :complex  (list (->Complex 0.2M -0.4M))
+                    :complex-reciprocal    :exec  (list (->Complex 0.2M -0.4M))
     )
 
 
@@ -328,24 +328,24 @@
 
     ?set-stack  ?items    ?instruction     ?get-stack     ?expected
     :complex    (list (->Complex 1 ∞))
-                    :complex-reciprocal    :complex       '()
+                    :complex-reciprocal    :exec       '()
     :complex    (list (->Complex 1 ∞))
                     :complex-reciprocal    :error        '({:step 0, :item ":complex-reciprocal produced NaN"})
 
 
     :complex    (list (->Complex 1 cljNaN))
-                    :complex-reciprocal    :complex       '()
+                    :complex-reciprocal    :exec       '()
     :complex    (list (->Complex 1 cljNaN))
                     :complex-reciprocal    :error        '({:step 0, :item ":complex-reciprocal produced NaN"})
 
 
     :complex    (list (->Complex 1M 1/3))
-                    :complex-reciprocal    :complex       '()
+                    :complex-reciprocal    :exec       '()
     :complex    (list (->Complex 1M 1/3))
                     :complex-reciprocal    :error        '({:item "Non-terminating decimal expansion; no exact representable decimal result.", :step 0})
 
     :complex    (list (->Complex 0 0))
-                    :complex-reciprocal    :complex       '()
+                    :complex-reciprocal    :exec       '()
     :complex    (list (->Complex 0 0))
                     :complex-reciprocal    :error        '({:item "Divide by zero", :step 0})
 
@@ -361,13 +361,13 @@
 
     ?set-stack  ?items    ?instruction     ?get-stack     ?expected
     :complex    (list (->Complex 1 1))
-                    :complex-infinite?    :boolean          '(false)
+                    :complex-infinite?    :exec           '(false)
     :complex    (list (->Complex ∞ 1))
-                    :complex-infinite?    :boolean          '(true)
+                    :complex-infinite?    :exec           '(true)
     :complex    (list (->Complex 1 ∞))
-                    :complex-infinite?    :boolean          '(true)
+                    :complex-infinite?    :exec           '(true)
     :complex    (list (->Complex -∞ ∞))
-                    :complex-infinite?    :boolean          '(true)
+                    :complex-infinite?    :exec           '(true)
 )
 
 
@@ -379,7 +379,7 @@
 
     ?set-stack  ?items    ?instruction     ?get-stack     ?expected
     :complex    (list (->Complex 2 3))
-                        :complex-parts          :exec      '((3 2))
+                        :complex-parts       :exec        '((3 2))
     )
 
 
