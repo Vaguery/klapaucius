@@ -221,15 +221,15 @@
     (eval (list
       `build-instruction
       instruction-name
-      (str "`:" instruction-name "` pops the top three items from the `" typename "` stack; call them `A`, `B` and `C`, respectively. It pushes them back so that top-to-bottom order is now `'(C A B ...)`")
+      (str "`:" instruction-name "` pops the top three items from the `" typename "` stack; call them `A`, `B` and `C`, respectively. It pushes a code block to `:exec` so that the resulting `" typename "` stack will read `'(C A B ...)`")
       :tags #{:combinator}
 
       `(consume-top-of ~typename :as :arg1)
       `(consume-top-of ~typename :as :arg2)
       `(consume-top-of ~typename :as :arg3)
-      `(push-onto ~typename :arg2)
-      `(push-onto ~typename :arg1)
-      `(push-onto ~typename :arg3)))))
+      `(calculate [:arg1 :arg2 :arg3] #(list %2 %1 %3) :as :result)
+      `(push-onto :exec :result)
+      ))))
 
 
 
@@ -241,8 +241,8 @@
     (eval (list
       `build-instruction
       instruction-name
-      (str "`:" instruction-name "` pops the top item from the `" typename
-        "` stack and the top `:scalar`. The `:scalar` is used to select a valid index; unlike most other indexed arguments, it is thresholded. The top item on the stack is _moved_ so that it is in the indexed position in the resulting stack.")
+      (str "`:" instruction-name "` pops the entire `" typename
+        "` stack and the top `:scalar`. The `:scalar` is used to select a valid index; unlike most other indexed arguments, this is _thresholded_. The stack is returned (to `:exec`) as a code block containing the original top item moved to the indexed position.")
       :tags #{:combinator}
 
       `(consume-top-of :scalar :as :which)
@@ -251,10 +251,13 @@
       `(calculate [:which :how-many]
         #(if (zero? %2) 0 (max 0 (min (Math/ceil %1) %2))) :as :index)
       `(consume-stack ~typename :as :oldstack)
-      `(calculate [:index :shoved-item :oldstack]
-        #(util/list! (concat (take %1 %3) (list %2) (drop %1 %3)))
-          :as :newstack)
-      `(replace-stack ~typename :newstack)
+      `(calculate [:index :oldstack]
+        #(util/list! (reverse (take %1 %2))) :as :old-top)
+      `(calculate [:index :oldstack]
+        #(util/list! (reverse (drop %1 %2))) :as :old-bottom)
+      `(calculate [:old-top :shoved-item :old-bottom]
+        #(list %3 %2 %1) :as :results)
+      `(push-onto :exec :results)
       ))))
 
 
@@ -296,8 +299,17 @@
           #(if (zero? %2)
             0
             (max 0 (min (Math/ceil %1) (dec %2)))) :as :index)
-      `(consume-nth-of ~typename :at :index :as :yanked-item)
-      `(push-onto ~typename :yanked-item)))))
+      `(consume-stack ~typename :as :oldstack)
+      `(calculate [:index :oldstack]
+        #(if (empty? %2) nil (nth %2 %1)) :as :yanked-item)
+      `(calculate [:index :oldstack]
+        #(util/list! (reverse (take %1 %2))) :as :old-top)
+      `(calculate [:index :oldstack]
+        #(util/list! (reverse (drop (inc %1) %2))) :as :old-bottom)
+      `(calculate [:old-bottom :yanked-item :old-top]
+        #(if (nil? %2) (list %1 %3) (list %1 %3 %2)) :as :results)
+      `(push-onto :exec :results)
+      ))))
 
 
 
@@ -309,11 +321,21 @@
     (eval (list
       `build-instruction
       instruction-name
-      (str "`:" instruction-name "` pops the top `:scalar`. The `:scalar` is brought into range as an index by forcing it into the range `[0,stack_length-1]` (inclusive), and then the item _currently_ found in the indexed position in the `" typename "` stack is _copied_ so that a duplicate of it is on top.")
+      (str "`:" instruction-name "` pops the top `:scalar`. The `:scalar` is brought into range as an index by forcing it into the range `[0,stack_length-1]` (inclusive), and then the item _currently_ found in the indexed position in the `" typename "` stack is _copied_ so that a duplicate of it is on top. The entire stack is pushed to `:exec` in a code block.")
       :tags #{:combinator}
 
       `(consume-top-of :scalar :as :which)
       `(count-of ~typename :as :how-many)
-      `(calculate [:which :how-many] #(min (max (Math/ceil %1) 0) (dec %2)) :as :index)
-      `(save-nth-of ~typename :at :index :as :yanked-item)
-      `(push-onto ~typename :yanked-item)))))
+      `(calculate [:which :how-many]
+          #(if (zero? %2)
+            0
+            (max 0 (min (Math/ceil %1) (dec %2)))) :as :index)
+      `(consume-stack ~typename :as :oldstack)
+      `(calculate [:index :oldstack]
+        #(if (empty? %2) nil (nth %2 %1)) :as :yanked-item)
+      `(calculate [:oldstack :yanked-item]
+        #(if (nil? %2)
+          (util/list! (reverse %1))
+          (list (util/list! (reverse %1)) %2)) :as :results)
+      `(push-onto :exec :results)
+      ))))

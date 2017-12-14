@@ -203,12 +203,12 @@
 
 (fact "a generated rotate-instruction has a reasonable docstring"
   (:docstring (rotate-instruction i-know-foo)) =>
-    "`:foo-rotate` pops the top three items from the `:foo` stack; call them `A`, `B` and `C`, respectively. It pushes them back so that top-to-bottom order is now `'(C A B ...)`")
+    (contains "`:foo-rotate`")
+    )
 
 
 (fact "a generated shove-instruction has a reasonable docstring"
-  (:docstring (shove-instruction i-know-foo)) =>
-    #"`:foo-shove` pops the top item from the `:foo` stack")
+  (:docstring (shove-instruction i-know-foo)) => #"`:foo-shove`")
 
 
 (fact "a generated swap-instruction has a reasonable docstring"
@@ -238,6 +238,6 @@
   (:needs (swap-instruction i-know-foo)) => {:foo 2}
   (:products (swap-instruction i-know-foo)) => {:exec 1}
 
-  (:needs (yankdup-instruction i-know-foo)) => {:foo 1, :scalar 1}
-  (:products (yankdup-instruction i-know-foo)) => {:foo 1}
+  (:needs (yankdup-instruction i-know-foo)) => {:scalar 1}
+  (:products (yankdup-instruction i-know-foo)) => {:exec 1}
   )

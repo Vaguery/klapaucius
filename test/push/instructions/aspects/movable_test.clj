@@ -104,12 +104,12 @@
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(11 22 33 44)}) foo-rotate)
         :foo-rotate)
-      :foo) => '(33 11 22 44)
+      :exec) => '((22 11 33))
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(11 22 33)}) foo-rotate)
         :foo-rotate)
-      :foo) => '(33 11 22)
+      :exec) => '((22 11 33))
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(11 22)}) foo-rotate)
@@ -133,52 +133,52 @@
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(:a :b :c) :scalar '(1)}) foo-shove)
         :foo-shove)
-      :foo) => '(:b :a :c)
+      :exec) => '(((:c) :a (:b)))
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(:a :b :c) :scalar '(0)}) foo-shove)
         :foo-shove)
-      :foo) => '(:a :b :c)
+      :exec) => '(((:c :b) :a ()))
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(:a :b :c) :scalar '(2)}) foo-shove)
         :foo-shove)
-      :foo) => '(:b :c :a)
+      :exec) => '((() :a (:c :b)))
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(:a :b :c) :scalar '(-1)}) foo-shove)
         :foo-shove)
-      :foo) => '(:a :b :c)
+      :exec) => '(((:c :b) :a ()))
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(:a :b :c) :scalar '(-1182)}) foo-shove)
         :foo-shove)
-      :foo) => '(:a :b :c)
+      :exec) => '(((:c :b) :a ()))
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(:a :b :c :d :e) :scalar '(387)}) foo-shove)
         :foo-shove)
-      :foo) => '(:b :c :d :e :a)
+      :exec) => '((() :a (:e :d :c :b)))
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(:a :b :c :d :e) :scalar '(38702777777777777744444444444444444444444N)}) foo-shove)
         :foo-shove)
-      :foo) => '(:b :c :d :e :a)
+      :exec) => '((() :a (:e :d :c :b)))
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(:a :b :c :d :e) :scalar '(-38702777777777777744444444444444444444444N)}) foo-shove)
         :foo-shove)
-      :foo) => '(:a :b :c :d :e)
+      :exec) => '(((:e :d :c :b) :a ()))
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(:a :b :c :d :e) :scalar '(387/13)}) foo-shove)
         :foo-shove)
-      :foo) => '(:b :c :d :e :a)
+      :exec) => '((() :a (:e :d :c :b)))
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter :stacks {:foo '(:a :b :c :d :e) :scalar '(7.71753612845e612M)}) foo-shove)
         :foo-shove)
-      :foo) => '(:b :c :d :e :a)
+      :exec) => '((() :a (:e :d :c :b)))
     ))
 
 
@@ -205,64 +205,69 @@
   (let [foo-yank (yank-instruction (make-type :foo))]
     (class foo-yank) => push.instructions.core.Instruction
     (:tags foo-yank) => #{:combinator}
-    (:needs foo-yank) => {:foo 1, :scalar 1}
+    (:needs foo-yank) => {:scalar 1}
     (:token foo-yank) => :foo-yank
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter
           :stacks {:foo '(:a :b :c :d :e) :scalar '(2)}) foo-yank)
         :foo-yank)
-      :foo) => '(:c :a :b :d :e)
+      :exec) => '(((:e :d) (:b :a) :c))
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter
           :stacks {:foo '(:a :b :c :d :e) :scalar '(0)}) foo-yank)
         :foo-yank)
-      :foo) => '(:a :b :c :d :e)
+      :exec) => '(((:e :d :c :b) () :a))
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter
           :stacks {:foo '(:a :b :c :d :e) :scalar '(-1)}) foo-yank)
         :foo-yank)
-      :foo) => '(:a :b :c :d :e)
+      :exec) => '(((:e :d :c :b) () :a))
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter
           :stacks {:foo '(:a :b :c :d :e) :scalar '(4)}) foo-yank)
         :foo-yank)
-      :foo) => '(:e :a :b :c :d)
+      :exec) => '((() (:d :c :b :a) :e))
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter
           :stacks {:foo '(:a :b :c :d :e) :scalar '(19122)}) foo-yank)
         :foo-yank)
-      :foo) => '(:e :a :b :c :d)
+      :exec) => '((() (:d :c :b :a) :e))
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter
           :stacks {:foo '(:a :b :c :d :e) :scalar '(-8.555)}) foo-yank)
         :foo-yank)
-      :foo) => '(:a :b :c :d :e)
+      :exec) => '(((:e :d :c :b) () :a))
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter
           :stacks {:foo '(:a :b :c :d :e) :scalar '(19122/17)}) foo-yank)
         :foo-yank)
-      :foo) => '(:e :a :b :c :d)
+      :exec) => '((() (:d :c :b :a) :e))
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter
           :stacks {:foo '(:a :b :c :d :e) :scalar '(5/2)}) foo-yank)
         :foo-yank)
-      :foo) => '(:d :a :b :c :e)
+      :exec) => '(((:e) (:c :b :a) :d))
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter
           :stacks {:foo '(:a :b :c :d :e) :scalar '(-666666666666.55555M)}) foo-yank)
         :foo-yank)
-      :foo) => '(:a :b :c :d :e)
-
-    ))
+      :exec) => '(((:e :d :c :b) () :a))
+    (get-stack
+      (i/execute-instruction
+        (i/register-instruction (m/basic-interpreter
+          :stacks {:foo '() :scalar '(2)}) foo-yank)
+        :foo-yank)
+      :exec) => '((() ()))
+      ))
 
 
 
@@ -270,62 +275,62 @@
   (let [foo-yankdup (yankdup-instruction (make-type :foo))]
     (class foo-yankdup) => push.instructions.core.Instruction
     (:tags foo-yankdup) => #{:combinator}
-    (:needs foo-yankdup) => {:foo 1, :scalar 1}
+    (:needs foo-yankdup) => {:scalar 1}
     (:token foo-yankdup) => :foo-yankdup
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter
           :stacks {:foo '(:a :b :c :d :e) :scalar '(2)}) foo-yankdup)
         :foo-yankdup)
-      :foo) => '(:c :a :b :c :d :e)
+      :exec) => '(((:e :d :c :b :a) :c))
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter
           :stacks {:foo '(:a :b :c :d :e) :scalar '(0)}) foo-yankdup)
         :foo-yankdup)
-      :foo) => '(:a :a :b :c :d :e)
+      :exec) => '(((:e :d :c :b :a) :a))
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter
           :stacks {:foo '(:a :b :c :d :e) :scalar '(-1)}) foo-yankdup)
         :foo-yankdup)
-      :foo) => '(:a :a :b :c :d :e)
+      :exec) => '(((:e :d :c :b :a) :a))
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter
           :stacks {:foo '(:a :b :c :d :e) :scalar '(4)}) foo-yankdup)
         :foo-yankdup)
-      :foo) => '(:e :a :b :c :d :e)
+      :exec) => '(((:e :d :c :b :a) :e))
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter
           :stacks {:foo '(:a :b :c :d :e) :scalar '(912)}) foo-yankdup)
         :foo-yankdup)
-      :foo) => '(:e :a :b :c :d :e)
+      :exec) => '(((:e :d :c :b :a) :e))
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter
           :stacks {:foo '(:a :b :c :d :e) :scalar '(9.7e82)}) foo-yankdup)
         :foo-yankdup)
-      :foo) => '(:e :a :b :c :d :e)
+      :exec) => '(((:e :d :c :b :a) :e))
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter
           :stacks {:foo '(:a :b :c :d :e) :scalar '(912/7)}) foo-yankdup)
         :foo-yankdup)
-      :foo) => '(:e :a :b :c :d :e)
+      :exec) => '(((:e :d :c :b :a) :e))
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter
           :stacks {:foo '(:a :b :c :d :e) :scalar '(-912876.5512M)}) foo-yankdup)
         :foo-yankdup)
-      :foo) => '(:a :a :b :c :d :e)
+      :exec) => '(((:e :d :c :b :a) :a))
     (get-stack
       (i/execute-instruction
         (i/register-instruction (m/basic-interpreter
-          :stacks {:foo '(:a :b :c :d :e) :scalar '(12/7)}) foo-yankdup)
+          :stacks {:foo '() :scalar '(8)}) foo-yankdup)
         :foo-yankdup)
-      :foo) => '(:c :a :b :c :d :e)
+      :exec) => '(())
     ))
 
 

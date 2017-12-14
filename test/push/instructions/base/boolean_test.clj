@@ -371,7 +371,7 @@
     ?set-stack  ?items             ?instruction        ?get-stack     ?expected
     ;; just shifting things
     :boolean    '(false true true false)
-                                   :boolean-rotate      :boolean       '(true false true false)
+                                   :boolean-rotate      :exec       '((true false true))
     ;; missing args
     :boolean    '(false true)      :boolean-rotate      :boolean       '(false true)
     :boolean    '(true)            :boolean-rotate      :boolean       '(true)
