@@ -496,7 +496,7 @@
      :scalar '(71.71)
      :tagspace (list taggy)}    :foo-tag     {:foo '()
                                               :scalar  '()
-                                              :tagspace (list
+                                              :exec (list
                                                 (assoc-in taggy
                                                           [:contents 71.71]
                                                           "bar"))}
@@ -505,6 +505,7 @@
      :scalar '(71.71)
      :tagspace (list taggy)}    :foo-tag     {:foo '()
                                               :scalar  '(71.71)
+                                              :error '({:item ":foo-tag missing arguments" :step 0})
                                               :tagspace (list taggy)}
     ))
 
@@ -523,16 +524,16 @@
     ?new-stacks              ?instruction     ?expected
 
     {:foo '(9 9 9 9 9 9)}    :foo-tagstack   {:foo '(9 9 9 9 9 9)
-                                              :tagspace (list
+                                              :exec (list
                                                 (make-tagspace
                                                   {0 9 1 9 2 9 3 9 4 9 5 9}))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foo '()}               :foo-tagstack   {:foo '()
-                                              :tagspace (list
+                                              :exec (list
                                                 (make-tagspace))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {}                       :foo-tagstack   {:foo '()
-                                              :tagspace (list
+                                              :exec (list
                                                 (make-tagspace))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ))
