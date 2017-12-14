@@ -28,9 +28,9 @@
                     (assoc-in , [:stacks :foo]  '([1 2 3 4])) ) ]
 
     (class foo-comprehension) => push.instructions.core.Instruction
-    
+
     (:needs foo-comprehension) => {:foo 1}
-    (:products foo-comprehension) => {:generator 1}
+    ; (:products foo-comprehension) => {:generator 1}
 
     (:token foo-comprehension) => :foo-comprehension
 
@@ -41,11 +41,11 @@
     (get-stack
       (i/execute-instruction (i/register-instruction context foo-comprehension) :foo-comprehension)
       :foo) => '()
-    
+
     (let [new-g (first (get-stack
                           (i/execute-instruction
                             (i/register-instruction context foo-comprehension) :foo-comprehension)
-                          :generator))]
+                          :exec))]
       (:state new-g) => '(1 (2 3 4))
       (:origin new-g) => '(1 (2 3 4))
       (:state (step-generator new-g)) => '(2 (3 4))
@@ -60,7 +60,7 @@
                 (step-generator
                   (step-generator
                     (step-generator new-g)))) => nil
-      ))) 
+      )))
 
 
 
@@ -72,9 +72,9 @@
                     (assoc-in , [:stacks :foo]  '("abcd")) ) ]
 
     (class foo-cycler) => push.instructions.core.Instruction
-    
+
     (:needs foo-cycler) => {:foo 1}
-    (:products foo-cycler) => {:generator 1}
+    ; (:products foo-cycler) => {:generator 1}
 
     (:token foo-cycler) => :foo-cycler
 
@@ -85,11 +85,11 @@
     (get-stack
       (i/execute-instruction (i/register-instruction context foo-cycler) :foo-cycler)
       :foo) => '()
-    
+
     (let [new-g (first (get-stack
                           (i/execute-instruction
                             (i/register-instruction context foo-cycler) :foo-cycler)
-                          :generator))]
+                          :exec))]
       (:state new-g) => '(\a (\b \c \d \a))
       (:origin new-g) => '(\a (\b \c \d \a))
       (:state (step-generator new-g)) => '(\b (\c \d \a \b))
@@ -102,20 +102,20 @@
 
     (let [new-g (first (get-stack
                           (i/execute-instruction
-                            (i/register-instruction 
+                            (i/register-instruction
                               (set-stack context :foo '([])) foo-cycler) :foo-cycler)
-                          :generator))]
+                          :exec))]
       new-g => nil
       )
 
     (let [new-g (first (get-stack
                           (i/execute-instruction
-                            (i/register-instruction 
+                            (i/register-instruction
                               (set-stack context :foo '(88)) foo-cycler) :foo-cycler)
-                          :generator))]
+                          :exec))]
       new-g => nil
       )
-    )) 
+    ))
 
 
 
@@ -127,9 +127,9 @@
                     (assoc-in , [:stacks :foo]  '("abcd")) ) ]
 
     (class foo-sampler) => push.instructions.core.Instruction
-    
+
     (:needs foo-sampler) => {:foo 1}
-    (:products foo-sampler) => {:generator 1}
+    ; (:products foo-sampler) => {:generator 1}
 
     (:token foo-sampler) => :foo-sampler
 
@@ -142,18 +142,18 @@
       :foo) => '()
 
 
-    (fact 
+    (fact
       (against-background (rand-nth anything) =streams=> (cycle [\X \Y \Z \W]))
       (let [new-g (first (get-stack
                             (i/execute-instruction
                               (i/register-instruction context foo-sampler) :foo-sampler)
-                            :generator))]
+                            :exec))]
         (:state new-g) => \X
         (:origin new-g) => \Y
         (:state (step-generator new-g)) => \Z
-          
+
         (:state (step-generator
-                  (step-generator new-g))) => \X 
+                  (step-generator new-g))) => \X
         (:state (step-generator
                   (step-generator
                     (step-generator new-g)))) => \W
@@ -161,18 +161,17 @@
 
     (let [new-g (first (get-stack
                           (i/execute-instruction
-                            (i/register-instruction 
+                            (i/register-instruction
                               (set-stack context :foo '([])) foo-sampler) :foo-sampler)
-                          :generator))]
+                          :exec))]
       new-g => nil
       )
 
     (let [new-g (first (get-stack
                           (i/execute-instruction
-                            (i/register-instruction 
+                            (i/register-instruction
                               (set-stack context :foo '(88)) foo-sampler) :foo-sampler)
-                          :generator))]
+                          :exec))]
       new-g => nil
       )
-    )) 
-
+    ))

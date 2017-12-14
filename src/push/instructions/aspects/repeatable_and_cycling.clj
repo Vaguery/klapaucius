@@ -87,7 +87,7 @@
                 (dissect-collection %)
                 nil)
               (partial dissect-step)) :as :g)
-      `(push-onto :generator :g)))))
+      `(push-onto :exec :g)))))
 
 
 
@@ -107,7 +107,7 @@
           #(g/make-generator
               (cycle-collection %)
               (partial cycle-step)) :as :g)
-      `(push-onto :generator :g)))))
+      `(push-onto :exec :g)))))
 
 
 
@@ -128,7 +128,7 @@
               (if (splittable? %1) (rand-nth (seq %1)) nil)
               (rand-nth-seq-function %1)
               (if (splittable? %1) (rand-nth (seq %1)) nil)) :as :g)
-      `(push-onto :generator :g)))))
+      `(push-onto :exec :g)))))
 
 
 
@@ -150,7 +150,7 @@
       `(consume-top-of ~typename :as :arg)
       `(calculate [:arg]
           #(g/make-generator %1 (partial (constantly %1))) :as :g)
-      `(push-onto :generator :g)))))
+      `(push-onto :exec :g)))))
 
 
 
@@ -171,7 +171,7 @@
           #(g/make-generator
             (if (< (util/count-collection-points %1) %2) %1 nil)
               (partial (constantly %1))) :as :g)
-      `(push-onto :generator :g)))))
+      `(push-onto :exec :g)))))
 
 
 
@@ -191,4 +191,4 @@
           #(g/make-generator
               (dissect-collection %)
               (partial dissect-step)) :as :g)
-      `(push-onto :generator :g)))))
+      `(push-onto :exec :g)))))

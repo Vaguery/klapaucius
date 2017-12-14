@@ -28,9 +28,9 @@
                     (assoc-in , [:stacks :foo]  '(1234)) ) ]
 
     (class foo-echo) => push.instructions.core.Instruction
-    
+
     (:needs foo-echo) => {:foo 1}
-    (:products foo-echo) => {:generator 1}
+    ; (:products foo-echo) => {:generator 1}
 
     (:token foo-echo) => :foo-echo
 
@@ -41,13 +41,13 @@
     (get-stack
       (i/execute-instruction (i/register-instruction context foo-echo) :foo-echo)
       :foo) => '()
-    
+
     (let [new-g (first (get-stack
                           (i/execute-instruction
                             (i/register-instruction context foo-echo) :foo-echo)
-                          :generator))]
+                          :exec))]
       (step-generator new-g) => new-g
-))) 
+)))
 
 
 
@@ -59,9 +59,9 @@
                     (assoc-in , [:stacks :foo]  '(1234 56 (7) [8 9])) ) ]
 
     (class foo-echoall) => push.instructions.core.Instruction
-    
+
     (:needs foo-echoall) => {}
-    (:products foo-echoall) => {:generator 1}
+    ; (:products foo-echoall) => {:generator 1}
 
     (:token foo-echoall) => :foo-echoall
 
@@ -69,17 +69,18 @@
 
     (i/contains-at-least? context :foo 1) => true
 
-    (get-stack
-      (i/execute-instruction (i/register-instruction context foo-echoall) :foo-echoall)
-      :foo) => '(1234 56 (7) [8 9])
-    
+    (type (first
+      (get-stack
+        (i/execute-instruction (i/register-instruction context foo-echoall) :foo-echoall)
+        :exec))) => push.type.definitions.generator.Generator
+
     (let [stepped (i/execute-instruction
                             (i/register-instruction context foo-echoall) :foo-echoall)
-          new-g (first (get-stack stepped :generator))]
+          new-g (first (get-stack stepped :exec))]
       (step-generator new-g) => new-g
 
       (:state new-g) => '(1234 56 (7) [8 9])
-))) 
+)))
 
 
 
@@ -91,9 +92,9 @@
                     (assoc-in , [:stacks :foo]  '(1234 56 (7) [8 9])) ) ]
 
     (class foo-rerunall) => push.instructions.core.Instruction
-    
+
     (:needs foo-rerunall) => {}
-    (:products foo-rerunall) => {:generator 1}
+    ; (:products foo-rerunall) => {:generator 1}
 
     (:token foo-rerunall) => :foo-rerunall
 
@@ -101,16 +102,15 @@
 
     (i/contains-at-least? context :foo 1) => true
 
-    (get-stack
+    (type (first (get-stack
       (i/execute-instruction (i/register-instruction context foo-rerunall) :foo-rerunall)
-      :foo) => '(1234 56 (7) [8 9])
-    
+      :exec))) => push.type.definitions.generator.Generator
+
     (let [stepped (i/execute-instruction
                             (i/register-instruction context foo-rerunall) :foo-rerunall)
-          new-g (first (get-stack stepped :generator))]
+          new-g (first (get-stack stepped :exec))]
 
       (:state new-g) => '(1234 (56 (7) [8 9]))
       (:state (step-generator new-g)) => '(56 ((7) [8 9]))
 
-))) 
-
+)))
