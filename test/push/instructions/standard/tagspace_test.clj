@@ -19,7 +19,7 @@
             ?expected)
 
     ?set-stack  ?items      ?instruction    ?get-stack     ?expected
-    :tagspace   '()         :tagspace-new    :tagspace    (list (make-tagspace)))
+    :tagspace   '()         :tagspace-new    :exec    (list (make-tagspace)))
 
 
 
@@ -120,19 +120,19 @@
 
     {:tagspace (list taggy)
      :set '(#{1 5})}          :tagspace-valuefilter
-                                                       {:tagspace
+                                                       {:exec
                                                         (list
                                                           (make-tagspace {2 1, 6 5, 8 1}))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:tagspace (list taggy)
      :set '(#{:a :b})}        :tagspace-valuefilter
-                                                       {:tagspace
+                                                       {:exec
                                                         (list
                                                           (make-tagspace))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:tagspace (list taggy)
      :set '(#{})}             :tagspace-valuefilter
-                                                       {:tagspace
+                                                       {:exec
                                                         (list
                                                           (make-tagspace))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -154,18 +154,18 @@
 
     {:tagspace (list taggy)
      :set '(#{2 3 4})}          :tagspace-valueremove
-                                                       {:tagspace
+                                                       {:exec
                                                         (list
                                                           (make-tagspace {2 1,6 5,8 1}))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:tagspace (list taggy)
      :set '(#{:a})}             :tagspace-valueremove
-                                                       {:tagspace
+                                                       {:exec
                                                         (list taggy)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:tagspace (list taggy)
      :set '(#{1})}              :tagspace-valueremove
-                                                       {:tagspace
+                                                       {:exec
                                                         (list
                                                           (make-tagspace {-4 3, 6 5}))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -281,53 +281,53 @@
     ?new-stacks                ?instruction          ?expected
     {:exec '()
      :scalar '(3)
-     :tagspace (list taggy)}  :tagspace-lookup       {:exec '(4)
+     :tagspace (list taggy)}  :tagspace-lookup    {:exec (list (list taggy 4))
                                                       :scalar  '()
-                                                      :tagspace (list taggy)}
+                                                      :tagspace '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec '()
      :scalar '(6)
-     :tagspace (list taggy)}    :tagspace-lookup     {:exec '(2)
+     :tagspace (list taggy)}    :tagspace-lookup  {:exec (list (list taggy 2))
                                                       :scalar  '()
-                                                      :tagspace (list taggy)}
+                                                      :tagspace '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec '()
      :scalar '(9.1)
-     :tagspace (list taggy)}    :tagspace-lookup     {:exec '(6)
+     :tagspace (list taggy)}    :tagspace-lookup   {:exec (list (list taggy 6))
                                                       :scalar  '()
-                                                      :tagspace (list taggy)}
+                                                      :tagspace '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec '()
      :scalar '(5/2)
-     :tagspace (list taggy)}    :tagspace-lookup     {:exec '(4)
+     :tagspace (list taggy)}    :tagspace-lookup  {:exec (list (list taggy 4))
                                                       :scalar  '()
-                                                      :tagspace (list taggy)}
+                                                      :tagspace '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec '()
      :scalar (list n/∞)
-     :tagspace (list taggy)}    :tagspace-lookup     {:exec '(2)
+     :tagspace (list taggy)}    :tagspace-lookup  {:exec (list (list taggy 2))
                                                       :scalar  '()
-                                                      :tagspace (list taggy)}
+                                                      :tagspace '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec '()
      :scalar (list n/-∞)
-     :tagspace (list taggy)}    :tagspace-lookup     {:exec '(2)
+     :tagspace (list taggy)}    :tagspace-lookup  {:exec (list (list taggy 2))
                                                       :scalar  '()
-                                                      :tagspace (list taggy)}
+                                                      :tagspace '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec '()
      :scalar '(-1007777778176487612847628374682734823M)
-     :tagspace (list taggy)}    :tagspace-lookup     {:exec '(2)
+     :tagspace (list taggy)}    :tagspace-lookup  {:exec (list (list taggy 2))
                                                       :scalar  '()
-                                                      :tagspace (list taggy)}
+                                                      :tagspace '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec '()
      :scalar '(133)
      :tagspace (list (make-tagspace))}
-                                :tagspace-lookup     {:exec '()
+                                :tagspace-lookup  {:exec (list (list (make-tagspace)))
                                                       :scalar '()
-                                                      :tagspace
-                                                        (list (make-tagspace))}
+                                                      :tagspace '()
+                                                      }
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ))
 
@@ -345,22 +345,22 @@
 
     {:exec '()
      :scalars '([-3 0 3 6 9])
-     :tagspace (list taggy)}    :tagspace-lookupscalars  {:exec     '((4 2 4 2 4))
+     :tagspace (list taggy)}    :tagspace-lookupscalars  {:exec  (list (list taggy (list 4 2 4 2 4)))
                                                           :scalars  '()
-                                                          :tagspace (list taggy)}
+                                                          :tagspace '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec '()
      :scalars '([])
-     :tagspace (list taggy)}    :tagspace-lookupscalars  {:exec     '(())
+     :tagspace (list taggy)}    :tagspace-lookupscalars  {:exec  (list (list taggy ()))
                                                           :scalars  '()
-                                                          :tagspace (list taggy)}
+                                                          :tagspace '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec '()
      :scalars '([-3 0 3 6 9])
      :tagspace (list (make-tagspace))}
-                                :tagspace-lookupscalars  {:exec     '(())
+                                :tagspace-lookupscalars  {:exec  (list (list (make-tagspace) '()))
                                                           :scalars  '()
-                                                          :tagspace (list (make-tagspace))}
+                                                          :tagspace '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ))
 
@@ -371,7 +371,7 @@
 (let
   [taggy (make-tagspace {1M 2 3M 4})]
 (tabular
-  (fact "`:tagspace-lookupscalars` bebefits unusually from the safety of `find-in-tagspace` stability"
+  (fact "`:tagspace-lookupscalars` benefits unusually from the safety of `find-in-tagspace` stability"
     (check-instruction-with-all-kinds-of-stack-stuff
         ?new-stacks tagspace-type ?instruction) => (contains ?expected))
 
@@ -379,15 +379,15 @@
 
     {:exec '()
      :scalars '([1/3 2/7])
-     :tagspace (list taggy)}    :tagspace-lookupscalars  {:exec     '((2 2))
+     :tagspace (list taggy)}    :tagspace-lookupscalars  {:exec (list (list taggy '(2 2)))
                                                           :scalars  '()
-                                                          :tagspace (list taggy)}
+                                                          :tagspace '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec '()
      :scalars (list [13/3 n/∞])
-     :tagspace (list taggy)}    :tagspace-lookupscalars  {:exec     '((2 2))
+     :tagspace (list taggy)}    :tagspace-lookupscalars  {:exec (list (list taggy '(2 2)))
                                                           :scalars  '()
-                                                          :tagspace (list taggy)}
+                                                          :tagspace '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ))
 
@@ -405,33 +405,43 @@
 
     {:exec '()
      :vector '([-11 1 3 5 7 11 22])
-     :tagspace (list taggy)}    :tagspace-lookupvector  {:exec     '((2.2 2.2 4.4 6.6 2.2 6.6 6.6))
+     :tagspace (list taggy)}    :tagspace-lookupvector
+
+              {:exec     (list (list taggy '(2.2 2.2 4.4 6.6 2.2 6.6 6.6)))
                                                           :vector  '()
-                                                          :tagspace (list taggy)}
+                                                          :tagspace '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec '()
      :vector '([-11 :foo 1 :bar 3 [5 7 11 22]])
-     :tagspace (list taggy)}    :tagspace-lookupvector  {:exec     '((2.2 :foo 2.2 :bar 4.4 [5 7 11 22]))
+     :tagspace (list taggy)}    :tagspace-lookupvector
+
+            {:exec (list (list  taggy '(2.2 :foo 2.2 :bar 4.4 [5 7 11 22])))
                                                           :vector  '()
-                                                          :tagspace (list taggy)}
+                                                          :tagspace '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec '()
      :vector '([:foo :bar :baz])
-     :tagspace (list taggy)}    :tagspace-lookupvector  {:exec     '((:foo :bar :baz))
+     :tagspace (list taggy)}    :tagspace-lookupvector
+
+                          {:exec     (list (list taggy '(:foo :bar :baz)))
                                                           :vector  '()
-                                                          :tagspace (list taggy)}
+                                                          :tagspace '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec '()
      :vector (list [n/∞ n/-∞])
-     :tagspace (list taggy)}    :tagspace-lookupvector  {:exec     '((2.2 2.2))
+     :tagspace (list taggy)}    :tagspace-lookupvector
+
+                                {:exec     (list (list taggy '(2.2 2.2)))
                                                           :vector  '()
-                                                          :tagspace (list taggy)}
+                                                          :tagspace '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:exec '()
      :vector '([])
-     :tagspace (list taggy)}    :tagspace-lookupvector  {:exec     '(())
+     :tagspace (list taggy)}    :tagspace-lookupvector
+
+                                        {:exec     (list (list taggy '()))
                                                           :vector  '()
-                                                          :tagspace (list taggy)}
+                                                          :tagspace '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ))
 
@@ -449,15 +459,15 @@
 
     ?new-stacks                ?instruction       ?expected
     {:tagspace (list taggy1 taggy2)}
-                               :tagspace-merge    {:tagspace (list (make-tagspace
+                               :tagspace-merge    {:exec (list (make-tagspace
                                                     {5.5 6.6, 1 2, 3 4, 5 6}))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:tagspace (list taggy2 taggy1)}
-                               :tagspace-merge    {:tagspace (list (make-tagspace
+                               :tagspace-merge    {:exec (list (make-tagspace
                                                     {5.5 6.6, 1 -2, 3 -4, 5 6}))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:tagspace (list taggy2 (make-tagspace))}
-                               :tagspace-merge    {:tagspace (list (make-tagspace
+                               :tagspace-merge    {:exec (list (make-tagspace
                                                     {5.5 6.6, 1 -2, 3 -4}))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ))
@@ -475,7 +485,7 @@
 
     ?new-stacks                ?instruction       ?expected
     {:tagspace (list taggy1 taggy2)}
-                               :tagspace-merge    {:tagspace '()
+                               :tagspace-merge    {:exec '()
                                                    :error '({:item "Non-terminating decimal expansion; no exact representable decimal result.", :step 0})}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ))
@@ -643,29 +653,29 @@
     ?new-stacks                ?instruction              ?expected
     {:scalar '(17)
      :tagspace (list taggy)}  :tagspace-offset     {:scalar  '()
-                                                    :tagspace (list (make-tagspace
+                                                    :exec (list (make-tagspace
                                                       {18 2, 20 4, 22 6}))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar '(-121)
      :tagspace (list taggy)}   :tagspace-offset    {:scalar  '()
-                                                    :tagspace (list (make-tagspace
+                                                    :exec (list (make-tagspace
                                                       {-120 2, -118 4, -116 6}))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar '(3/2)
      :tagspace (list taggy)}   :tagspace-offset    {:scalar  '()
-                                                    :tagspace (list (make-tagspace
+                                                    :exec (list (make-tagspace
                                                       {5/2 2, 9/2 4, 13/2 6}))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar '(-12.345M)
      :tagspace (list taggy)}   :tagspace-offset    {:scalar  '()
-                                                    :tagspace (list (make-tagspace
+                                                    :exec (list (make-tagspace
                                                       {-11.345M 2,
                                                         -9.345M 4,
                                                         -7.345M 6}))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar '(0)
      :tagspace (list taggy)}   :tagspace-offset    {:scalar  '()
-                                                    :tagspace (list (make-tagspace
+                                                    :exec (list (make-tagspace
                                                       {1 2 3 4 5 6}))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ))
@@ -701,27 +711,27 @@
     ?new-stacks                ?instruction      ?expected
     {:scalar '(3)
      :tagspace (list taggy)}   :tagspace-scale   {:scalar  '()
-                                                  :tagspace (list (make-tagspace
+                                                  :exec (list (make-tagspace
                                                     {3 2, 9 4, 15 6}))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar '(-3)
      :tagspace (list taggy)}    :tagspace-scale  {:scalar  '()
-                                                  :tagspace (list (make-tagspace
+                                                  :exec (list (make-tagspace
                                                     {-3 2, -9 4, -15 6}))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar '(1/3)
      :tagspace (list taggy)}    :tagspace-scale  {:scalar  '()
-                                                  :tagspace (list (make-tagspace
+                                                  :exec (list (make-tagspace
                                                     {1/3 2, 5/3 6, 1 4}))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar '(-0.25)
      :tagspace (list taggy)}    :tagspace-scale  {:scalar  '()
-                                                  :tagspace (list (make-tagspace
+                                                  :exec (list (make-tagspace
                                                     {-1.25 6, -0.75 4, -0.25 2}))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar '(0)
      :tagspace (list taggy)}    :tagspace-scale  {:scalar '()
-                                                  :tagspace (list (make-tagspace
+                                                  :exec (list (make-tagspace
                                                     {0 6}))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ))
@@ -817,28 +827,28 @@
     ?new-stacks                 ?instruction      ?expected
     {:scalar '(321 2/3)
      :tagspace (list taggy)}    :tagspace-tidy   {:scalar  '()
-                                                  :tagspace (list (make-tagspace
+                                                  :exec (list (make-tagspace
                                                     {2/3 2, 965/6 4, 321N 6}))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar '(-2.7 3.7)
      :tagspace (list taggy)}    :tagspace-tidy   {:scalar  '()
-                                                  :tagspace (list (make-tagspace
+                                                  :exec (list (make-tagspace
                                                     {-2.7 6, 0.5 4, 3.7 2}))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar '(3 3)
      :tagspace (list taggy)}    :tagspace-tidy   {:scalar  '()
-                                                  :tagspace (list (make-tagspace
+                                                  :exec (list (make-tagspace
                                                     {3 6}))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar '(3/5 1/5)
      :tagspace (list taggy)}    :tagspace-tidy   {:scalar  '()
-                                                  :tagspace (list (make-tagspace
+                                                  :exec (list (make-tagspace
                                                     {1/5 2, 2/5 4, 3/5 6}))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar '(-2 3.75)
      :tagspace (list (make-tagspace {}))}
                                 :tagspace-tidy   {:scalar  '()
-                                                  :tagspace (list (make-tagspace {}))}
+                                                  :exec (list (make-tagspace {}))}
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ))
 
@@ -872,13 +882,13 @@
     ?new-stacks                 ?instruction      ?expected
     {:tagspace (list taggy)}    :tagspace-normalize
                                                  {:scalar  '()
-                                                  :tagspace (list (make-tagspace
+                                                  :exec (list (make-tagspace
                                                     {0 2, 1 4, 2 6}))}
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:tagspace (list (make-tagspace {9 2 17 4 -2 6}))}
                                 :tagspace-normalize
                                                  {:scalar  '()
-                                                  :tagspace (list (make-tagspace
+                                                  :exec (list (make-tagspace
                                                     {0 6, 1 2, 2 4}))}
 
     ))

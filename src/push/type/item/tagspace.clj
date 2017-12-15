@@ -6,7 +6,8 @@
             [push.type.core                 :as t]
             [push.instructions.aspects      :as aspects]
             [push.type.definitions.tagspace :as ts]
-            [dire.core                                   :refer [with-handler!]]
+            [push.util.code-wrangling       :as util]
+            [dire.core                      :refer [with-handler!]]
             ))
 
 
@@ -60,13 +61,15 @@
 (def tagspace-lookup
   (i/build-instruction
     tagspace-lookup
-    "`:tagspace-lookup` pops the top `:scalar` and the top `:tagspace`. The indicated item is looked up and pushed to `:exec`; if the `:tagspace` is empty, no item is pushed to `:exec`. The `:tagspace` is returned to that stack. (Note this behavior differs from most other `:tagspace` functions in that the `:tagspace` is returned immediately.)"
+    "`:tagspace-lookup` pops the top `:scalar` and the top `:tagspace`. The indicated item is looked up and pushed to `:exec` in a codeblock containing `(tagspace item)`."
     :tags #{:tagspace :collection}
     (d/consume-top-of :scalar :as :idx)
     (d/consume-top-of :tagspace :as :ts)
-    (d/calculate [:idx :ts] #(ts/find-in-tagspace %2 %1) :as :result)
+    (d/calculate [:idx :ts] #(ts/find-in-tagspace %2 %1) :as :item)
+    (d/calculate [:ts :item]
+      #(if (nil? %2) (list %1) (list %1 %2)) :as :result)
     (d/push-onto :exec :result)
-    (d/push-onto :tagspace :ts)))
+    ))
 
 
 
@@ -78,10 +81,11 @@
     (d/consume-top-of :scalars :as :indices)
     (d/consume-top-of :tagspace :as :ts)
     (d/calculate [:indices :ts]
-      #(map (fn [k] (ts/find-in-tagspace %2 k)) %1) :as :results)
-    (d/calculate [:results] #(when %1 (remove nil? %1)) :as :results)
+      #(map (fn [k] (ts/find-in-tagspace %2 k)) %1) :as :items)
+    (d/calculate [:items] #(when %1 (remove nil? %1)) :as :items)
+    (d/calculate [:ts :items] #(list %1 (util/list! %2)) :as :results)
     (d/push-onto :exec :results)
-    (d/push-onto :tagspace :ts)))
+    ))
 
 
 
@@ -96,9 +100,10 @@
       #(remove nil?
         (map
           (fn [k] (if (number? k) (ts/find-in-tagspace %2 k) k))
-          %1)) :as :results)
+          %1)) :as :items)
+    (d/calculate [:ts :items] #(list %1 %2) :as :results)
     (d/push-onto :exec :results)
-    (d/push-onto :tagspace :ts)))
+    ))
 
 
 
@@ -123,7 +128,8 @@
     (d/consume-top-of :tagspace :as :arg1)
     (d/calculate [:arg1 :arg2]
       #(ts/make-tagspace (merge (:contents %1) (:contents %2))) :as :result)
-    (d/push-onto :tagspace :result)))
+    (d/push-onto :exec :result)
+    ))
 
 
 
@@ -147,7 +153,8 @@
     (d/consume-top-of :tagspace :as :ts)
     (d/calculate [:ts] #(vals (:contents %1)) :as :items)
     (d/calculate [:items] #(ts/make-tagspace (zipmap (range) %1 )) :as :result)
-    (d/push-onto :tagspace :result)))
+    (d/push-onto :exec :result)
+    ))
 
 
 
@@ -157,7 +164,7 @@
     "`:tagspace-new` creates a new, empty `:tagspace` item and pushes it to the stack."
     :tags #{:tagspace}
     (d/calculate [] ts/make-tagspace :as :result)
-    (d/push-onto :tagspace :result)))
+    (d/push-onto :exec :result)))
 
 
 
@@ -174,7 +181,7 @@
           (fn [r k v] (assoc r (+' k %2) v))
           {}
           (:contents %1))) :as :result)
-    (d/push-onto :tagspace :result)))
+    (d/push-onto :exec :result)))
 
 
 
@@ -191,7 +198,7 @@
           (fn [r k v] (assoc r (*' k %2) v))
           {}
           (:contents %1))) :as :result)
-    (d/push-onto :tagspace :result)))
+    (d/push-onto :exec :result)))
 
 
 
@@ -236,7 +243,8 @@
       #(when %3 (n/index-maker %1 %2 %3)) :as :indices)
     (d/calculate [:indices :items]
       #(when %1 (ts/make-tagspace (zipmap %1 %2))) :as :result)
-    (d/push-onto :tagspace :result)))
+    (d/push-onto :exec :result)
+    ))
 
 
 
@@ -252,7 +260,8 @@
         (filter
           (fn [kv] (boolean (%2 (second kv))))
           (seq (:contents %1)))) :as :result)
-    (d/push-onto :tagspace :result)))
+    (d/push-onto :exec :result)
+    ))
 
 
 
@@ -268,7 +277,8 @@
         (remove
           (fn [kv] (boolean (%2 (second kv))))
           (seq (:contents %1)))) :as :result)
-    (d/push-onto :tagspace :result)))
+    (d/push-onto :exec :result)
+    ))
 
 
 
@@ -289,7 +299,8 @@
           (remove
             (fn [kv] (boolean (%2 (second kv))))
             (seq (:contents %1))))) :as :result)
-    (d/push-onto :exec :result)))
+    (d/push-onto :exec :result)
+    ))
 
 
 
@@ -300,7 +311,8 @@
     :tags #{:tagspace :collection}
     (d/consume-top-of :tagspace :as :arg)
     (d/calculate [:arg] #(list (or (vals (:contents %1)) (list)) %1) :as :valList)
-    (d/push-onto :exec :valList)))
+    (d/push-onto :exec :valList)
+    ))
 
 
 
@@ -312,7 +324,8 @@
     (d/consume-top-of :tagspace :as :arg)
     (d/calculate [:arg]
       #(list (set (or (vals (:contents %1)) (list))) %1) :as :valSet)
-    (d/push-onto :exec :valSet)))
+    (d/push-onto :exec :valSet)
+    ))
 
 
 
@@ -324,7 +337,8 @@
     (d/consume-top-of :tagspace :as :arg)
     (d/calculate [:arg]
       #(list (vec (or (vals (:contents %1)) (list))) %1) :as :valSet)
-    (d/push-onto :exec :valSet)))
+    (d/push-onto :exec :valSet)
+    ))
 
 
 
