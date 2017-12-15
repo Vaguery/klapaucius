@@ -34,7 +34,7 @@
     (d/consume-top-of :set :as :a)
     (d/calculate [:a :b]
       #(sets/subset? %2 %1) :as :well?)
-    (d/push-onto :boolean :well?)))
+    (d/push-onto :exec :well?)))
 
 
 
@@ -47,7 +47,7 @@
     (d/consume-top-of :set :as :a)
     (d/calculate [:a :b]
       #(sets/superset? %2 %1) :as :well?)
-    (d/push-onto :boolean :well?)))
+    (d/push-onto :exec :well?)))
 
 
 
