@@ -31,7 +31,7 @@
     (d/calculate [:arg1 :arg2] +' :as :prelim)
     (d/calculate [:prelim] #(if %1 (Double/isNaN %1) false) :as :nan)
     (d/calculate [:nan :prelim] #(when-not %1 %2) :as :sum)
-    (d/push-onto :scalar :sum)
+    (d/push-onto :exec :sum)
     (d/calculate [:nan] #(when %1 ":scalar-add produced NaN") :as :warning)
     (d/record-an-error :from :warning)
     ))
@@ -47,7 +47,7 @@
     (d/calculate [:arg] #(or (> %1 1) (< %1 -1)) :as :bad-arg?)
     (d/calculate [:bad-arg? :arg] #(when-not %1 (Math/acos %2)) :as :result)
     (d/calculate [:bad-arg?] #(when %1 ":scalar-arccosine bad argument") :as :warning)
-    (d/push-onto :scalar :result)
+    (d/push-onto :exec :result)
     (d/record-an-error :from :warning)))
 
 
@@ -61,7 +61,7 @@
     (d/calculate [:arg] #(or (> %1 1) (< %1 -1)) :as :bad-arg?)
     (d/calculate [:bad-arg? :arg] #(when-not %1 (Math/asin %2)) :as :result)
     (d/calculate [:bad-arg?] #(when %1 ":scalar-arcsine bad argument") :as :warning)
-    (d/push-onto :scalar :result)
+    (d/push-onto :exec :result)
     (d/record-an-error :from :warning)))
 
 
@@ -101,7 +101,7 @@
     (d/calculate [:numerator :denominator] #(/ %1 %2) :as :quotient)
     (d/calculate [:quotient] #(if %1 (Double/isNaN %1) false) :as :nan)
     (d/calculate [:nan :quotient] #(when-not %1 %2) :as :quotient)
-    (d/push-onto :scalar :quotient)
+    (d/push-onto :exec :quotient)
     (d/calculate [:nan] #(when %1 ":scalar-divide produced NaN") :as :warn2)
     (d/record-an-error :from :warn2)
     ))
@@ -114,7 +114,7 @@
     "`:scalar-E` pushes the value E to the :scalar stack."
     :tags #{:arithmetic :base}
     (d/calculate [] #(Math/E) :as :e)
-    (d/push-onto :scalar :e)))
+    (d/push-onto :exec :e)))
 
 
 
@@ -126,7 +126,7 @@
     :tags #{:arithmetic :base}
     (d/consume-top-of :scalar :as :arg)
     (d/calculate [:arg] #(math/infinite? %1) :as :result)
-    (d/push-onto :boolean :result)))
+    (d/push-onto :exec :result)))
 
 
 
@@ -144,7 +144,7 @@
     :tags #{:arithmetic :base}
     (d/consume-top-of :scalar :as :arg)
     (d/calculate [:arg] #(mod (nt/abs %1) 1) :as :result)
-    (d/push-onto :scalar :result)))
+    (d/push-onto :exec :result)))
 
 
 
@@ -163,7 +163,7 @@
     (d/calculate [:arg] #( (complement pos?) %1) :as :bad-arg?)
     (d/calculate [:bad-arg? :arg] #(when-not %1 (Math/log %2)) :as :result)
     (d/calculate [:bad-arg?] #(when %1 ":scalar-ln bad argument") :as :warning)
-    (d/push-onto :scalar :result)
+    (d/push-onto :exec :result)
     (d/record-an-error :from :warning)))
 
 
@@ -178,7 +178,7 @@
       #(<= %1 -1) :as :bad-arg?)
     (d/calculate [:bad-arg? :arg] #(when-not %1 (Math/log1p %2)) :as :result)
     (d/calculate [:bad-arg?] #(when %1 ":scalar-ln1p bad argument") :as :warning)
-    (d/push-onto :scalar :result)
+    (d/push-onto :exec :result)
     (d/record-an-error :from :warning)))
 
 
@@ -194,7 +194,7 @@
       #( (complement pos?) %1) :as :bad-arg?)
     (d/calculate [:bad-arg? :arg] #(when-not %1 (Math/log10 %2)) :as :result)
     (d/calculate [:bad-arg?] #(when %1 ":scalar-log10 bad argument") :as :warning)
-    (d/push-onto :scalar :result)
+    (d/push-onto :exec :result)
     (d/record-an-error :from :warning)))
 
 
@@ -210,7 +210,7 @@
     (d/calculate [:numerator :denominator] mod :as :remainder)
     (d/calculate [:remainder] #(if %1 (Double/isNaN %1) false) :as :nan)
     (d/calculate [:nan :remainder] #(when-not %1 %2) :as :remainder)
-    (d/push-onto :scalar :remainder)
+    (d/push-onto :exec :remainder)
     (d/calculate [:nan] #(when %1 ":scalar-modulo produced NaN") :as :warn2)
     (d/record-an-error :from :warn2)
     ))
@@ -229,7 +229,7 @@
     (d/calculate [:prelim] #(if %1 (Double/isNaN %1) false) :as :nan)
     (d/calculate [:nan :prelim] #(when-not %1 %2) :as :product)
     (d/calculate [:nan] #(when %1 ":scalar-multiply produced NaN") :as :warning)
-    (d/push-onto :scalar :product)
+    (d/push-onto :exec :product)
     (d/record-an-error :from :warning)
     ))
 
@@ -241,7 +241,7 @@
     "`:scalar-π` pushes the value π to the :scalar stack."
     :tags #{:arithmetic :base}
     (d/calculate [] #(Math/PI) :as :pi)
-    (d/push-onto :scalar :pi)))
+    (d/push-onto :exec :pi)))
 
 
 
@@ -274,7 +274,7 @@
            ) :as :bad-result)
     (d/calculate [:bad-result :prelim] #(when-not %1 %2) :as :result)
     (d/calculate [:bad-result] #(when %1 ":scalar-power out of bounds") :as :warning)
-    (d/push-onto :scalar :result)
+    (d/push-onto :exec :result)
     (d/record-an-error :from :warning)
   ))
 
@@ -287,7 +287,7 @@
     :tags #{:arithmetic :base :dangerous}
     (d/consume-top-of :scalar :as :arg)
     (d/calculate [:arg] #(/ 1 %1) :as :reciprocal)
-    (d/push-onto :scalar :reciprocal)))
+    (d/push-onto :exec :reciprocal)))
 
 
 
@@ -332,7 +332,7 @@
     (d/calculate [:prelim] #(if %1 (Double/isNaN %1) false) :as :nan)
     (d/calculate [:nan :prelim] #(when-not %1 %2) :as :diff)
     (d/calculate [:nan] #(when %1 ":scalar-subtract produced NaN") :as :warning)
-    (d/push-onto :scalar :diff)
+    (d/push-onto :exec :diff)
     (d/record-an-error :from :warning)
     ))
 
@@ -348,7 +348,7 @@
       #(Double/isNaN (Math/tan %1)) :as :bad-arg?)
     (d/calculate [:bad-arg? :arg] #(when-not %1 (Math/tan %2)) :as :result)
     (d/calculate [:bad-arg?] #(when %1 ":scalar-tangent bad argument") :as :warning)
-    (d/push-onto :scalar :result)
+    (d/push-onto :exec :result)
     (d/record-an-error :from :warning)))
 
 
@@ -366,7 +366,7 @@
     (d/consume-top-of :scalar :as :arg)
     (d/calculate [:arg] #(if (math/infinite? %1) 0 %1) :as :safe)
     (d/calculate [:safe] #(x/rewrite-digits (bigint %1) 3) :as :result)
-    (d/push-onto :scalar :result)))
+    (d/push-onto :exec :result)))
 
 
 
@@ -381,7 +381,7 @@
     :tags #{:numeric}
     (d/consume-top-of :scalar :as :arg)
     (d/calculate [:arg] #(math/few %1) :as :scaled)
-    (d/push-onto :scalar :scaled)
+    (d/push-onto :exec :scaled)
     ))
 
 
@@ -392,7 +392,7 @@
     :tags #{:numeric}
     (d/consume-top-of :scalar :as :arg)
     (d/calculate [:arg] #(math/lots %1) :as :scaled)
-    (d/push-onto :scalar :scaled)))
+    (d/push-onto :exec :scaled)))
 
 
 
@@ -403,7 +403,7 @@
     :tags #{:numeric}
     (d/consume-top-of :scalar :as :arg)
     (d/calculate [:arg] #(math/many %1) :as :scaled)
-    (d/push-onto :scalar :scaled)))
+    (d/push-onto :exec :scaled)))
 
 
 
@@ -414,7 +414,7 @@
     :tags #{:numeric}
     (d/consume-top-of :scalar :as :arg)
     (d/calculate [:arg] #(math/bunch %1) :as :scaled)
-    (d/push-onto :scalar :scaled)))
+    (d/push-onto :exec :scaled)))
 
 
 
@@ -430,7 +430,7 @@
     :tags #{:conversion :base :numeric}
     (d/consume-top-of :boolean :as :arg)
     (d/calculate [:arg] #(if %1 1.0 0.0) :as :result)
-    (d/push-onto :scalar :result)))
+    (d/push-onto :exec :result)))
 
 
 
@@ -441,7 +441,7 @@
     :tags #{:conversion :base :numeric}
     (d/consume-top-of :boolean :as :arg)
     (d/calculate [:arg] #(if %1 1.0 -1.0) :as :result)
-    (d/push-onto :scalar :result)))
+    (d/push-onto :exec :result)))
 
 
 
@@ -452,7 +452,7 @@
     :tags #{:base :conversion}
     (d/consume-top-of :boolean :as :arg1)
     (d/calculate [:arg1] #(if %1 1 0) :as :logic)
-    (d/push-onto :scalar :logic)))
+    (d/push-onto :exec :logic)))
 
 
 
@@ -463,7 +463,7 @@
     :tags #{:base :conversion}
     (d/consume-top-of :boolean :as :arg1)
     (d/calculate [:arg1] #(if %1 1 -1) :as :logic)
-    (d/push-onto :scalar :logic)))
+    (d/push-onto :exec :logic)))
 
 
 
@@ -474,7 +474,7 @@
     :tags #{:base :conversion}
     (d/consume-top-of :char :as :arg1)
     (d/calculate [:arg1] long :as :int)
-    (d/push-onto :scalar :int)))
+    (d/push-onto :exec :int)))
 
 
 ;; SUBTYPES
@@ -487,7 +487,7 @@
     :tags #{:numeric :predicate}
     (d/consume-top-of :scalar :as :arg)
     (d/calculate [:arg] #(instance? java.math.BigDecimal %1) :as :result)
-    (d/push-onto :boolean :result)))
+    (d/push-onto :exec :result)))
 
 
 
@@ -499,7 +499,7 @@
     (d/consume-top-of :scalar :as :arg)
     (d/calculate [:arg]
       #(or (float? %1) (instance? java.math.BigDecimal %1)) :as :result)
-    (d/push-onto :boolean :result)))
+    (d/push-onto :exec :result)))
 
 
 
@@ -510,7 +510,7 @@
     :tags #{:numeric :predicate}
     (d/consume-top-of :scalar :as :arg)
     (d/calculate [:arg] integer? :as :result)
-    (d/push-onto :boolean :result)))
+    (d/push-onto :exec :result)))
 
 
 
@@ -521,7 +521,7 @@
     :tags #{:numeric :predicate}
     (d/consume-top-of :scalar :as :arg)
     (d/calculate [:arg] ratio? :as :result)
-    (d/push-onto :boolean :result)))
+    (d/push-onto :exec :result)))
 
 
 

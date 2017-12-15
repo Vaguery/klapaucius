@@ -28,14 +28,14 @@
 
     ?set-stack  ?items          ?instruction      ?get-stack     ?expected
     ;; simple
-    :char    '(\0)           :char->integer      :scalar        '(48)
-    :char    '(\r)           :char->integer      :scalar        '(114)
-    :char    '(\newline)     :char->integer      :scalar        '(10)
-    :char    '(\uF021)       :char->integer      :scalar        '(61473)
+    :char    '(\0)           :char->integer      :exec          '(48)
+    :char    '(\r)           :char->integer      :exec          '(114)
+    :char    '(\newline)     :char->integer      :exec          '(10)
+    :char    '(\uF021)       :char->integer      :exec          '(61473)
     ;; consumes arg
     :char    '(\0)           :char->integer      :char          '()
     ;; missing args
-    :char    '()             :char->integer      :scalar        '()
+    :char    '()             :char->integer      :exec          '()
     :char    '()             :char->integer      :char          '())
 
 
@@ -48,14 +48,14 @@
         ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction      ?get-stack     ?expected
-    :scalar     '(92M)      :scalar-bigdec?     :boolean        '(true)
-    :scalar     '(-2)       :scalar-bigdec?     :boolean        '(false)
-    :scalar     '(22/11)    :scalar-bigdec?     :boolean        '(false)
-    :scalar     '(3/7)      :scalar-bigdec?     :boolean        '(false)
-    :scalar     '(3N)       :scalar-bigdec?     :boolean        '(false)
-    :scalar     '(3.2)      :scalar-bigdec?     :boolean        '(false)
-    :scalar     '(3.2M)     :scalar-bigdec?     :boolean        '(true)
-    :scalar     '()         :scalar-bigdec?     :boolean        '()
+    :scalar     '(92M)      :scalar-bigdec?     :exec           '(true)
+    :scalar     '(-2)       :scalar-bigdec?     :exec           '(false)
+    :scalar     '(22/11)    :scalar-bigdec?     :exec           '(false)
+    :scalar     '(3/7)      :scalar-bigdec?     :exec           '(false)
+    :scalar     '(3N)       :scalar-bigdec?     :exec           '(false)
+    :scalar     '(3.2)      :scalar-bigdec?     :exec           '(false)
+    :scalar     '(3.2M)     :scalar-bigdec?     :exec           '(true)
+    :scalar     '()         :scalar-bigdec?     :exec           '()
     )
 
 
@@ -65,14 +65,14 @@
         ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction      ?get-stack     ?expected
-    :scalar     '(92M)      :scalar-float?        :boolean        '(true)
-    :scalar     '(-2)       :scalar-float?        :boolean        '(false)
-    :scalar     '(22/11)    :scalar-float?        :boolean        '(false)
-    :scalar     '(3/7)      :scalar-float?        :boolean        '(false)
-    :scalar     '(3N)       :scalar-float?        :boolean        '(false)
-    :scalar     '(3.2)      :scalar-float?        :boolean        '(true)
-    :scalar     '(3.2M)     :scalar-float?        :boolean        '(true)
-    :scalar     '()         :scalar-float?        :boolean        '()
+    :scalar     '(92M)      :scalar-float?        :exec           '(true)
+    :scalar     '(-2)       :scalar-float?        :exec           '(false)
+    :scalar     '(22/11)    :scalar-float?        :exec           '(false)
+    :scalar     '(3/7)      :scalar-float?        :exec           '(false)
+    :scalar     '(3N)       :scalar-float?        :exec           '(false)
+    :scalar     '(3.2)      :scalar-float?        :exec           '(true)
+    :scalar     '(3.2M)     :scalar-float?        :exec           '(true)
+    :scalar     '()         :scalar-float?        :exec           '()
     )
 
 
@@ -83,14 +83,14 @@
         ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction      ?get-stack     ?expected
-    :scalar     '(92M)      :scalar-integer?     :boolean        '(false)
-    :scalar     '(-2)       :scalar-integer?     :boolean        '(true)
-    :scalar     '(22/11)    :scalar-integer?     :boolean        '(true)
-    :scalar     '(3/7)      :scalar-integer?     :boolean        '(false)
-    :scalar     '(3N)       :scalar-integer?     :boolean        '(true)
-    :scalar     '(3.2)      :scalar-integer?     :boolean        '(false)
-    :scalar     '(3.2M)     :scalar-integer?     :boolean        '(false)
-    :scalar     '()         :scalar-integer?     :boolean        '()
+    :scalar     '(92M)      :scalar-integer?      :exec          '(false)
+    :scalar     '(-2)       :scalar-integer?      :exec          '(true)
+    :scalar     '(22/11)    :scalar-integer?      :exec          '(true)
+    :scalar     '(3/7)      :scalar-integer?      :exec          '(false)
+    :scalar     '(3N)       :scalar-integer?      :exec          '(true)
+    :scalar     '(3.2)      :scalar-integer?      :exec          '(false)
+    :scalar     '(3.2M)     :scalar-integer?      :exec          '(false)
+    :scalar     '()         :scalar-integer?      :exec          '()
     )
 
 
@@ -101,13 +101,13 @@
         ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction      ?get-stack     ?expected
-    :scalar     '(92M)      :scalar-ratio?     :boolean        '(false)
-    :scalar     '(-2)       :scalar-ratio?     :boolean        '(false)
-    :scalar     '(3/1)      :scalar-ratio?     :boolean        '(false)
-    :scalar     '(22/11)    :scalar-ratio?     :boolean        '(false)
-    :scalar     '(3/7)      :scalar-ratio?     :boolean        '(true)
-    :scalar     '(3N)       :scalar-ratio?     :boolean        '(false)
-    :scalar     '(3.2)      :scalar-ratio?     :boolean        '(false)
-    :scalar     '(3.2M)     :scalar-ratio?     :boolean        '(false)
-    :scalar     '()         :scalar-ratio?     :boolean        '()
+    :scalar     '(92M)      :scalar-ratio?        :exec          '(false)
+    :scalar     '(-2)       :scalar-ratio?        :exec          '(false)
+    :scalar     '(3/1)      :scalar-ratio?        :exec          '(false)
+    :scalar     '(22/11)    :scalar-ratio?        :exec          '(false)
+    :scalar     '(3/7)      :scalar-ratio?        :exec          '(true)
+    :scalar     '(3N)       :scalar-ratio?        :exec          '(false)
+    :scalar     '(3.2)      :scalar-ratio?        :exec          '(false)
+    :scalar     '(3.2M)     :scalar-ratio?        :exec          '(false)
+    :scalar     '()         :scalar-ratio?        :exec          '()
     )

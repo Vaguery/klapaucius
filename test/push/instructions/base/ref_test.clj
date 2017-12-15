@@ -31,7 +31,7 @@
 
 
 (fact ":ref-clear completely clears a binding"
-  (let [hasref 
+  (let [hasref
     (assoc
       (push.interpreter.templates.one-with-everything/make-everything-interpreter
         :stacks {:ref '(:x)})
@@ -47,7 +47,7 @@
 
 
 (fact ":ref-fullquote copies the entire :ref binding stack onto the :code stack, w/o discarding it"
-  (let [hasref 
+  (let [hasref
     (assoc
       (push.interpreter.templates.one-with-everything/make-everything-interpreter
         :stacks {:ref '(:x)})
@@ -66,7 +66,7 @@
 
 
 (fact ":ref-dump copies the entire :ref binding stack onto the :exec stack, w/o discarding it"
-  (let [hasref 
+  (let [hasref
     (assoc
       (push.interpreter.templates.one-with-everything/make-everything-interpreter
         :stacks {:ref '(:x)})
@@ -84,7 +84,7 @@
 
 
 (fact ":ref-forget completely forgets a binding"
-  (let [hasref 
+  (let [hasref
     (assoc
       (push.interpreter.templates.one-with-everything/make-everything-interpreter
         :stacks {:ref '(:x)})
@@ -100,7 +100,7 @@
 
 
 (fact ":ref-lookup pushes the bound :ref item to :exec"
-  (let [hasref 
+  (let [hasref
     (assoc
       (push.interpreter.templates.one-with-everything/make-everything-interpreter
         :stacks {:ref '(:x)})
@@ -118,7 +118,7 @@
 
 
 (fact ":ref-known? returns a boolean indicating whether the key exists in :bindings"
-  (let [hasref 
+  (let [hasref
     (assoc
       (push.interpreter.templates.one-with-everything/make-everything-interpreter
         :stacks {:ref '(:x :y)})
@@ -138,7 +138,7 @@
 
 
 (fact ":ref-exchange swaps the stacks of two bindings"
-  (let [hasref 
+  (let [hasref
     (assoc
       (push.interpreter.templates.one-with-everything/make-everything-interpreter
         :stacks {:ref '(:x :y)})
@@ -157,7 +157,7 @@
 
 
 (fact ":ref-ARGS gets the contents of the top :ref but replaces it"
-  (let [hasref 
+  (let [hasref
     (assoc
       (push.interpreter.templates.one-with-everything/make-everything-interpreter
         :stacks {:ref '(:x :y)})
@@ -175,7 +175,7 @@
 
 
 (fact ":ref-peek gets the contents of the top :ref but replaces it"
-  (let [hasref 
+  (let [hasref
     (assoc
       (push.interpreter.templates.one-with-everything/make-everything-interpreter
         :stacks {:ref '(:x :y)})
@@ -194,7 +194,7 @@
 
 
 (fact ":ref->vector gets the entire stack of the top :ref and pushes that as a vector to :exec"
-  (let [hasref 
+  (let [hasref
     (assoc
       (push.interpreter.templates.one-with-everything/make-everything-interpreter
         :stacks {:ref '(:x :y)})
@@ -216,7 +216,7 @@
 
 
 (fact ":ref-fillvector makes a scaled vector of copies of the top item in the ref"
-  (let [hasref 
+  (let [hasref
     (assoc
       (push.interpreter.templates.one-with-everything/make-everything-interpreter
         :stacks {:ref '(:x :y) :scalar '(3 5)})
@@ -234,7 +234,7 @@
 
 
 (fact ":ref-fillvector is OK if the :ref is empty"
-  (let [hasref 
+  (let [hasref
     (assoc
       (push.interpreter.templates.one-with-everything/make-everything-interpreter
         :stacks {:ref '(:x :y) :scalar '(3 5)})
@@ -254,7 +254,7 @@
 
 
 (fact ":ref-cyclevector makes a scaled vector of copies by cycling over its entire stack"
-  (let [hasref 
+  (let [hasref
     (assoc
       (push.interpreter.templates.one-with-everything/make-everything-interpreter
         :stacks {:ref '(:x :y) :scalar '(3 5)})
@@ -273,7 +273,7 @@
 
 
 (fact ":ref-cyclevector is OK if the :ref is empty"
-  (let [hasref 
+  (let [hasref
     (assoc
       (push.interpreter.templates.one-with-everything/make-everything-interpreter
         :stacks {:ref '(:x :y) :scalar '(3 5)})
@@ -293,7 +293,7 @@
 
 
 (fact ":ref-dump-tagspace"
-  (let [hasref 
+  (let [hasref
     (assoc
       (push.interpreter.templates.one-with-everything/make-everything-interpreter
         :stacks {:ref '(:x) :vector '()})
@@ -307,4 +307,3 @@
     (push.core/get-stack
       (i/execute-instruction hasref :ref-dump-tagspace) :vector) => '([1 2 3 4])
     ))
-

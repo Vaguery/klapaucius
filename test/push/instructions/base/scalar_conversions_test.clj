@@ -12,9 +12,9 @@
         ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items      ?instruction      ?get-stack     ?expected
-    :boolean    '(true)    :boolean->float    :scalar        '(1.0)
-    :boolean    '(false)   :boolean->float    :scalar        '(0.0)
-    :boolean    '()        :boolean->float    :scalar        '()
+    :boolean    '(true)    :boolean->float    :exec          '(1.0)
+    :boolean    '(false)   :boolean->float    :exec          '(0.0)
+    :boolean    '()        :boolean->float    :exec          '()
     )
 
 
@@ -25,9 +25,9 @@
         ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items      ?instruction          ?get-stack     ?expected
-    :boolean    '(true)    :boolean->signedfloat    :scalar        '(1.0)
-    :boolean    '(false)   :boolean->signedfloat    :scalar        '(-1.0)
-    :boolean    '()        :boolean->signedfloat    :scalar        '()
+    :boolean    '(true)    :boolean->signedfloat    :exec          '(1.0)
+    :boolean    '(false)   :boolean->signedfloat    :exec          '(-1.0)
+    :boolean    '()        :boolean->signedfloat    :exec          '()
     )
 
 
@@ -38,9 +38,9 @@
         ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items      ?instruction      ?get-stack     ?expected
-    :boolean    '(true)    :boolean->integer    :scalar        '(1)
-    :boolean    '(false)   :boolean->integer    :scalar        '(0)
-    :boolean    '()        :boolean->integer    :scalar        '()
+    :boolean    '(true)    :boolean->integer    :exec          '(1)
+    :boolean    '(false)   :boolean->integer    :exec          '(0)
+    :boolean    '()        :boolean->integer    :exec          '()
     )
 
 
@@ -51,7 +51,7 @@
         ?set-stack ?items scalar-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items      ?instruction          ?get-stack     ?expected
-    :boolean    '(true)    :boolean->signedint    :scalar        '(1)
-    :boolean    '(false)   :boolean->signedint    :scalar        '(-1)
-    :boolean    '()        :boolean->signedint    :scalar        '()
+    :boolean    '(true)    :boolean->signedint    :exec          '(1)
+    :boolean    '(false)   :boolean->signedint    :exec          '(-1)
+    :boolean    '()        :boolean->signedint    :exec          '()
     )

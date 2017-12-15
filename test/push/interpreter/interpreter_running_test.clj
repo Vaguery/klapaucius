@@ -262,7 +262,7 @@
             :config {:store-args? true})]
     (:config (handle-item i :scalar-add)) => (contains {:store-args? true})
     (:bindings (handle-item i :scalar-add)) => (contains '{:ARGS ((2 1))})
-    (u/get-stack (handle-item i :scalar-add) :scalar) => '(3 3)
+    (u/get-stack (handle-item i :scalar-add) :exec) => '(3)
     ))
 
 
@@ -272,7 +272,7 @@
             :stacks {:scalar '(1 2 3) :exec '()}
             :config {:cycle-args? true})]
     (:config (handle-item i :scalar-add)) => (contains {:cycle-args? true})
-    (u/get-stack (handle-item i :scalar-add) :exec) => '((2 1))
+    (u/get-stack (handle-item i :scalar-add) :exec) => '(3 (2 1))
     ))
 
 
@@ -283,7 +283,7 @@
             :config {:store-args? true :cycle-args? true})]
     (:config (handle-item i :scalar-add)) => (contains {:cycle-args? true})
     (:bindings (handle-item i :scalar-add)) => (contains '{:ARGS ((2 1))})
-    (u/get-stack (handle-item i :scalar-add) :exec) => '((2 1))
+    (u/get-stack (handle-item i :scalar-add) :exec) => '(3 (2 1))
     ))
 
 
@@ -595,7 +595,7 @@
                                :string  '(),
                                :unknown '()})
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  (:stacks (run-n simple-things 5)) => (contains
+  (:stacks (run-n simple-things 6)) => (contains
                               {:boolean '(true false),
                                :char    '(),
                                :code    '(),
@@ -664,13 +664,14 @@
 
 (fact "`run-n` produces a log"
     (u/get-stack (run-n simple-things 177) :log) => '(
-      {:item "true" :step 7}
-      {:item ":boolean-or", :step 6}
-      {:item "true", :step 5}
-      {:item ":scalar-add", :step 4}
-      {:item "false", :step 3}
-      {:item "2", :step 2}
-      {:item "1", :step 1}
+      {:item "true" :step 8}
+      {:item ":boolean-or" :step 7}
+      {:item "true" :step 6}
+      {:item "3" :step 5}
+      {:item ":scalar-add" :step 4}
+      {:item "false" :step 3}
+      {:item "2" :step 2}
+      {:item "1" :step 1}
       ))
 
 
@@ -680,7 +681,7 @@
 (fact "`entire-run` produces a lazy seq of all the steps from the initialization to the stated endpoint"
   (count (entire-run simple-things 22)) => 22
   (map #(u/get-stack % :scalar) (entire-run simple-things 22)) =>
-    '(() (1) (2 1) (2 1) (3) (3) (3) (3) (3) (3)
+    '(() (1) (2 1) (2 1) () (3) (3) (3) (3) (3)
       (3) (3) (3) (3) (3) (3) (3) (3) (3) (3) (3) (3)))
 
 
@@ -688,7 +689,7 @@
 
 
 (fact "`last-changed-step` returns the last point at which an interpreter stack contents change, within the specified number of steps, when running the specified program"
-  (:counter (last-changed-step simple-things 22000)) => 7
+  (:counter (last-changed-step simple-things 22000)) => 8
   (u/get-stack (last-changed-step simple-things 22000) :exec) => '()
 
   (:counter (last-changed-step forever-8 1000)) => 12
