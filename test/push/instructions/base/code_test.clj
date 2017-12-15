@@ -53,10 +53,10 @@
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; are you alone?
-    :code    '(1.1 '(8 9))         :code-atom?        :boolean        '(true)
-    :code    '(() 8)               :code-atom?        :boolean        '(false)
+    :code    '(1.1 '(8 9))         :code-atom?        :exec        '(true)
+    :code    '(() 8)               :code-atom?        :exec        '(false)
     ;; …except in silence
-    :code    '()                   :code-atom?        :boolean        '())
+    :code    '()                   :code-atom?        :exec        '())
 
 
 (tabular
@@ -786,13 +786,14 @@
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; an echoing sound is heard
-    :code    '(1.1 (8 9))         :code-null?        :boolean        '(false)
-    :code    '(() 8)               :code-null?        :boolean        '(true)
+    :code    '(1.1 (8 9))         :code-null?        :exec         '(false)
+    :code    '(() 8)              :code-null?        :exec         '(true)
 
 ;;;;; PROBLEM HERE
-    :code    '(() 8)              :code-null?        :boolean        '(true)
+    :code    '(() 8)              :code-null?        :exec         '(true)
     ;; …except in silence
-    :code    '()                   :code-null?        :boolean        '())
+    :code    '()                  :code-null?        :exec         '()
+    )
 
 
 (tabular

@@ -209,7 +209,7 @@
       :tags #{:arithmetic :base}
       `(consume-top-of ~stackname :as :arg1)
       `(calculate [:arg1] #(~operation %1) :as :result)
-      `(push-onto :boolean :result)))))
+      `(push-onto :exec :result)))))
 
 
 (defn simple-item-to-code-instruction

@@ -45,21 +45,21 @@
 
     ?set-stack  ?items         ?instruction  ?get-stack   ?expected
     ;; exploring Java's recognizers
-    :char    '(\R)           :char-digit?   :boolean     '(false)
-    :char    '(\8)           :char-digit?   :boolean     '(true)
-    :char    '(\e)           :char-digit?   :boolean     '(false)
-    :char    '(\space)       :char-digit?   :boolean     '(false)
-    :char    '(\2)           :char-digit?   :boolean     '(true)
-    :char    '(\٧)           :char-digit?   :boolean     '(true)   ;; Arabic
-    :char    '(\൬)           :char-digit?   :boolean     '(true)  ;; Malayalam
-    :char    '(\④)           :char-digit?   :boolean     '(false)
-    :char    '(\⒋)           :char-digit?   :boolean     '(false)
-    :char    '(\⓽)           :char-digit?   :boolean     '(false)
-    :char    '(\➏)           :char-digit?   :boolean     '(false)
-    :char    '(\８)           :char-digit?   :boolean     '(true)   ;; fullwidth (Asian)
-    :char    '(\Ⅷ)           :char-digit?   :boolean    '(false)
+    :char    '(\R)           :char-digit?   :exec      '(false)
+    :char    '(\8)           :char-digit?   :exec      '(true)
+    :char    '(\e)           :char-digit?   :exec      '(false)
+    :char    '(\space)       :char-digit?   :exec      '(false)
+    :char    '(\2)           :char-digit?   :exec      '(true)
+    :char    '(\٧)           :char-digit?   :exec      '(true)   ;; Arabic
+    :char    '(\൬)           :char-digit?   :exec      '(true)  ;; Malayalam
+    :char    '(\④)           :char-digit?   :exec      '(false)
+    :char    '(\⒋)           :char-digit?   :exec      '(false)
+    :char    '(\⓽)           :char-digit?   :exec      '(false)
+    :char    '(\➏)           :char-digit?   :exec      '(false)
+    :char    '(\８)           :char-digit?   :exec      '(true)   ;; fullwidth (Asian)
+    :char    '(\Ⅷ)           :char-digit?   :exec    '(false)
    ;; missing args
-    :char    '()             :char-digit?   :boolean     '())
+    :char    '()             :char-digit?   :exec      '())
 
 
 ;; fixture
@@ -148,20 +148,20 @@
 
     ?set-stack  ?items         ?instruction  ?get-stack   ?expected
     ;; exploring Java's recognizers
-    :char    '(\R)           :char-letter?   :boolean     '(true)
-    :char    '(\8)           :char-letter?   :boolean     '(false)
-    :char    '(\e)           :char-letter?   :boolean     '(true)
-    :char    '(\space)       :char-letter?   :boolean     '(false)
-    :char    '(\2)           :char-letter?   :boolean     '(false)
-    :char    '(\ø)           :char-letter?   :boolean     '(true)
-    :char    '(\á)           :char-letter?   :boolean     '(true)
-    :char    '(\Ñ)           :char-letter?   :boolean     '(true)
-    :char    '(\Ω)           :char-letter?   :boolean     '(true)
-    :char    '(\£)           :char-letter?   :boolean     '(false)
-    :char    '(\ℜ)           :char-letter?   :boolean     '(true)
-    :char    '(\♫)           :char-letter?   :boolean     '(false)
+    :char    '(\R)           :char-letter?   :exec       '(true)
+    :char    '(\8)           :char-letter?   :exec       '(false)
+    :char    '(\e)           :char-letter?   :exec       '(true)
+    :char    '(\space)       :char-letter?   :exec       '(false)
+    :char    '(\2)           :char-letter?   :exec       '(false)
+    :char    '(\ø)           :char-letter?   :exec       '(true)
+    :char    '(\á)           :char-letter?   :exec       '(true)
+    :char    '(\Ñ)           :char-letter?   :exec       '(true)
+    :char    '(\Ω)           :char-letter?   :exec       '(true)
+    :char    '(\£)           :char-letter?   :exec       '(false)
+    :char    '(\ℜ)           :char-letter?   :exec       '(true)
+    :char    '(\♫)           :char-letter?   :exec       '(false)
    ;; missing args
-    :char    '()             :char-letter?   :boolean     '())
+    :char    '()             :char-letter?   :exec       '())
 
 
 (tabular
@@ -171,22 +171,22 @@
 
     ?set-stack  ?items     ?instruction  ?get-stack     ?expected
     ;; exploring Java's recognizers
-    :char    '(\r)         :char-lowercase?   :boolean     '(true)
-    :char    '(\R)         :char-lowercase?   :boolean     '(false)
-    :char    '(\1)         :char-lowercase?   :boolean     '(false)
-    :char    '(\space)     :char-lowercase?   :boolean     '(false)
-    :char    '(\æ)         :char-lowercase?   :boolean     '(true)
-    :char    '(\ƛ)         :char-lowercase?   :boolean     '(true)
-    :char    '(\ǯ)         :char-lowercase?   :boolean     '(true)
-    :char    '(\ɷ)         :char-lowercase?   :boolean     '(true)
-    :char    '(\ʯ)         :char-lowercase?   :boolean     '(true)
-    :char    '(\π)         :char-lowercase?   :boolean     '(true)
-    :char    '(\ß)         :char-lowercase?   :boolean     '(true)
-    :char    '(\℥)         :char-lowercase?   :boolean     '(false)
-    :char    '(\⒦)         :char-lowercase?   :boolean     '(false)
-    :char    '(\ⓝ)         :char-lowercase?   :boolean     '(true)
+    :char    '(\r)         :char-lowercase?   :exec      '(true)
+    :char    '(\R)         :char-lowercase?   :exec      '(false)
+    :char    '(\1)         :char-lowercase?   :exec      '(false)
+    :char    '(\space)     :char-lowercase?   :exec      '(false)
+    :char    '(\æ)         :char-lowercase?   :exec      '(true)
+    :char    '(\ƛ)         :char-lowercase?   :exec      '(true)
+    :char    '(\ǯ)         :char-lowercase?   :exec      '(true)
+    :char    '(\ɷ)         :char-lowercase?   :exec      '(true)
+    :char    '(\ʯ)         :char-lowercase?   :exec      '(true)
+    :char    '(\π)         :char-lowercase?   :exec      '(true)
+    :char    '(\ß)         :char-lowercase?   :exec      '(true)
+    :char    '(\℥)         :char-lowercase?   :exec      '(false)
+    :char    '(\⒦)         :char-lowercase?   :exec      '(false)
+    :char    '(\ⓝ)         :char-lowercase?   :exec      '(true)
    ;; missing args
-    :char    '()           :char-lowercase?   :boolean     '())
+    :char    '()           :char-lowercase?   :exec     '())
 
 
 (tabular
@@ -196,27 +196,27 @@
 
     ?set-stack  ?items     ?instruction  ?get-stack     ?expected
     ;; exploring Java's recognizers
-    :char    '(\r)         :char-uppercase?   :boolean     '(false)
-    :char    '(\R)         :char-uppercase?   :boolean     '(true)
-    :char    '(\1)         :char-uppercase?   :boolean     '(false)
-    :char    '(\space)     :char-uppercase?   :boolean     '(false)
-    :char    '(\æ)         :char-uppercase?   :boolean     '(false)
-    :char    '(\Æ)         :char-uppercase?   :boolean     '(true)
-    :char    '(\Ə)         :char-uppercase?   :boolean     '(true)
-    :char    '(\Ȝ)         :char-uppercase?   :boolean     '(true)
-    :char    '(\ʀ)         :char-uppercase?   :boolean     '(false)
-    :char    '(\ᴆ)         :char-uppercase?   :boolean     '(false)
-    :char    '(\Ψ)         :char-uppercase?   :boolean     '(true)
-    :char    '(\∃)         :char-uppercase?   :boolean     '(false)
-    :char    '(\∀)         :char-uppercase?   :boolean     '(false)
-    :char    '(\ℍ)         :char-uppercase?   :boolean     '(true)
-    :char    '(\ℚ)         :char-uppercase?   :boolean     '(true)
-    :char    '(\ℜ)         :char-uppercase?   :boolean     '(true)
-    :char    '(\℞)         :char-uppercase?   :boolean     '(false)
-    :char    '(\₨)         :char-uppercase?   :boolean     '(false)
-    :char    '(\Ⓕ)         :char-uppercase?   :boolean     '(true)
+    :char    '(\r)         :char-uppercase?   :exec      '(false)
+    :char    '(\R)         :char-uppercase?   :exec      '(true)
+    :char    '(\1)         :char-uppercase?   :exec      '(false)
+    :char    '(\space)     :char-uppercase?   :exec      '(false)
+    :char    '(\æ)         :char-uppercase?   :exec      '(false)
+    :char    '(\Æ)         :char-uppercase?   :exec      '(true)
+    :char    '(\Ə)         :char-uppercase?   :exec      '(true)
+    :char    '(\Ȝ)         :char-uppercase?   :exec      '(true)
+    :char    '(\ʀ)         :char-uppercase?   :exec      '(false)
+    :char    '(\ᴆ)         :char-uppercase?   :exec      '(false)
+    :char    '(\Ψ)         :char-uppercase?   :exec      '(true)
+    :char    '(\∃)         :char-uppercase?   :exec      '(false)
+    :char    '(\∀)         :char-uppercase?   :exec      '(false)
+    :char    '(\ℍ)         :char-uppercase?   :exec      '(true)
+    :char    '(\ℚ)         :char-uppercase?   :exec      '(true)
+    :char    '(\ℜ)         :char-uppercase?   :exec      '(true)
+    :char    '(\℞)         :char-uppercase?   :exec      '(false)
+    :char    '(\₨)         :char-uppercase?   :exec      '(false)
+    :char    '(\Ⓕ)         :char-uppercase?  :exec     '(true)
    ;; missing args
-    :char    '()           :char-uppercase?   :boolean     '())
+    :char    '()           :char-uppercase?   :exec     '())
 
 
 (tabular
@@ -226,35 +226,35 @@
 
     ?set-stack  ?items              ?instruction  ?get-stack     ?expected
     ;; exploring Java's recognizers
-    :char    '(\space)           :char-whitespace?   :boolean     '(true)
-    :char    '(\newline)         :char-whitespace?   :boolean     '(true)
-    :char    '(\e)               :char-whitespace?   :boolean     '(false)
-    :char    '(\tab)             :char-whitespace?   :boolean     '(true)
-    :char    '(\formfeed)        :char-whitespace?   :boolean     '(true)
-    :char    '(\backspace)       :char-whitespace?   :boolean     '(false)
-    :char    '(\return)          :char-whitespace?   :boolean     '(true)
-    :char    '(\␠)               :char-whitespace?   :boolean     '(false)
-    :char    '(\u00A0)           :char-whitespace?   :boolean     '(false)
-    :char    '(\u1361)           :char-whitespace?   :boolean     '(false)
-    :char    '(\u1680)           :char-whitespace?   :boolean     '(true)
-    :char    '(\u2002)           :char-whitespace?   :boolean     '(true)
-    :char    '(\u2003)           :char-whitespace?   :boolean     '(true)
-    :char    '(\u2004)           :char-whitespace?   :boolean     '(true)
-    :char    '(\u2005)           :char-whitespace?   :boolean     '(true)
-    :char    '(\u2006)           :char-whitespace?   :boolean     '(true)
-    :char    '(\u2007)           :char-whitespace?   :boolean     '(false)
-    :char    '(\u2008)           :char-whitespace?   :boolean     '(true)
-    :char    '(\u2009)           :char-whitespace?   :boolean     '(true)
-    :char    '(\u200A)           :char-whitespace?   :boolean     '(true)
-    :char    '(\u200B)           :char-whitespace?   :boolean     '(false)
-    :char    '(\u202F)           :char-whitespace?   :boolean     '(false)
-    :char    '(\u205F)           :char-whitespace?   :boolean     '(true)
-    :char    '(\u3000)           :char-whitespace?   :boolean     '(true)
-    :char    '(\u303F)           :char-whitespace?   :boolean     '(false)
-    :char    '(\u0007)           :char-whitespace?   :boolean     '(false)
-    :char    '(\u0011)           :char-whitespace?   :boolean     '(false)
+    :char    '(\space)           :char-whitespace?   :exec      '(true)
+    :char    '(\newline)         :char-whitespace?   :exec      '(true)
+    :char    '(\e)               :char-whitespace?   :exec      '(false)
+    :char    '(\tab)             :char-whitespace?   :exec      '(true)
+    :char    '(\formfeed)        :char-whitespace?   :exec      '(true)
+    :char    '(\backspace)       :char-whitespace?   :exec      '(false)
+    :char    '(\return)          :char-whitespace?   :exec      '(true)
+    :char    '(\␠)               :char-whitespace?   :exec      '(false)
+    :char    '(\u00A0)           :char-whitespace?   :exec      '(false)
+    :char    '(\u1361)           :char-whitespace?   :exec      '(false)
+    :char    '(\u1680)           :char-whitespace?   :exec      '(true)
+    :char    '(\u2002)           :char-whitespace?   :exec      '(true)
+    :char    '(\u2003)           :char-whitespace?   :exec      '(true)
+    :char    '(\u2004)           :char-whitespace?   :exec      '(true)
+    :char    '(\u2005)           :char-whitespace?   :exec      '(true)
+    :char    '(\u2006)           :char-whitespace?   :exec      '(true)
+    :char    '(\u2007)           :char-whitespace?   :exec      '(false)
+    :char    '(\u2008)           :char-whitespace?   :exec      '(true)
+    :char    '(\u2009)           :char-whitespace?   :exec      '(true)
+    :char    '(\u200A)           :char-whitespace?   :exec      '(true)
+    :char    '(\u200B)           :char-whitespace?   :exec      '(false)
+    :char    '(\u202F)           :char-whitespace?   :exec      '(false)
+    :char    '(\u205F)           :char-whitespace?   :exec      '(true)
+    :char    '(\u3000)           :char-whitespace?   :exec      '(true)
+    :char    '(\u303F)           :char-whitespace?   :exec      '(false)
+    :char    '(\u0007)           :char-whitespace?   :exec      '(false)
+    :char    '(\u0011)           :char-whitespace?   :exec      '(false)
    ;; missing args
-    :char    '()                 :char-whitespace?   :boolean     '())
+    :char    '()                 :char-whitespace?   :exec      '())
 
 
 ;; visible

@@ -42,7 +42,7 @@
       :tags #{:string :base :conversion}
       `(d/consume-top-of ~stackname :as :arg)
       '(d/calculate [:arg] str :as :printed)
-      '(d/push-onto :string :printed)))))
+      '(d/push-onto :exec :printed)))))
 
 
 
@@ -76,7 +76,7 @@
     (d/calculate [:arg] #(s/split %1 #"\s+") :as :chunks)
     (d/calculate [:chunks] valid-numbers-only :as :numbers)
     (d/calculate [:numbers] first :as :result)
-    (d/push-onto :scalar :result)))
+    (d/push-onto :exec :result)))
 
 
 (def string->scalars
@@ -88,7 +88,7 @@
     (d/calculate [:arg] #(s/split %1 #"\s+") :as :chunks)
     (d/calculate [:chunks] valid-numbers-only :as :numbers)
     (d/calculate [:numbers] vec :as :result)
-    (d/push-onto :scalars :result)))
+    (d/push-onto :exec :result)))
 
 
 (def exec-string-iterate
@@ -133,7 +133,7 @@
     (d/calculate [:longer :limit]
       #(when-not (< (count %1) %2)
         ":string-concat produced oversized result") :as :message)
-    (d/push-onto :string :result)
+    (d/push-onto :exec :result)
     (d/record-an-error :from :message)
     ))
 
@@ -147,7 +147,8 @@
     (d/consume-top-of :char :as :c)
     (d/consume-top-of :string :as :s)
     (d/calculate [:s :c] #(s/join (list %1 (str %2))) :as :longer)
-    (d/push-onto :string :longer)))
+    (d/push-onto :exec :longer)
+    ))
 
 
 
@@ -160,7 +161,8 @@
     (d/consume-top-of :string :as :target)
     (d/calculate [:host :target]
       #(boolean (re-find (re-pattern (str-to-pattern %2)) %1)) :as :found?)
-    (d/push-onto :boolean :found?)))
+    (d/push-onto :exec :found?)
+    ))
 
 
 
@@ -172,7 +174,8 @@
     (d/consume-top-of :string :as :s)
     (d/consume-top-of :char :as :c)
     (d/calculate [:s :c] #(boolean (some #{%2} (vec %1))) :as :found?)
-    (d/push-onto :boolean :found?)))
+    (d/push-onto :exec :found?)
+    ))
 
 
 
@@ -189,7 +192,8 @@
     :tags #{:string :base}
     (d/consume-top-of :string :as :arg1)
     (d/calculate [:arg1] first :as :c)
-    (d/push-onto :char :c)))
+    (d/push-onto :exec :c)
+    ))
 
 
 
@@ -201,7 +205,8 @@
     (d/consume-top-of :string :as :s)
     (d/consume-top-of :char :as :c)
     (d/calculate [:s :c] #(.indexOf %1 (long %2)) :as :where)
-    (d/push-onto :scalar :where)))
+    (d/push-onto :exec :where)
+    ))
 
 
 
@@ -212,7 +217,8 @@
     :tags #{:string :base}
     (d/consume-top-of :string :as :arg1)
     (d/calculate [:arg1] last :as :c)
-    (d/push-onto :char :c)))
+    (d/push-onto :exec :c)
+    ))
 
 
 
@@ -223,7 +229,8 @@
     :tags #{:string :base}
     (d/consume-top-of :string :as :arg1)
     (d/calculate [:arg1] count :as :len)
-    (d/push-onto :scalar :len)))
+    (d/push-onto :exec :len)
+    ))
 
 
 
@@ -237,7 +244,8 @@
     (d/calculate [:s :where]
       #(if (empty? %1) 0 (num/scalar-to-index %2 (count %1))) :as :idx)
     (d/calculate [:s :idx] #(when (seq %1) (nth %1 %2)) :as :result)
-    (d/push-onto :char :result)))
+    (d/push-onto :exec :result)
+    ))
 
 
 
@@ -249,7 +257,8 @@
     (d/consume-top-of :string :as :s)
     (d/consume-top-of :char :as :c)
     (d/calculate [:s :c] #(get (frequencies %1) %2 0) :as :count)
-    (d/push-onto :scalar :count)))
+    (d/push-onto :exec :count)
+    ))
 
 
 
@@ -261,7 +270,8 @@
     (d/consume-top-of :string :as :s)
     (d/consume-top-of :char :as :c)
     (d/calculate [:s :c] #(s/join (remove #{%2} %1)) :as :gone)
-    (d/push-onto :string :gone)))
+    (d/push-onto :exec :gone)
+    ))
 
 
 
@@ -279,8 +289,9 @@
       #(when (<= (count %1) %2) %1) :as :result)
     (d/calculate [:replaced :limit]
       #(when-not (<= (count %1) %2) ":string-replace result too large") :as :message)
-    (d/push-onto :string :result)
-    (d/record-an-error :from :message)))
+    (d/push-onto :exec :result)
+    (d/record-an-error :from :message)
+    ))
 
 
 
@@ -293,7 +304,8 @@
     (d/consume-top-of :char :as :c1)
     (d/consume-top-of :char :as :c2)
     (d/calculate [:s :c1 :c2] s/replace :as :different)
-    (d/push-onto :string :different)))
+    (d/push-onto :exec :different)
+    ))
 
 
 
@@ -306,7 +318,8 @@
     (d/consume-top-of :string :as :s2)
     (d/consume-top-of :string :as :s1)
     (d/calculate [:s1 :s2 :s3] s/replace-first :as :different)
-    (d/push-onto :string :different)))
+    (d/push-onto :exec :different)
+    ))
 
 
 
@@ -319,7 +332,8 @@
     (d/consume-top-of :char :as :c1)
     (d/consume-top-of :char :as :c2)
     (d/calculate [:s :c1 :c2] s/replace-first :as :different)
-    (d/push-onto :string :different)))
+    (d/push-onto :exec :different)
+    ))
 
 
 
@@ -346,7 +360,8 @@
     (d/calculate [:s :where]
       #(if (empty? %1) 0 (num/scalar-to-index %2 (count %1))) :as :idx)
     (d/calculate [:s :idx :c] #(s/join (assoc (vec %1) (long %2) %3)) :as :result)
-    (d/push-onto :string :result)))
+    (d/push-onto :exec :result)
+    ))
 
 
 
@@ -359,7 +374,8 @@
     (d/consume-stack :string :as :old)
     (d/calculate [:s1] #(reverse (map str (seq %1))) :as :letters)
     (d/calculate [:old :letters] into :as :new)
-    (d/replace-stack :string :new)))
+    (d/replace-stack :exec :new)
+    ))
 
 
 
@@ -378,7 +394,8 @@
     (d/consume-stack :string :as :old)
     (d/calculate [:s] #(s/split %1 #"\s+") :as :words)
     (d/calculate [:words :old] #(into %2 (reverse %1)) :as :new)
-    (d/replace-stack :string :new)))
+    (d/replace-stack :exec :new)
+    ))
 
 
 
@@ -402,7 +419,8 @@
       #(min (count %1) (max 0 (Math/ceil %2))) :as :cropped-b)
     (d/calculate [:s :cropped-a :cropped-b]
         #(subs %1 (min %2 %3) (max %2 %3)) :as :result)
-    (d/push-onto :string :result)))
+    (d/push-onto :exec :result)
+    ))
 
 
 
@@ -416,7 +434,8 @@
     (d/calculate [:s1 :where]
       #(if (empty? %1) 0 (num/scalar-to-index %2 (count %1))) :as :idx)
     (d/calculate [:s1 :idx] #(s/join (take %2 %1)) :as :leftovers)
-    (d/push-onto :string :leftovers)))
+    (d/push-onto :exec :leftovers)
+    ))
 
 
 (def string-type

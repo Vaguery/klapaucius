@@ -31,11 +31,11 @@
         ?set-stack ?items string-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction       ?get-stack     ?expected
-    :string    '("88")       :string->scalar      :scalar       '(88)
-    :string    '("88.8")     :string->scalar      :scalar       '(88.8)
-    :string    '("6.2e7")    :string->scalar     :scalar       '(6.2e7)
-    :string    '("88N")      :string->scalar     :scalar       '(88N)
-    :string    '("3/11")     :string->scalar     :scalar       '(3/11)
+    :string    '("88")       :string->scalar      :exec          '(88)
+    :string    '("88.8")     :string->scalar      :exec          '(88.8)
+    :string    '("6.2e7")    :string->scalar      :exec          '(6.2e7)
+    :string    '("88N")      :string->scalar      :exec          '(88N)
+    :string    '("3/11")     :string->scalar      :exec          '(3/11)
   )
 
 
@@ -45,11 +45,11 @@
         ?set-stack ?items string-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction       ?get-stack     ?expected
-    :string    '("hey 88")     :string->scalar     :scalar       '(88)
-    :string    '("(neg 88.8")  :string->scalar     :scalar       '(88.8)
-    :string    '("\n\n6.2e7")  :string->scalar     :scalar       '(6.2e7)
-    :string    '("{:x 88N}")   :string->scalar     :scalar       '(88N)
-    :string    '("(+ 3/11 9)") :string->scalar     :scalar       '(3/11)
+    :string    '("hey 88")     :string->scalar     :exec         '(88)
+    :string    '("(neg 88.8")  :string->scalar     :exec         '(88.8)
+    :string    '("\n\n6.2e7")  :string->scalar     :exec         '(6.2e7)
+    :string    '("{:x 88N}")   :string->scalar     :exec         '(88N)
+    :string    '("(+ 3/11 9)") :string->scalar     :exec         '(3/11)
   )
 
 (tabular
@@ -58,11 +58,11 @@
         ?set-stack ?items string-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction       ?get-stack     ?expected
-    :string    '("hey88")      :string->scalar     :scalar       '()
-    :string    '("(88.8)")     :string->scalar     :scalar       '()
-    :string    '("")           :string->scalar     :scalar       '()
-    :string    '("string")     :string->scalar     :scalar       '()
-    :string    '(":foo")       :string->scalar     :scalar       '()
+    :string    '("hey88")      :string->scalar     :exec         '()
+    :string    '("(88.8)")     :string->scalar     :exec         '()
+    :string    '("")           :string->scalar     :exec         '()
+    :string    '("string")     :string->scalar     :exec         '()
+    :string    '(":foo")       :string->scalar     :exec         '()
   )
 
 
@@ -72,14 +72,14 @@
         ?set-stack ?items string-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction       ?get-stack     ?expected
-    :string    '("")            :string->scalars     :scalars       '([])
-    :string    '("8, 9, 10")    :string->scalars     :scalars       '([8 9 10])
-    :string    '("17.2 3.1 a")  :string->scalars     :scalars       '([17.2 3.1])
-    :string    '("nothing 5M")  :string->scalars     :scalars       '([5M])
-    :string    '("1e7 0x8 061") :string->scalars     :scalars       '([1.0E7 8 49])
-    :string    '("፹ 〺 Ⅸ ⅔")   :string->scalars     :scalars       '([])
+    :string    '("")            :string->scalars    :exec     '([])
+    :string    '("8, 9, 10")    :string->scalars    :exec     '([8 9 10])
+    :string    '("17.2 3.1 a")  :string->scalars    :exec     '([17.2 3.1])
+    :string    '("nothing 5M")  :string->scalars    :exec     '([5M])
+    :string    '("1e7 0x8 061") :string->scalars    :exec     '([1.0E7 8 49])
+    :string    '("፹ 〺 Ⅸ ⅔")   :string->scalars     :exec     '([])
     :string    '("(->Complex -∞ 2/3)")
-                                :string->scalars     :scalars       '([2/3])
+                                :string->scalars    :exec      '([2/3])
   )
 
 
@@ -90,27 +90,27 @@
         ?set-stack ?items string-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items         ?instruction           ?get-stack     ?expected
-    :boolean    '(false)       :boolean->string      :string       '("false")
-    :boolean    '(true)        :boolean->string      :string       '("true")
-    :boolean    '()            :boolean->string      :string       '()
+    :boolean    '(false)       :boolean->string        :exec         '("false")
+    :boolean    '(true)        :boolean->string        :exec         '("true")
+    :boolean    '()            :boolean->string        :exec         '()
 
-    :char       '(\Y)          :char->string         :string       '("Y")
-    :char       '(\u262F)      :char->string         :string       '("☯")
-    :char       '()            :char->string         :string       '()
+    :char       '(\Y)          :char->string           :exec         '("Y")
+    :char       '(\u262F)      :char->string           :exec         '("☯")
+    :char       '()            :char->string           :exec         '()
 
-    :code     '((88 :code-do)) :code->string         :string       '("(88 :code-do)")
-    :code     '([1 [3 5]])     :code->string         :string       '("[1 [3 5]]")
-    :code     '(''99)          :code->string         :string       '("(quote (quote 99))")
-    :code     '(1/8)           :code->string         :string       '("1/8")
-    :code     '({:a [1 2]})    :code->string         :string       '("{:a [1 2]}")
-    :code     '()              :code->string         :string       '()
+    :code     '((88 :code-do)) :code->string           :exec         '("(88 :code-do)")
+    :code     '([1 [3 5]])     :code->string           :exec         '("[1 [3 5]]")
+    :code     '(''99)          :code->string           :exec         '("(quote (quote 99))")
+    :code     '(1/8)           :code->string           :exec         '("1/8")
+    :code     '({:a [1 2]})    :code->string           :exec         '("{:a [1 2]}")
+    :code     '()              :code->string           :exec         '()
 
-    :exec     '((88 :code-do)) :exec->string         :string       '("(88 :code-do)")
-    :exec     '([1 [3 5]])     :exec->string         :string       '("[1 [3 5]]")
-    :exec     '(''99)          :exec->string         :string       '("(quote (quote 99))")
-    :exec     '(1/8)           :exec->string         :string       '("1/8")
-    :exec     '({:a [1 2]})    :exec->string         :string       '("{:a [1 2]}")
-    :exec     '()              :exec->string         :string       '())
+    :exec     '((88 :code-do)) :exec->string           :exec         '("(88 :code-do)")
+    :exec     '([1 [3 5]])     :exec->string           :exec         '("[1 [3 5]]")
+    :exec     '(''99)          :exec->string           :exec         '("(quote (quote 99))")
+    :exec     '(1/8)           :exec->string           :exec         '("1/8")
+    :exec     '({:a [1 2]})    :exec->string           :exec         '("{:a [1 2]}")
+    :exec     '()              :exec->string           :exec         '())
 
 
 ;; quotable
@@ -215,15 +215,15 @@
 
     ?set-stack  ?items         ?instruction  ?get-stack   ?expected
     ;; concatenation
-    :string    '("foo" "bar")   :string-concat  :string     '("barfoo")
-    :string    '("foo " "bar ") :string-concat  :string     '("bar foo ")
-    :string    '("foo" "bar\n") :string-concat  :string     '("bar\nfoo")
-    :string    '("" "2")        :string-concat  :string     '("2")
+    :string    '("foo" "bar")   :string-concat  :exec      '("barfoo")
+    :string    '("foo " "bar ") :string-concat  :exec      '("bar foo ")
+    :string    '("foo" "bar\n") :string-concat  :exec      '("bar\nfoo")
+    :string    '("" "2")        :string-concat  :exec      '("2")
     ;; because Java is weird enough to let you inline backspace characters
     :string    '("\b8" "\n" )
-                                :string-concat  :string     '("\n\b8")
+                                :string-concat  :exec      '("\n\b8")
     ;; missing args
-    :string    '("foo")         :string-concat  :string     '("foo"))
+    :string    '("foo")         :string-concat  :string      '("foo"))
 
 
 
@@ -235,10 +235,10 @@
 
     ?set-stack   ?items    ?instruction     ?get-stack     ?expected
     :string     '("foo" "bar")
-                          :string-concat    :string
+                          :string-concat    :exec
                                                            '("barfoo")
     :string     '("fools" "barge")
-                          :string-concat    :string
+                          :string-concat    :exec
                                                            '()
     :string     '("fools" "barge")
                           :string-concat    :error
@@ -255,7 +255,7 @@
     ?new-stacks                ?instruction             ?expected
 
     {:string  '("foo")
-     :char    '(\w)}         :string-conjchar      {:string '("foow")
+     :char    '(\w)}         :string-conjchar      {:exec '("foow")
                                                     :char '()}         )
 
 (tabular
@@ -271,14 +271,14 @@
                                 :string-containschar?
                                                   {:char '()
                                                    :string '()
-                                                   :boolean '(true)}
+                                                   :exec '(true)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:char   '(\q)
      :string '("ere he was able")}
                                 :string-containschar?
                                                   {:char '()
                                                    :string '()
-                                                   :boolean '(false)} )
+                                                   :exec '(false)} )
 
 
 (tabular
@@ -287,13 +287,13 @@
         ?set-stack ?items string-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items            ?instruction  ?get-stack   ?expected
-    :string    '("foo" "bar")       :string-contains?  :boolean     '(false)
-    :string    '("foo" "barfoobar") :string-contains?  :boolean     '(false)
-    :string    '("barfoobar" "foo") :string-contains?  :boolean     '(true)
-    :string    '("foo" "foo")       :string-contains?  :boolean     '(true)
-    :string    '("" "foo")          :string-contains?  :boolean     '(false)
-    :string    '("foo" "")          :string-contains?  :boolean     '(true)
-    :string    '("" "")             :string-contains?  :boolean     '(true))
+    :string    '("foo" "bar")       :string-contains?  :exec     '(false)
+    :string    '("foo" "barfoobar") :string-contains?  :exec     '(false)
+    :string    '("barfoobar" "foo") :string-contains?  :exec     '(true)
+    :string    '("foo" "foo")       :string-contains?  :exec     '(true)
+    :string    '("" "foo")          :string-contains?  :exec     '(false)
+    :string    '("foo" "")          :string-contains?  :exec     '(true)
+    :string    '("" "")             :string-contains?  :exec     '(true))
 
 
 (tabular
@@ -303,11 +303,11 @@
 
     ?set-stack  ?items         ?instruction  ?get-stack   ?expected
     ;; anything?
-    :string    '("foo")         :string-emptystring?  :boolean     '(false)
-    :string    '("")            :string-emptystring?  :boolean     '(true)
-    :string    '("\n")          :string-emptystring?  :boolean     '(false)
+    :string    '("foo")         :string-emptystring?  :exec      '(false)
+    :string    '("")            :string-emptystring?  :exec      '(true)
+    :string    '("\n")          :string-emptystring?  :exec      '(false)
     ;; missing args
-    :string    '()              :string-emptystring?  :boolean     '())
+    :string    '()              :string-emptystring?  :exec      '())
 
 
 (tabular
@@ -317,15 +317,15 @@
 
     ?set-stack  ?items         ?instruction  ?get-stack   ?expected
     ;; initial
-    :string    '("foo")         :string-first  :char     '(\f)
-    :string    '(" foo ")       :string-first  :char     '(\space)
-    :string    '("\n\t\t\n")    :string-first  :char     '(\newline)
+    :string    '("foo")         :string-first  :exec     '(\f)
+    :string    '(" foo ")       :string-first  :exec     '(\space)
+    :string    '("\n\t\t\n")    :string-first  :exec     '(\newline)
     :string    '("\u2665\u2666")
-                                :string-first  :char     '(\u2665)
+                                :string-first  :exec     '(\u2665)
     ;; because Java is weird enough to let you inline backspace characters
-    :string    '("\b8" )        :string-first  :char     '(\backspace)
+    :string    '("\b8" )        :string-first  :exec     '(\backspace)
     ;; missing args
-    :string    '()              :string-first  :char     '())
+    :string    '()              :string-first  :exec     '())
 
 
 (tabular
@@ -341,21 +341,21 @@
                                 :string-indexofchar
                                                   {:char '()
                                                    :string '()
-                                                   :scalar '(0)}
+                                                   :exec '(0)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:char   '(\a)
      :string '("ere he was able")}
                                 :string-indexofchar
                                                   {:char '()
                                                    :string '()
-                                                   :scalar '(8)}
+                                                   :exec '(8)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:char   '(\z)
      :string '("ere he was able")}
                                 :string-indexofchar
                                                   {:char '()
                                                    :string '()
-                                                   :scalar '(-1)}
+                                                   :exec '(-1)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;; missing arguments
     {:char   '()
@@ -363,14 +363,14 @@
                                 :string-indexofchar
                                                   {:char '()
                                                    :string '("ere he was able")
-                                                   :scalar '()}
+                                                   :exec '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:char   '(\e)
      :string '()}
                                 :string-indexofchar
                                                   {:char '(\e)
                                                    :string '()
-                                                   :scalar '()})
+                                                   :exec '()})
 
 
 (tabular
@@ -380,15 +380,15 @@
 
     ?set-stack  ?items         ?instruction  ?get-stack   ?expected
     ;; final
-    :string    '("foo")         :string-last  :char     '(\o)
-    :string    '(" foo ")       :string-last  :char     '(\space)
-    :string    '("\n\t\t\n")    :string-last  :char     '(\newline)
+    :string    '("foo")         :string-last  :exec       '(\o)
+    :string    '(" foo ")       :string-last  :exec       '(\space)
+    :string    '("\n\t\t\n")    :string-last  :exec       '(\newline)
     :string    '("\u2665\u2666")
-                                :string-last  :char     '(\u2666)
+                                :string-last  :exec       '(\u2666)
     ;; because Java is weird enough to let you inline backspace characters
-    :string    '("\b8" )        :string-last  :char     '(\8)
+    :string    '("\b8" )        :string-last  :exec       '(\8)
     ;; missing args
-    :string    '()              :string-last  :char     '())
+    :string    '()              :string-last  :exec       '())
 
 
 (tabular
@@ -398,14 +398,14 @@
 
     ?set-stack  ?items         ?instruction  ?get-stack   ?expected
     ;; length
-    :string    '("foo")         :string-length  :scalar     '(3)
-    :string    '(" foo ")       :string-length  :scalar     '(5)
-    :string    '("foo\n\t\t\n") :string-length  :scalar     '(7)
-    :string    '("\u2665")      :string-length  :scalar     '(1)
+    :string    '("foo")         :string-length  :exec      '(3)
+    :string    '(" foo ")       :string-length  :exec      '(5)
+    :string    '("foo\n\t\t\n") :string-length  :exec      '(7)
+    :string    '("\u2665")      :string-length  :exec      '(1)
     ;; because Java is weird enough to let you inline backspace characters
-    :string    '("\b8" )        :string-length  :scalar     '(2)
+    :string    '("\b8" )        :string-length  :exec      '(2)
     ;; missing args
-    :string    '()              :string-length  :scalar     '())
+    :string    '()              :string-length  :exec      '())
 
 
 
@@ -420,28 +420,28 @@
     {:scalar '(0)
      :string  '("ere he was able")}
                                 :string-nth
-                                                  {:char '(\e)
+                                                  {:exec '(\e)
                                                    :string '()
                                                    :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar '(-2)
      :string '("ere he was able")}
                                 :string-nth
-                                                  {:char '(\l)
+                                                  {:exec '(\l)
                                                    :string '()
                                                    :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar '(16)
      :string '("ere he was able")}
                                 :string-nth
-                                                  {:char '(\r)
+                                                  {:exec '(\r)
                                                    :string '()
                                                    :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar '(16)
      :string '("")}
                                 :string-nth
-                                                  {:char '()
+                                                  {:exec  '()
                                                    :string '()
                                                    :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -449,14 +449,14 @@
     {:scalar '()
      :string '("ere he was able")}
                                 :string-nth
-                                                  {:char '()
+                                                  {:exec  '()
                                                    :string '("ere he was able")
                                                    :scalar '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar '(0)
      :string '()}
                                 :string-nth
-                                                  {:char '()
+                                                  {:exec  '()
                                                    :string '()
                                                    :scalar '(0)})
 
@@ -474,14 +474,14 @@
                                 :string-occurrencesofchar
                                                   {:char '()
                                                    :string '()
-                                                   :scalar '(4)}
+                                                   :exec '(4)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:char   '(\z)
      :string '("ere he was able")}
                                 :string-occurrencesofchar
                                                   {:char '()
                                                    :string '()
-                                                   :scalar '(0)}
+                                                   :exec '(0)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;; missing arguments
     {:char   '()
@@ -489,14 +489,14 @@
                                 :string-occurrencesofchar
                                                   {:char '()
                                                    :string '("ere he was able")
-                                                   :scalar '()}
+                                                   :exec '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:char   '(\e)
      :string '()}
                                 :string-occurrencesofchar
                                                   {:char '(\e)
                                                    :string '()
-                                                   :scalar '()})
+                                                   :exec '()})
 
 
 (tabular
@@ -511,19 +511,19 @@
      :string '("ere he was able")}
                                 :string-removechar
                                                   {:char '()
-                                                   :string '("r h was abl")}
+                                                   :exec '("r h was abl")}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:char   '(\space)
      :string '("ere he was able")}
                                 :string-removechar
                                                   {:char '()
-                                                   :string '("erehewasable")}
+                                                   :exec '("erehewasable")}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:char   '(\z)
      :string '("ere he was able")}
                                 :string-removechar
                                                   {:char '()
-                                                   :string '("ere he was able")}
+                                                   :exec '("ere he was able")}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;; missing arguments
     {:char   '()
@@ -547,15 +547,15 @@
 
     ?set-stack  ?items         ?instruction  ?get-stack   ?expected
     :string    '("X" "ab" "aabbaaabbb")
-                                :string-replace  :string     '("aXbaaXbb")
+                                :string-replace  :exec     '("aXbaaXbb")
     :string    '("Napoleon" "he" "ere he was able")
-                                :string-replace  :string     '("ere Napoleon was able")
+                                :string-replace  :exec     '("ere Napoleon was able")
     :string    '(" " "\n" "foo\n\t\t\n")
-                                :string-replace  :string     '("foo \t\t ")
+                                :string-replace  :exec     '("foo \t\t ")
     :string    '("" "a" "aabbaaabbb")
-                                :string-replace  :string     '("bbbbb")
+                                :string-replace  :exec     '("bbbbb")
     :string    '("X" "" "aabbaaabbb")
-                                :string-replace  :string     '("XaXaXbXbXaXaXaXbXbXbX")
+                                :string-replace  :exec     '("XaXaXbXbXaXaXaXbXbXbX")
     ;; missing args
     :string    '("a" "b")       :string-replace  :string     '("a" "b")
     :string    '("a")           :string-replace  :string     '("a")
@@ -570,10 +570,10 @@
 
     ?set-stack   ?items    ?instruction     ?get-stack     ?expected
     :string     '("foo" "a" "aa")
-                          :string-replace    :string
+                          :string-replace    :exec
                                                            '("foofoo")
     :string     '("foo" "a" "aaaa")
-                          :string-replace    :string
+                          :string-replace    :exec
                                                            '()
     :string     '("foo" "a" "aaaa")
                           :string-replace    :error
@@ -590,15 +590,15 @@
 
     ?set-stack  ?items         ?instruction           ?get-stack   ?expected
     :string    '("X" "ab" "aabbaaabbb")
-                                :string-replacefirst  :string     '("aXbaaabbb")
+                                :string-replacefirst  :exec     '("aXbaaabbb")
     :string    '("Napoleon" "he" "ere he was able")
-                                :string-replacefirst  :string     '("ere Napoleon was able")
+                                :string-replacefirst  :exec     '("ere Napoleon was able")
     :string    '(" " "\n" "foo\n\t\t\n")
-                                :string-replacefirst  :string     '("foo \t\t\n")
+                                :string-replacefirst  :exec     '("foo \t\t\n")
     :string    '("" "a" "aabbaaabbb")
-                                :string-replacefirst  :string     '("abbaaabbb")
+                                :string-replacefirst  :exec     '("abbaaabbb")
     :string    '("X" "" "aabbaaabbb")
-                                :string-replacefirst  :string     '("Xaabbaaabbb")
+                                :string-replacefirst  :exec     '("Xaabbaaabbb")
     ;; missing args
     :string    '("a" "b")       :string-replacefirst  :string     '("a" "b")
     :string    '("a")           :string-replacefirst  :string     '("a")
@@ -617,19 +617,19 @@
      :string '("ere he was able")}
                                 :string-replacechar
                                                   {:char '()
-                                                   :string '("frf hf was ablf")}
+                                                   :exec '("frf hf was ablf")}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:char   '(\space \•)
      :string '("ere he was able")}
                                 :string-replacechar
                                                   {:char '()
-                                                   :string '("ere•he•was•able")}
+                                                   :exec '("ere•he•was•able")}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:char   '(\z \q)
      :string '("ere he was able")}
                                 :string-replacechar
                                                   {:char '()
-                                                   :string '("ere he was able")}
+                                                   :exec '("ere he was able")}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;; missing arguments
     {:char   '()
@@ -664,19 +664,19 @@
      :string '("ere he was able")}
                                 :string-replacefirstchar
                                                   {:char '()
-                                                   :string '("fre he was able")}
+                                                   :exec '("fre he was able")}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:char   '(\space \•)
      :string '("ere he was able")}
                                 :string-replacefirstchar
                                                   {:char '()
-                                                   :string '("ere•he was able")}
+                                                   :exec '("ere•he was able")}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:char   '(\z \q)
      :string '("ere he was able")}
                                 :string-replacefirstchar
                                                   {:char '()
-                                                   :string '("ere he was able")}
+                                                   :exec '("ere he was able")}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;; missing arguments
     {:char   '()
@@ -745,22 +745,22 @@
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:string  '("foo")
      :scalar  '(1)
-     :char    '(\O)}          :string-setchar        {:string '("fOo")
+     :char    '(\O)}          :string-setchar        {:exec '("fOo")
                                                      :char '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:string  '("foo")
      :scalar  '(6)
-     :char    '(\O)}          :string-setchar        {:string '("Ooo")
+     :char    '(\O)}          :string-setchar        {:exec '("Ooo")
                                                      :char '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:string  '("foo")
      :scalar  '(-2)
-     :char    '(\O)}          :string-setchar        {:string '("fOo")
+     :char    '(\O)}          :string-setchar        {:exec '("fOo")
                                                      :char '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:string  '("")
      :scalar  '(11)
-     :char    '(\O)}          :string-setchar        {:string '("O")
+     :char    '(\O)}          :string-setchar        {:exec '("O")
                                                      :char '()})
 
 
@@ -772,12 +772,12 @@
 
     ?set-stack  ?items         ?instruction  ?get-stack   ?expected
     ;; shatter
-    :string    '("foo")         :string-shatter  :string     '("f" "o" "o")
-    :string    '("foo\n\t")     :string-shatter  :string     '("f" "o" "o" "\n" "\t")
-    :string    '("\u2665")      :string-shatter  :string     '("\u2665")
-    :string    '("" "x")        :string-shatter  :string     '("x")
+    :string    '("foo")         :string-shatter  :exec     '("f" "o" "o")
+    :string    '("foo\n\t")     :string-shatter  :exec     '("f" "o" "o" "\n" "\t")
+    :string    '("\u2665")      :string-shatter  :exec     '("\u2665")
+    :string    '("" "x")        :string-shatter  :exec     '("x")
     ;; missing args
-    :string    '()              :string-shatter  :string     '())
+    :string    '()              :string-shatter  :exec     '())
 
 
 
@@ -789,16 +789,16 @@
 
     ?set-stack  ?items         ?instruction  ?get-stack   ?expected
     ;; we good here?
-    :string    '("foo")         :string-solid?  :boolean     '(true)
-    :string    '("foo_bar")     :string-solid?  :boolean     '(true)
-    :string    '("foo/bar")     :string-solid?  :boolean     '(true)
-    :string    '("a\u1722b")    :string-solid?  :boolean     '(true)
-    :string    '("")            :string-solid?  :boolean     '(false)
-    :string    '("foo bar")     :string-solid?  :boolean     '(false)
-    :string    '("foo\nbar")    :string-solid?  :boolean     '(false)
-    :string    '(" foo")        :string-solid?  :boolean     '(false)
+    :string    '("foo")         :string-solid?  :exec     '(true)
+    :string    '("foo_bar")     :string-solid?  :exec     '(true)
+    :string    '("foo/bar")     :string-solid?  :exec     '(true)
+    :string    '("a\u1722b")    :string-solid?  :exec     '(true)
+    :string    '("")            :string-solid?  :exec     '(false)
+    :string    '("foo bar")     :string-solid?  :exec     '(false)
+    :string    '("foo\nbar")    :string-solid?  :exec     '(false)
+    :string    '(" foo")        :string-solid?  :exec     '(false)
     ;; missing args
-    :string    '()              :string-solid?  :boolean     '())
+    :string    '()              :string-solid?  :exec     '())
 
 
 
@@ -809,13 +809,13 @@
 
     ?set-stack  ?items         ?instruction  ?get-stack   ?expected
     ;; we good here?
-    :string    '("foo")         :string-spacey?  :boolean     '(false)
-    :string    '("       ")     :string-spacey?  :boolean     '(true)
-    :string    '("\n\n\n\n")    :string-spacey?  :boolean     '(true)
-    :string    '("\n\n\n\n.")    :string-spacey?  :boolean    '(false)
-    :string    '("")            :string-spacey?  :boolean     '(false)
+    :string    '("foo")         :string-spacey?  :exec     '(false)
+    :string    '("       ")     :string-spacey?  :exec     '(true)
+    :string    '("\n\n\n\n")    :string-spacey?  :exec     '(true)
+    :string    '("\n\n\n\n.")   :string-spacey?  :exec     '(false)
+    :string    '("")            :string-spacey?  :exec     '(false)
     ;; missing args
-    :string    '()              :string-spacey?  :boolean     '())
+    :string    '()              :string-spacey?  :exec     '())
 
 
 (tabular
@@ -825,14 +825,14 @@
 
     ?set-stack  ?items         ?instruction  ?get-stack   ?expected
     ;; chunks
-    :string    '("a b c d e")   :string-splitonspaces  :string     '("a" "b" "c" "d" "e")
-    :string    '(" foo ")       :string-splitonspaces  :string     '("" "foo")
+    :string    '("a b c d e")   :string-splitonspaces  :exec   '("a" "b" "c" "d" "e")
+    :string    '(" foo ")       :string-splitonspaces  :exec   '("" "foo")
     :string    '("\na\tb\tc\n\n")
-                                :string-splitonspaces  :string   '("" "a" "b" "c")
-    :string    '("\"\"")        :string-splitonspaces  :string     '("\"\"")
-    :string    '("")            :string-splitonspaces  :string     '("")
+                                :string-splitonspaces  :exec '("" "a" "b" "c")
+    :string    '("\"\"")        :string-splitonspaces  :exec   '("\"\"")
+    :string    '("")            :string-splitonspaces  :exec   '("")
     ;; missing args
-    :string    '()              :string-splitonspaces  :string     '())
+    :string    '()              :string-splitonspaces  :exec   '())
 
 
 
@@ -847,22 +847,22 @@
     {:scalar  '(2 12)
      :string   '("ere he was able")}
                                 :string-substring
-                                                  {:string '("e he was a")}
+                                                  {:exec '("e he was a")}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar  '(12 2)
      :string   '("ere he was able")}
                                 :string-substring
-                                                  {:string '("e he was a")}
+                                                  {:exec '("e he was a")}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar  '(33 -712)                    ;; these get cropped to 0, count s
      :string   '("ere he was able")}
                                 :string-substring
-                                                  {:string '("ere he was able")}
+                                                  {:exec '("ere he was able")}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar  '(4 4)
      :string   '("ere he was able")}
                                 :string-substring
-                                                  {:string '("")})
+                                                  {:exec '("")})
 
 
 (tabular
@@ -876,25 +876,25 @@
     {:scalar    '(8)
      :string '("ere he was able")}
                                 :string-take
-                                                  {:string '("ere he w")
+                                                  {:exec '("ere he w")
                                                    :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar    '(-3)
      :string '("ere he was able")}
                                 :string-take
-                                                  {:string '("ere he was a")
+                                                  {:exec '("ere he was a")
                                                    :scalar  '()}
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar    '(99)
      :string '("ere he was able")}
                                 :string-take
-                                                  {:string '("ere he wa")
+                                                  {:exec '("ere he wa")
                                                    :scalar  '()}
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar    '(99)
      :string '("")}
                                 :string-take
-                                                  {:string '("")
+                                                  {:exec '("")
                                                    :scalar  '()}
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:scalar    '()
