@@ -4,6 +4,7 @@
             [push.util.numerics       :as n]
             [push.type.core           :as t]
             [push.util.code-wrangling :as u]
+            [push.type.definitions.quoted :as qc]
             ))
 
 
@@ -15,18 +16,20 @@
     :tags #{:binding :introspection}
     (d/save-bindings :as :known)
     (d/calculate [:known] #(count (keys %)) :as :count)
-    (d/push-onto :scalar :count)))
+    (d/return-item :count)
+    ))
 
 
 
 (def push-bindings
   (i/build-instruction
     push-bindings
-    "`:push-bindings` pushes a list (in sorted order) containing all the registered :bindings keywords to the :code stack"
+    "`:push-bindings` returns a quoted list (in sorted order) containing all the registered :bindings keywords"
     :tags #{:binding :introspection}
     (d/save-bindings :as :known)
-    (d/calculate [:known] #(u/list! (sort %1)) :as :listed)
-    (d/push-onto :code :listed)))
+    (d/calculate [:known] #(qc/push-quote (u/list! (sort %1))) :as :listed)
+    (d/return-item :listed)
+    ))
 
 
 
@@ -37,7 +40,8 @@
     :tags #{:set :binding :introspection}
     (d/save-bindings :as :known)
     (d/calculate [:known] set :as :bindingset)
-    (d/push-onto :set :bindingset)))
+    (d/return-item :bindingset)
+    ))
 
 
 
@@ -47,7 +51,8 @@
     "`:push-counter` pushes the current interpreter counter value to the `:scalar` stack"
     :tags #{:introspection}
     (d/save-counter :as :count)
-    (d/push-onto :scalar :count)))
+    (d/return-item :count)
+    ))
 
 
 
@@ -57,7 +62,8 @@
     "`:push-instructionset` pushes a set containing all the registered :instruction keywords to the :set stack"
     :tags #{:set :introspection}
     (d/save-instructions :as :dictionary)
-    (d/push-onto :set :dictionary)))
+    (d/return-item :dictionary)
+    ))
 
 
 
@@ -71,7 +77,7 @@
     (d/calculate [:known :i]
         #(if (empty? %1) 0 (n/scalar-to-index %2 (count %1))) :as :idx)
     (d/calculate [:known :idx] #(when (seq %1) (nth (sort %1) %2)) :as :result)
-    (d/push-onto :ref :result)
+    (d/return-item :result)
     ))
 
 

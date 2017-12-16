@@ -17,10 +17,10 @@
     (register-type-and-check-instruction
       ?set-stack ?items random-scalars-module ?instruction ?get-stack) => ?expected)
 
-    ?set-stack   ?items        ?instruction       ?get-stack     ?expected  
-    :scalar      '(77/8)       :integer-uniform   :scalar        '(4)      
-    :scalar      '(0)          :integer-uniform   :scalar        '(0)       
-    :scalar      '(-10000.2)   :integer-uniform   :scalar        '(-13)
+    ?set-stack   ?items        ?instruction       ?get-stack     ?expected
+    :scalar      '(77/8)       :integer-uniform   :exec          '(4)
+    :scalar      '(0)          :integer-uniform   :exec          '(0)
+    :scalar      '(-10000.2)   :integer-uniform   :exec          '(-13)
     )
 
 
@@ -32,12 +32,12 @@
     ?set-stack   ?items          ?instruction         ?get-stack     ?expected
 
     :scalar    '(10000000000000000000000000000000000000000000N)
-                                 :integer-uniform     :scalar       '()
+                                 :integer-uniform     :exec         '()
     :scalar    '(10000000000000000000000000000000000000000000N)
                                  :integer-uniform     :error          '({:item ":integer-uniform argument out of range", :step 0})
 
     :scalar    (list (+' Long/MIN_VALUE -1))
-                                 :integer-uniform     :scalar       '()
+                                 :integer-uniform     :exec         '()
     :scalar    (list (+' Long/MIN_VALUE -1))
                                  :integer-uniform     :error          '({:item ":integer-uniform argument out of range", :step 0})
     )
@@ -52,10 +52,10 @@
       ?set-stack ?items random-scalars-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack   ?items    ?instruction     ?get-stack     ?expected     ?diceroll
-    :scalar     '(50.0)    :float-uniform      :scalar      '(25.0)      25.0  
-    :scalar     '(8.0)     :float-uniform      :scalar      '(2.0)       2.0
-    :scalar     '(0.0)     :float-uniform      :scalar      '(0.0)       0.0
-    :scalar     '(-100.0)  :float-uniform      :scalar      '(-26.0)     -26.0)
+    :scalar     '(50.0)    :float-uniform      :exec       '(25.0)      25.0
+    :scalar     '(8.0)     :float-uniform      :exec       '(2.0)       2.0
+    :scalar     '(0.0)     :float-uniform      :exec       '(0.0)       0.0
+    :scalar     '(-100.0)  :float-uniform      :exec       '(-26.0)     -26.0)
 
 
 
@@ -67,12 +67,12 @@
     ?set-stack   ?items          ?instruction         ?get-stack     ?expected
 
     :scalar    '(1.0e861M)
-                                 :float-uniform     :scalar       '()
+                                 :float-uniform     :exec        '()
     :scalar    '(1.0e861M)
                                  :float-uniform     :error          '({:item ":float-uniform argument out of range", :step 0})
 
     :scalar    (list Double/MAX_VALUE)
-                                 :float-uniform     :scalar       '()
+                                 :float-uniform     :exec        '()
     :scalar    (list Double/MAX_VALUE)
                                  :float-uniform     :error          '({:item ":float-uniform argument out of range", :step 0})
     )
@@ -86,8 +86,8 @@
       ?set-stack ?items random-scalars-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack   ?items    ?instruction         ?get-stack     ?expected     ?diceroll
-    :boolean     '()       :boolean-faircoin    :boolean       '(true)          0.1
-    :boolean     '()       :boolean-faircoin    :boolean       '(false)         0.9
-    :boolean     '()       :boolean-faircoin    :boolean       '(false)         0.5
-    :boolean     '()       :boolean-faircoin    :boolean       '(true)          0.0
+    :boolean     '()       :boolean-faircoin    :exec         '(true)          0.1
+    :boolean     '()       :boolean-faircoin    :exec         '(false)         0.9
+    :boolean     '()       :boolean-faircoin    :exec         '(false)         0.5
+    :boolean     '()       :boolean-faircoin    :exec         '(true)          0.0
     )

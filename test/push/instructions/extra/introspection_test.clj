@@ -2,7 +2,9 @@
   (:require [push.interpreter.core :as i]
             [push.type.core :as t]
             [push.util.code-wrangling :as u]
-            [push.interpreter.templates.one-with-everything :as o])
+            [push.interpreter.templates.one-with-everything :as o]
+            [push.type.definitions.quoted :as qc]
+            )
   (:use midje.sweet)
   (:use [push.util.test-helpers])
   (:use push.type.module.introspection)
@@ -11,7 +13,7 @@
 
 ;;; some fixtures
 
-(def simple-case 
+(def simple-case
   (i/register-type
     (o/make-everything-interpreter :bindings {:c 1 :b false} :counter 77)
     standard-introspection-module))
@@ -25,7 +27,7 @@
       ?set-stack ?items standard-introspection-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack   ?items    ?instruction     ?get-stack     ?expected
-    :scalar     '()       :push-counter    :scalar       '(77))
+    :scalar     '()       :push-counter      :exec         '(77))
 
 
 (tabular
@@ -35,7 +37,8 @@
       ?set-stack ?items standard-introspection-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack   ?items    ?instruction     ?get-stack     ?expected
-    :code        '()       :push-bindings    :code          '((:b :c)))
+    :code        '()       :push-bindings   :exec     (list (qc/push-quote '(:b :c)))
+    )
 
 
 (tabular
@@ -45,7 +48,7 @@
       ?set-stack ?items standard-introspection-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack   ?items    ?instruction     ?get-stack     ?expected
-    :set          '()      :push-bindingset    :set            '(#{:b :c}))
+    :set          '()      :push-bindingset    :exec            '(#{:b :c}))
 
 
 (def what-simple-case-knows (into #{} (keys (:instructions simple-case))))
@@ -58,8 +61,8 @@
       ?set-stack ?items standard-introspection-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack ?items ?instruction     ?get-stack   ?expected
-    :set       '()    :push-instructionset    
-                                       :set     (list what-simple-case-knows))
+    :set       '()    :push-instructionset
+                                       :exec     (list what-simple-case-knows))
 
 
 
@@ -70,8 +73,8 @@
       ?set-stack ?items standard-introspection-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack ?items ?instruction     ?get-stack   ?expected
-    :scalar       '()    :push-bindingcount    
-                                       :scalar     '(2))
+    :scalar       '()    :push-bindingcount
+                                       :exec        '(2))
 
 
 
@@ -82,14 +85,14 @@
       ?set-stack ?items standard-introspection-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack ?items   ?instruction     ?get-stack   ?expected
-    :scalar     '(1)    :push-nthref    
-                                         :ref         '(:c)
-    :scalar     '(0)    :push-nthref    
-                                         :ref         '(:b)
-    :scalar     '(11)   :push-nthref    
-                                         :ref         '(:c)
-    :scalar     '(-21)  :push-nthref    
-                                         :ref         '(:c))
+    :scalar     '(1)    :push-nthref
+                                         :exec         '(:c)
+    :scalar     '(0)    :push-nthref
+                                         :exec         '(:b)
+    :scalar     '(11)   :push-nthref
+                                         :exec         '(:c)
+    :scalar     '(-21)  :push-nthref
+                                         :exec         '(:c))
 
 
 (tabular
@@ -99,14 +102,14 @@
       ?set-stack ?items standard-introspection-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack ?items   ?instruction     ?get-stack   ?expected
-    :scalar     '(1)    :push-nthref    
-                                         :ref         '()
-    :scalar     '(0)    :push-nthref    
-                                         :ref         '()
-    :scalar     '(11)   :push-nthref    
-                                         :ref         '()
-    :scalar     '(-21)  :push-nthref    
-                                         :ref         '())
+    :scalar     '(1)    :push-nthref
+                                         :exec          '()
+    :scalar     '(0)    :push-nthref
+                                         :exec          '()
+    :scalar     '(11)   :push-nthref
+                                         :exec          '()
+    :scalar     '(-21)  :push-nthref
+                                         :exec          '())
 
 
 (def knows-things (assoc simple-case :bindings {:m '() :x '(2) :a '(1)}))
@@ -118,5 +121,5 @@
       ?set-stack ?items standard-introspection-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack ?items   ?instruction     ?get-stack   ?expected
-    :exec     '()       :push-refcycler    
+    :exec     '()       :push-refcycler
                                          :exec       '((:push-bindings :code-cycler)))

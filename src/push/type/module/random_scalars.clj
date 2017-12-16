@@ -18,7 +18,7 @@
     (d/calculate [:valid :arg] #(when %1 (long (rand %2))) :as :result)
     (d/calculate [:valid]
       #(when-not %1 ":integer-uniform argument out of range") :as :warning)
-    (d/push-onto :scalar :result)
+    (d/return-item :result)
     (d/record-an-error :from :warning)))
 
 
@@ -34,7 +34,7 @@
     (d/calculate [:valid :arg] #(when %1 (rand %2)) :as :result)
     (d/calculate [:valid]
       #(when-not %1 ":float-uniform argument out of range") :as :warning)
-    (d/push-onto :scalar :result)
+    (d/return-item :result)
     (d/record-an-error :from :warning)))
 
 
@@ -45,7 +45,7 @@
     "`:boolean-faircoin` pushes a random `:boolean` value, with equal probability `true` or `false`."
     :tags #{:logical :random}
     (d/calculate [] #(< (rand) 0.5) :as :result)
-    (d/push-onto :boolean :result)))
+    (d/return-item :result)))
 
 
 ;;;;;;;;;;;;;;;;;
