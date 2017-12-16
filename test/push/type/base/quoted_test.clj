@@ -14,5 +14,6 @@
 
 (fact "push-quote creates a new QuotedCode record with the given value"
   (:value (push-quote 88)) => 88
+  (:value (push-quote nil)) => nil
   (:value (push-quote (push-quote 88))) => (push-quote 88)
   (:value (push-quote '())) => '())

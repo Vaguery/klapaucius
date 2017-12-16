@@ -6,6 +6,7 @@
             [push.util.code-wrangling     :as u]
             [push.instructions.aspects    :as aspects]
             [push.util.stack-manipulation :as stacks]
+            [push.type.definitions.quoted :as qc]
             ))
 
 
@@ -14,87 +15,90 @@
     code-append
     "`code-append` concatenates the top :code item to the end of the second :code item. If either argument isn't a list, it's made into one first. If the result would be larger than :max-collection-size points, it is discarded and an `:error` is pushed instead"
     :tags #{:complex :base}
+
     (d/consume-top-of :code :as :arg2)
     (d/consume-top-of :code :as :arg1)
     (d/calculate [:arg1] #(if (coll? %1) %1 (list %1)) :as :list1)
     (d/calculate [:arg2] #(if (coll? %1) %1 (list %1)) :as :list2)
-    (d/calculate [:list1 :list2] #(u/list! (concat %1 %2)) :as :both)
-    (d/save-max-collection-size :as :limit)
-    (d/calculate [:both :limit]
-      #(when (< (u/count-code-points %1) %2) %1) :as :result)
-    (d/calculate [:both :limit]
-      #(when-not (< (u/count-code-points %1) %2) ":code-append produced an oversized result") :as :message)
-    (d/push-onto :code :result)
-    (d/record-an-error :from :message)
+    (d/calculate [:list1 :list2]
+      #(qc/push-quote (u/list! (concat %1 %2))) :as :result)
+    (d/return-item :result)
     ))
 
 
 
 (def code-atom?
   (i/simple-1-in-predicate
-    "`:code-atom?` pushes `true` if the top `:code` item is not a collection"
-      :code "atom?" #(not (coll? %1))))
+    "`:code-atom?` returns `true` if the top `:code` item is not a collection"
+      :code
+      "atom?"
+      #(not (coll? %1))
+      ))
 
 
 
 (def code-cons
   (i/build-instruction
     code-cons
-    "`:code-cons` pops the top two `:code` items. If the first one is a list, it conjoins the second item to that; if it's not a list, it makes it one, then conjoins. If the result would be larger than :max-code-points it is discarded, and an `:error` is pushed instead."
+    "`:code-cons` pops the top two `:code` items. If the first one is a list, it conjoins the second item to that; if it's not a list, it makes it one, then conjoins."
     :tags #{:complex :base}
+
     (d/consume-top-of :code :as :item2)
     (d/consume-top-of :code :as :item1)
     (d/calculate [:item2] #(if (seq? %1) %1 (list %1)) :as :list)
-    (d/calculate [:list :item1] #(u/list! (conj %1 %2)) :as :conjed)
-    (d/save-max-collection-size :as :limit)
-    (d/calculate [:conjed :limit]
-      #(when (< (u/count-code-points %1) %2) %1) :as :result)
-    (d/calculate [:conjed :limit]
-      #(when-not (< (u/count-code-points %1) %2) ":code-cons produced an oversized result") :as :message)
-    (d/push-onto :code :result)
-    (d/record-an-error :from :message)
+    (d/calculate [:list :item1]
+      #(qc/push-quote (u/list! (conj %1 %2))) :as :result)
+    (d/return-item :result)
     ))
 
 
 
 (def code-container (i/simple-2-in-1-out-instruction
-  "`:code-container` pops the top two `:code` items. It performs a depth-first traversal of the second code item (if it is a list or not), looking for duplicates of the first item. If it finds one, then the _parent_ node of the tree is returned as a list. If the item is not found, or there is no parent (the two items are identical), there is no return value."
-  :code "container" #(first (u/containers-in %1 %2))))
+  "`:code-container` pops the top two `:code` items. It performs a depth-first traversal of the second code item (if it is a list or not), looking for duplicates of the first item. If it finds one, then the _parent_ node of the tree is returned as quoted code. If the item is not found, or there is no parent (the two items are identical), there is no return value."
+    :code
+    "container"
+    #(qc/push-quote (first (u/containers-in %1 %2)))
+    ))
 
 
 
 (def code-contains?
   (i/build-instruction
     code-contains?
-    "`:code-contains?` pops the top two items from the `:code` stack, and pushes `true` if the second one is contained (as any subtree) in the first, or if they are identical."
+    "`:code-contains?` pops the top two items from the `:code` stack, and returns `true` if the second one is contained (as any subtree) in the first, or if they are identical."
     :tags #{:complex :base}
+
     (d/consume-top-of :code :as :arg2)
     (d/consume-top-of :code :as :arg1)
     (d/calculate [:arg1 :arg2] #(u/contains-anywhere? %1 %2) :as :found)
-    (d/push-onto :boolean :found)))
+    (d/return-item :found)
+    ))
 
 
 
 (def code-do
   (i/build-instruction
     code-do
-    "`:code-do` makes a copy of the top `:code` item, and builds a continuation
-      `'([top code item] :code-pop)`
-      which is pushed to the `:exec` stack"
+    "`:code-do` pops the top `:code` item, and returns a continuation `'([quoted top code item] [unquoted top code item] :code-pop)`"
     :tags #{:complex :base}
-    (d/save-top-of :code :as :do-this)
-    (d/calculate [:do-this] #(list %1 :code-pop) :as :continuation)
-    (d/push-onto :exec :continuation)))
+
+    (d/consume-top-of :code :as :do-this)
+    (d/calculate [:do-this]
+      #(list (qc/push-quote %1) %1 :code-pop) :as :continuation)
+    (d/return-item :continuation)
+    ))
 
 
 
 (def code-do*
   (i/build-instruction
     code-do*
-    "`:code-do*` pops the top `:code` item, and pushes it onto the `:exec` stack"
+    "`:code-do*` pops the top `:code` item, and returns it (unquoted)"
     :tags #{:complex :base}
+
     (d/consume-top-of :code :as :do-this)
-    (d/push-onto :exec :do-this)))
+    (d/return-item :do-this)
+    ))
 
 
 
@@ -108,6 +112,7 @@
 
     This continuation is pushed to the `:exec` stack."
     :tags #{:complex :base}
+
     (d/consume-top-of :code :as :do-this)
     (d/consume-top-of :scalar :as :counter)
     (d/calculate [:counter] pos? :as :go?)
@@ -116,7 +121,8 @@
       #(if %3
         (list %2 0 :code-quote %1 :code-do*range)
         (list %2 :code-quote %1)) :as :continuation)
-    (d/push-onto :exec :continuation)))
+    (d/return-item :continuation)
+    ))
 
 
 
@@ -144,7 +150,8 @@
         %5 (list %4 %1)
         :else
           (list %2 %1 (list %4 %3 :code-quote %1 :code-do*range))) :as :continuation)
-    (d/push-onto :exec :continuation)))
+    (d/return-item :continuation)
+    ))
 
 
 
@@ -167,22 +174,25 @@
       #(if %4
            %1
            (list %1 (list %3 :code-quote %1 :code-do*times))) :as :continuation)
-    (d/push-onto :exec :continuation)))
+    (d/return-item :continuation)
+    ))
 
 
 
 (def code-drop
   (i/build-instruction
     code-drop
-    "`:code-drop` pops the top `:code` and `:scalar` items. It wraps the `:code` item in a list if it isn't one, and forces the scalar into an index range. It then pushes the result of `(drop index code)`."
+    "`:code-drop` pops the top `:code` and `:scalar` items. It wraps the `:code` item in a list if it isn't one, and forces the scalar into an index range. It then returns the result of `(drop index code)`."
     :tags #{:complex :base}
     (d/consume-top-of :code :as :c)
     (d/consume-top-of :scalar :as :i)
     (d/calculate [:c] #(if (seq? %1) %1 (list %1)) :as :list)
     (d/calculate [:list :i]
       #(if (empty? %1) 0 (n/scalar-to-index %2 (count %1))) :as :idx)
-    (d/calculate [:list :idx] #(drop %2 %1) :as :result)
-    (d/push-onto :code :result)))
+    (d/calculate [:list :idx]
+      #(qc/push-quote (drop %2 %1)) :as :result)
+    (d/return-item :result)
+    ))
 
 
 
@@ -197,48 +207,50 @@
     (d/calculate [:size :i]
       #(n/scalar-to-index %2 %1) :as :idx)
     (d/calculate [:c :idx]
-      #(u/nth-code-point %1 %2) :as :result)
-    (d/push-onto :code :result)))
+      #(qc/push-quote (u/nth-code-point %1 %2)) :as :result)
+    (d/return-item :result)
+    ))
 
 
 
 (def code-first (i/simple-1-in-1-out-instruction
   "`:code-first` examines the top `:code` item to determine if it's a code block (not a vector, map, record or other collection type!) If it is, the function returns its first item, otherwise the item itself it returned."
-  :code "first" #(if (seq? %) (first %) %)))
+  :code
+  "first"
+  #(qc/push-quote (if (seq? %) (first %) %))
+  ))
 
 
 
 (def code-if
   (i/build-instruction
     code-if
-    "`:code-if` pops two items from the `:code` stack and one from the `:boolean` stack. If the `:boolean` is `true`, it pushes the second `:code` item back; if false, the first `:code` item. The other popped `:code` item is discarded."
+    "`:code-if` pops two items from the `:code` stack and one from the `:boolean` stack. If the `:boolean` is `true`, it returns the first `:code` item (quoted); if false, it returns the second `:code` item."
     :tags #{:complex :base}
     (d/consume-top-of :code :as :arg2)
     (d/consume-top-of :code :as :arg1)
     (d/consume-top-of :boolean :as :which)
-    (d/calculate [:which :arg1 :arg2] #(if %1 %2 %3) :as :that)
-    (d/push-onto :exec :that)))
+    (d/calculate [:which :arg1 :arg2]
+      #(qc/push-quote (if %1 %2 %3)) :as :that)
+    (d/return-item :that)
+    ))
 
 
 
 (def code-insert
   (i/build-instruction
     code-insert
-    "`:code-insert` pops the top two `:code` items (call them `A` and `B` respectively), and the top `:scalar`. It counts the number of code points in `B` (that is, lists and items in lists, not other collections), then forces the `:scalar` to a suitable index range. It then pushes the result when the indexed node of `B` is replaced with `A`. If the result would be larger than :max-collection-size, it is discarded and an `:error` is pushed instead."
+    "`:code-insert` pops the top two `:code` items (call them `A` and `B` respectively), and the top `:scalar`. It counts the number of code points in `B` (that is, lists and items in lists, not other collections), then forces the `:scalar` to a suitable index range. It then pushes the result when the indexed node of `B` is replaced with `A`."
     :tags #{:complex :base}
+
     (d/consume-top-of :code :as :a)
     (d/consume-top-of :code :as :b)
     (d/consume-top-of :scalar :as :i)
     (d/calculate [:b] #(u/count-code-points %1) :as :size)
     (d/calculate [:i :size] #(n/scalar-to-index %1 %2) :as :idx)
-    (d/calculate [:a :b :idx] #(u/replace-nth-in-code %2 %1 %3) :as :replaced)
-    (d/save-max-collection-size :as :limit)
-    (d/calculate [:replaced :limit]
-      #(when (< (u/count-code-points %1) %2) %1) :as :result)
-    (d/calculate [:replaced :limit]
-      #(when-not (< (u/count-code-points %1) %2) ":code-insert produced an oversized result") :as :message)
-    (d/push-onto :code :result)
-    (d/record-an-error :from :message)
+    (d/calculate [:a :b :idx]
+      #(qc/push-quote (u/replace-nth-in-code %2 %1 %3)) :as :result)
+    (d/return-item :result)
     ))
 
 
@@ -246,29 +258,27 @@
 (def code-length
   (i/build-instruction
     code-length
-    "`:code-length` pops the top `:code` item, and if it is a Collection it counts the number of items in its root and pushes that value to the `:scalar` stack. 1 is pushed to `:scalar` for items that are not Collections."
+    "`:code-length` pops the top `:code` item, and if it is a collection (including a :vector, :set, :tagspace or other thing) it counts the number of items in its root and returns that value, or 1 if it is not a collection."
     :tags #{:complex :base}
+
     (d/consume-top-of :code :as :arg)
     (d/calculate [:arg] #(if (coll? %1) (count %1) 1) :as :len)
-    (d/push-onto :scalar :len)))
+    (d/return-item :len)
+    ))
 
 
 
 (def code-list
   (i/build-instruction
     code-list
-    "`:code-list` pops the top two items from the `:code` stack, returning a list of two elements: of the first item, then the second. If the result would be larger than :max-collection-size, it is discarded and an `:error` is pushed."
+    "`:code-list` pops the top two items from the `:code` stack, returning a quoted codeblock containing the two elements."
     :tags #{:complex :base}
+
     (d/consume-top-of :code :as :arg2)
     (d/consume-top-of :code :as :arg1)
-    (d/calculate [:arg1 :arg2] list :as :both)
-    (d/save-max-collection-size :as :limit)
-    (d/calculate [:both :limit]
-      #(when (< (u/count-code-points %1) %2) %1) :as :result)
-    (d/calculate [:both :limit]
-      #(when-not (< (u/count-code-points %1) %2) ":code-list produced an oversized result") :as :message)
-    (d/push-onto :code :result)
-    (d/record-an-error :from :message)
+    (d/calculate [:arg1 :arg2]
+      #(qc/push-quote (list %1 %2)) :as :result)
+    (d/return-item :result)
     ))
 
 
@@ -276,7 +286,7 @@
 (def code-map
   (i/build-instruction
     code-map
-    "`:code-map` pops the top items of the `:code` and `:exec` stacks (call them \"C\" and \"E\", respectively), and pushes a continuation to `:exec`. If C is a list of 2 or more elements, `'(:code-quote () (:code-quote (first C) E) :code-cons (:code-quote (rest C) :code-reduce E))`; if a list of 1 item, `'(:code-quote () (:code-quote (first C) E) :code-cons)`; if an empty list, no continuation results; if not a list, `'(:code-quote () (:code-quote C E) :code-cons)`. If the continuation would be larger than :max-collection-size it is discarded and an `:error` is pushed."
+    "`:code-map` pops the top items of the `:code` and `:exec` stacks (call them \"C\" and \"E\", respectively), and pushes a continuation to `:exec`. If C is a list of 2 or more elements, `'(:code-quote () (:code-quote (first C) E) :code-cons (:code-quote (rest C) :code-reduce E))`; if a list of 1 item, `'(:code-quote () (:code-quote (first C) E) :code-cons)`; if an empty list, no continuation results; if not a list, `'(:code-quote () (:code-quote C E) :code-cons)`."
     :tags #{:complex :base}
     (d/consume-top-of :code :as :item)
     (d/consume-top-of :exec :as :fn)
@@ -291,15 +301,8 @@
                 (list :code-quote '()
                       (list :code-quote (first %1) %2) :code-cons
                       (list :code-quote (rest %1) :code-reduce %2)))
-      :as :continuation)
-    (d/save-max-collection-size :as :limit)
-    (d/calculate [:continuation :limit]
-      #(when (< (u/count-code-points %1) %2) %1) :as :result)
-    (d/calculate [:continuation :limit]
-      #(when-not (< (u/count-code-points %1) %2)
-        ":code-map produced an oversized result") :as :message)
-    (d/record-an-error :from :message)
-    (d/push-onto :exec :result)
+      :as :results)
+    (d/return-item :results)
     ))
 
 

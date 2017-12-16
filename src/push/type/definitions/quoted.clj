@@ -5,9 +5,9 @@
 
 
 (defn push-quote
-  "takes any Push item (single literal, keyword, or code block) and returns a QuotedCode Push item with that value"
+  "takes any Push item (single literal, keyword, or code block) and returns a QuotedCode Push item with that value; if the item is nil, returns nil"
   [item]
-  (->QuotedCode item))
+  (if (nil? item) nil (->QuotedCode item)))
 
 
 (defn quoted-code?
