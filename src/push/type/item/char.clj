@@ -10,30 +10,35 @@
 
 (def char-digit? (i/simple-1-in-predicate
   "`:char-digit? pushes `true` if the top `:char` is a digit (per Java `Character/isDigit`)"
-  :char "digit?" #(Character/isDigit %1)))
+  :char "digit?" #(Character/isDigit %1)
+  ))
 
 
 (def char-letter? (i/simple-1-in-predicate
   "`:char-letter? pushes `true` if the top `:char` is a letter (per Java `Character/isLetter`)"
-  :char "letter?" #(Character/isLetter %1)))
+  :char "letter?" #(Character/isLetter %1)
+  ))
 
 
 
 (def char-lowercase? (i/simple-1-in-predicate
   "`:char-lowercase? pushes `true` if the top `:char` is lowercase (per Java `Character/isLowerCase`)"
-  :char "lowercase?" #(Character/isLowerCase %1)))
+  :char "lowercase?" #(Character/isLowerCase %1)
+  ))
 
 
 
 (def char-uppercase? (i/simple-1-in-predicate
   "`:char-uppercase? pushes `true` if the top `:char` is uppercase (per Java `Character/isUpperCase`)"
-  :char "uppercase?" #(Character/isUpperCase %1)))
+  :char "uppercase?" #(Character/isUpperCase %1)
+  ))
 
 
 
 (def char-whitespace? (i/simple-1-in-predicate
   "`:char-whitespace? pushes `true` if the top `:char` is a whitespace (per Java `Character/isWhitespace`)"
-  :char "whitespace?" #(Character/isWhitespace %1)))
+  :char "whitespace?" #(Character/isWhitespace %1)
+  ))
 
 
 
@@ -49,7 +54,8 @@
     (d/consume-top-of :scalar :as :arg)
     (d/calculate [:arg]
       #(char (num/scalar-to-index %1 128)) :as :c)
-    (d/push-onto :char :c)))
+    (d/return-item :c)
+    ))
 
 
 
@@ -61,7 +67,8 @@
     (d/consume-top-of :scalar :as :arg)
     (d/calculate [:arg]
       #(char (num/scalar-to-index %1 65535)) :as :c)
-    (d/push-onto :char :c)))
+    (d/return-item :c)
+    ))
 
 
 
@@ -69,13 +76,12 @@
 (def string->chars
   (i/build-instruction
     string->chars
-    "`:string->chars` pops the top `:string` item, and pushes every character (in the same order as the string) onto the `:char` stack. Thus a string \"foo\" will be pushed onto the `:char` stack as `'(\\f \\o \\o ...)`"
+    "`:string->chars` pops the top `:string` item, and returns a codeblock containing the characters of that string"
     :tags #{:string :conversion :base}
     (d/consume-top-of :string :as :arg)
-    (d/consume-stack :char :as :old-stack)
-    (d/calculate [:arg :old-stack]
-      #(if (empty? %1) %2 (fix/list! (concat (vec %1) %2))) :as :new-stack)
-    (d/replace-stack :char :new-stack)))
+    (d/calculate [:arg] #(into '() (reverse (vec %1))) :as :results)
+    (d/return-item :results)
+    ))
 
 
 

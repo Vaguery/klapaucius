@@ -24,17 +24,18 @@
 
 
 (tabular
-  (fact ":string->chars puts every char in the top :string onto the :char stack"
+  (fact ":string->chars puts every char in the top :string onto the :exec stack"
     (register-type-and-check-instruction
         ?set-stack ?items char-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items          ?instruction  ?get-stack         ?expected
     ;; all the letters
-    :string    '("foo")         :string->chars   :char     '(\f \o \o)
-    :string    '("4\n5")        :string->chars   :char     '(\4 \newline \5)
-    :string    '("")            :string->chars   :char     '()
+    :string    '("foo")         :string->chars   :exec     '((\f \o \o))
+    :string    '("4\n5")        :string->chars   :exec     '((\4 \newline \5))
+    :string    '("")            :string->chars   :exec     '(())
     ;; missing args
-    :string    '()              :string->chars   :char     '())
+    :string    '()              :string->chars   :exec     '()
+    )
 
 
 
@@ -72,33 +73,33 @@
 
     ?set-stack  ?items          ?instruction  ?get-stack         ?expected
     ;; all the letters
-    :scalar    '(88)         :scalar->asciichar   :char         '(\X)
-    :scalar    '(37)         :scalar->asciichar   :char         '(\%)
-    :scalar    '(-37)        :scalar->asciichar   :char         '(\[)
-    :scalar    '(200)        :scalar->asciichar   :char         '(\H)
+    :scalar    '(88)         :scalar->asciichar   :exec        '(\X)
+    :scalar    '(37)         :scalar->asciichar   :exec        '(\%)
+    :scalar    '(-37)        :scalar->asciichar   :exec        '(\[)
+    :scalar    '(200)        :scalar->asciichar   :exec        '(\H)
     ;; edge cases
-    :scalar    '(0)          :scalar->asciichar   :char         (list (char 0))
-    :scalar    '(128)        :scalar->asciichar   :char         (list (char 0))
-    :scalar    '(256)        :scalar->asciichar   :char         (list (char 0))
-    :scalar    '(-128)       :scalar->asciichar   :char         (list (char 0))
+    :scalar    '(0)          :scalar->asciichar   :exec        (list (char 0))
+    :scalar    '(128)        :scalar->asciichar   :exec        (list (char 0))
+    :scalar    '(256)        :scalar->asciichar   :exec        (list (char 0))
+    :scalar    '(-128)       :scalar->asciichar   :exec        (list (char 0))
 
-    :scalar    '(88.9)       :scalar->asciichar   :char         (list (char 89))
-    :scalar    '(37.2)       :scalar->asciichar   :char         (list (char 38))
-    :scalar    '(-37.9)      :scalar->asciichar   :char         (list (char 91))
-    :scalar    '(200.2)      :scalar->asciichar   :char         (list (char 73))
+    :scalar    '(88.9)       :scalar->asciichar   :exec        (list (char 89))
+    :scalar    '(37.2)       :scalar->asciichar   :exec        (list (char 38))
+    :scalar    '(-37.9)      :scalar->asciichar   :exec        (list (char 91))
+    :scalar    '(200.2)      :scalar->asciichar   :exec        (list (char 73))
 
-    :scalar    '(828/5)       :scalar->asciichar   :char        (list (char 38))
-    :scalar    '(373/2)       :scalar->asciichar   :char        (list (char 59))
-    :scalar    '(-37/2)       :scalar->asciichar   :char        (list (char 110))
-    :scalar    '(200/6)       :scalar->asciichar   :char        (list (char 34))
+    :scalar    '(828/5)      :scalar->asciichar   :exec        (list (char 38))
+    :scalar    '(373/2)      :scalar->asciichar   :exec        (list (char 59))
+    :scalar    '(-37/2)      :scalar->asciichar   :exec        (list (char 110))
+    :scalar    '(200/6)      :scalar->asciichar   :exec        (list (char 34))
     ;; edge cases
-    :scalar    '(0.2)        :scalar->asciichar   :char         (list (char 1))
-    :scalar    '(128.2)      :scalar->asciichar   :char         (list (char 1))
-    :scalar    '(256.2)      :scalar->asciichar   :char         (list (char 1))
-    :scalar    '(-128.2)     :scalar->asciichar   :char         (list (char 0))
+    :scalar    '(0.2)        :scalar->asciichar   :exec         (list (char 1))
+    :scalar    '(128.2)      :scalar->asciichar   :exec         (list (char 1))
+    :scalar    '(256.2)      :scalar->asciichar   :exec         (list (char 1))
+    :scalar    '(-128.2)     :scalar->asciichar   :exec         (list (char 0))
 
     ;; missing args
-    :scalar    '()           :scalar->asciichar   :char         '())
+    :scalar    '()           :scalar->asciichar   :exec         '())
 
 
 (tabular
@@ -108,34 +109,34 @@
 
     ?set-stack  ?items          ?instruction  ?get-stack         ?expected
 
-    :scalar    '(88)         :scalar->char   :char         '(\X)
-    :scalar    '(37)         :scalar->char   :char         '(\%)
-    :scalar    '(382)        :scalar->char   :char         '(\ž)
-    :scalar    '(-17212)     :scalar->char   :char         '(\볃)
-    :scalar    '(2764)       :scalar->char   :char         '(\ૌ)
+    :scalar    '(88)         :scalar->char   :exec         '(\X)
+    :scalar    '(37)         :scalar->char   :exec         '(\%)
+    :scalar    '(382)        :scalar->char   :exec         '(\ž)
+    :scalar    '(-17212)     :scalar->char   :exec         '(\볃)
+    :scalar    '(2764)       :scalar->char   :exec         '(\ૌ)
     ;; edge cases
-    :scalar    '(0)          :scalar->char   :char         (list (char 0))
-    :scalar    '(65535)      :scalar->char   :char         (list (char 0))
-    :scalar    '(256)        :scalar->char   :char         (list (char 256))
-    :scalar    '(-128)       :scalar->char   :char         (list (char 65407))
+    :scalar    '(0)          :scalar->char   :exec         (list (char 0))
+    :scalar    '(65535)      :scalar->char   :exec         (list (char 0))
+    :scalar    '(256)        :scalar->char   :exec         (list (char 256))
+    :scalar    '(-128)       :scalar->char   :exec         (list (char 65407))
     ;; missing args
-    :scalar    '()           :scalar->char   :char         '()
+    :scalar    '()           :scalar->char   :exec         '()
 
-    :scalar    '(88.9)         :scalar->char   :char         (list (char 89))
-    :scalar    '(37.2)         :scalar->char   :char         (list (char 38))
-    :scalar    '(-22771.9)     :scalar->char   :char         (list (char 42764))
-    :scalar    '(200.2)        :scalar->char   :char         (list (char 201))
+    :scalar    '(88.9)         :scalar->char   :exec         (list (char 89))
+    :scalar    '(37.2)         :scalar->char   :exec         (list (char 38))
+    :scalar    '(-22771.9)     :scalar->char   :exec         (list (char 42764))
+    :scalar    '(200.2)        :scalar->char   :exec         (list (char 201))
 
-    :scalar    '(0.2)          :scalar->char   :char         (list (char 1))
-    :scalar    '(65535.3)      :scalar->char   :char         (list (char 1))
-    :scalar    '(256.9)        :scalar->char   :char         (list (char 257))
-    :scalar    '(-128.2)       :scalar->char   :char         (list (char 65407))
+    :scalar    '(0.2)          :scalar->char   :exec         (list (char 1))
+    :scalar    '(65535.3)      :scalar->char   :exec         (list (char 1))
+    :scalar    '(256.9)        :scalar->char   :exec         (list (char 257))
+    :scalar    '(-128.2)       :scalar->char   :exec         (list (char 65407))
     ;; bounds for internal typecast (huge bigint mod 65535 -> 0)
-    :scalar    '(1.1e88M)      :scalar->char   :char         '(\뗖)
+    :scalar    '(1.1e88M)      :scalar->char   :exec         '(\뗖)
     :scalar    '(111111111111111111111111111111111111111.0M)
-                              :scalar->char   :char         '(\㓂)
+                               :scalar->char   :exec         '(\㓂)
     ;; missing args
-    :scalar    '()             :scalar->char   :char         '()
+    :scalar    '()             :scalar->char   :exec         '()
 
     )
 
