@@ -5,7 +5,7 @@
   (:use [push.util.test-helpers])
   (:use push.instructions.aspects)
   (:use push.instructions.aspects.printable)
-  (:use push.type.module.print) 
+  (:use push.type.module.print)
   )
 
 
@@ -15,8 +15,7 @@
         ?set-stack ?items print-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items      ?instruction      ?get-stack     ?expected
-    ;; start again
-    :print    '(9)         :print-newline        :print      '(\newline 9))
+    :print    '("9")         :print-newline        :print      '("\n" "9"))
 
 
 (tabular
@@ -25,8 +24,7 @@
         ?set-stack ?items print-module ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items      ?instruction      ?get-stack     ?expected
-    ;; start again
-    :print    '(9)         :print-space        :print      '(\space 9)
+    :print    '("9")         :print-space        :print      '(" " "9")
     )
 
 (fact "`make-printable` adds the :printable attribute to a PushType record"
@@ -36,4 +34,3 @@
 (fact "`make-printable` takes adds appropriate instructions to a PushType record"
   (keys (:instructions
     (make-printable (t/make-type :foo)))) => '(:foo-print))
-

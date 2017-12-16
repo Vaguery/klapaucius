@@ -1,9 +1,11 @@
 (ns push.type.item.ref
-  (:require [push.instructions.dsl     :as d]
-            [push.instructions.core    :as i]
-            [push.type.core            :as t]
-            [push.instructions.aspects :as aspects]
-            [push.util.numerics        :as num]
+  (:require [push.instructions.dsl           :as d]
+            [push.instructions.core          :as i]
+            [push.type.core                  :as t]
+            [push.instructions.aspects       :as aspects]
+            [push.util.numerics              :as num]
+            [push.type.definitions.tagspace  :as ts]
+            [push.type.definitions.quoted    :as qc]
             ))
 
 
@@ -13,8 +15,8 @@
     "`:ref-ARGS` (1) pushes the top item currently stored in the special `:ARGS` binding onto `:exec`, and (2) pushes the keyword `:ARGS` onto the `:ref` stack."
     (d/calculate [] (fn [] :ARGS) :as :dummy)  ;; awful syntax needs to be fixed
     (d/save-top-of-binding :dummy :as :value)
-    (d/push-onto :exec :value)
     (d/push-onto :ref :dummy)
+    (d/return-item :value)
     ))
 
 
@@ -25,7 +27,8 @@
     "`:ref-clear` pops the top `:ref` keyword and clears all items currently bound to that keyword in the Interpreter's binding table. The variable remains recognized, it simply has no bound values."
     :tags #{:binding}
     (d/consume-top-of :ref :as :arg)
-    (d/clear-binding :arg)))
+    (d/clear-binding :arg)
+    ))
 
 
 
@@ -44,7 +47,7 @@
     (d/calculate [:raw-count :relative]
       #(num/scalar-to-index %1 %2) :as :size)
     (d/calculate [:contents :size] #(vec (take %2 (cycle %1))) :as :result)
-    (d/push-onto :exec :result)
+    (d/return-item :result)
     ))
 
 
@@ -57,21 +60,21 @@
     :tags #{:binding}
     (d/consume-top-of :ref :as :arg)
     (d/save-binding-stack :arg :as :newblock)
-    (d/push-onto :exec :newblock)))
+    (d/return-item :newblock)
+    ))
 
 
 
 (def ref-dump-tagspace
   (i/build-instruction
     ref-dump-tagspace
-    "`:ref-dump-tagspace` pops the top `:ref` keyword and pushes the entire current contents of that binding's stack as a `:vector` item`, then pushes a continuation block to `:exec` that will subsequently convert the `:vector` to a `:tagspace`"
+    "`:ref-dump-tagspace` pops the top `:ref` keyword and looks up the entire current contents of that binding's stack; this is used to construct a `:tagspace`, using the integer position of each as the key scalars. If the `:ref` is empty, an empty `:tagspace` is returned; the binding contents remain in place."
     :tags #{:binding}
     (d/consume-top-of :ref :as :ref)
     (d/save-binding-stack :ref :as :contents)
-    (d/calculate [:contents] vec :as :vec)
-    (d/calculate [] #((constantly :vector->tagspace)) :as :continuation)
-    (d/push-onto :vector :vec)
-    (d/push-onto :exec :continuation)
+    (d/calculate [:contents]
+      #(ts/make-tagspace (zipmap (range 0 (count %1)) %1)) :as :result)
+    (d/return-item :result)
     ))
 
 
@@ -106,7 +109,7 @@
       #(num/scalar-to-index %1 %2) :as :size)
     (d/calculate [:item :size]
       #(if (nil? %1) [] (vec (take %2 (repeat %1)))) :as :result)
-    (d/push-onto :exec :result)
+    (d/return-item :result)
     ))
 
 
@@ -118,18 +121,21 @@
     "`:ref-forget` pops the top `:ref` keyword and clears the entire binding currently associated with it, key and all. NOTE: this is permitted to erase an `:input` binding."
     :tags #{:binding}
     (d/consume-top-of :ref :as :arg)
-    (d/forget-binding :arg)))
+    (d/forget-binding :arg)
+    ))
 
 
 
 (def ref-fullquote
   (i/build-instruction
     ref-fullquote
-    "`:ref-fullquote` pops the top `:ref` keyword and pushes the entire current contents of that binding's stack onto the `:code` stack as a single block"
+    "`:ref-fullquote` pops the top `:ref` keyword and pushes the entire current contents of that binding's stack onto the `:exec` stack as a quoted codeblock"
     :tags #{:binding}
     (d/consume-top-of :ref :as :arg)
     (d/save-binding-stack :arg :as :newblock)
-    (d/push-onto :code :newblock)))
+    (d/calculate [:newblock] #(qc/push-quote %1) :as :result)
+    (d/return-item :result)
+    ))
 
 
 
@@ -141,7 +147,8 @@
     (d/consume-top-of :ref :as :arg)
     (d/save-bindings :as :known) ;; just the keys
     (d/calculate [:known :arg] #(boolean (some #{%2} %1)) :as :result)
-    (d/push-onto :boolean :result)))
+    (d/return-item :result)
+    ))
 
 
 
@@ -152,7 +159,8 @@
     :tags #{:binding}
     (d/consume-top-of :ref :as :arg)
     (d/save-top-of-binding :arg :as :value)
-    (d/push-onto :exec :value)))
+    (d/return-item :value)
+    ))
 
 
 
@@ -162,7 +170,8 @@
     "`:ref-new` creates a new (randomly-named) `:ref` keyword and pushes it to that stack"
     :tags #{:binding}
     (d/calculate [] #(keyword (gensym "ref!")) :as :newref)
-    (d/push-onto :ref :newref)))
+    (d/push-onto :ref :newref)
+    ))
 
 
 
@@ -173,8 +182,9 @@
     :tags #{:binding}
     (d/consume-top-of :ref :as :arg)
     (d/save-top-of-binding :arg :as :value)
-    (d/push-onto :exec :value)
-    (d/push-onto :ref :arg)))
+    (d/push-onto :ref :arg)
+    (d/return-item :value)
+    ))
 
 
 
@@ -186,7 +196,7 @@
     (d/consume-top-of :ref :as :arg)
     (d/save-binding-stack :arg :as :contents)
     (d/calculate [:contents] vec :as :result)
-    (d/push-onto :exec :result)
+    (d/return-item :result)
     ))
 
 

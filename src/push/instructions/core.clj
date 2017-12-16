@@ -28,13 +28,13 @@
       #'forget-binding {}
       #'insert-as-nth-of {}
       #'replace-stack {}
+      #'print-item {}
       #'push-onto {}
       #'push-these-onto {}
       #'quote-all-bindings {}
       #'quote-no-bindings {}
       #'record-an-error {}
       #'replace-binding {}
-      #'requeue-stack {}
       #'return-codeblock {}
       #'return-item {}
       #'retrieve-snapshot-state {}
@@ -79,13 +79,13 @@
       #'forget-binding {}
       #'insert-as-nth-of {(second step) 1}
       #'replace-stack {}
+      #'print-item {:print 1}
       #'push-onto {(second step) 1}
       #'push-these-onto {(second step) (count (last step))}
       #'quote-all-bindings {}
       #'quote-no-bindings {}
       #'record-an-error {:log 1}
       #'replace-binding {}
-      #'requeue-stack {:exec 1}
       #'retrieve-snapshot-state {}
       #'return-codeblock {:exec 1}
       #'return-item {:exec 1}

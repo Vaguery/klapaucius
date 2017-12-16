@@ -1,7 +1,10 @@
 (ns push.instructions.base.ref_test
   (:require [push.interpreter.core :as i]
             [push.util.stack-manipulation :as s]
-            [push.type.core :as t])
+            [push.type.core :as t]
+            [push.type.definitions.tagspace :as ts]
+            [push.type.definitions.quoted   :as qc]
+            )
   (:use midje.sweet)
   (:use [push.util.test-helpers])
   (:use [push.type.item.ref])
@@ -46,7 +49,7 @@
 
 
 
-(fact ":ref-fullquote copies the entire :ref binding stack onto the :code stack, w/o discarding it"
+(fact ":ref-fullquote copies the entire :ref binding stack as quoted code, w/o discarding it"
   (let [hasref
     (assoc
       (push.interpreter.templates.one-with-everything/make-everything-interpreter
@@ -58,10 +61,14 @@
 
 
     (:bindings (i/execute-instruction hasref :ref-fullquote)) => {:x '(1 2 (3 4))}
-    (push.core/get-stack (i/execute-instruction hasref :ref-fullquote) :code) => '((1 2 (3 4)))
     (push.core/get-stack
-      (i/execute-instruction (i/push-item hasref :ref :f) :ref-fullquote) :code) => '(())
-    ))
+      (i/execute-instruction hasref :ref-fullquote)
+      :exec) => (list (qc/push-quote '(1 2 (3 4))))
+    (push.core/get-stack
+      (i/execute-instruction
+        (i/push-item hasref :ref :f) :ref-fullquote)
+        :exec) => (list (qc/push-quote '()))
+        ))
 
 
 
@@ -124,14 +131,14 @@
         :stacks {:ref '(:x :y)})
       :bindings {:x '(8)})]
     (push.core/get-stack hasref :ref) => '(:x :y)
-    (push.core/get-stack hasref :boolean) => '()
+    (push.core/get-stack hasref :exec) => '()
     (:bindings hasref) => {:x '(8)}
 
 
-    (push.core/get-stack (i/execute-instruction hasref :ref-known?) :boolean) =>
+    (push.core/get-stack (i/execute-instruction hasref :ref-known?) :exec) =>
       '(true)
     (push.core/get-stack
-      (i/execute-instruction (i/push-item hasref :ref :f) :ref-known?) :boolean) =>
+      (i/execute-instruction (i/push-item hasref :ref :f) :ref-known?) :exec) =>
       '(false)
     ))
 
@@ -297,13 +304,12 @@
     (assoc
       (push.interpreter.templates.one-with-everything/make-everything-interpreter
         :stacks {:ref '(:x) :vector '()})
-      :bindings {:x '(1 2 3 4)})]
+      :bindings {:x '(11 222 3333 44444)})]
     (push.core/get-stack hasref :ref) => '(:x)
 
     (push.core/get-stack
-      (i/execute-instruction hasref :ref-dump-tagspace) :exec) => '(:vector->tagspace)
+      (i/execute-instruction hasref :ref-dump-tagspace) :exec) =>
+        (list (ts/make-tagspace {0 11, 1 222, 2 3333, 3 44444}))
     (push.core/get-stack
       (i/execute-instruction hasref :ref-dump-tagspace) :ref) => '()
-    (push.core/get-stack
-      (i/execute-instruction hasref :ref-dump-tagspace) :vector) => '([1 2 3 4])
     ))

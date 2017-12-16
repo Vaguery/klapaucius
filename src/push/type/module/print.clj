@@ -14,8 +14,9 @@
     print-newline
     "`:print-newline` pushes a single newline character to the `:print` stack"
     :tags #{:print :io :base}
-    (d/calculate [] (fn [] \newline) :as :newline)
-    (d/push-onto :print :newline)))
+    (d/calculate [] (fn [] "\n") :as :newline)
+    (d/push-onto :print :newline)
+    ))
 
 
 
@@ -24,8 +25,9 @@
     print-space
     "`:print-space` pushes a single space character to the `:print` stack"
     :tags #{:print :io :base}
-    (d/calculate [] (fn [] \space) :as :space)
-    (d/push-onto :print :space)))
+    (d/calculate [] (fn [] " ") :as :space)
+    (d/push-onto :print :space)
+    ))
 
 
 

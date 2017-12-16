@@ -17,5 +17,5 @@
       :tags #{:io}
 
       `(consume-top-of ~typename :as :arg)
-      `(calculate [:arg] #(pr-str %1) :as :output)
-      `(push-onto :print :output)))))
+      `(print-item :arg)
+      ))))

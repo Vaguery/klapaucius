@@ -659,33 +659,22 @@
       ))
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn requeue-stack
-  "?"
-  [interpreter & {:keys [from]}]
-  (let [old-exec    (stack/get-stack interpreter :exec)
-        new-items   (util/list! (sc/scratch-read interpreter from))
-        too-big?    (oversized-stack? interpreter old-exec new-items)
+(defn print-item
+  "Takes the indicated scratch variable's contents, applies `(pr-str _)` and pushes the result to the `:print` stack. NOTE it does not do size checking."
+  [interpreter scratchname]
+  (let [old-stack   (stack/get-stack interpreter :print)
+        new-item    (sc/scratch-read interpreter scratchname)
         counter     (:counter interpreter)
         instruction (:current-item interpreter)
-        new-exec    (if (or (nil? new-items) too-big?)
-                        old-exec
-                        (util/list! (conj old-exec (reverse new-items))))
-        ]
-    (if too-big?
-      (oops/throw-stack-oversize-exception instruction :exec)
-      (stack/set-stack interpreter :exec new-exec)
-      )))
+        new-stack   (if (nil? new-item)
+                      old-stack
+                      (util/list! (conj old-stack (pr-str new-item))))]
+        (stack/set-stack interpreter :print new-stack)
+        ))
 
 
-(dire/with-handler! #'requeue-stack
-  "?"
-  #(re-find #"tried to push an oversized item to" (.getMessage %))
-  (fn
-    [e interpreter & {:keys [from]}]
-      (add-error-message! interpreter (.getMessage e))
-      ))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
