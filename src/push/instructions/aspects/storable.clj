@@ -19,7 +19,8 @@
 
       `(consume-top-of :ref :as :where)
       `(consume-top-of ~typename :as :what)
-      `(bind-item :what :into :where)))))
+      `(bind-item :what :into :where)
+      ))))
 
 
 
@@ -35,7 +36,8 @@
       :tags #{:storable}
 
       `(consume-top-of ~typename :as :what)
-      `(replace-binding :what)))))
+      `(replace-binding :what)
+      ))))
 
 
 
@@ -52,7 +54,8 @@
 
       `(consume-top-of :ref :as :where)
       `(save-stack ~typename :as :all)
-      `(replace-binding :all :into :where)))))
+      `(replace-binding :all :into :where)
+      ))))
 
 
 
@@ -68,4 +71,5 @@
       :tags #{:storable}
 
       `(save-stack ~typename :as :all)
-      `(replace-binding :all)))))
+      `(replace-binding :all)
+      ))))

@@ -35,7 +35,7 @@
             (store-in-tagspace %2 %3 %4)) :as :stored)
       `(calculate [:fail?]
         #(if %1 (str ~instruction-name " failed: oversized result") nil) :as :warning)
-      `(push-onto :exec :stored)
+      `(return-item :stored)
       `(record-an-error :from :warning)
       ))))
 
@@ -55,5 +55,5 @@
 
       `(save-stack ~typename :as :items)
       `(calculate [:items] #(make-tagspace (zipmap (range) %1)) :as :new-ts)
-      `(push-onto :exec :new-ts)
+      `(return-item :new-ts)
       ))))

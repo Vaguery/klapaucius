@@ -18,7 +18,7 @@
     (d/calculate [:sum] #(if %1 (complex/complex-NaN? %1) false) :as :nan)
     (d/calculate [:nan :sum]#(when-not %1 %2):as :sum)
     (d/calculate [:nan] #(when %1 ":complex-add produced NaN") :as :warning)
-    (d/push-onto :exec :sum)
+    (d/return-item :sum)
     (d/record-an-error :from :warning)
     ))
 
@@ -30,7 +30,7 @@
     :tags #{:complex :numeric}
     (d/consume-top-of :complex :as :arg1)
     (d/calculate [:arg1] #(complex/conjugate %1) :as :cc)
-    (d/push-onto :exec :cc)
+    (d/return-item :cc)
     ))
 
 
@@ -48,7 +48,7 @@
     (d/calculate [:quotient]
       #(if %1 (complex/complex-NaN? %1) false) :as :nan)
     (d/calculate [:nan :quotient] #(when-not %1 %2) :as :quotient)
-    (d/push-onto :exec :quotient)
+    (d/return-item :quotient)
     (d/calculate [:nan]
       #(when %1 ":complex-divide produced NaN") :as :warn2)
     (d/record-an-error :from :warn2)
@@ -64,7 +64,7 @@
     :tags #{:arithmetic :base}
     (d/consume-top-of :complex :as :arg)
     (d/calculate [:arg] #(complex/complex-infinite? %1) :as :result)
-    (d/push-onto :exec :result)
+    (d/return-item :result)
     ))
 
 
@@ -81,7 +81,7 @@
     (d/calculate [:prelim] #(if %1 (complex/complex-NaN? %1) false) :as :nan)
     (d/calculate [:nan :prelim]#(when-not %1 %2):as :product)
     (d/calculate [:nan] #(when %1 ":complex-multiply produced NaN") :as :warning)
-    (d/push-onto :exec :product)
+    (d/return-item :product)
     (d/record-an-error :from :warning)
     ))
 
@@ -96,7 +96,7 @@
     (d/calculate [:arg]
       #(let [r (:re %1) i (:im %1)]
           (nt/sqrt (+' (*' r r) (*' i i)))) :as :result)
-    (d/push-onto :exec :result)
+    (d/return-item :result)
     ))
 
 
@@ -113,7 +113,7 @@
     (d/calculate [:prelim] #(if %1 (complex/complex-NaN? %1) false) :as :nan)
     (d/calculate [:nan :prelim] #(when-not %1 %2) :as :product)
     (d/calculate [:nan] #(when %1 ":complex-reciprocal produced NaN") :as :warning)
-    (d/push-onto :exec :product)
+    (d/return-item :product)
     (d/record-an-error :from :warning)
     ))
 
@@ -130,7 +130,7 @@
     (d/calculate [:arg1 :arg2]
         #(complex/complexify (*' (:re %1) %2)
                              (*' (:im %1) %2)) :as :result)
-    (d/push-onto :exec :result)
+    (d/return-item :result)
     ))
 
 
@@ -145,7 +145,7 @@
     (d/calculate [:arg1 :arg2]
         #(complex/complexify (+' (:re %1) %2)
                              (+' (:im %1) %2)) :as :result)
-    (d/push-onto :exec :result)
+    (d/return-item :result)
     ))
 
 
@@ -161,7 +161,7 @@
     (d/calculate [:diff] #(if %1 (complex/complex-NaN? %1) false) :as :nan)
     (d/calculate [:nan :diff]#(when-not %1 %2):as :diff)
     (d/calculate [:nan] #(when %1 ":complex-subtract produced NaN") :as :warning)
-    (d/push-onto :exec :diff)
+    (d/return-item :diff)
     (d/record-an-error :from :warning)
     ))
 
@@ -173,7 +173,7 @@
     "`:complex-zero` pushes {re:0 im:0} onto `:complex`."
     :tags #{:complex}
     (d/calculate [] (fn [] (complex/complexify 0)) :as :new)
-    (d/push-onto :exec :new)
+    (d/return-item :new)
     ))
 
 
@@ -186,7 +186,7 @@
     :tags #{:complex}
     (d/consume-top-of :scalar :as :re)
     (d/calculate [:re] #(complex/complexify %1 0) :as :new)
-    (d/push-onto :exec :new)
+    (d/return-item :new)
     ))
 
 

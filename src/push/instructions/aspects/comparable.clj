@@ -19,7 +19,8 @@
       `(consume-top-of ~typename :as :arg2)
       `(consume-top-of ~typename :as :arg1)
       `(calculate [:arg1 :arg2] #(< (compare %1 %2) 0) :as :check)
-      `(push-onto :exec :check)))))
+      `(return-item :check)
+      ))))
 
 
 
@@ -37,7 +38,8 @@
       `(consume-top-of ~typename :as :arg2)
       `(consume-top-of ~typename :as :arg1)
       `(calculate [:arg1 :arg2] #(< (compare %1 %2) 1) :as :check)
-      `(push-onto :exec :check)))))
+      `(return-item :check)
+      ))))
 
 
 
@@ -56,7 +58,8 @@
       `(consume-top-of ~typename :as :arg2)
       `(consume-top-of ~typename :as :arg1)
       `(calculate [:arg1 :arg2] #(> (compare %1 %2) -1) :as :check)
-      `(push-onto :exec :check)))))
+      `(return-item :check)
+      ))))
 
 
 
@@ -75,7 +78,8 @@
       `(consume-top-of ~typename :as :arg2)
       `(consume-top-of ~typename :as :arg1)
       `(calculate [:arg1 :arg2] #(> (compare %1 %2) 0) :as :check)
-      `(push-onto :exec :check)))))
+      `(return-item :check)
+      ))))
 
 
 
@@ -93,7 +97,7 @@
       `(consume-top-of ~typename :as :arg2)
       `(consume-top-of ~typename :as :arg1)
       `(calculate [:arg1 :arg2] #(if (pos? (compare %1 %2)) %2 %1) :as :winner)
-      `(push-onto :exec :winner)
+      `(return-item :winner)
       ))))
 
 
@@ -112,5 +116,5 @@
       `(consume-top-of ~typename :as :arg2)
       `(consume-top-of ~typename :as :arg1)
       `(calculate [:arg1 :arg2] #(if (neg? (compare %1 %2)) %2 %1) :as :winner)
-      `(push-onto :exec :winner)
+      `(return-item :winner)
       ))))

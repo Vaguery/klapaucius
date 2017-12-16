@@ -59,7 +59,7 @@
       `(calculate [:old-stack :idx]
         #(util/list! (reverse (drop %2 %1))) :as :leftovers)
       `(calculate [:leftovers :topchunk] #(list %1 %2) :as :result)
-      `(push-onto :exec :result)
+      `(return-item :result)
       ))))
 
 
@@ -84,7 +84,7 @@
       `(calculate [:old-stack :idx]
         #(util/list! (reverse (drop %2 %1))) :as :leftovers)
       `(calculate [:leftovers :topchunk] #(list %2 %1) :as :result)
-      `(push-onto :exec :result)
+      `(return-item :result)
       ))))
 
 
@@ -102,7 +102,7 @@
 
       `(save-top-of ~typename :as :arg1)
       `(calculate [:arg1] #(list %1 %1) :as :duplicated)
-      `(push-onto :exec :duplicated)
+      `(return-item :duplicated)
       ))))
 
 
@@ -120,7 +120,7 @@
 
       `(consume-stack ~typename :as :old)
       `(calculate [:old] #(util/list! (reverse %1)) :as :new)
-      `(push-onto :exec :new)
+      `(return-item :new)
       ))))
 
 
@@ -190,7 +190,7 @@
         #(util/list! (reverse (drop %2 %1))) :as :duplicated)
       `(calculate [:old-stack :duplicated]
         #(list (util/list! (reverse %1)) %2) :as :results)
-      `(push-onto :exec :results)
+      `(return-item :results)
       ))))
 
 
@@ -225,7 +225,7 @@
       `(consume-top-of ~typename :as :arg2)
       `(consume-top-of ~typename :as :arg3)
       `(calculate [:arg1 :arg2 :arg3] #(list %2 %1 %3) :as :result)
-      `(push-onto :exec :result)
+      `(return-item :result)
       ))))
 
 
@@ -254,7 +254,7 @@
         #(util/list! (reverse (drop %1 %2))) :as :old-bottom)
       `(calculate [:old-top :shoved-item :old-bottom]
         #(list %3 %2 %1) :as :results)
-      `(push-onto :exec :results)
+      `(return-item :results)
       ))))
 
 
@@ -274,7 +274,7 @@
       `(consume-top-of ~typename :as :arg1)
       `(consume-top-of ~typename :as :arg2)
       `(calculate [:arg1 :arg2] #(list %1 %2) :as :reversed)
-      `(push-onto :exec :reversed)
+      `(return-item :reversed)
       ))))
 
 
@@ -305,7 +305,7 @@
         #(util/list! (reverse (drop (inc %1) %2))) :as :old-bottom)
       `(calculate [:old-bottom :yanked-item :old-top]
         #(if (nil? %2) (list %1 %3) (list %1 %3 %2)) :as :results)
-      `(push-onto :exec :results)
+      `(return-item :results)
       ))))
 
 
@@ -334,5 +334,5 @@
         #(if (nil? %2)
           (util/list! (reverse %1))
           (list (util/list! (reverse %1)) %2)) :as :results)
-      `(push-onto :exec :results)
+      `(return-item :results)
       ))))

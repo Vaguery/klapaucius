@@ -18,7 +18,8 @@
 
       `(count-of ~typename :as :depth)
       `(calculate [:depth] #(zero? %1) :as :check)
-      `(push-onto :exec :check)))))
+      `(return-item :check)
+      ))))
 
 
 
@@ -34,4 +35,5 @@
       :tags #{:visible}
 
       `(count-of ~typename :as :depth)
-      `(push-onto :exec :depth)))))
+      `(return-item :depth)
+      ))))

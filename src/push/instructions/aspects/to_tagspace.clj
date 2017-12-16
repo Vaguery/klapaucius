@@ -33,5 +33,5 @@
           #(if %2
             (push.type.definitions.tagspace/make-tagspace (zipmap %1 %2))
             nil) :as :result)
-      `(push-onto :exec :result)
+      `(return-item :result)
       ))))

@@ -19,7 +19,8 @@
       `(consume-top-of ~typename :as :arg1)
       `(consume-top-of ~typename :as :arg2)
       `(calculate [:arg1 :arg2] #(= %1 %2) :as :check)
-      `(push-onto :exec :check)))))
+      `(return-item :check)
+      ))))
 
 
 
@@ -38,4 +39,5 @@
       `(consume-top-of ~typename :as :arg1)
       `(consume-top-of ~typename :as :arg2)
       `(calculate [:arg1 :arg2] #(not= %1 %2) :as :check)
-      `(push-onto :exec :check)))))
+      `(return-item :check)
+      ))))

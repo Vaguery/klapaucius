@@ -82,7 +82,8 @@
     "`:push-refcycler` pushes a code block to `:exec` that contains `(:push-bindings :code-cycler)`"
     :tags #{:binding :generator :introspection}
     (d/calculate [] #(list :push-bindings :code-cycler) :as :result)
-    (d/push-onto :exec :result)))
+    (d/return-item :result)
+    ))
 
 ;;;;;;;;;;;;;;;;;
 

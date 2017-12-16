@@ -40,7 +40,7 @@
           ~argvector
           (fn ~argsymbols (apply ~maker ~argsymbols))
           :as :result)
-      `(push-onto :exec :result)
+      `(return-item :result)
       )
     ))
 
@@ -75,7 +75,7 @@
         argvector    (vec (reverse (keys pieces)))]
     (list
       `(calculate [:arg] #(map (into {} %1) ~argvector) :as :continuation)
-      `(push-onto :exec :continuation))
+      `(return-item :continuation))
     ))
 
 

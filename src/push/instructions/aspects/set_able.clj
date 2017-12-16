@@ -22,7 +22,8 @@
         #(if (or (set? %1) (seq? %1) (vector? %1))
           (set %1)
           (conj #{} %1)) :as :s)
-      `(push-onto :exec :s)))))
+      `(return-item :s)
+      ))))
 
 
 
@@ -44,7 +45,8 @@
         #(if (or (set? %1) (seq? %1) (vector? %1))
           (into %2 %1)
           (conj %2 %1)) :as :result)
-      `(push-onto :exec :result)))))
+      `(return-item :result)
+      ))))
 
 
 
@@ -63,7 +65,8 @@
       `(consume-top-of ~typename :as :arg)
       `(consume-top-of :set :as :s)
       `(calculate [:s :arg] #(boolean (%1 %2)) :as :result)
-      `(push-onto :exec :result)))))
+      `(return-item :result)
+      ))))
 
 
 
@@ -83,7 +86,8 @@
       `(consume-top-of ~typename :as :arg)
       `(consume-top-of :set :as :s)
       `(calculate [:s :arg] #(conj %1 %2) :as :result)
-      `(push-onto :exec :result)))))
+      `(return-item :result)
+      ))))
 
 
 
@@ -101,4 +105,5 @@
 
       `(consume-top-of ~typename :as :arg)
       `(calculate [:arg] #(conj #{} %1) :as :s)
-      `(push-onto :exec :s)))))
+      `(return-item :s)
+      ))))

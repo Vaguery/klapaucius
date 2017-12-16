@@ -17,8 +17,8 @@
     "`:generator-again` pops the top `:generator` and produces a code block containing the current `:state` and the unchanged generator, which is pushed to the `:exec` stack. If the number of points exceeds the "
     :tags #{:generator}
     (d/consume-top-of :generator :as :arg)
-    (d/calculate [:arg] #(list (:state %) %) :as :results)
-    (d/push-onto :exec :results)
+    (d/calculate [:arg] #(list (:state %1) %1) :as :results)
+    (d/return-item :results)
     ))
 
 
@@ -30,7 +30,8 @@
     :tags #{:generator}
     (d/consume-top-of :scalar :as :arg)
     (d/calculate [:arg] #(g/make-generator %1 inc') :as :g)
-    (d/push-onto :exec :g)))
+    (d/return-item :g)
+    ))
 
 
 
@@ -48,7 +49,8 @@
           (iterate
             (fn [g] (when-not (nil? g) (g/step-generator g)))
             %1))) :as :result)
-    (d/push-onto :exec :result)))
+    (d/return-item :result)
+    ))
 
 
 
@@ -61,7 +63,8 @@
     (d/calculate [:arg]
       #(let [n (g/step-generator %1)]
         (when-not (nil? n) (list (:state n) n))) :as :results)
-    (d/push-onto :exec :results)))
+    (d/return-item :results)
+    ))
 
 
 
@@ -72,7 +75,8 @@
     :tags #{:generator}
     (d/consume-top-of :generator :as :arg)
     (d/calculate [:arg] #(g/make-generator (:origin %1) (:step-function %1)) :as :result)
-    (d/push-onto :exec :result)))
+    (d/return-item :result)
+    ))
 
 
 
@@ -84,7 +88,8 @@
     (d/consume-top-of :scalar :as :arg1)
     (d/consume-top-of :scalar :as :arg2)
     (d/calculate [:arg1 :arg2] #(g/make-generator %2 (partial +' %1)) :as :g)
-    (d/push-onto :exec :g)))
+    (d/return-item :g)
+    ))
 
 
 
@@ -100,7 +105,8 @@
       #(g/make-generator
         (bigint %1)
         (fn [x] (exotics/rewrite-digits x 3))) :as :g)
-    (d/push-onto :exec :g)))
+    (d/return-item :g)
+    ))
 
 
 

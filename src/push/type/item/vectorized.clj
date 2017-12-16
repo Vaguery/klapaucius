@@ -59,7 +59,7 @@
       `(d/calculate [:oversized? :old-stack]
         #(if %1 %2 (list)) :as :recovered-stack)
       `(d/replace-stack ~rootname :recovered-stack)
-      `(d/push-onto :exec :results)
+      `(d/return-item :results)
       ))))
 
 
@@ -76,7 +76,7 @@
       `(d/consume-top-of ~typename :as :arg1)
       `(d/calculate [:arg1]
           #(into [] (butlast %1)) :as :most)
-      `(d/push-onto :exec :most)
+      `(d/return-item :most)
       ))))
 
 
@@ -235,7 +235,7 @@
                    (keyword ~instruction-name)
                    %2))
           :as :continuation)
-      `(d/push-onto :exec :continuation)
+      `(d/return-item :continuation)
       ))))
 
 
@@ -369,7 +369,7 @@
       `(d/consume-top-of ~typename :as :arg)
       `(d/calculate [:arg]
           #(seq %1) :as :items)
-      `(d/push-onto :exec :items)
+      `(d/return-item :items)
       ))))
 
 
@@ -823,7 +823,7 @@
           #(list
             (filter-vector-with-vector %1 %2)
             (remove-vector-with-vector %1 %2)) :as :result)
-      `(d/push-onto :exec :result)
+      `(d/return-item :result)
       ))))
 
 

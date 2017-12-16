@@ -182,7 +182,8 @@
       :tags #{:arithmetic :base}
       `(consume-top-of ~stackname :as :arg1)
       `(calculate [:arg1] #(~operation %1) :as :result)
-      `(push-onto :exec :result)))))
+      `(return-item :result)
+      ))))
 
 
 (defn simple-2-in-1-out-instruction
@@ -199,7 +200,8 @@
       `(consume-top-of ~stackname :as :arg2)
       `(consume-top-of ~stackname :as :arg1)
       `(calculate [:arg1 :arg2] #(~operation %1 %2) :as :result)
-      `(push-onto :exec :result)))))
+      `(return-item :result)
+      ))))
 
 
 (defn simple-1-in-predicate
@@ -215,7 +217,8 @@
       :tags #{:arithmetic :base}
       `(consume-top-of ~stackname :as :arg1)
       `(calculate [:arg1] #(~operation %1) :as :result)
-      `(push-onto :exec :result)))))
+      `(return-item :result)
+      ))))
 
 
 (defn simple-item-to-code-instruction

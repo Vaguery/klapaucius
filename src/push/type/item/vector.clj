@@ -13,7 +13,7 @@
     "`:vector-refilter` pops the top `:vector` value, and sends it to the `:exec` stack"
     :tags #{:conversion :vector}
     (d/consume-top-of :vector :as :arg)
-    (d/push-onto :exec :arg)
+    (d/return-item :arg)
     ))
 
 

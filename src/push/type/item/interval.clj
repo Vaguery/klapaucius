@@ -16,7 +16,7 @@
     (d/consume-top-of :interval :as :i2)
     (d/consume-top-of :interval :as :i1)
     (d/calculate [:i1 :i2] interval/interval-add :as :result)
-    (d/push-onto :exec :result)))
+    (d/return-item :result)))
 
 
 (def interval-crossover
@@ -51,7 +51,7 @@
         :min-open? (:max-open? %1)
         :max-open? (:max-open? %2)) :as :last)
     (d/calculate [:first :outer :inner :last] list :as :foil)
-    (d/push-onto :exec :foil)
+    (d/return-item :foil)
     ))
 
 
@@ -70,7 +70,7 @@
         (list %1 (first %2) :interval-multiply
               %1 (second %2) :interval-multiply)
         (list %1 %2 :interval-multiply)) :as :results)
-    (d/push-onto :exec :results)
+    (d/return-item :results)
     ))
 
 
@@ -84,7 +84,7 @@
     :tags #{:interval}
     (d/consume-top-of :interval :as :arg)
     (d/calculate [:arg] #(interval/interval-empty? %1) :as :result)
-    (d/push-onto :exec :result)
+    (d/return-item :result)
     ))
 
 
@@ -103,7 +103,7 @@
             (max (:max %1) (:max %2))
             :min-open? (and (:min-open? %1) (:min-open? %2))
             :max-open? (and (:max-open? %1) (:max-open? %2))) :as :result)
-    (d/push-onto :exec :result)
+    (d/return-item :result)
     ))
 
 
@@ -117,7 +117,7 @@
     (d/consume-top-of :interval :as :i)
     (d/consume-top-of :scalar :as :number)
     (d/calculate [:i :number] #(interval/interval-include? %1 %2) :as :result)
-    (d/push-onto :exec :result)
+    (d/return-item :result)
     ))
 
 
@@ -131,7 +131,7 @@
     (d/consume-top-of :interval :as :i2)
     (d/consume-top-of :interval :as :i1)
     (d/calculate [:i1 :i2] #(interval/interval-intersection %1 %2) :as :result)
-    (d/push-onto :exec :result)
+    (d/return-item :result)
     ))
 
 
@@ -142,7 +142,7 @@
     :tags #{:interval}
     (d/consume-top-of :interval :as :i)
     (d/calculate [:i] :min :as :result)
-    (d/push-onto :exec :result)))
+    (d/return-item :result)))
 
 
 (def interval-max
@@ -152,7 +152,7 @@
     :tags #{:interval}
     (d/consume-top-of :interval :as :i)
     (d/calculate [:i] :max :as :result)
-    (d/push-onto :exec :result)))
+    (d/return-item :result)))
 
 
 (def interval-multiply
@@ -163,7 +163,7 @@
     (d/consume-top-of :interval :as :i2)
     (d/consume-top-of :interval :as :i1)
     (d/calculate [:i1 :i2] #(interval/interval-multiply %1 %2) :as :result)
-    (d/push-onto :exec :result)
+    (d/return-item :result)
     ))
 
 
@@ -179,7 +179,7 @@
         (- (:min %1))
         :min-open? (:max-open? %1)
         :max-open? (:min-open? %1)) :as :result)
-    (d/push-onto :exec :result)
+    (d/return-item :result)
     ))
 
 
@@ -191,7 +191,7 @@
     (d/consume-top-of :scalar :as :arg2)
     (d/consume-top-of :scalar :as :arg1)
     (d/calculate [:arg1 :arg2] #(interval/make-interval %1 %2) :as :result)
-    (d/push-onto :exec :result)
+    (d/return-item :result)
     ))
 
 
@@ -203,7 +203,7 @@
     (d/consume-top-of :scalar :as :arg2)
     (d/consume-top-of :scalar :as :arg1)
     (d/calculate [:arg1 :arg2] #(interval/make-open-interval %1 %2) :as :result)
-    (d/push-onto :exec :result)
+    (d/return-item :result)
     ))
 
 
@@ -215,7 +215,7 @@
     (d/consume-top-of :interval :as :arg2)
     (d/consume-top-of :interval :as :arg1)
     (d/calculate [:arg1 :arg2] #(interval/interval-overlap? %1 %2) :as :result)
-    (d/push-onto :exec :result)
+    (d/return-item :result)
     ))
 
 
@@ -230,7 +230,7 @@
     (d/calculate [:i :min? :max?]
         #(interval/make-interval
             (:min %1) (:max %1) :min-open? %2 :max-open? %3) :as :result)
-    (d/push-onto :exec :result)
+    (d/return-item :result)
     ))
 
 
@@ -249,7 +249,7 @@
                 c
                 :min-open? (:min-open? %1)
                 :max-open? (:max-open? %1)))) :as :result)
-    (d/push-onto :exec :result)))
+    (d/return-item :result)))
 
 
 (def interval-reciprocal
@@ -259,7 +259,7 @@
     :tags #{:interval}
     (d/consume-top-of :interval :as :i)
     (d/calculate [:i] #(interval/interval-reciprocal %1) :as :results)
-    (d/push-onto :exec :results)
+    (d/return-item :results)
     ))
 
 
@@ -277,7 +277,7 @@
         (*' %2 (:max %1))
         :min-open? (if (neg? %2) (:max-open? %1) (:min-open? %1))
         :max-open? (if (neg? %2) (:min-open? %1) (:max-open? %1))) :as :result)
-    (d/push-onto :exec :result)
+    (d/return-item :result)
     ))
 
 
@@ -296,7 +296,7 @@
         (+' %2 (:max %1))
         :min-open? (:min-open? %1)
         :max-open? (:max-open? %1)) :as :result)
-    (d/push-onto :exec :result)
+    (d/return-item :result)
     ))
 
 
@@ -310,7 +310,7 @@
     (d/consume-top-of :interval :as :arg2)
     (d/consume-top-of :interval :as :arg1)
     (d/calculate [:arg1 :arg2] #(interval/interval-subset? %1 %2) :as :result)
-    (d/push-onto :exec :result)
+    (d/return-item :result)
     ))
 
 
@@ -325,7 +325,7 @@
     (d/consume-top-of :interval :as :a)
     (d/calculate [:a :b]
       #(list %1 (interval/interval-negate %2) :interval-add) :as :result)
-    (d/push-onto :exec :result)))
+    (d/return-item :result)))
 
 
 
@@ -338,7 +338,7 @@
     (d/consume-top-of :interval :as :i2)
     (d/consume-top-of :interval :as :i1)
     (d/calculate [:i1 :i2] #(interval/interval-union %1 %2) :as :result)
-    (d/push-onto :exec :result)
+    (d/return-item :result)
     ))
 
 
@@ -355,7 +355,7 @@
     (d/consume-top-of :scalars :as :vector)
     (d/calculate [:vector :allowed]
         #(filterv (fn [n] (interval/interval-include? %2 n)) %1) :as :result)
-    (d/push-onto :exec :result)
+    (d/return-item :result)
     ))
 
 
@@ -371,7 +371,7 @@
     (d/calculate [:vector :allowed]
         #(vec
           (remove (fn [n] (interval/interval-include? %2 n)) %1)) :as :result)
-    (d/push-onto :exec :result)
+    (d/return-item :result)
     ))
 
 
@@ -388,7 +388,7 @@
           (filterv (fn [n] (interval/interval-include? %2 n)) %1)
           (vec
             (remove (fn [n] (interval/interval-include? %2 n)) %1))) :as :result)
-    (d/push-onto :exec :result)
+    (d/return-item :result)
     ))
 
 
@@ -407,7 +407,7 @@
         (filter
           (fn [kv] (interval/interval-include? %2 (first kv)))
           (seq (:contents %1)))) :as :result)
-    (d/push-onto :exec :result)
+    (d/return-item :result)
     ))
 
 
@@ -425,7 +425,7 @@
         (remove
           (fn [kv] (interval/interval-include? %2 (first kv)))
           (seq (:contents %1)))) :as :result)
-    (d/push-onto :exec :result)
+    (d/return-item :result)
     ))
 
 
@@ -448,7 +448,7 @@
           (remove
             (fn [kv] (interval/interval-include? %2 (first kv)))
             (seq (:contents %1))))) :as :result)
-    (d/push-onto :exec :result)
+    (d/return-item :result)
     ))
 
 

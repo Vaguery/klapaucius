@@ -19,5 +19,5 @@
 
       `(consume-top-of ~typename :as :arg)
       `(calculate [:arg] #(quotable/push-quote %1) :as :quoted)
-      `(push-onto :exec :quoted)
+      `(return-item :quoted)
       ))))
