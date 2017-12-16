@@ -271,7 +271,7 @@
      :scalar '(1)}       :foo-liftstack      {:foo    '()
                                               :scalar '()
                                               :exec '()
-                                              :error  '({:item ":foo-liftstack tried to push an overized item to :exec" :step 0})}
+                                              :error  '({:item ":foo-liftstack tried to push an oversized item to :exec" :step 0})}
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foo    '(1 2 3 4)
      :scalar '(3)}       :foo-liftstack      {:foo    '()

@@ -34,22 +34,22 @@
 
 
 (tabular
-  (fact "`foos-butlast` pushes the butlast of the first :foos vector back onto :foos"
+  (fact "`foos-butlast` returns the butlast of the first :foos vector"
     (check-instruction-with-all-kinds-of-stack-stuff
         ?new-stacks foos-type ?instruction) => (contains ?expected))
 
     ?new-stacks                ?instruction     ?expected
 
     {:foos   '([1 2 3])
-     :foo    '(9.9)}          :foos-butlast     {:foos   '([1 2])
+     :foo    '(9.9)}          :foos-butlast     {:exec   '([1 2])
                                                  :foo    '(9.9)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos   '([])
-     :foo    '(9.9)}          :foos-butlast     {:foos   '([])  ;; NOTE!
+     :foo    '(9.9)}          :foos-butlast     {:exec   '([])  ;; NOTE!
                                                  :foo    '(9.9)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos   '([1 2 3])
-     :foo    '()}             :foos-butlast     {:foos   '([1 2])
+     :foo    '()}             :foos-butlast     {:exec   '([1 2])
                                                  :foo    '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
@@ -65,44 +65,51 @@
 
     {:foos    '([1 2 3])
      :foo     '(7 77 777 7777)
-     :scalar  '(1)}            :foos-build       {:foos    '([7] [1 2 3])
-                                                  :foo     '(77 777 7777)
+     :scalar  '(1)}            :foos-build       {:foos    '([1 2 3])
+                                                  :foo     '()
+                                                  :exec  '(((7777 777 77) [7]))
                                                   :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos    '([1 2 3])
      :foo     '(7 77 777 7777)
-     :scalar  '(-1)}           :foos-build       {:foos    '([7 77 777] [1 2 3])
-                                                  :foo     '(7777)
+     :scalar  '(-1)}           :foos-build       {:foos    '([1 2 3])
+                                                  :foo     '()
+                                                  :exec  '(((7777) [7 77 777]))
                                                   :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos    '([1 2 3])
      :foo     '(7 77 777 7777)
-     :scalar  '(3/2)}         :foos-build       {:foos    '([7 77] [1 2 3])
-                                                  :foo     '(777 7777)
+     :scalar  '(3/2)}         :foos-build       {:foos     '([1 2 3])
+                                                  :foo     '()
+                                                  :exec  '(((7777 777) [7 77]))
                                                   :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos    '([1 2 3])
      :foo     '(7 77 777 7777)
-     :scalar  '(0.7)}         :foos-build       {:foos    '([7] [1 2 3])
-                                                  :foo     '(77 777 7777)
+     :scalar  '(0.7)}         :foos-build       {:foos     '([1 2 3])
+                                                  :foo     '()
+                                                  :exec  '(((7777 777 77) [7]))
                                                   :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos    '([1 2 3])
      :foo     '(7 77 777 7777)
-     :scalar  '(0)}            :foos-build       {:foos    '([] [1 2 3])
-                                                  :foo     '(7 77 777 7777)
+     :scalar  '(0)}            :foos-build       {:foos    '([1 2 3])
+                                                  :foo     '()
+                                                  :exec  '(((7777 777 77 7) []))
                                                   :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos    '([1 2 3])
      :foo     '(7)
-     :scalar  '(99)}           :foos-build       {:foos    '([] [1 2 3])
-                                                  :foo     '(7)
+     :scalar  '(99)}           :foos-build       {:foos    '([1 2 3])
+                                                  :foo     '()
+                                                  :exec  '(((7) []))
                                                   :scalar  '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:foos    '([1 2 3])
      :foo     '()
-     :scalar  '(99)}           :foos-build       {:foos    '([] [1 2 3])
+     :scalar  '(99)}           :foos-build       {:foos    '([1 2 3])
                                                   :foo     '()
+                                                  :exec  '((() []))
                                                   :scalar  '()})
 
 
@@ -115,15 +122,18 @@
     ?new-stacks                ?instruction       ?expected
     {:foos    '([1 2 3])
      :foo     '(7 77 777 7777)
-     :scalar  '(3)}            :foos-build       {:foos    '([7 77 777] [1 2 3])
-                                                  :foo     '(7777)
-                                                  :error  '()}
+     :scalar  '(3)}            :foos-build       {:foos    '([1 2 3])
+                                                  :foo     '()
+                                                  :exec  '(((7777) [7 77 777]))
+                                                  :error   '()}
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     {:foos    '(1 2 3 4 5 6 7 8)
-      :foo     '(7 77 777 7777)
-      :scalar  '(3)}            :foos-build       {:foos    '(1 2 3 4 5 6 7 8)
-                                                   :foo     '(7777)
-                                                   :error   '({:item ":foos-build tried to push an overized item to :foos", :step 0})}
+     {:foos    '(999)
+      :foo     '(1 2 3 4 5 6 7 8 9)
+      :scalar  '(3)}           :foos-build       {:foos    '(999)
+                                                  :foo     '(1 2 3 4 5 6 7 8 9)
+                                                  :exec  '()
+            :error   '({:item ":foos-build tried to push an oversized item to :exec" :step 0})
+                                                    }
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      )
 
@@ -154,7 +164,7 @@
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      {:foos    '([1 2 3][4] 5 6 7 8 9)}
                                :foos-concat       {:foos    '(5 6 7 8 9)
-                                                   :error   '({:item ":foos-concat tried to push an overized item to :foos", :step 0})}
+                                                   :error   '({:item ":foos-concat tried to push an oversized item to :foos", :step 0})}
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      )
 
@@ -195,7 +205,7 @@
      {:foos    '([1 2 3] 4 5 6 7 8)
       :foo     '(9)}             :foos-conj       {:foos    '(4 5 6 7 8)
                                                    :foo     '()
-                                                   :error   '({:item ":foos-conj tried to push an overized item to :foos", :step 0})}
+                                                   :error   '({:item ":foos-conj tried to push an oversized item to :foos", :step 0})}
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      )
 
@@ -1102,7 +1112,7 @@
      :scalar '(2 999)}
                              :foos-fillvector       {:foos '()
                                                      :foo  '()
-                                                     :error '("foos-fillvector produced oversized result")}
+                                                     :error '({:item "foos-fillvector produced oversized result" :step 0})}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 )
 

@@ -38,21 +38,28 @@
     (eval (list
       `push.instructions.core/build-instruction
       instruction-name
-      (str "`" typename "-build` pops the top `:scalar` item, and d/calculates an index modulo the size of the `:" rootname "` stack. It takes the stack, down to that index, and pushes a new `:" typename "` vector out of those elements (top element last in the vector).")
+      (str "`" typename "-build` pops the top `:scalar` item, and d/calculates an index modulo the size of the `:" rootname "` stack. It takes the stack, down to that index, and pushes a new `:" typename "` vector out of those elements (top element last in the vector). Returns a code block containing the remaining items from the stack, then the vector. If there is an overflow error, the original consumed stack is returned to `:" rootname "`.")
       :tags #{:vector}
 
       `(d/consume-top-of :scalar :as :where)
-      `(d/consume-stack ~rootname :as :items)
-      `(d/calculate [:where :items]
+      `(d/consume-stack ~rootname :as :old-stack)
+      `(d/save-max-collection-size :as :limit)
+      `(d/calculate [:where :old-stack]
           #(if (empty? %2)
             0
             (num/scalar-to-index %1 (count %2))) :as :idx)
-      `(d/calculate [:idx :items]
-          #(into [] (take %1 %2)) :as :new-vector)
-      `(d/calculate [:idx :items]
-          #(drop %1 %2) :as :new-stack)
-      `(d/replace-stack ~rootname :new-stack)
-      `(d/push-onto ~typename :new-vector)
+      `(d/calculate [:idx :old-stack]
+        #(into [] (take %1 %2)) :as :new-vector)
+      `(d/calculate [:idx :old-stack]
+        #(u/list! (reverse (drop %1 %2))) :as :reduced-stack)
+      `(d/calculate [:limit :reduced-stack :new-vector]
+        #(> (u/count-collection-points (list %2 %3)) %1) :as :oversized?)
+      `(d/calculate [:oversized? :old-stack :reduced-stack  :new-vector]
+        #(if %1 (u/list! (reverse %2)) (list %3 %4)) :as :results)
+      `(d/calculate [:oversized? :old-stack]
+        #(if %1 %2 (list)) :as :recovered-stack)
+      `(d/replace-stack ~rootname :recovered-stack)
+      `(d/push-onto :exec :results)
       ))))
 
 
@@ -69,7 +76,7 @@
       `(d/consume-top-of ~typename :as :arg1)
       `(d/calculate [:arg1]
           #(into [] (butlast %1)) :as :most)
-      `(d/push-onto ~typename :most)
+      `(d/push-onto :exec :most)
       ))))
 
 
@@ -275,7 +282,7 @@
       `(d/calculate [:oversized? :item :vector-length]
           #(if %1 nil (into [] (take %3 (repeat %2)))) :as :result)
       `(d/push-onto ~typename :result)
-      `(d/push-onto :error :warning)
+      `(d/record-an-error :from :warning)
       ))))
 
 

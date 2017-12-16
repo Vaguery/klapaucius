@@ -99,5 +99,5 @@
 
 (defn throw-stack-oversize-exception
   [instruction stackname]
-  (throw (Exception. (str instruction " tried to push an overized item to "
+  (throw (Exception. (str instruction " tried to push an oversized item to "
                           stackname))))

@@ -13,7 +13,7 @@
 
 
 (tabular
-  (fact "`vector-butlast` pushes the butlast of the first :vector back onto :vector"
+  (fact "`vector-butlast` returns the butlast of the first :vector"
     (check-instruction-with-all-kinds-of-stack-stuff
       ?new-stacks standard-vector-type ?instruction) =>
     (contains ?expected))
@@ -21,15 +21,15 @@
     ?new-stacks                ?instruction     ?expected
 
     {:vector  '([1 2 3])
-     :code    '(9.9)}          :vector-butlast     {:vector   '([1 2])
+     :code    '(9.9)}          :vector-butlast     {:exec   '([1 2])
                                                     :code    '(9.9)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:vector   '([])
-     :code    '(9.9)}          :vector-butlast     {:vector   '([])  ;; NOTE!
+     :code    '(9.9)}          :vector-butlast     {:exec   '([])  ;; NOTE!
                                                     :code    '(9.9)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:vector   '([1 2 3])
-     :code    '()}             :vector-butlast     {:vector   '([1 2])
+     :code    '()}             :vector-butlast     {:exec   '([1 2])
                                                     :code    '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )

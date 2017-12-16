@@ -809,7 +809,7 @@
       (push-these-onto
         (scratch-replace skimpy {:bar [1 2]})
         :foo [:bar :bar :bar])
-      :error) => '({:item " tried to push an overized item to :foo", :step 0})
+      :error) => '({:item " tried to push an oversized item to :foo", :step 0})
 
     (push/get-stack
       (push-these-onto
@@ -900,7 +900,7 @@
       (insert-as-nth-of
         (scratch-replace wee {:foo [1 2 3 4 5 6]}) :scalar :foo :at 1)
       :error) =>
-      '({:item " tried to push an overized item to :scalar", :step 0})
+      '({:item " tried to push an oversized item to :scalar", :step 0})
     (push/get-stack
       (insert-as-nth-of
         (scratch-replace wee {:foo [1]}) :scalar :foo :at 1)
@@ -1147,7 +1147,7 @@
     (push/get-stack
       (push-onto
         (scratch-replace skimpy {:bar skimpy}) :foo :bar)
-      :error) => '({:item " tried to push an overized item to :foo", :step 0})
+      :error) => '({:item " tried to push an oversized item to :foo", :step 0})
 
     (push/get-stack
       (push-onto
@@ -1206,3 +1206,160 @@
     (config-read turned-on :cycle-args?) =>  true
     (config-read (stop-cycling-arguments turned-on) :cycle-args?) => false
     ))
+
+
+;; return-item
+(fact "`return-item` pushes the indicated scratch item onto :exec"
+  (push/get-stack
+    (return-item
+      (scratch-replace afew {:foo 99})
+      :foo)
+    :exec) => '(99)
+    )
+
+(fact "`return-item` doesn't raise a fuss if the scratch variable isn't set"
+  (push/get-stack
+    (return-item afew :foo)
+    :exec) => '()
+    )
+
+(fact "`return-item` doesn't raise a fuss if the scratch variable is a list"
+  (push/get-stack
+    (return-item
+      (scratch-replace afew {:foo '(4 5 6)})
+      :foo)
+    :exec) => '((4 5 6))
+    )
+
+
+(fact "return-item balks when the items are oversized"
+  (let [skimpy (push/interpreter :config {:max-collection-size 12}
+                                 :stacks {:exec '(1 [2 (3 4) {5 6} 7] 8)} )]
+
+    (push/get-stack
+      (return-item
+        (scratch-replace skimpy {:bar '(9 9 9 9 9 9 9 9 9)})
+        :bar)
+      :error) => '({:item " tried to push an oversized item to :exec" :step 0})
+
+      (push/get-stack
+        (return-item
+          (scratch-replace skimpy {:bar '(9 9 9 9 9 9 9 9 9)})
+          :bar)
+        :exec) => '(1 [2 (3 4) {5 6} 7] 8)
+      ))
+
+
+
+;; return-codeblock
+(fact "`return-codeblock` pushes the indicated scratch items onto :exec as a block"
+  (push/get-stack
+    (return-codeblock
+      (scratch-replace afew {:foo 99 :bar 88})
+      :foo :bar)
+    :exec) => '((99 88))
+    )
+
+(fact "`return-codeblock` doesn't raise a fuss if a scratch variable isn't set"
+  (push/get-stack
+    (return-codeblock
+      (scratch-replace afew {:foo 99 :bar 88})
+      :baz :foo :bar :baz)
+    :exec) => '((99 88))
+    )
+
+(fact "`return-codeblock` doesn't raise a fuss if a scratch variable is a list"
+  (push/get-stack
+    (return-codeblock
+      (scratch-replace afew {:foo '(4 5 6) :bar [1 2 3]})
+      :bar :foo)
+    :exec) => '(([1 2 3] (4 5 6)))
+    )
+
+(fact "`return-codeblock` doesn't raise a fuss if all the scratch variables are nil"
+  (push/get-stack
+    (return-codeblock
+      (scratch-replace afew {})
+      :bar :foo)
+    :exec) => '(())
+    )
+
+(fact "`return-codeblock` has no problems if no keywords are given"
+  (push/get-stack
+    (return-codeblock
+      (scratch-replace afew {}))
+    :exec) => '(( ))
+    )
+
+(fact "return-codeblock balks when the items are oversized"
+  (let [skimpy (push/interpreter :config {:max-collection-size 12}
+                                 :stacks {:exec '(1 [2 (3 4) {5 6} 7] 8)} )]
+
+    (push/get-stack
+      (return-codeblock
+        (scratch-replace skimpy {:foo 9 :bar [99 99 99]})
+        :bar :bar :bar)
+      :error) => '({:item " tried to push an oversized item to :exec" :step 0})
+
+    (push/get-stack
+      (return-codeblock
+        (scratch-replace skimpy {:foo 9 :bar [99 99 99]})
+        :bar)
+      :error) => '()
+
+    (push/get-stack
+      (return-codeblock
+        (scratch-replace skimpy {:foo 9 :bar [99 99 99]})
+        :bar :bar :bar)
+      :exec) => '(1 [2 (3 4) {5 6} 7] 8)
+      ))
+
+
+
+;; requeue-stack
+(fact "`requeue-stack` pushes the list passed in to :exec, as a reversed codeblock"
+  (push/get-stack
+    (requeue-stack
+      (scratch-replace afew {:foo '(11 22 33 44)})
+      :from :foo)
+    :exec) => '((44 33 22 11))
+    )
+
+(fact "`requeue-stack` doesn't raise a fuss if a scratch variable isn't set"
+  (push/get-stack
+    (requeue-stack
+      (scratch-replace afew {})
+      :from :foo)
+    :exec) => '(())
+    )
+
+(fact "`requeue-stack` doesn't raise a fuss if a scratch variable isn't a list"
+  (push/get-stack
+    (return-codeblock
+      (scratch-replace afew {:foo 88})
+      :from :foo)
+    :exec) => '((88))
+    )
+
+(fact "requeue-stack balks when the items are oversized"
+  (let [skimpy (push/interpreter :config {:max-collection-size 12}
+                                 :stacks {:exec '(1 2 3 4 5 6 7 8 9)})]
+
+    (push/get-stack
+      (requeue-stack
+        (scratch-replace skimpy {:foo '(99 99 99 99 99)})
+        :from :foo)
+      :error) => '({:item " tried to push an oversized item to :exec" :step 0})
+
+    (push/get-stack
+      (requeue-stack
+        (scratch-replace skimpy {:foo '(99 99)})
+        :from :foo)
+      :error) => '()
+
+    (push/get-stack
+      (requeue-stack
+        (scratch-replace skimpy {:foo '(99 99 99)})
+        :from :foo)
+      :error) => '({:item " tried to push an oversized item to :exec" :step 0})
+      ))

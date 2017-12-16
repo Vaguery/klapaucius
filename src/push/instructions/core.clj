@@ -34,6 +34,9 @@
       #'quote-no-bindings {}
       #'record-an-error {}
       #'replace-binding {}
+      #'requeue-stack {}
+      #'return-codeblock {}
+      #'return-item {}
       #'retrieve-snapshot-state {}
       #'save-binding-stack {}
       #'save-bindings {}
@@ -82,7 +85,10 @@
       #'quote-no-bindings {}
       #'record-an-error {:log 1}
       #'replace-binding {}
+      #'requeue-stack {:exec 1}
       #'retrieve-snapshot-state {}
+      #'return-codeblock {:exec 1}
+      #'return-item {:exec 1}
       #'save-binding-stack {}
       #'save-bindings {}
       #'save-counter {:scalar 1}

@@ -18,6 +18,7 @@
   (get-in interpreter [:config :max-collection-size] 0))
 
 
+
 (defn oversized-item?
   "takes an interpreter, stackname stack and an item; returns `true` if there is room to push (pr in any way put) the item on the stack; throws an exception otherwise"
   [interpreter stackname item]
@@ -334,7 +335,7 @@
 
 (dire/with-handler! #'insert-as-nth-of
   "?"
-  #(re-find #"tried to push an overized item to" (.getMessage %))
+  #(re-find #"tried to push an oversized item to" (.getMessage %))
   (fn
     [e interpreter stackname kwd & {:keys [as at]}]
       (add-error-message! interpreter (.getMessage e))
@@ -361,7 +362,7 @@
 
 (dire/with-handler! #'push-onto
   "?"
-  #(re-find #"tried to push an overized item to" (.getMessage %))
+  #(re-find #"tried to push an oversized item to" (.getMessage %))
   (fn
     [e interpreter stackname kwd & {:keys [as at]}]
       (add-error-message! interpreter (.getMessage e))
@@ -386,7 +387,7 @@
 
 (dire/with-handler! #'push-these-onto
   "?"
-  #(re-find #"tried to push an overized item to" (.getMessage %))
+  #(re-find #"tried to push an oversized item to" (.getMessage %))
   (fn
     [e interpreter stackname kwd & {:keys [as at]}]
       (add-error-message! interpreter (.getMessage e))
@@ -601,6 +602,90 @@
                 new-err (util/list! (conj old-err err-item))]
             (stack/set-stack interpreter :error new-err)
             ))))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn return-item
+  "?"
+  [interpreter kwd]
+  (let [old-stack   (stack/get-stack interpreter :exec)
+        new-item    (sc/scratch-read interpreter kwd)
+        too-big?    (oversized-stack? interpreter old-stack new-item)
+        counter     (:counter interpreter)
+        instruction (:current-item interpreter)
+        new-stack   (if (or (nil? new-item) too-big?)
+                        old-stack
+                        (util/list! (conj old-stack new-item)))]
+      (if too-big?
+        (oops/throw-stack-oversize-exception instruction :exec)
+        (stack/set-stack interpreter :exec new-stack)
+        )))
+
+
+(dire/with-handler! #'return-item
+  "?"
+  #(re-find #"tried to push an oversized item to" (.getMessage %))
+  (fn
+    [e interpreter kwd]
+      (add-error-message! interpreter (.getMessage e))
+      ))
+
+;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn return-codeblock
+  "?"
+  [interpreter & keywords]
+  (let [old-stack   (stack/get-stack interpreter :exec)
+        new-items   (util/list!
+                      (remove nil?
+                        (map #(sc/scratch-read interpreter %) keywords)))
+        too-big?    (oversized-stack? interpreter old-stack new-items)
+        counter     (:counter interpreter)
+        instruction (:current-item interpreter)
+        new-stack   (if (or (nil? new-items) too-big?)
+                        old-stack
+                        (util/list! (conj old-stack new-items)))]
+      (if too-big?
+        (oops/throw-stack-oversize-exception instruction :exec)
+        (stack/set-stack interpreter :exec new-stack)
+        )))
+
+(dire/with-handler! #'return-codeblock
+  "?"
+  #(re-find #"tried to push an oversized item to" (.getMessage %))
+  (fn
+    [e interpreter & keywords]
+      (add-error-message! interpreter (.getMessage e))
+      ))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn requeue-stack
+  "?"
+  [interpreter & {:keys [from]}]
+  (let [old-exec    (stack/get-stack interpreter :exec)
+        new-items   (util/list! (sc/scratch-read interpreter from))
+        too-big?    (oversized-stack? interpreter old-exec new-items)
+        counter     (:counter interpreter)
+        instruction (:current-item interpreter)
+        new-exec    (if (or (nil? new-items) too-big?)
+                        old-exec
+                        (util/list! (conj old-exec (reverse new-items))))
+        ]
+    (if too-big?
+      (oops/throw-stack-oversize-exception instruction :exec)
+      (stack/set-stack interpreter :exec new-exec)
+      )))
+
+
+(dire/with-handler! #'requeue-stack
+  "?"
+  #(re-find #"tried to push an oversized item to" (.getMessage %))
+  (fn
+    [e interpreter & {:keys [from]}]
+      (add-error-message! interpreter (.getMessage e))
+      ))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;

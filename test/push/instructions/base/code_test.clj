@@ -658,7 +658,7 @@
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      {:code  '([1 2] 10)
       :exec  '(:foo)}
-                        :code-map       {:error '({:item ":code-map tried to push an overized item to :exec", :step 0})}
+                        :code-map       {:error '({:item ":code-map tried to push an oversized item to :exec", :step 0})}
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      )
 
@@ -707,7 +707,7 @@
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      {:code  '([1 2 3 4 5] 6)
       :exec  '(:foo)}
-                        :code-reduce       {:error '({:item ":code-reduce tried to push an overized item to :exec", :step 0})}
+                        :code-reduce       {:error '({:item ":code-reduce tried to push an oversized item to :exec", :step 0})}
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      )
 
@@ -920,7 +920,7 @@
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      {:code  '([99 99 99 99 99 99] 2 (1 2 3 4))}
                         :code-subst      {:code   '()
-                                          :error  '({:item ":code-subst tried to push an overized item to :code", :step 0})}
+                                          :error  '({:item ":code-subst tried to push an oversized item to :code", :step 0})}
      )
 
 
