@@ -28,7 +28,8 @@
       #(if %3
         (list (dec %2) %1)
         (list 0 %2 :exec-do*range %1)) :as :continuation)
-    (d/push-onto :exec :continuation)))
+    (d/return-item :continuation)
+    ))
 
 
 (def exec-doabunch*count
@@ -51,7 +52,8 @@
       #(if %3
         (list (dec %2) %1)
         (list 0 %2 :exec-doabunch*range %1)) :as :continuation)
-    (d/push-onto :exec :continuation)))
+    (d/return-item :continuation)
+    ))
 
 
 (def exec-doafew*count
@@ -74,7 +76,8 @@
       #(if %3
         (list (dec %2) %1)
         (list 0 %2 :exec-doafew*range %1)) :as :continuation)
-    (d/push-onto :exec :continuation)))
+    (d/return-item :continuation)
+    ))
 
 
 (def exec-do*range
@@ -105,7 +108,8 @@
         %5 (list %4 %1)
         :else
            (list %2 %1 (list %4 %3 :exec-do*range %1))) :as :continuation)
-    (d/push-onto :exec :continuation)))
+    (d/return-item :continuation)
+    ))
 
 
 (def exec-doafew*range
@@ -138,7 +142,8 @@
         %5 (list %4 %1)
         :else
            (list %2 %1 (list %4 %3 :exec-doafew*range %1))) :as :continuation)
-    (d/push-onto :exec :continuation)))
+    (d/return-item :continuation)
+    ))
 
 
 (def exec-doabunch*range
@@ -171,7 +176,8 @@
         %5 (list %4 %1)
         :else
            (list %2 %1 (list %4 %3 :exec-doabunch*range %1))) :as :continuation)
-    (d/push-onto :exec :continuation)))
+    (d/return-item :continuation)
+    ))
 
 
 (def exec-do*times
@@ -194,7 +200,8 @@
       #(if %4
            %1
            (list %1 (list %3 :exec-do*times %1))) :as :continuation)
-    (d/push-onto :exec :continuation)))
+    (d/return-item :continuation)
+    ))
 
 
 (def exec-doafew*times
@@ -218,7 +225,9 @@
       #(if %4
            %1
            (list %1 (list %3 :exec-doafew*times %1))) :as :continuation)
-    (d/push-onto :exec :continuation)))
+    (d/return-item :continuation)
+    ))
+
 
 (def exec-doabunch*times
   (i/build-instruction
@@ -241,7 +250,9 @@
       #(if %4
            %1
            (list %1 (list %3 :exec-doabunch*times %1))) :as :continuation)
-    (d/push-onto :exec :continuation)))
+    (d/return-item :continuation)
+    ))
+
 
 (def exec-if
   (i/build-instruction
@@ -252,14 +263,18 @@
     (d/consume-top-of :exec :as :option1)
     (d/consume-top-of :exec :as :option2)
     (d/calculate [:decider :option1 :option2] #(if %1 %2 %3) :as :result)
-    (d/push-onto :exec :result)))
+    (d/return-item :result)
+    ))
 
 
 
 (def exec-k
   (i/simple-2-in-1-out-instruction
     "`:exec-k` pops the top two `:exec` items, and pushes the top one back onto `:exec` (discarding the second one, in other words)"
-    :exec "k" (fn [a b] b)))
+    :exec
+    "k"
+    (fn [a b] b)
+    ))
 
 
 
@@ -275,7 +290,8 @@
     (d/consume-stack :exec :as :oldstack)
     (d/calculate [:oldstack :continuation]
       #(into '() (conj (reverse %1) %2)) :as :newstack)
-    (d/replace-stack :exec :newstack)))
+    (d/replace-stack :exec :newstack)
+    ))
 
 
 
@@ -283,27 +299,27 @@
   (i/build-instruction
     exec-noop
     "`:exec-noop does not affect the stacks"
-    :tags #{:complex :base}))
+    :tags #{:complex :base}
+    ))
 
 
 (def exec-s
   (i/build-instruction
     exec-s
-    "`:exec-s` pops three items off the `:exec` stack; call them `A, `B` and `C`, from top to third items. It then pushes three items, onto `:exec`:
+    "`:exec-s` pops three items off the `:exec` stack; call them `A, `B` and `C`, from top to third items. It then pushes a code block containing three items, onto `:exec`:
 
-    1. the list `'(B C)`
+    1. `A`
     2. `C`
-    3. `A`
+    3. the list `'(B C)`
 
-    As a result, the top of the `:exec` stack will read: `'(A C (B C) ...)`"
+    As a result, the top of the `:exec` stack will read: `'((A C (B C)) ...)`"
     :tags #{:complex :base}
     (d/consume-top-of :exec :as :a)
     (d/consume-top-of :exec :as :b)
     (d/consume-top-of :exec :as :c)
     (d/calculate [:b :c] list :as :bc)
-    (d/push-onto :exec :bc)
-    (d/push-onto :exec :c)
-    (d/push-onto :exec :a)))
+    (d/return-codeblock :a :c :bc)
+    ))
 
 
 
@@ -315,8 +331,9 @@
     :tags #{:complex :base}
     (d/consume-top-of :exec :as :do-this)
     (d/consume-top-of :boolean :as :really?)
-    (d/calculate [:do-this :really?] #(when %2 %1) :as :continuation)
-    (d/push-onto :exec :continuation)))
+    (d/calculate [:do-this :really?] #(when %2 %1) :as :result)
+    (d/return-item :result)
+    ))
 
 
 
@@ -327,7 +344,8 @@
     :tags #{:complex :base}
     (d/consume-top-of :exec :as :do-this)
     (d/calculate [:do-this] #(list %1 :exec-while %1) :as :continuation)
-    (d/push-onto :exec :continuation)))
+    (d/return-item :continuation)
+    ))
 
 
 
@@ -342,7 +360,8 @@
     (d/consume-top-of :exec :as :do-this)
     (d/consume-top-of :boolean :as :again?)
     (d/calculate [:do-this :again?] #(if %2 (list %1 :exec-while %1) '()) :as :continuation)
-    (d/push-onto :exec :continuation)))
+    (d/return-item :continuation)
+    ))
 
 
 

@@ -320,9 +320,10 @@
 
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     ;; forever
-    :exec    '(1.1 2.2 3.3 4.4)  :exec-s          :exec         '(1.1 3.3 (2.2 3.3) 4.4)
-    :exec    '(1.1 2.2)          :exec-s          :exec         '(1.1 2.2)
-    :exec    '()                 :exec-s          :exec         '())
+    :exec    '(1.1 2.2 3.3 4.4)  :exec-s    :exec '((1.1 3.3 (2.2 3.3)) 4.4)
+    :exec    '(1.1 2.2)          :exec-s    :exec                 '(1.1 2.2)
+    :exec    '()                 :exec-s    :exec                        '()
+    )
 
 
 (tabular
