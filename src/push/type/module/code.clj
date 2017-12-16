@@ -310,7 +310,7 @@
 (def code-reduce
   (i/build-instruction
     code-reduce
-    "`:code-reduce` pops the top items of the `:code` and `:exec` stacks (call them \"C\" and \"E\", respectively), and pushes a continuation to `:exec`. If C is a list of 2 or more elements, `'((:code-quote (first C) E) :code-cons (:code-quote (rest C) :code-reduce E ))`; if a list of 1 item, `'((:code-quote (first C) E) :code-cons)`; if an empty list, no continuation results; if not a list, `'((:code-quote C E) :code-cons)`. If the continuation would be larger than :max-collection-size it is discarded."
+    "`:code-reduce` pops the top items of the `:code` and `:exec` stacks (call them \"C\" and \"E\", respectively), and pushes a continuation to `:exec`. If C is a list of 2 or more elements, `'((:code-quote (first C) E) :code-cons (:code-quote (rest C) :code-reduce E ))`; if a list of 1 item, `'((:code-quote (first C) E) :code-cons)`; if an empty list, no continuation results; if not a list, `'((:code-quote C E) :code-cons)`."
     :tags #{:complex :base}
     (d/consume-top-of :code :as :item)
     (d/consume-top-of :exec :as :fn)
@@ -324,64 +324,73 @@
               :else
                 (list (list :code-quote (first %1) %2) :code-cons
                       (list :code-quote (rest %1) :code-reduce %2)))
-      :as :continuation)
-    (d/save-max-collection-size :as :limit)
-    (d/calculate [:continuation :limit]
-      #(when (< (u/count-code-points %1) %2) %1) :as :result)
-    (d/push-onto :exec :result)))
+      :as :results)
+    (d/return-item :results)
+    ))
 
 
 
 (def code-member?
   (i/build-instruction
     code-member?
-    "`:code-member?` pops two items from the `:code` stack; call them `A` (the top one) and `B` (the second one). First, if `A` is not a Collection, it is wrapped in a list. The result of `true` is pushed to the `:boolean` stack if `B` is a member of this modified `A`, or `false` if not."
+    "`:code-member?` pops two items from the `:code` stack; call them `A` (the top one) and `B` (the second one). First, if `A` is not a code block, it is wrapped in a list. The result of `true` is pushed to the `:boolean` stack if `B` is a member of this modified `A`, or `false` if not."
     :tags #{:complex :predicate :base}
+
     (d/consume-top-of :code :as :arg1)
     (d/consume-top-of :code :as :arg2)
-    (d/calculate [:arg1] #(if (coll? %1) %1 (list %1)) :as :list1)
+    (d/calculate [:arg1] #(if (seq? %1) %1 (list %1)) :as :list1)
     (d/calculate [:list1 :arg2] #(not (not-any? #{%2} %1)) :as :present)
-    (d/push-onto :boolean :present)))
+    (d/return-item :present)
+    ))
 
 
 
 (def code-noop
   (i/build-instruction
     code-noop
-    "`:code-noop` has no effect on the stacks."
-    :tags #{:complex :base}))
+    "`:code-noop` has no effect on the interpreter beyond incrementing the counter"
+    :tags #{:complex :base}
+    ))
 
 
 
 (def code-nth
   (i/build-instruction
     code-nth
-    "`:code-nth` pops the top `:code` and `:scalar` items. It wraps the `:code` item in a list if it isn't one, and forces the scalar into an index range by taking `(mod scalar (count code)`. It then pushes the indexed item of the (listified) `:code` item onto the `:code` stack."
+    "`:code-nth` pops the top `:code` and `:scalar` items. It wraps the `:code` item in a list if it isn't one, and forces the scalar into an index range by taking `(mod scalar (count code)`. It then returns the indexed item of the (listified) `:code` item."
     :tags #{:complex :base}
+
     (d/consume-top-of :code :as :c)
     (d/consume-top-of :scalar :as :i)
     (d/calculate [:c] #(if (seq? %1) %1 (list %1)) :as :list)
     (d/calculate [:list :i]
       #(if (empty? %1) 0 (n/scalar-to-index %2 (count %1))) :as :idx)
-    (d/calculate [:list :idx] #(when (seq %1) (nth %1 %2)) :as :result)
-    (d/push-onto :code :result)))
+    (d/calculate [:list :idx]
+      #(qc/push-quote (when (seq %1) (nth %1 %2))) :as :result)
+    (d/return-item :result)
+    ))
 
 
 
 (def code-null? (i/simple-1-in-predicate
-  "`:code-null?` pushes `true` if the top `:code` item is an empty collection"
-  :code "null?" #(and (coll? %) (empty? %))))
+  "`:code-null?` pushes `true` if the top `:code` item is an empty code block"
+  :code
+  "null?"
+  #(and (seq? %) (empty? %))
+  ))
 
 
 
 (def code-points
   (i/build-instruction
     code-points
-    "`:code-points` pops the top item from the `:code` stack, and treats it as a tree of seqs and non-seq items. If it is an empty list, or any literal (including a vector, map, set or other collection type), the result is 1; if it is a list containing items, they are also counted, including any contents of sub-lists, and so on. _Note_ the difference from `:code-size`, which counts contents of all Collections, not just (code) lists. The result is pushed to the `:scalar` stack."
+    "`:code-points` pops the top item from the `:code` stack, and treats it as a tree of seqs and non-seq items. If it is an empty list, or any literal (including a vector, map, set or other collection type), the result is 1; if it is a list containing items, they are also counted, including any contents of sub-lists, and so on. _Note_ the difference from `:code-size`, which counts contents of all collections (including :set and :vector elements), not just (code) lists."
     :tags #{:complex :base}
+
     (d/consume-top-of :code :as :arg1)
     (d/calculate [:arg1] #(u/count-code-points %1) :as :size)
-    (d/push-onto :scalar :size)))
+    (d/return-item :size)
+    ))
 
 
 
@@ -390,73 +399,88 @@
     code-position
     "`:code-position` pops the top two `:code` items (call them `A` and `B`, respectively). It pushes the index of the first occurrence of `A` in `B`, or -1 if it is not found."
     :tags #{:complex :base}
+
     (d/consume-top-of :code :as :arg2)
     (d/consume-top-of :code :as :arg1)
     (d/calculate [:arg1] #(if (seq? %1) %1 (list %1)) :as :listed)
     (d/calculate [:listed :arg2] #(.indexOf %1 %2) :as :idx)
-    (d/push-onto :scalar :idx)))
+    (d/return-item :idx)
+    ))
 
 
 
 (def code-quote
   (i/build-instruction
     code-quote
-    "`:code-quote` pops the top item from the `:exec` stack and puts it onto the `:code` stack."
+    "`:code-quote` pops the top item from the `:exec` stack and converts it to QuotedCode"
     :tags #{:complex :base}
-    (d/consume-top-of :exec :as :arg1)
-    (d/push-onto :code :arg1)))
+
+    (d/consume-top-of :exec :as :arg)
+    (d/calculate [:arg] #(qc/push-quote %1) :as :result)
+    (d/return-item :result)
+    ))
 
 
 
 (def code-rest (i/simple-1-in-1-out-instruction
-  "`:code-rest` examines the top `:code` item; if it's a Collection, it removes
-  the first item and returns the reduced list; if it's not a Collection, it returns
-  the original item"
-  :code "rest" #(if (coll? %1) (rest %1) (list))))
+  "`:code-rest` examines the top `:code` item; if it's a code block, it removes
+  the first item and returns the reduced list, otherwise it returns an empty code block"
+  :code
+  "rest"
+  #(qc/push-quote (if (seq? %1) (rest %1) (list)))
+  ))
 
 
 
 (def code-size
   (i/build-instruction
     code-size
-    "`:code-size` pops the top item from the `:code` stack, and totals the number of items it contains anywhere, in any nested Collection of any type. The root of the item counts as 1, and every element (including sub-Collections) nested inside that add 1 more. Items in lists, vectors, sets, and maps are counted. Maps are counted as a collection of key-value pairs, each key and value are an item in a pair, and if they themselves are nested items those are traversed as well. (_Note_ that this differs from `:code-points` by counting the contents of Collections, as opposed to lists only.) The result is pushed to the `:scalar` stack."
+    "`:code-size` pops the top item from the `:code` stack, and totals the number of items it contains anywhere, in any nested Collection of any type. The root of the item counts as 1, and every element (including sub-Collections) nested inside that add 1 more. Items in lists, vectors, sets, and maps are counted. Maps are counted as a collection of key-value pairs, each key and value are an item in a pair, and if they themselves are nested items those are traversed as well. (_Note_ that this differs from `:code-points` by counting the contents of all collections, as opposed to lists only.) Includes items in :set, :vector, :tagspace and other Record types."
     :tags #{:complex :base}
+
     (d/consume-top-of :code :as :arg1)
     (d/calculate [:arg1] #(u/count-collection-points %1) :as :size)
-    (d/push-onto :scalar :size)))
+    (d/return-item :size)
+    ))
 
 
 
 (def code-subst
   (i/build-instruction
     code-subst
-    "`:code-subst` pops the top three `:code` items (call them `A` `B` and `C`, respectively). It replaces all occurrences of `B` in `C` (in a depth-first traversal) with `A`. If the result is larger than max-collection-size, it is discarded."
+    "`:code-subst` pops the top three `:code` items (call them `A` `B` and `C`, respectively). It replaces all occurrences of `B` in `C` (in a depth-first traversal) with `A`."
     :tags #{:complex :base}
+
     (d/consume-top-of :code :as :arg3)
     (d/consume-top-of :code :as :arg2)
     (d/consume-top-of :code :as :arg1)
-    (d/calculate [:arg1 :arg2 :arg3] u/replace-in-code :as :replaced)
-    (d/save-max-collection-size :as :limit)
-    (d/calculate [:replaced :limit]
-      #(when (< (u/count-code-points %1) %2) %1) :as :result)
-    (d/push-onto :code :result)))
+    (d/calculate [:arg1 :arg2 :arg3]
+      #(qc/push-quote (u/replace-in-code %1 %2 %3)) :as :result)
+    (d/return-item :result)
+    ))
 
 
 
 (def code-wrap (i/simple-1-in-1-out-instruction
   "`:code-wrap` puts the top item on the `:code` stack into a one-element list"
-  :code "wrap" list))
+  :code
+  "wrap"
+  #(qc/push-quote (list %1))
+  ))
 
 
 
 (def code-return
   (i/build-instruction
     code-return
-    "`:code-return` pops the top `:code` item, wraps it in a list with :code-quote, and pushes that form onto the :return stack"
+    "`:code-return` pops the top `:code` item and pushes it (quoted) on the :return stack"
     :tags #{:complex :base}
+
     (d/consume-top-of :code :as :arg)
-    (d/calculate [:arg] #(list :code-quote %1) :as :form)
-    (d/push-onto :return :form)))
+    (d/calculate [:arg]
+      #(qc/push-quote %1) :as :form)
+    (d/push-onto :return :form)
+    ))
 
 
 
