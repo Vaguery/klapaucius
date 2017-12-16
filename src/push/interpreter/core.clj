@@ -4,6 +4,7 @@
             [push.util.exceptions         :as oops]
             [push.router.core             :as router]
             [push.util.scratch            :as scratch]
+            [push.type.definitions.quoted :as quoted]
             [push.util.type-checkers      :as types   :refer [pushcode?]]
             ))
 
