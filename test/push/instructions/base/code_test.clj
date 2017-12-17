@@ -54,6 +54,17 @@
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
 
+
+(tabular
+  (fact ":code-append! returns `(:code-append :code-do*)`"
+    (register-type-and-check-instruction
+        ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items      ?instruction      ?get-stack     ?expected
+    :code       '()         :code-append!      :exec '((:code-append :code-do*))
+    )
+
+
 (tabular
   (fact ":code-atom? pushes true to :boolean if the top :code is not a list"
     (register-type-and-check-instruction
@@ -99,6 +110,18 @@
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
 
+
+(tabular
+  (fact ":code-cons! returns `(:code-cons :code-do*)`"
+    (register-type-and-check-instruction
+        ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items      ?instruction      ?get-stack     ?expected
+    :code       '()         :code-cons!       :exec '((:code-cons :code-do*))
+    )
+
+
+
 (tabular
   (fact ":code-container returns the smallest, first container of code/1 in code/2"
     (register-type-and-check-instruction
@@ -119,6 +142,15 @@
     :code    '(2)                :code-container        :exec             '()
     )
 
+
+(tabular
+  (fact ":code-container! returns `(:code-container :code-do*)`"
+    (register-type-and-check-instruction
+        ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items      ?instruction      ?get-stack     ?expected
+    :code       '()       :code-container!  :exec '((:code-container :code-do*))
+    )
 
 
 (tabular
@@ -386,6 +418,17 @@
                                                :scalar  '(1)})
 
 
+
+(tabular
+ (fact ":code-drop! returns `(:code-drop :code-do*)`"
+   (register-type-and-check-instruction
+       ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
+
+   ?set-stack  ?items      ?instruction      ?get-stack     ?expected
+   :code       '()       :code-drop!  :exec '((:code-drop :code-do*))
+   )
+
+
 (tabular
   (fact ":code-extract picks an indexed item out of a :code item"
     (check-instruction-with-all-kinds-of-stack-stuff
@@ -439,6 +482,17 @@
 
 
 (tabular
+  (fact ":code-extract! returns `(:code-extract :code-do*)`"
+    (register-type-and-check-instruction
+        ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items      ?instruction      ?get-stack     ?expected
+    :code       '()       :code-extract!  :exec '((:code-extract :code-do*))
+    )
+
+
+
+(tabular
   (fact ":code-first pushes the first item of the top :code item, if it's a non-empty list"
     (register-type-and-check-instruction
         ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
@@ -461,6 +515,16 @@
     ?set-stack  ?items            ?instruction      ?get-stack     ?expected
     :code    '([1 2 3])           :code-first        :exec      (qq [1 2 3])
     :code    '({:a 8 :b 7})       :code-first        :exec  (qq {:a 8 :b 7})
+    )
+
+
+(tabular
+  (fact ":code-first! returns `(:code-first :code-do*)`"
+    (register-type-and-check-instruction
+        ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items      ?instruction      ?get-stack     ?expected
+    :code       '()       :code-first!  :exec '((:code-first :code-do*))
     )
 
 
@@ -578,6 +642,16 @@
 
 
 (tabular
+  (fact ":code-insert! returns `(:code-insert :code-do*)`"
+    (register-type-and-check-instruction
+      ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items      ?instruction      ?get-stack     ?expected
+    :code       '()       :code-insert!  :exec '((:code-insert :code-do*))
+    )
+
+
+(tabular
   (fact ":code-length pushes the count of the top :code item (including :set or :vector items) or 1 if it is not a collection (:tagspace is not a collection)"
     (register-type-and-check-instruction
         ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
@@ -630,6 +704,16 @@
                        :code-list       {:error '({:item ":code-list tried to push an oversized item to :exec", :step 0})}
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      )
+
+
+(tabular
+  (fact ":code-list! returns `(:code-list :code-do*)`"
+    (register-type-and-check-instruction
+      ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items      ?instruction      ?get-stack     ?expected
+    :code       '()       :code-list!  :exec '((:code-list :code-do*))
+    )
 
 
 (tabular
@@ -804,6 +888,16 @@
 
 
 (tabular
+  (fact ":code-nth! returns `(:code-nth :code-do*)`"
+    (register-type-and-check-instruction
+      ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items      ?instruction      ?get-stack     ?expected
+    :code       '()       :code-nth!          :exec '((:code-nth :code-do*))
+    )
+
+
+(tabular
   (fact ":code-null? returns true if the top :code item is an empty list, false otherwise"
     (register-type-and-check-instruction
         ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
@@ -870,6 +964,15 @@
     :code    '()                  :code-rest        :exec        '()
     )
 
+
+(tabular
+  (fact ":code-rest! returns `(:code-rest :code-do*)`"
+    (register-type-and-check-instruction
+      ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items      ?instruction      ?get-stack     ?expected
+    :code       '()       :code-rest!         :exec '((:code-rest :code-do*))
+    )
 
 
 (tabular
@@ -967,6 +1070,16 @@
     )
 
 
+(tabular
+  (fact ":code-subst! returns `(:code-subst :code-do*)`"
+    (register-type-and-check-instruction
+      ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items    ?instruction      ?get-stack     ?expected
+    :code       '()       :code-subst!       :exec  '((:code-subst :code-do*))
+    )
+
+
 
 (tabular
   (fact ":code-wrap returns a :the top :code item in an extra list layer"
@@ -980,6 +1093,17 @@
     :code    '(())              :code-wrap      :exec        (qq '(()))
     :code    '()                :code-wrap      :exec        '()
     )
+
+
+(tabular
+  (fact ":code-wrap! returns `(:code-wrap :code-do*)`"
+    (register-type-and-check-instruction
+      ?set-stack ?items code-module ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items      ?instruction      ?get-stack     ?expected
+    :code       '()       :code-wrap!        :exec '((:code-wrap :code-do*))
+    )
+
 
 ;; visible
 

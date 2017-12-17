@@ -26,6 +26,16 @@
     ))
 
 
+(def code-append!
+  (i/build-instruction
+    code-append!
+    "`code-append!` returns the code block `(:code-append :code-do*)`"
+    :tags #{:complex :base}
+
+    (d/calculate [] #(list :code-append :code-do*) :as :result)
+    (d/return-item :result)
+    ))
+
 
 (def code-atom?
   (i/simple-1-in-predicate
@@ -52,12 +62,33 @@
     ))
 
 
+(def code-cons!
+  (i/build-instruction
+    code-cons!
+    "`code-cons!` returns the code block `(:code-cons :code-do*)`"
+    :tags #{:complex :base}
+
+    (d/calculate [] #(list :code-cons :code-do*) :as :result)
+    (d/return-item :result)
+    ))
+
 
 (def code-container (i/simple-2-in-1-out-instruction
   "`:code-container` pops the top two `:code` items. It performs a depth-first traversal of the second code item (if it is a list or not), looking for duplicates of the first item. If it finds one, then the _parent_ node of the tree is returned as quoted code. If the item is not found, or there is no parent (the two items are identical), there is no return value."
     :code
     "container"
     #(qc/push-quote (first (u/containers-in %1 %2)))
+    ))
+
+
+(def code-container!
+  (i/build-instruction
+    code-container!
+    "`code-container!` returns the code block `(:code-container :code-do*)`"
+    :tags #{:complex :base}
+
+    (d/calculate [] #(list :code-container :code-do*) :as :result)
+    (d/return-item :result)
     ))
 
 
@@ -195,6 +226,16 @@
     ))
 
 
+(def code-drop!
+  (i/build-instruction
+    code-drop!
+    "`code-drop!` returns the code block `(:code-drop :code-do*)`"
+    :tags #{:complex :base}
+
+    (d/calculate [] #(list :code-drop :code-do*) :as :result)
+    (d/return-item :result)
+    ))
+
 
 (def code-extract
   (i/build-instruction
@@ -212,6 +253,16 @@
     ))
 
 
+(def code-extract!
+  (i/build-instruction
+    code-extract!
+    "`code-extract!` returns the code block `(:code-extract :code-do*)`"
+    :tags #{:complex :base}
+
+    (d/calculate [] #(list :code-extract :code-do*) :as :result)
+    (d/return-item :result)
+    ))
+
 
 (def code-first (i/simple-1-in-1-out-instruction
   "`:code-first` examines the top `:code` item to determine if it's a code block (not a vector, map, record or other collection type!) If it is, the function returns its first item, otherwise the item itself it returned."
@@ -219,6 +270,17 @@
   "first"
   #(qc/push-quote (if (seq? %) (first %) %))
   ))
+
+
+(def code-first!
+  (i/build-instruction
+    code-first!
+    "`code-first!` returns the code block `(:code-first :code-do*)`"
+    :tags #{:complex :base}
+
+    (d/calculate [] #(list :code-first :code-do*) :as :result)
+    (d/return-item :result)
+    ))
 
 
 
@@ -254,6 +316,16 @@
     ))
 
 
+(def code-insert!
+  (i/build-instruction
+    code-insert!
+    "`code-insert!` returns the code block `(:code-insert :code-do*)`"
+    :tags #{:complex :base}
+
+    (d/calculate [] #(list :code-insert :code-do*) :as :result)
+    (d/return-item :result)
+    ))
+
 
 (def code-length
   (i/build-instruction
@@ -281,6 +353,16 @@
     (d/return-item :result)
     ))
 
+
+(def code-list!
+  (i/build-instruction
+    code-list!
+    "`code-list!` returns the code block `(:code-list :code-do*)`"
+    :tags #{:complex :base}
+
+    (d/calculate [] #(list :code-list :code-do*) :as :result)
+    (d/return-item :result)
+    ))
 
 
 (def code-map
@@ -371,6 +453,16 @@
     ))
 
 
+(def code-nth!
+  (i/build-instruction
+    code-nth!
+    "`code-nth!` returns the code block `(:code-nth :code-do*)`"
+    :tags #{:complex :base}
+
+    (d/calculate [] #(list :code-nth :code-do*) :as :result)
+    (d/return-item :result)
+    ))
+
 
 (def code-null? (i/simple-1-in-predicate
   "`:code-null?` pushes `true` if the top `:code` item is an empty code block"
@@ -378,7 +470,6 @@
   "null?"
   #(and (seq? %) (empty? %))
   ))
-
 
 
 (def code-points
@@ -431,6 +522,16 @@
   ))
 
 
+(def code-rest!
+  (i/build-instruction
+    code-rest!
+    "`code-rest!` returns the code block `(:code-rest :code-do*)`"
+    :tags #{:complex :base}
+
+    (d/calculate [] #(list :code-rest :code-do*) :as :result)
+    (d/return-item :result)
+    ))
+
 
 (def code-size
   (i/build-instruction
@@ -460,6 +561,17 @@
     ))
 
 
+(def code-subst!
+  (i/build-instruction
+    code-subst!
+    "`code-subst!` returns the code block `(:code-subst :code-do*)`"
+    :tags #{:complex :base}
+
+    (d/calculate [] #(list :code-subst :code-do*) :as :result)
+    (d/return-item :result)
+    ))
+
+
 
 (def code-wrap (i/simple-1-in-1-out-instruction
   "`:code-wrap` puts the top item on the `:code` stack into a one-element list"
@@ -468,6 +580,16 @@
   #(qc/push-quote (list %1))
   ))
 
+
+(def code-wrap!
+  (i/build-instruction
+    code-wrap!
+    "`code-wrap!` returns the code block `(:code-wrap :code-do*)`"
+    :tags #{:complex :base}
+
+    (d/calculate [] #(list :code-wrap :code-do*) :as :result)
+    (d/return-item :result)
+    ))
 
 
 (def code-return
@@ -498,9 +620,12 @@
         aspects/make-taggable
         aspects/make-visible
         (t/attach-instruction , code-append)
+        (t/attach-instruction , code-append!)
         (t/attach-instruction , code-atom?)
         (t/attach-instruction , code-cons)
+        (t/attach-instruction , code-cons!)
         (t/attach-instruction , code-container)
+        (t/attach-instruction , code-container!)
         (t/attach-instruction , code-contains?)
         (t/attach-instruction , code-do)
         (t/attach-instruction , code-do*)
@@ -508,24 +633,33 @@
         (t/attach-instruction , code-do*range)
         (t/attach-instruction , code-do*times)
         (t/attach-instruction , code-drop)
+        (t/attach-instruction , code-drop!)
         (t/attach-instruction , code-extract)
+        (t/attach-instruction , code-extract!)
         (t/attach-instruction , code-first)
+        (t/attach-instruction , code-first!)
         (t/attach-instruction , code-if)
         (t/attach-instruction , code-insert)
+        (t/attach-instruction , code-insert!)
         (t/attach-instruction , code-length)
         (t/attach-instruction , code-list)
+        (t/attach-instruction , code-list!)
         (t/attach-instruction , code-map)
         (t/attach-instruction , code-member?)
         (t/attach-instruction , code-noop)
         (t/attach-instruction , code-nth)
+        (t/attach-instruction , code-nth!)
         (t/attach-instruction , code-null?)
         (t/attach-instruction , code-points)
         (t/attach-instruction , code-position)
         (t/attach-instruction , code-quote)
         (t/attach-instruction , code-reduce)
         (t/attach-instruction , code-rest)
+        (t/attach-instruction , code-rest!)
         (t/attach-instruction , code-return)
         (t/attach-instruction , code-size)
         (t/attach-instruction , code-subst)
+        (t/attach-instruction , code-subst!)
         (t/attach-instruction , code-wrap)
+        (t/attach-instruction , code-wrap!)
         ))
