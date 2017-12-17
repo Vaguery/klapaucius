@@ -223,20 +223,20 @@
 
 
 (tabular
-  (fact ":interval-empty? returns true if the start and end are identical and at least one is open"
+  (fact ":interval-emptyset? returns true if the start and end are identical and at least one is open"
     (register-type-and-check-instruction
         ?set-stack ?items interval-type ?instruction ?get-stack) => ?expected)
 
     ?set-stack  ?items       ?instruction        ?get-stack     ?expected
 
     :interval    (list (s/make-interval 2 3))
-                             :interval-empty?     :exec          '(false)
+                             :interval-emptyset?     :exec          '(false)
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval 7 7))
-                             :interval-empty?     :exec          '(false)
+                             :interval-emptyset?     :exec          '(false)
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :interval    (list (s/make-interval 7 7 :min-open? true))
-                             :interval-empty?     :exec          '(true)
+                             :interval-emptyset?     :exec          '(true)
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
 

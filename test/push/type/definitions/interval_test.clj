@@ -45,11 +45,11 @@
   )
 
 
-(fact "interval-empty? works as expected"
-  (interval-empty? (make-open-interval 3 4)) => false
-  (interval-empty? (make-interval 3 3)) => false
-  (interval-empty? (make-interval 3 3 :min-open? true)) => true
-  (interval-empty? (make-interval 7 7 :min-open? true)) => true
+(fact "interval-emptyset? works as expected"
+  (interval-emptyset? (make-open-interval 3 4)) => false
+  (interval-emptyset? (make-interval 3 3)) => false
+  (interval-emptyset? (make-interval 3 3 :min-open? true)) => true
+  (interval-emptyset? (make-interval 7 7 :min-open? true)) => true
   )
 
 

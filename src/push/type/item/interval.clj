@@ -77,13 +77,13 @@
 
 
 
-(def interval-empty?
+(def interval-emptyset?
   (i/build-instruction
-    interval-empty?
-    "`:interval-empty?` pops the top `:interval` item and pushes `true` if it's empty: that is, if the ends are equal, AND at least one end is open"
+    interval-emptyset?
+    "`:interval-emptyset?` pops the top `:interval` item and pushes `true` if it's empty: that is, if the ends are equal, AND at least one end is open"
     :tags #{:interval}
     (d/consume-top-of :interval :as :arg)
-    (d/calculate [:arg] #(interval/interval-empty? %1) :as :result)
+    (d/calculate [:arg] #(interval/interval-emptyset? %1) :as :result)
     (d/return-item :result)
     ))
 
@@ -478,7 +478,7 @@
         (t/attach-instruction , interval-add)
         (t/attach-instruction , interval-crossover)
         (t/attach-instruction , interval-divide)
-        (t/attach-instruction , interval-empty?)
+        (t/attach-instruction , interval-emptyset?)
         (t/attach-instruction , interval-hull)
         (t/attach-instruction , interval-include?)
         (t/attach-instruction , interval-intersection)

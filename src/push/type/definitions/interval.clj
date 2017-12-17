@@ -45,7 +45,7 @@
 
 
 
-(defn interval-empty?
+(defn interval-emptyset?
   "Takes an Interval and returns `true` if it has identical `:min` and `:max`, and either is open"
   [interval]
   (and (= (:min interval) (:max interval))
@@ -63,7 +63,7 @@
     (cond
       (and (= s n) so?) false
       (and (= e n) eo?) false
-      (and (not (interval-empty? interval)) (= s e n)) true
+      (and (not (interval-emptyset? interval)) (= s e n)) true
       :else (not= (compare s n) (compare e n)))))
 
 
@@ -114,8 +114,8 @@
         e2 (:max interval2)
         i2open (make-open-interval s2 e2)]
     (cond
-      (interval-empty? interval1) false
-      (interval-empty? interval2) false
+      (interval-emptyset? interval1) false
+      (interval-emptyset? interval2) false
       (= i1open i2open) true
       (contains-interval-end? interval1 interval2) true
       (contains-interval-end? interval2 interval1) true
@@ -245,8 +245,8 @@
 (defn interval-add
   "Takes two Interval records, and returns their sum (in interval arithmetc terms). That is, the new `:min` is the _smallest_ of all possible four sums of extremes, and the new `:max` is the _largest_ of all possible four products of extremes. A given end is open if either of the ends multiplied to obtain it were open. If both arguments are `empty`, then the result is `nil`; if only one is empty, then the result is the other argument unchanged."
   [i1 i2]
-  (let [no1 (interval-empty? i1)
-        no2 (interval-empty? i2)]
+  (let [no1 (interval-emptyset? i1)
+        no2 (interval-emptyset? i2)]
   (cond
     (and no1 no2)
       nil
@@ -283,7 +283,7 @@
 (defn interval-multiply
   "Takes two Interval records, and returns their product (in interval arithmetc terms). That is, the new `:min` is the _smallest_ of all possible four products of extremes, and the new `:max` is the _largest_ of all possible four products of extremes. A given end is open if either of the ends multiplied to obtain it were open. If either argument is `empty`, then the result is `nil`."
   [i1 i2]
-  (if (or (interval-empty? i1) (interval-empty? i2))
+  (if (or (interval-emptyset? i1) (interval-emptyset? i2))
     nil
     (let [a     [(:min i1) (:min-open? i1)]
           b     [(:max i1) (:max-open? i1)]
