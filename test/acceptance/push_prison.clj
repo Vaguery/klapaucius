@@ -54,17 +54,17 @@
           (if (is-done? s)
             (println "DONE")
             (recur (do
-              (println (str ">>> " (:counter s)
-                            ; "\nstacks (pts): " (fix/count-collection-points (:stacks s))
-                            ; "\nbindings (pts): " (fix/count-collection-points (:bindings s))
+              (println (str "\n>>> " (:counter s)
+                            "\nstacks (pts): " (fix/count-collection-points (:stacks s))
+                            "\nbindings (pts): " (:bindings s)
                             ; "\nall items in :log (sum of chars): "
                             ; (apply (juxt max +')
                             ;   (into '(0)
                             ;     (map
                             ;       #(count (str (:item %)))
                             ;       (u/get-stack s :log))))
-                            ; "\n>>> ATTEMPTING " (pr-str (first (u/get-stack s :exec)))
-                            (pr-str (u/peek-at-stack s :log))
+                            "\n>>> ATTEMPTING " (pr-str (first (u/get-stack s :exec)))
+                            ; (pr-str (u/peek-at-stack s :log))
                             ))
               (step s))))))
       (catch Exception e (do
@@ -103,9 +103,9 @@
       ))
 
 
-; (fact "no exceptions are raised when I step through any of these problematic programs"
-;   :debug :acceptance
-;   (map step-through-prisoner prisoners) =not=> (throws))
+(fact "no exceptions are raised when I step through any of these problematic programs"
+  :debug :acceptance
+  (map step-through-prisoner prisoners) =not=> (throws))
 
 (fact "no exceptions are raised when I run (lazily) any of these problematic programs"
   :debug :acceptance

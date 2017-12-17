@@ -55,6 +55,11 @@
     :code       '()             :code-againlater   :exec              '()
     )
 
+(fact "code-againlater clarifies this in its docstring"
+  (:docstring (i/get-instruction (push/interpreter) :code-againlater)) =>
+  #"All items taken from :code are returned"
+  )
+
 
 
 (tabular
@@ -123,6 +128,11 @@
    )
 
 
+(fact "code-later clarifies this in its docstring"
+  (:docstring (i/get-instruction (push/interpreter) :code-later)) =>
+  #"All items taken from :code are returned"
+  )
+
 
 
 (tabular
@@ -145,6 +155,26 @@
     :exec) => (list (list
                 (q! 4) (q! 3) (q! 2) (q! 1))
                 ))
+
+(fact "code-flipstack clarifies this in its docstring"
+  (:docstring (i/get-instruction (push/interpreter) :code-flipstack)) =>
+  #"All items taken from :code are returned"
+  )
+
+
+(fact "flipstack-instruction handles :ref items differently"
+  (push/get-stack
+    (i/execute-instruction
+      (push/interpreter :stacks {:scalar '(3) :ref '(:a :b :c :d)}) :ref-flipstack)
+    :exec) => '((:push-quoterefs (:d :c :b :a) :push-unquoterefs))
+    )
+
+
+(fact "ref-flipstack clarifies this in its docstring"
+  (:docstring (i/get-instruction (push/interpreter) :ref-flipstack)) =>
+  #"The returned block of items is wrapped in"
+  )
+
 
 
 (tabular
@@ -200,6 +230,27 @@
                 (list (q! 3) (q! 2) (q! 1))
                 (list (q! 6) (q! 5) (q! 4))
                 )))
+
+
+(fact "code-cutstack clarifies this in its docstring"
+  (:docstring (i/get-instruction (push/interpreter) :code-cutstack)) =>
+  #"All items taken from :code are returned"
+  )
+
+
+(fact "cutstack-instruction handles :ref items differently"
+  (push/get-stack
+    (i/execute-instruction
+      (push/interpreter :stacks {:scalar '(3) :ref '(:a :b :c :d)}) :ref-cutstack)
+    :exec) => '((:push-quoterefs ((:c :b :a) (:d)) :push-unquoterefs))
+    )
+
+
+(fact "ref-cutstack clarifies this in its docstring"
+  (:docstring (i/get-instruction (push/interpreter) :ref-cutstack)) =>
+  #"The returned block of items is wrapped in"
+  )
+
 
 
 (tabular
@@ -266,6 +317,26 @@
                 (list (q! 6) (q! 5) (q! 4))
                 (list (q! 1) (q! 2) (q! 3))
                 )))
+
+
+(fact "code-cutflip clarifies this in its docstring"
+  (:docstring (i/get-instruction (push/interpreter) :code-cutflip)) =>
+  #"All items taken from :code are returned"
+  )
+
+
+(fact "cutflip-instruction handles :ref items differently"
+  (push/get-stack
+    (i/execute-instruction
+      (push/interpreter :stacks {:scalar '(3) :ref '(:a :b :c :d)}) :ref-cutflip)
+    :exec) => '((:push-quoterefs ((:d) (:a :b :c)) :push-unquoterefs))
+    )
+
+
+(fact "ref-cutflip clarifies this in its docstring"
+  (:docstring (i/get-instruction (push/interpreter) :ref-cutflip)) =>
+  #"The returned block of items is wrapped in"
+  )
 
 
 
@@ -356,3 +427,23 @@
                 (list (q! 4) (q! 3) (q! 2) (q! 1))
                 (list (q! 4) (q! 3))
                 )))
+
+
+(fact "code-liftstack clarifies this in its docstring"
+  (:docstring (i/get-instruction (push/interpreter) :code-liftstack)) =>
+  #"All items taken from :code are returned"
+  )
+
+
+(fact "liftstack-instruction handles :ref items differently"
+  (push/get-stack
+    (i/execute-instruction
+      (push/interpreter :stacks {:scalar '(3) :ref '(:a :b :c :d)}) :ref-liftstack)
+    :exec) => '((:push-quoterefs ((:d :c :b :a) (:d)) :push-unquoterefs))
+    )
+
+
+(fact "ref-liftstack clarifies this in its docstring"
+  (:docstring (i/get-instruction (push/interpreter) :ref-liftstack)) =>
+  #"The returned block of items is wrapped in"
+  )

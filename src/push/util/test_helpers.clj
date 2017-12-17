@@ -9,13 +9,19 @@
 
 ;; convenience functions for testing
 
+(def starting-interpreter
+  (push/interpreter))
+
+
+(def basic-only
+  (m/basic-interpreter))
 
 (defn step-and-check-it
   "helper sets up an interpreter with `items` on `setup-stack`,
   registers the named `instruction`, executes that instruction to produce
   the next step after, and returns the indicated `get-stack`"
   [setup-stack items instruction read-stack]
-  (let [setup (-> (push/interpreter)
+  (let [setup (-> starting-interpreter
                   (u/set-stack , setup-stack items)
                   (i/register-instruction , instruction)
                   (assoc , :current-item (:token instruction)))
@@ -30,7 +36,7 @@
   executes the named instruction to produce the next step after, and returns
   the indicated `get-stack`"
   [setup-stack items type-under-test instruction-token read-stack]
-  (let [setup (-> (push/interpreter)
+  (let [setup (-> starting-interpreter
                   (u/set-stack , setup-stack items)
                   (i/register-type , type-under-test)
                   (assoc , :current-item instruction-token))
@@ -62,7 +68,7 @@
   executes the named instruction to produce the next step after, and returns all
   the stacks of the resulting Interpreter state"
   [new-stacks type-under-test instruction-token]
-  (let [setup (-> (m/basic-interpreter)
+  (let [setup (-> basic-only
                   (i/register-type , type-under-test)
                   (assoc , :current-item instruction-token))
         old-stacks (:stacks setup)

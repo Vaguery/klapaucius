@@ -8,6 +8,15 @@
             ))
 
 
+;; helpers
+
+(defn wrap-in-refquotes
+  [item]
+  (list :push-quoterefs item :push-unquoterefs)
+  )
+
+
+
 
 (defn againlater-instruction
   "returns a new x-againlater instruction for a PushType"
@@ -17,7 +26,9 @@
     (eval (list
       `build-instruction
       instruction-name
-      (str "`:" instruction-name "` places a copy of the top `" typename "` item at both the head and tail of the `:exec` stack (and places the `:exec` stack itself in a code block). If the resulting `:exec` stack would be oversized, the item is discarded and an `:error` is pushed without affecting the `:exec` stack.")
+      (str "`:" instruction-name "` places a copy of the top `" typename "` item at both the head and tail of the `:exec` stack (and places the `:exec` stack itself in a code block). If the resulting `:exec` stack would be oversized, the item is discarded and an `:error` is pushed without affecting the `:exec` stack."
+      (when (= :code typename) " All items taken from :code are returned as QuotedCode.")
+      )
       :tags #{:combinator}
 
       `(consume-top-of ~typename :as :item)
@@ -48,7 +59,10 @@
     (eval (list
       `build-instruction
       instruction-name
-      (str "`:" instruction-name "` consumes a `:scalar` argument and the entire `" typename "` stack. It takes the first [idx] items of the stack and reverses the order of that segment. It returns a nested code block, containing two interior code blocks holding the 'remaining' part of the stack (reversed) and the 'flipped' part of the stack.")
+      (str "`:" instruction-name "` consumes a `:scalar` argument and the entire `" typename "` stack. It takes the first [idx] items of the stack and reverses the order of that segment. It returns a nested code block, containing two interior code blocks holding the 'remaining' part of the stack (reversed) and the 'flipped' part of the stack."
+      (when (= :code typename) " All items taken from :code are returned as QuotedCode.")
+      (when (= :ref typename) " The returned block of items is wrapped in `:push-quoterefs` and `:push-unquoterefs`.")
+      )
       :tags #{:combinator}
 
       `(consume-top-of :scalar :as :where)
@@ -61,8 +75,10 @@
         #(util/list! (take %2 %1)) :as :topchunk)
       `(calculate [:old-stack :idx]
         #(util/list! (reverse (drop %2 %1))) :as :leftovers)
-      `(calculate [:leftovers :topchunk] #(list %1 %2) :as :result)
-      `(return-item :result)
+      `(calculate [:leftovers :topchunk] #(list %1 %2) :as :results)
+      `(calculate [:results]
+        #(if (= :ref ~typename) (wrap-in-refquotes %1) %1) :as :results)
+      `(return-item :results)
       ))))
 
 
@@ -75,7 +91,10 @@
     (eval (list
       `build-instruction
       instruction-name
-      (str "`:" instruction-name "` takes an `:scalar` argument, makes that into an index modulo the `" typename "` stack size, takes the first [idx] items and moves that to the bottom of the stack.")
+      (str "`:" instruction-name "` takes an `:scalar` argument, makes that into an index modulo the `" typename "` stack size, takes the first [idx] items and moves that to the bottom of the stack."
+      (when (= :code typename) " All items taken from :code are returned as QuotedCode.")
+      (when (= :ref typename) " The returned block of items is wrapped in `:push-quoterefs` and `:push-unquoterefs`.")
+      )
       :tags #{:combinator}
 
       `(consume-top-of :scalar :as :where)
@@ -88,8 +107,10 @@
         #(util/list! (reverse (take %2 %1))) :as :topchunk)
       `(calculate [:old-stack :idx]
         #(util/list! (reverse (drop %2 %1))) :as :leftovers)
-      `(calculate [:leftovers :topchunk] #(list %2 %1) :as :result)
-      `(return-item :result)
+      `(calculate [:leftovers :topchunk] #(list %2 %1) :as :results)
+      `(calculate [:results]
+        #(if (= :ref ~typename) (wrap-in-refquotes %1) %1) :as :results)
+      `(return-item :results)
       ))))
 
 
@@ -102,14 +123,19 @@
     (eval (list
       `build-instruction
       instruction-name
-      (str "`:" instruction-name "` examines the top `" typename "` item and pushes a code block containing two copies to `:exec`.")
+      (str "`:" instruction-name "` examines the top `" typename "` item and pushes a code block containing two copies to `:exec`."
+      (when (= :code typename) " All items taken from :code are returned as QuotedCode.")
+      (when (= :ref typename) " The returned block of items is wrapped in `:push-quoterefs` and `:push-unquoterefs`.")
+      )
       :tags #{:combinator}
 
       `(consume-top-of ~typename :as :arg1)
       `(calculate [:arg1]
         #(if (= :code ~typename) (qc/push-quote %1) %1) :as :arg1)
-      `(calculate [:arg1] #(list %1 %1) :as :duplicated)
-      `(return-item :duplicated)
+      `(calculate [:arg1] #(list %1 %1) :as :results)
+      `(calculate [:results]
+        #(if (= :ref ~typename) (wrap-in-refquotes %1) %1) :as :results)
+      `(return-item :results)
       ))))
 
 
@@ -122,14 +148,19 @@
     (eval (list
       `build-instruction
       instruction-name
-      (str "`:" instruction-name "` reverses the entire `" typename "` stack, pushing it as a code block onto `:exec`.")
+      (str "`:" instruction-name "` reverses the entire `" typename "` stack, pushing it as a code block onto `:exec`."
+      (when (= :code typename) " All items taken from :code are returned as QuotedCode.")
+      (when (= :ref typename) " The returned block of items is wrapped in `:push-quoterefs` and `:push-unquoterefs`.")
+      )
       :tags #{:combinator}
 
       `(consume-stack ~typename :as :old-stack)
       `(calculate [:old-stack]
         #(if (= :code ~typename) (map qc/push-quote %1) %1) :as :old-stack)
-      `(calculate [:old-stack] #(util/list! (reverse %1)) :as :new)
-      `(return-item :new)
+      `(calculate [:old-stack] #(util/list! (reverse %1)) :as :results)
+      `(calculate [:results]
+        #(if (= :ref ~typename) (wrap-in-refquotes %1) %1) :as :results)
+      `(return-item :results)
       ))))
 
 
@@ -158,7 +189,9 @@
     (eval (list
       `build-instruction
       instruction-name
-      (str "`:" instruction-name "` pops the top `" typename "` item and places it at the tail of the `:exec` stack. If the result would be oversized, the item is discarded and an `:error` is pushed.")
+      (str "`:" instruction-name "` pops the top `" typename "` item and places it at the tail of the `:exec` stack. If the result would be oversized, the item is discarded and an `:error` is pushed."
+      (when (= :code typename) " All items taken from :code are returned as QuotedCode.")
+      )
       :tags #{:combinator}
 
       `(consume-top-of ~typename :as :item)
@@ -190,7 +223,10 @@
     (eval (list
       `build-instruction
       instruction-name
-      (str "`:" instruction-name "` takes an `:scalar` argument, makes that into an index modulo the `" typename "` stack size, 'cuts' the stack after the first [idx] items and _copies_ everything below that point onto the top of the stack. If the result would have more points (at any level) than `max-collection-size` the result is _discarded_ (!) and an :error is pushed.")
+      (str "`:" instruction-name "` takes an `:scalar` argument, makes that into an index modulo the `" typename "` stack size, 'cuts' the stack after the first [idx] items and _copies_ everything below that point onto the top of the stack. If the result would have more points (at any level) than `max-collection-size` the result is _discarded_ (!) and an :error is pushed."
+      (when (= :code typename) " All items taken from :code are returned as QuotedCode.")
+      (when (= :ref typename) " The returned block of items is wrapped in `:push-quoterefs` and `:push-unquoterefs`.")
+      )
       :tags #{:combinator}
 
       `(consume-top-of :scalar :as :where)
@@ -203,6 +239,8 @@
         #(util/list! (reverse (drop %2 %1))) :as :duplicated)
       `(calculate [:old-stack :duplicated]
         #(list (util/list! (reverse %1)) %2) :as :results)
+      `(calculate [:results]
+        #(if (= :ref ~typename) (wrap-in-refquotes %1) %1) :as :results)
       `(return-item :results)
       ))))
 
@@ -232,7 +270,10 @@
     (eval (list
       `build-instruction
       instruction-name
-      (str "`:" instruction-name "` pops the top three items from the `" typename "` stack; call them `A`, `B` and `C`, respectively. It pushes a code block to `:exec` so that the resulting `" typename "` stack will read `'(C A B ...)`")
+      (str "`:" instruction-name "` pops the top three items from the `" typename "` stack; call them `A`, `B` and `C`, respectively. It pushes a code block to `:exec` so that the resulting `" typename "` stack will read `'(C A B ...)`"
+      (when (= :code typename) " All items taken from :code are returned as QuotedCode.")
+      (when (= :ref typename) " The returned block of items is wrapped in `:push-quoterefs` and `:push-unquoterefs`.")
+      )
       :tags #{:combinator}
 
       `(consume-top-of ~typename :as :arg1)
@@ -244,8 +285,10 @@
       `(consume-top-of ~typename :as :arg3)
       `(calculate [:arg3]
         #(if (= :code ~typename) (qc/push-quote %1) %1) :as :arg3)
-      `(calculate [:arg1 :arg2 :arg3] #(list %2 %1 %3) :as :result)
-      `(return-item :result)
+      `(calculate [:arg1 :arg2 :arg3] #(list %2 %1 %3) :as :results)
+      `(calculate [:results]
+        #(if (= :ref ~typename) (wrap-in-refquotes %1) %1) :as :results)
+      `(return-item :results)
       ))))
 
 
@@ -259,7 +302,10 @@
       `build-instruction
       instruction-name
       (str "`:" instruction-name "` pops the entire `" typename
-        "` stack and the top `:scalar`. The `:scalar` is used to select a valid index; unlike most other indexed arguments, this is _thresholded_. The stack is returned (to `:exec`) as a code block containing the original top item moved to the indexed position.")
+        "` stack and the top `:scalar`. The `:scalar` is used to select a valid index; unlike most other indexed arguments, this is _thresholded_. The stack is returned (to `:exec`) as a code block containing the original top item moved to the indexed position."
+        (when (= :code typename) " All items taken from :code are returned as QuotedCode.")
+        (when (= :ref typename) " The returned block of items is wrapped in `:push-quoterefs` and `:push-unquoterefs`.")
+        )
       :tags #{:combinator}
 
       `(consume-top-of :scalar :as :which)
@@ -279,6 +325,8 @@
         #(util/list! (reverse (drop %1 %2))) :as :old-bottom)
       `(calculate [:old-top :shoved-item :old-bottom]
         #(list %3 %2 %1) :as :results)
+        `(calculate [:results]
+          #(if (= :ref ~typename) (wrap-in-refquotes %1) %1) :as :results)
       `(return-item :results)
       ))))
 
@@ -292,8 +340,10 @@
     (eval (list
       `build-instruction
       instruction-name
-      (str "`:" instruction-name "` swaps the positions of the top two `" typename
-        "` items, pushing the result to `:exec` as a code block.")
+      (str "`:" instruction-name "` swaps the positions of the top two `" typename "` items, pushing the result to `:exec` as a code block."
+      (when (= :code typename) " All items taken from :code are returned as QuotedCode.")
+      (when (= :ref typename) " The returned block of items is wrapped in `:push-quoterefs` and `:push-unquoterefs`.")
+      )
       :tags #{:combinator}
 
       `(consume-top-of ~typename :as :arg1)
@@ -302,8 +352,10 @@
       `(consume-top-of ~typename :as :arg2)
       `(calculate [:arg2]
         #(if (= :code ~typename) (qc/push-quote %1) %1) :as :arg2)
-      `(calculate [:arg1 :arg2] #(list %1 %2) :as :reversed)
-      `(return-item :reversed)
+      `(calculate [:arg1 :arg2] #(list %1 %2) :as :results)
+      `(calculate [:results]
+        #(if (= :ref ~typename) (wrap-in-refquotes %1) %1) :as :results)
+      `(return-item :results)
       ))))
 
 
@@ -316,7 +368,10 @@
     (eval (list
       `build-instruction
       instruction-name
-      (str "`:" instruction-name "` pops the top `:scalar`. The `:scalar` is brought into range as an index by forcing it into the range `[0,stack_length-1]` (inclusive), and then the item _currently_ found in the indexed position in the `" typename "` stack is _moved_ so that it is on top.")
+      (str "`:" instruction-name "` pops the top `:scalar`. The `:scalar` is brought into range as an index by forcing it into the range `[0,stack_length-1]` (inclusive), and then the item _currently_ found in the indexed position in the `" typename "` stack is _moved_ so that it is on top."
+      (when (= :code typename) " All items taken from :code are returned as QuotedCode.")
+      (when (= :ref typename) " The returned block of items is wrapped in `:push-quoterefs` and `:push-unquoterefs`.")
+      )
       :tags #{:combinator}
 
       `(consume-top-of :scalar :as :which)
@@ -336,6 +391,8 @@
         #(util/list! (reverse (drop (inc %1) %2))) :as :old-bottom)
       `(calculate [:old-bottom :yanked-item :old-top]
         #(if (nil? %2) (list %1 %3) (list %1 %3 %2)) :as :results)
+      `(calculate [:results]
+        #(if (= :ref ~typename) (wrap-in-refquotes %1) %1) :as :results)
       `(return-item :results)
       ))))
 
@@ -349,21 +406,28 @@
     (eval (list
       `build-instruction
       instruction-name
-      (str "`:" instruction-name "` pops the top `:scalar`. The `:scalar` is brought into range as an index by forcing it into the range `[0,stack_length-1]` (inclusive), and then the item _currently_ found in the indexed position in the `" typename "` stack is _copied_ so that a duplicate of it is on top. The entire stack is pushed to `:exec` in a code block.")
+      (str "`:" instruction-name "` pops the top `:scalar`. The `:scalar` is brought into range as an index by forcing it into the range `[0,stack_length-1]` (inclusive), and then the item _currently_ found in the indexed position in the `" typename "` stack is _copied_ so that a duplicate of it is on top. The entire stack is pushed to `:exec` in a code block."
+      (when (= :code typename) " All items taken from :code are returned as QuotedCode.")
+      (when (= :ref typename) " The returned block of items is wrapped in `:push-quoterefs` and `:push-unquoterefs`.")
+      )
       :tags #{:combinator}
 
       `(consume-top-of :scalar :as :which)
-      `(count-of ~typename :as :how-many)
+      `(consume-stack ~typename :as :oldstack)
+      `(calculate [:oldstack] count :as :how-many)
       `(calculate [:which :how-many]
           #(if (zero? %2)
             0
             (max 0 (min (Math/ceil %1) (dec %2)))) :as :index)
-      `(consume-stack ~typename :as :oldstack)
+      `(calculate [:oldstack]
+        #(if (= :code ~typename) (map qc/push-quote %1) %1) :as :oldstack)
       `(calculate [:index :oldstack]
         #(if (empty? %2) nil (nth %2 %1)) :as :yanked-item)
       `(calculate [:oldstack :yanked-item]
         #(if (nil? %2)
           (util/list! (reverse %1))
           (list (util/list! (reverse %1)) %2)) :as :results)
+      `(calculate [:results]
+        #(if (= :ref ~typename) (wrap-in-refquotes %1) %1) :as :results)
       `(return-item :results)
       ))))

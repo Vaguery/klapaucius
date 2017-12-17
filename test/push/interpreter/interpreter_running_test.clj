@@ -143,6 +143,8 @@
     (bound-keyword? kinda-knows-a :a) => true
     (u/get-stack (handle-item kinda-knows-a :a) :ref) => '(:a)   ;; quoting!
     (u/get-stack (handle-item kinda-knows-a :a) :exec) => '()    ;; quoting
+    (u/get-stack (handle-item kinda-knows-a :boolean-not) :ref) => '()
+                                                                 ;; but not insttructions!
   ))
 
 

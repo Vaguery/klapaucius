@@ -71,6 +71,24 @@
     :exec) => (list (list (q! 1) (q! 1)))
     )
 
+(fact "code-dup clarifies this in its docstring"
+  (:docstring (i/get-instruction (push/interpreter) :code-dup)) =>
+  #"All items taken from :code are returned"
+  )
+
+
+(fact "dup-instruction handles :ref items differently"
+  (push/get-stack
+    (i/execute-instruction
+      (push/interpreter :stacks {:scalar '(3) :ref '(:a :b :c :d)}) :ref-dup)
+    :exec) => '((:push-quoterefs (:a :a) :push-unquoterefs))
+    )
+
+
+(fact "ref-dup clarifies this in its docstring"
+  (:docstring (i/get-instruction (push/interpreter) :ref-dup)) =>
+  #"The returned block of items is wrapped in"
+  )
 
 
 
@@ -145,6 +163,26 @@
     :exec) => (list (list (q! 2) (q! 1) (q! 3)))
     )
 
+(fact "code-rotate clarifies this in its docstring"
+  (:docstring (i/get-instruction (push/interpreter) :code-rotate)) =>
+  #"All items taken from :code are returned"
+  )
+
+
+(fact "rotate-instruction handles :ref items differently"
+  (push/get-stack
+    (i/execute-instruction
+      (push/interpreter :stacks {:scalar '(3) :ref '(:a :b :c :d)}) :ref-rotate)
+    :exec) => '((:push-quoterefs (:b :a :c) :push-unquoterefs))
+    )
+
+
+(fact "ref-rotate clarifies this in its docstring"
+  (:docstring (i/get-instruction (push/interpreter) :ref-rotate)) =>
+  #"The returned block of items is wrapped in"
+  )
+
+
 
 (fact "shove-instruction returns an Instruction with the correct stuff"
   (let [foo-shove (shove-instruction (make-type :foo))]
@@ -212,7 +250,27 @@
     :exec) => (list (list (list (q! 4) (q! 3))
                                 (q! 1)
                           (list (q! 2))))
+                          )
+
+(fact "code-shove clarifies this in its docstring"
+  (:docstring (i/get-instruction (push/interpreter) :code-shove)) =>
+  #"All items taken from :code are returned"
+  )
+
+
+(fact "shove-instruction handles :ref items differently"
+  (push/get-stack
+    (i/execute-instruction
+      (push/interpreter :stacks {:scalar '(3) :ref '(:a :b :c :d :e)}) :ref-shove)
+    :exec) => '((:push-quoterefs ((:e) :a (:d :c :b)) :push-unquoterefs))
     )
+
+
+(fact "ref-shove clarifies this in its docstring"
+  (:docstring (i/get-instruction (push/interpreter) :ref-shove)) =>
+  #"The returned block of items is wrapped in"
+  )
+
 
 
 (fact "swap-instruction returns an Instruction with the correct stuff"
@@ -240,6 +298,26 @@
       (push/interpreter :stacks {:code '(1 2 3)}) :code-swap)
     :exec) => (list (list (q! 1) (q! 2)))
     )
+
+
+(fact "code-swap clarifies this in its docstring"
+  (:docstring (i/get-instruction (push/interpreter) :code-swap)) =>
+  #"All items taken from :code are returned"
+  )
+
+
+(fact "swap-instruction handles :ref items differently"
+  (push/get-stack
+    (i/execute-instruction
+      (push/interpreter :stacks {:scalar '(3) :ref '(:a :b :c :d :e)}) :ref-swap)
+    :exec) => '((:push-quoterefs (:a :b) :push-unquoterefs))
+    )
+
+
+(fact "ref-swap clarifies this in its docstring"
+  (:docstring (i/get-instruction (push/interpreter) :ref-swap)) =>
+  #"The returned block of items is wrapped in"
+  )
 
 
 (fact "yank-instruction returns an Instruction with the correct stuff"
@@ -321,6 +399,24 @@
                 (q! 3)
                 )))
 
+(fact "code-yank clarifies this in its docstring"
+  (:docstring (i/get-instruction (push/interpreter) :code-yank)) =>
+  #"All items taken from :code are returned"
+  )
+
+
+(fact "yank-instruction handles :ref items differently"
+  (push/get-stack
+    (i/execute-instruction
+      (push/interpreter :stacks {:scalar '(3) :ref '(:a :b :c :d :e)}) :ref-yank)
+    :exec) => '((:push-quoterefs ((:e) (:c :b :a) :d) :push-unquoterefs))
+    )
+
+
+(fact "ref-yank clarifies this in its docstring"
+  (:docstring (i/get-instruction (push/interpreter) :ref-yank)) =>
+  #"The returned block of items is wrapped in"
+  )
 
 
 
@@ -385,6 +481,35 @@
         :foo-yankdup)
       :exec) => '(())
     ))
+
+
+(fact "yankdup-instruction quotes :code items"
+  (push/get-stack
+    (i/execute-instruction
+      (push/interpreter :stacks {:scalar '(2) :code '(1 2 3 4)}) :code-yankdup)
+    :exec) => (list (list
+                (list (q! 4) (q! 3) (q! 2) (q! 1))
+                (q! 3)
+                )))
+
+(fact "code-yankdup clarifies this in its docstring"
+  (:docstring (i/get-instruction (push/interpreter) :code-yankdup)) =>
+  #"All items taken from :code are returned"
+  )
+
+
+(fact "yankdup-instruction handles :ref items differently"
+  (push/get-stack
+    (i/execute-instruction
+      (push/interpreter :stacks {:scalar '(3) :ref '(:a :b :c :d :e)}) :ref-yankdup)
+    :exec) => '((:push-quoterefs ((:e :d :c :b :a) :d) :push-unquoterefs))
+    )
+
+
+(fact "ref-yankdup clarifies this in its docstring"
+  (:docstring (i/get-instruction (push/interpreter) :ref-yankdup)) =>
+  #"The returned block of items is wrapped in"
+  )
 
 
 (fact "`make-movable` adds the :movable attribute to a PushType record"

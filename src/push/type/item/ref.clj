@@ -13,9 +13,9 @@
   (i/build-instruction
     ref-ARGS
     "`:ref-ARGS` (1) pushes the top item currently stored in the special `:ARGS` binding onto `:exec`, and (2) pushes the keyword `:ARGS` onto the `:ref` stack."
-    (d/calculate [] (fn [] :ARGS) :as :dummy)  ;; awful syntax needs to be fixed
-    (d/save-top-of-binding :dummy :as :value)
-    (d/push-onto :ref :dummy)
+    (d/calculate [] (fn [] :ARGS) :as :which-binding)
+    (d/save-top-of-binding :which-binding :as :value)
+    (d/push-onto :ref :which-binding)
     (d/return-item :value)
     ))
 
