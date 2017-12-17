@@ -29,7 +29,8 @@
   (-> interpreter
       (append-to-record  , :types type)
       (append-to-record  , :routers (:router type))
-      (merge-into-record , :stacks {(:name type) '()})
+      (merge-into-record , :stacks
+        {(or (get-in type [:router :target-stack]) (:name type)) '()})
       (merge-into-record , :instructions (:instructions type))
       ))
 

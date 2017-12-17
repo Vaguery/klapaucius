@@ -10,7 +10,7 @@
   (yaml-from-interpreter-stacks
     (push/interpreter :program [1 2 :scalar-add]
                       :bindings {:x 77})) =>
-  "boolean:\nbooleans:\nchar:\nchars:\ncode:\ncomplex:\ncomplexes:\nerror:\nexec:\n  - 1\n  - 2\n  - :scalar-add\ngenerator:\ninterval:\nintervals:\nlog:\nprint:\nquoted:\nref:\nrefs:\nreturn:\nscalar:\nscalars:\nset:\nsnapshot:\nstring:\nstrings:\ntagspace:\nunknown:\nvector:\nx:\n  - 77\n"
+  "boolean:\nbooleans:\nchar:\nchars:\ncode:\ncomplex:\ncomplexes:\nerror:\nexec:\n  - 1\n  - 2\n  - :scalar-add\ngenerator:\ninterval:\nintervals:\nlog:\nprint:\nref:\nrefs:\nreturn:\nscalar:\nscalars:\nset:\nsnapshot:\nstring:\nstrings:\ntagspace:\nunknown:\nvector:\nx:\n  - 77\n"
   )
 
 

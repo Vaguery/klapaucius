@@ -545,11 +545,11 @@
   (is-done? unready-to-pop) => true
 
   (:stacks (step unready-to-pop)) =>
-    '{:boolean (), :booleans (), :char (), :chars (), :code (), :complex (), :complexes (), :snapshot (), :error (:error1 :error2), :exec (), :generator (), :interval (), :intervals(),
+    '{:boolean (), :booleans (), :char (), :chars (), :code (), :complex (), :complexes (), :snapshot (), :error (:error1 :error2), :exec (), :generator (), :interval (), :intervals (),
 
       :log (:log1 :log2),
 
-      :print (), :quoted (), :ref (), :refs (), :return (:return1 :return2),
+      :print (), :ref (), :refs (), :return (:return1 :return2),
 
       :scalar (1 2 3),
 

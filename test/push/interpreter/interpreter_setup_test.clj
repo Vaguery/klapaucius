@@ -7,7 +7,8 @@
             [push.instructions.aspects :as aspects]
             [push.interpreter.templates.minimum :as m]
             [push.interpreter.definitions :as record]
-            [push.core :as push])
+            [push.core :as push]
+            [push.type.item.quoted :as quoted])
   (:use midje.sweet)
   (:use [push.util.type-checkers :only (boolean?)])
   (:use push.interpreter.core)
@@ -111,6 +112,19 @@
 
 (fact "`register-type` adds the stack type to the Interpreter stacks, if needed"
   (keys (:stacks (register-type just-basic foo-type))) => (contains :foo))
+
+
+
+
+(fact "`register-type` uses :target-stack to add a stack, if one is specified"
+  (keys (:stacks just-basic)) =not=> (contains :quoted)
+
+  (keys (:stacks (register-type just-basic quoted/quoted-type))) =not=>
+    (contains :quoted)
+
+  (keys (:stacks (register-type just-basic quoted/quoted-type))) =>
+    (contains :code)
+    )
 
 
 (fact "`register-type` adds any instructions attached to the type to the Interpreter"

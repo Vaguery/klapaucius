@@ -8,10 +8,10 @@
 
 (def quoted-type
   (t/make-type  :quoted
-                    :router (r/make-router :quoted
-                                           :recognizer q/quoted-code?
-                                           :preprocessor :value
-                                           :target-stack :code)
-                    :attributes #{}
-                    :instructions {}
-                    ))
+                :router (r/make-router :quoted
+                                       :recognizer q/quoted-code?
+                                       :preprocessor :value
+                                       :target-stack :code)
+                :attributes #{}
+                :instructions {}
+                ))
