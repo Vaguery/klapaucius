@@ -3,7 +3,6 @@
   (:require [push.instructions.dsl     :as d]
             [push.instructions.core    :as i]
             [push.instructions.aspects :as aspects]
-            [push.util.type-checkers   :as checkers :refer [boolean?]]
             [push.util.exotics         :as exotics]
             [push.type.core            :as types]
             ))
@@ -118,7 +117,7 @@
 
 (def boolean-type
   ( ->  (types/make-type  :boolean
-                      :recognized-by checkers/boolean?
+                      :recognized-by boolean?
                       :attributes #{:logical})
         aspects/make-set-able
         aspects/make-equatable

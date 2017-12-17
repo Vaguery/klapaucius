@@ -1,7 +1,7 @@
-(defproject klapaucius "0.1.26-SNAPSHOT"
+(defproject klapaucius "0.1.27"
   :description "Push language interpreter"
   :url "https://github.com/Vaguery/klapaucius"
-  :dependencies [[org.clojure/clojure            "1.8.0"]
+  :dependencies [[org.clojure/clojure            "1.9.0"]
                  [org.clojure/math.numeric-tower "0.0.4"]
                  [com.climate/claypoole          "1.1.4"]
                  [inflections                   "0.13.0"]
@@ -13,7 +13,7 @@
                         ]
   :profiles {:dev {:dependencies [[midje "1.9.0"]]
                    :plugins      [[lein-midje "3.2.1"]
-                                  [lein-ancient "0.6.14"]
+                                  [lein-ancient "0.6.15"]
                                   ]}}
   :hiera  {:path "target/ns-hierarchy.png"
            :vertical false

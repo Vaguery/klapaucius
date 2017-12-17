@@ -1,7 +1,6 @@
 (ns push.type.base.char_test
   (:use midje.sweet)
   (:use [push.util.test-helpers])
-  (:use [push.util.type-checkers :only (boolean?)])
   (:use [push.type.item.char])
   )
 

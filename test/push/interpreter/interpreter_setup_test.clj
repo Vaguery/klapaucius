@@ -10,7 +10,6 @@
             [push.core :as push]
             [push.type.item.quoted :as quoted])
   (:use midje.sweet)
-  (:use [push.util.type-checkers :only (boolean?)])
   (:use push.interpreter.core)
   )
 
