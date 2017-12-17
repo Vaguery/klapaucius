@@ -1,13 +1,11 @@
 (ns push.instructions.aspects.movable
-  (:require [push.util.code-wrangling
-              :as util
+  (:require [push.util.code-wrangling :as util
               :refer [list! count-collection-points]]
-            [push.util.numerics
-              :as num
-              :refer [scalar-to-index]])
-  (:use     [push.instructions.core
-              :only (build-instruction)]
-            [push.instructions.dsl]))
+            [push.util.numerics :as num :refer [scalar-to-index]]
+            [push.type.definitions.quoted :as qc])
+  (:use     [push.instructions.core :only (build-instruction)]
+            [push.instructions.dsl]
+            ))
 
 
 
@@ -19,13 +17,16 @@
     (eval (list
       `build-instruction
       instruction-name
-      (str "`:" instruction-name "` places a copy of the top `" typename "` items at both the head and tail of the `:exec` stack (and places the `:exec` stack itself in a code block). If the resulting `:exec` stack would be oversized, the item is discarded and an `:error` is pushed.")
+      (str "`:" instruction-name "` places a copy of the top `" typename "` item at both the head and tail of the `:exec` stack (and places the `:exec` stack itself in a code block). If the resulting `:exec` stack would be oversized, the item is discarded and an `:error` is pushed without affecting the `:exec` stack.")
       :tags #{:combinator}
 
       `(consume-top-of ~typename :as :item)
+      `(calculate [:item]
+        #(if (= :code ~typename) (qc/push-quote %1) %1) :as :item)
       `(consume-stack :exec :as :oldexecstack)
       `(save-max-collection-size :as :limit)
-      `(calculate [:oldexecstack :item] #(list %2 %1 %2) :as :newexecstack)
+      `(calculate [:oldexecstack :item]
+        #(list %2 %1 %2) :as :newexecstack)
       `(calculate [:limit :newexecstack]
         #(< %1 (util/count-collection-points %2)) :as :oversized)
       `(calculate [:oversized :oldexecstack :newexecstack]
@@ -52,6 +53,8 @@
 
       `(consume-top-of :scalar :as :where)
       `(consume-stack ~typename :as :old-stack)
+      `(calculate [:old-stack]
+        #(if (= :code ~typename) (map qc/push-quote %1) %1) :as :old-stack)
       `(calculate [:where :old-stack]
         #(if (empty? %2) 0 (num/scalar-to-index %1 (count %2))) :as :idx)
       `(calculate [:old-stack :idx]
@@ -77,6 +80,8 @@
 
       `(consume-top-of :scalar :as :where)
       `(consume-stack ~typename :as :old-stack)
+      `(calculate [:old-stack]
+        #(if (= :code ~typename) (map qc/push-quote %1) %1) :as :old-stack)
       `(calculate [:where :old-stack]
         #(if (empty? %2) 0 (num/scalar-to-index %1 (count %2))) :as :idx)
       `(calculate [:old-stack :idx]
@@ -100,7 +105,9 @@
       (str "`:" instruction-name "` examines the top `" typename "` item and pushes a code block containing two copies to `:exec`.")
       :tags #{:combinator}
 
-      `(save-top-of ~typename :as :arg1)
+      `(consume-top-of ~typename :as :arg1)
+      `(calculate [:arg1]
+        #(if (= :code ~typename) (qc/push-quote %1) %1) :as :arg1)
       `(calculate [:arg1] #(list %1 %1) :as :duplicated)
       `(return-item :duplicated)
       ))))
@@ -118,8 +125,10 @@
       (str "`:" instruction-name "` reverses the entire `" typename "` stack, pushing it as a code block onto `:exec`.")
       :tags #{:combinator}
 
-      `(consume-stack ~typename :as :old)
-      `(calculate [:old] #(util/list! (reverse %1)) :as :new)
+      `(consume-stack ~typename :as :old-stack)
+      `(calculate [:old-stack]
+        #(if (= :code ~typename) (map qc/push-quote %1) %1) :as :old-stack)
+      `(calculate [:old-stack] #(util/list! (reverse %1)) :as :new)
       `(return-item :new)
       ))))
 
@@ -153,6 +162,8 @@
       :tags #{:combinator}
 
       `(consume-top-of ~typename :as :item)
+      `(calculate [:item]
+        #(if (= :code ~typename) (qc/push-quote %1) %1) :as :item)
       `(consume-stack :exec :as :oldstack)
       `(save-max-collection-size :as :limit)
       `(calculate [:oldstack :item]
@@ -184,6 +195,8 @@
 
       `(consume-top-of :scalar :as :where)
       `(consume-stack ~typename :as :old-stack)
+      `(calculate [:old-stack]
+        #(if (= :code ~typename) (map qc/push-quote %1) %1) :as :old-stack)
       `(calculate [:old-stack :where]
         #(if (empty? %1) 0 (num/scalar-to-index %2 (count %1))) :as :idx)
       `(calculate [:old-stack :idx]
@@ -206,7 +219,8 @@
       (str "`:" instruction-name "` discards the top item from the `" typename "` stack.")
       :tags #{:combinator}
 
-      `(delete-top-of ~typename)))))
+      `(delete-top-of ~typename)
+      ))))
 
 
 
@@ -222,8 +236,14 @@
       :tags #{:combinator}
 
       `(consume-top-of ~typename :as :arg1)
+      `(calculate [:arg1]
+        #(if (= :code ~typename) (qc/push-quote %1) %1) :as :arg1)
       `(consume-top-of ~typename :as :arg2)
+      `(calculate [:arg2]
+        #(if (= :code ~typename) (qc/push-quote %1) %1) :as :arg2)
       `(consume-top-of ~typename :as :arg3)
+      `(calculate [:arg3]
+        #(if (= :code ~typename) (qc/push-quote %1) %1) :as :arg3)
       `(calculate [:arg1 :arg2 :arg3] #(list %2 %1 %3) :as :result)
       `(return-item :result)
       ))))
@@ -244,10 +264,15 @@
 
       `(consume-top-of :scalar :as :which)
       `(consume-top-of ~typename :as :shoved-item)
+      `(calculate [:shoved-item]
+        #(if (= :code ~typename) (qc/push-quote %1) %1) :as :shoved-item)
       `(count-of ~typename :as :how-many)
       `(calculate [:which :how-many]
         #(if (zero? %2) 0 (max 0 (min (Math/ceil %1) %2))) :as :index)
       `(consume-stack ~typename :as :oldstack)
+      `(calculate [:oldstack]
+        #(if (= :code ~typename) (map qc/push-quote %1) %1) :as :oldstack)
+
       `(calculate [:index :oldstack]
         #(util/list! (reverse (take %1 %2))) :as :old-top)
       `(calculate [:index :oldstack]
@@ -272,7 +297,11 @@
       :tags #{:combinator}
 
       `(consume-top-of ~typename :as :arg1)
+      `(calculate [:arg1]
+        #(if (= :code ~typename) (qc/push-quote %1) %1) :as :arg1)
       `(consume-top-of ~typename :as :arg2)
+      `(calculate [:arg2]
+        #(if (= :code ~typename) (qc/push-quote %1) %1) :as :arg2)
       `(calculate [:arg1 :arg2] #(list %1 %2) :as :reversed)
       `(return-item :reversed)
       ))))
@@ -291,12 +320,14 @@
       :tags #{:combinator}
 
       `(consume-top-of :scalar :as :which)
-      `(count-of ~typename :as :how-many)
+      `(consume-stack ~typename :as :oldstack)
+      `(calculate [:oldstack]
+        #(if (= :code ~typename) (map qc/push-quote %1) %1) :as :oldstack)
+      `(calculate [:oldstack] count :as :how-many)
       `(calculate [:which :how-many]
           #(if (zero? %2)
-            0
-            (max 0 (min (Math/ceil %1) (dec %2)))) :as :index)
-      `(consume-stack ~typename :as :oldstack)
+              0
+              (max 0 (min (Math/ceil %1) (dec %2)))) :as :index)
       `(calculate [:index :oldstack]
         #(if (empty? %2) nil (nth %2 %1)) :as :yanked-item)
       `(calculate [:index :oldstack]

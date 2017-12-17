@@ -4,6 +4,7 @@
   (:require [push.interpreter.core :as i])
   (:require [push.core :as push])
   (:require [push.type.core :as t])
+  (:require [push.type.definitions.quoted :as qc])
   (:require [push.util.code-wrangling :as u])
   (:use push.instructions.aspects)
   (:use push.instructions.aspects.movable)
@@ -22,6 +23,13 @@
 (def teeny (push/interpreter :config {:max-collection-size 9}))
 ;;;;;;;;;;;;;;;
 
+;; helper
+
+(defn q!
+  [item]
+  (qc/push-quote item))
+;;;;;;;;;;;;;;;
+
 
 (tabular
   (fact ":foo-againlater copies the top item from :foo to the tail of :exec"
@@ -33,6 +41,19 @@
     :foo       '(1 2 3 4 5)    :foo-againlater   :exec             '(1 () 1)
     ;; missing args
     :foo       '()             :foo-againlater   :exec              '())
+
+
+(tabular
+  (fact ":code-againlater quotes its items"
+    (register-type-and-check-instruction
+        ?set-stack ?items foo-type ?instruction ?get-stack) => ?expected)
+
+    ?set-stack  ?items          ?instruction    ?get-stack         ?expected
+    :code       '(1 2 3 4 5)    :code-againlater   :code           '(2 3 4 5)
+    :code       '(1 2 3 4 5)    :code-againlater   :exec   (list (q! 1) () (q! 1))
+    ;; missing args
+    :code       '()             :code-againlater   :exec              '()
+    )
 
 
 
@@ -94,6 +115,15 @@
      )
 
 
+(fact "later-instruction quotes :code items"
+ (push/get-stack
+   (i/execute-instruction
+     (push/interpreter :stacks {:exec '(1 2 3) :code '(99)}) :code-later)
+   :exec) => (list 1 2 3 (q! 99))
+   )
+
+
+
 
 (tabular
   (fact ":foo-flipstack reverses the whole :foo stack, pushing it to :exec"
@@ -106,6 +136,15 @@
     ;; missing args
     :foo       '()             :foo-flipstack   :exec         '(())
     )
+
+
+(fact "flipstack-instruction quotes :code items"
+  (push/get-stack
+    (i/execute-instruction
+      (push/interpreter :stacks {:scalar '(3) :code '(1 2 3 4)}) :code-flipstack)
+    :exec) => (list (list
+                (q! 4) (q! 3) (q! 2) (q! 1))
+                ))
 
 
 (tabular
@@ -151,6 +190,16 @@
                                                   :scalar '()}
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
+
+
+(fact "cutstack-instruction quotes :code items"
+  (push/get-stack
+    (i/execute-instruction
+      (push/interpreter :stacks {:scalar '(3) :code '(1 2 3 4 5 6)}) :code-cutstack)
+    :exec) => (list (list
+                (list (q! 3) (q! 2) (q! 1))
+                (list (q! 6) (q! 5) (q! 4))
+                )))
 
 
 (tabular
@@ -207,6 +256,16 @@
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     )
 
+
+
+(fact "cutflip-instruction quotes :code items"
+  (push/get-stack
+    (i/execute-instruction
+      (push/interpreter :stacks {:scalar '(3) :code '(1 2 3 4 5 6)}) :code-cutflip)
+    :exec) => (list (list
+                (list (q! 6) (q! 5) (q! 4))
+                (list (q! 1) (q! 2) (q! 3))
+                )))
 
 
 
@@ -287,3 +346,13 @@
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
      )
+
+
+(fact "liftstack-instruction quotes :code items"
+  (push/get-stack
+    (i/execute-instruction
+      (push/interpreter :stacks {:scalar '(2) :code '(1 2 3 4)}) :code-liftstack)
+    :exec) => (list (list
+                (list (q! 4) (q! 3) (q! 2) (q! 1))
+                (list (q! 4) (q! 3))
+                )))

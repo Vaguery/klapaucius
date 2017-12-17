@@ -10,6 +10,14 @@
             ))
 
 
+;; helper
+
+(defn q!
+  [item]
+  (qc/push-quote item))
+
+;;
+
 (def code-append
   (i/build-instruction
     code-append
@@ -21,7 +29,7 @@
     (d/calculate [:arg1] #(if (coll? %1) %1 (list %1)) :as :list1)
     (d/calculate [:arg2] #(if (coll? %1) %1 (list %1)) :as :list2)
     (d/calculate [:list1 :list2]
-      #(qc/push-quote (u/list! (concat %1 %2))) :as :result)
+      #(q! (u/list! (concat %1 %2))) :as :result)
     (d/return-item :result)
     ))
 
@@ -46,7 +54,6 @@
       ))
 
 
-
 (def code-cons
   (i/build-instruction
     code-cons
@@ -57,7 +64,7 @@
     (d/consume-top-of :code :as :item1)
     (d/calculate [:item2] #(if (seq? %1) %1 (list %1)) :as :list)
     (d/calculate [:list :item1]
-      #(qc/push-quote (u/list! (conj %1 %2))) :as :result)
+      #(q! (u/list! (conj %1 %2))) :as :result)
     (d/return-item :result)
     ))
 
@@ -77,7 +84,7 @@
   "`:code-container` pops the top two `:code` items. It performs a depth-first traversal of the second code item (if it is a list or not), looking for duplicates of the first item. If it finds one, then the _parent_ node of the tree is returned as quoted code. If the item is not found, or there is no parent (the two items are identical), there is no return value."
     :code
     "container"
-    #(qc/push-quote (first (u/containers-in %1 %2)))
+    #(q! (first (u/containers-in %1 %2)))
     ))
 
 
@@ -115,7 +122,7 @@
 
     (d/consume-top-of :code :as :do-this)
     (d/calculate [:do-this]
-      #(list (qc/push-quote %1) %1 :code-pop) :as :continuation)
+      #(list (q! %1) %1 :code-pop) :as :continuation)
     (d/return-item :continuation)
     ))
 
@@ -221,7 +228,7 @@
     (d/calculate [:list :i]
       #(if (empty? %1) 0 (n/scalar-to-index %2 (count %1))) :as :idx)
     (d/calculate [:list :idx]
-      #(qc/push-quote (drop %2 %1)) :as :result)
+      #(q! (drop %2 %1)) :as :result)
     (d/return-item :result)
     ))
 
@@ -248,7 +255,7 @@
     (d/calculate [:size :i]
       #(n/scalar-to-index %2 %1) :as :idx)
     (d/calculate [:c :idx]
-      #(qc/push-quote (u/nth-code-point %1 %2)) :as :result)
+      #(q! (u/nth-code-point %1 %2)) :as :result)
     (d/return-item :result)
     ))
 
@@ -268,7 +275,7 @@
   "`:code-first` examines the top `:code` item to determine if it's a code block (not a vector, map, record or other collection type!) If it is, the function returns its first item, otherwise the item itself it returned."
   :code
   "first"
-  #(qc/push-quote (if (seq? %) (first %) %))
+  #(q! (if (seq? %) (first %) %))
   ))
 
 
@@ -293,7 +300,7 @@
     (d/consume-top-of :code :as :arg1)
     (d/consume-top-of :boolean :as :which)
     (d/calculate [:which :arg1 :arg2]
-      #(qc/push-quote (if %1 %2 %3)) :as :that)
+      #(q! (if %1 %2 %3)) :as :that)
     (d/return-item :that)
     ))
 
@@ -311,7 +318,7 @@
     (d/calculate [:b] #(u/count-code-points %1) :as :size)
     (d/calculate [:i :size] #(n/scalar-to-index %1 %2) :as :idx)
     (d/calculate [:a :b :idx]
-      #(qc/push-quote (u/replace-nth-in-code %2 %1 %3)) :as :result)
+      #(q! (u/replace-nth-in-code %2 %1 %3)) :as :result)
     (d/return-item :result)
     ))
 
@@ -349,7 +356,7 @@
     (d/consume-top-of :code :as :arg2)
     (d/consume-top-of :code :as :arg1)
     (d/calculate [:arg1 :arg2]
-      #(qc/push-quote (list %1 %2)) :as :result)
+      #(q! (list %1 %2)) :as :result)
     (d/return-item :result)
     ))
 
@@ -448,7 +455,7 @@
     (d/calculate [:list :i]
       #(if (empty? %1) 0 (n/scalar-to-index %2 (count %1))) :as :idx)
     (d/calculate [:list :idx]
-      #(qc/push-quote (when (seq %1) (nth %1 %2))) :as :result)
+      #(q! (when (seq %1) (nth %1 %2))) :as :result)
     (d/return-item :result)
     ))
 
@@ -507,7 +514,7 @@
     :tags #{:complex :base}
 
     (d/consume-top-of :exec :as :arg)
-    (d/calculate [:arg] #(qc/push-quote %1) :as :result)
+    (d/calculate [:arg] #(q! %1) :as :result)
     (d/return-item :result)
     ))
 
@@ -518,7 +525,7 @@
   the first item and returns the reduced list, otherwise it returns an empty code block"
   :code
   "rest"
-  #(qc/push-quote (if (seq? %1) (rest %1) (list)))
+  #(q! (if (seq? %1) (rest %1) (list)))
   ))
 
 
@@ -556,7 +563,7 @@
     (d/consume-top-of :code :as :arg2)
     (d/consume-top-of :code :as :arg1)
     (d/calculate [:arg1 :arg2 :arg3]
-      #(qc/push-quote (u/replace-in-code %1 %2 %3)) :as :result)
+      #(q! (u/replace-in-code %1 %2 %3)) :as :result)
     (d/return-item :result)
     ))
 
@@ -577,7 +584,7 @@
   "`:code-wrap` puts the top item on the `:code` stack into a one-element list"
   :code
   "wrap"
-  #(qc/push-quote (list %1))
+  #(q! (list %1))
   ))
 
 
@@ -599,8 +606,7 @@
     :tags #{:complex :base}
 
     (d/consume-top-of :code :as :arg)
-    (d/calculate [:arg]
-      #(qc/push-quote %1) :as :form)
+    (d/calculate [:arg] #(q! %1) :as :form)
     (d/push-onto :return :form)
     ))
 

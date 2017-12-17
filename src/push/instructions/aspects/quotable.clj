@@ -1,5 +1,5 @@
 (ns push.instructions.aspects.quotable
-  (:require [push.type.definitions.quoted :as quotable])
+  (:require [push.type.definitions.quoted :as qc])
   (:use [push.instructions.core :only (build-instruction)]
         [push.instructions.dsl]
         ))
@@ -18,6 +18,6 @@
       :tags #{:visible}
 
       `(consume-top-of ~typename :as :arg)
-      `(calculate [:arg] #(quotable/push-quote %1) :as :quoted)
+      `(calculate [:arg] #(qc/push-quote %1) :as :quoted)
       `(return-item :quoted)
       ))))

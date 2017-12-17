@@ -1,6 +1,8 @@
 (ns push.instructions.aspects.movable-test
   (:require [push.interpreter.core :as i]
-            [push.interpreter.templates.minimum :as m])
+            [push.interpreter.templates.minimum :as m]
+            [push.core :as push]
+            [push.type.definitions.quoted :as qc])
   (:use midje.sweet)
   (:use push.util.stack-manipulation)
   (:use push.instructions.aspects)
@@ -28,6 +30,11 @@
   (scalar-to-index -1.2246467991473532E-16 4) => 0
   )
 
+;; helper
+
+(defn q!
+  [item]
+  (qc/push-quote item))
 
 
 ;; movable instructions
@@ -55,6 +62,15 @@
         :foo-dup)
       :exec) => '()
       ))
+
+
+(fact "dup-instruction quotes :code items"
+  (get-stack
+    (i/execute-instruction
+      (push/interpreter :stacks {:code '(1 2 3)}) :code-dup)
+    :exec) => (list (list (q! 1) (q! 1)))
+    )
+
 
 
 
@@ -122,6 +138,13 @@
       :foo) => '()))
 
 
+(fact "rotate-instruction quotes :code items"
+  (get-stack
+    (i/execute-instruction
+      (push/interpreter :stacks {:code '(1 2 3)}) :code-rotate)
+    :exec) => (list (list (q! 2) (q! 1) (q! 3)))
+    )
+
 
 (fact "shove-instruction returns an Instruction with the correct stuff"
   (let [foo-shove (shove-instruction (make-type :foo))]
@@ -182,6 +205,16 @@
     ))
 
 
+(fact "shove-instruction quotes :code items"
+  (get-stack
+    (i/execute-instruction
+      (push/interpreter :stacks {:scalar '(1) :code '(1 2 3 4)}) :code-shove)
+    :exec) => (list (list (list (q! 4) (q! 3))
+                                (q! 1)
+                          (list (q! 2))))
+    )
+
+
 (fact "swap-instruction returns an Instruction with the correct stuff"
   (let [foo-swap (swap-instruction (make-type :foo))]
     (class foo-swap) => push.instructions.core.Instruction
@@ -199,6 +232,14 @@
         :foo-swap)
       :exec) => '((:a :b))
       ))
+
+
+(fact "swap-instruction quotes :code items"
+  (get-stack
+    (i/execute-instruction
+      (push/interpreter :stacks {:code '(1 2 3)}) :code-swap)
+    :exec) => (list (list (q! 1) (q! 2)))
+    )
 
 
 (fact "yank-instruction returns an Instruction with the correct stuff"
@@ -268,6 +309,18 @@
         :foo-yank)
       :exec) => '((() ()))
       ))
+
+
+(fact "yank-instruction quotes :code items"
+  (push/get-stack
+    (i/execute-instruction
+      (push/interpreter :stacks {:scalar '(2) :code '(1 2 3 4)}) :code-yank)
+    :exec) => (list (list
+                (list (q! 4))
+                (list (q! 2) (q! 1))
+                (q! 3)
+                )))
+
 
 
 
