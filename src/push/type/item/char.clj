@@ -50,7 +50,7 @@
   (i/build-instruction
     scalar->asciichar
     "`:scalar->asciichar` pops the top `:scalar` value, reduces it modulo 128, and pushes the `:char` that is represented by that ASCII value"
-    :tags #{:string :conversion :base}
+
     (d/consume-top-of :scalar :as :arg)
     (d/calculate [:arg]
       #(char (num/scalar-to-index %1 128)) :as :c)
@@ -63,7 +63,7 @@
   (i/build-instruction
     scalar->char
     "`:scalar->char` pops the top `:scalar` value, reduces it modulo 65535, and pushes the `:char` that is represented by that unicode value"
-    :tags #{:string :conversion :base}
+
     (d/consume-top-of :scalar :as :arg)
     (d/calculate [:arg]
       #(char (num/scalar-to-index %1 65535)) :as :c)
@@ -77,7 +77,7 @@
   (i/build-instruction
     string->chars
     "`:string->chars` pops the top `:string` item, and returns a codeblock containing the characters of that string"
-    :tags #{:string :conversion :base}
+
     (d/consume-top-of :string :as :arg)
     (d/calculate [:arg] #(into '() (reverse (vec %1))) :as :results)
     (d/return-item :results)

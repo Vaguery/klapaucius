@@ -15,7 +15,6 @@
       `build-instruction
       instruction-name
       (str "`:" instruction-name "` pops the top `" typename "` item and creates a new `:set`. If the argument is a code block, set or vector, the set contains its elements; otherwise, the set contains the entire item.")
-      :tags #{:set}
 
       `(consume-top-of ~typename :as :arg)
       `(calculate [:arg]
@@ -37,7 +36,6 @@
       `build-instruction
       instruction-name
       (str "`:" instruction-name "` pops the top `" typename "` item and the top `:set` item, and conjoins the item to the `:set`. If the argument is a code block, set or vector, the items added will be its elements, otherwise the entire item.")
-      :tags #{:set}
 
       `(consume-top-of ~typename :as :arg)
       `(consume-top-of :set :as :s)
@@ -60,7 +58,6 @@
       `build-instruction
       instruction-name
       (str "`:" instruction-name "` pops the top `" typename "` item and the top `:set` item, and pushes `true` if the item is an element of the `:set`.")
-      :tags #{:set}
 
       `(consume-top-of ~typename :as :arg)
       `(consume-top-of :set :as :s)
@@ -81,7 +78,6 @@
       `build-instruction
       instruction-name
       (str "`:" instruction-name "` pops the top `" typename "` item and the top `:set` item, and adds the item to the `:set`. If a collection, the argument remains a single set item.")
-      :tags #{:set}
 
       `(consume-top-of ~typename :as :arg)
       `(consume-top-of :set :as :s)
@@ -101,7 +97,6 @@
       `build-instruction
       instruction-name
       (str "`:" instruction-name "` pops the top `" typename "` item and creates a new `:set` containing just that item. If a collection, the argument remains a single set item.")
-      :tags #{:set}
 
       `(consume-top-of ~typename :as :arg)
       `(calculate [:arg] #(conj #{} %1) :as :s)

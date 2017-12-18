@@ -19,7 +19,7 @@
       - `[s]` zero or negative?: `([s] [item])`
 
     This continuation is pushed to the `:exec` stack."
-    :tags #{:complex :base}
+
     (d/consume-top-of :exec :as :do-this)
     (d/consume-top-of :scalar :as :counter)
     (d/calculate [:counter] #((complement pos?) %1) :as :done?)
@@ -41,7 +41,7 @@
       - `[s]` zero or negative?: `([s] [item])`
 
     This continuation is pushed to the `:exec` stack."
-    :tags #{:complex :base}
+
     (d/consume-top-of :exec :as :do-this)
     (d/consume-top-of :scalar :as :counter)
     (d/calculate [:counter] n/bunch :as :scaled-counter)
@@ -65,7 +65,7 @@
       - `[s]` zero or negative?: `([s] [item])`
 
     This continuation is pushed to the `:exec` stack."
-    :tags #{:complex :base}
+
     (d/consume-top-of :exec :as :do-this)
     (d/consume-top-of :scalar :as :counter)
     (d/calculate [:counter] n/few :as :scaled-counter)
@@ -93,7 +93,7 @@
         `'([end] [item])`
 
     This continuation is pushed to the `:exec` stack. "
-    :tags #{:complex :base}
+
     (d/consume-top-of :exec :as :do-this)
     (d/consume-top-of :scalar :as :end)
     (d/consume-top-of :scalar :as :start)
@@ -125,7 +125,7 @@
         `'([end] [item])`
 
     This continuation is pushed to the `:exec` stack. "
-    :tags #{:complex :base}
+
     (d/consume-top-of :exec :as :do-this)
     (d/consume-top-of :scalar :as :end)
     (d/consume-top-of :scalar :as :start)
@@ -159,7 +159,7 @@
         `'([end] [item])`
 
     This continuation is pushed to the `:exec` stack. "
-    :tags #{:complex :base}
+
     (d/consume-top-of :exec :as :do-this)
     (d/consume-top-of :scalar :as :end)
     (d/consume-top-of :scalar :as :start)
@@ -190,7 +190,6 @@
         - positive: `(item ([counter-1] :exec-do*times item))`
         "
 
-    :tags #{:complex :base}
     (d/consume-top-of :exec :as :do-this)
     (d/consume-top-of :scalar :as :counter)
     (d/calculate [:counter] #((complement pos?) %1) :as :done?)
@@ -214,7 +213,6 @@
         - positive: `(item ([counter-1] :exec-doafew*times item))`
         "
 
-    :tags #{:complex :base}
     (d/consume-top-of :exec :as :do-this)
     (d/consume-top-of :scalar :as :counter)
     (d/calculate [:counter] #(n/few %1) :as :counter)
@@ -239,7 +237,6 @@
         - positive: `(item ([counter-1] :exec-doabunch*times item))`
         "
 
-    :tags #{:complex :base}
     (d/consume-top-of :exec :as :do-this)
     (d/consume-top-of :scalar :as :counter)
     (d/calculate [:counter] #(n/bunch %1) :as :counter)
@@ -258,7 +255,7 @@
   (i/build-instruction
     exec-if
     "`:exec-if` pops the top `:boolean` item and the top two `:exec` items (call the top one `A` and the second `B`). If the `:boolean` is `true`, it pushes `A` onto `:exec`, otherwise it pushes `B` onto `:exec`."
-    :tags #{:complex :base}
+
     (d/consume-top-of :boolean :as :decider)
     (d/consume-top-of :exec :as :option1)
     (d/consume-top-of :exec :as :option2)
@@ -282,7 +279,7 @@
   (i/build-instruction
     exec-laterloop
     "`:exec-laterloop` pops the top item from the `:exec` stack, and the top `:scalar item. It calculates an index in the `:exec` stack based on the `:scalar` value, and pushes a continuation in the form `'([item] :exec-laterloop [item])` to the END of the `:exec` stack. If the `:exec` stack is empty except for the looping item, then the loop ceases and nothing is pushed."
-    :tags #{:complex :base}
+
     (d/consume-top-of :exec :as :arg)
     (d/count-of :exec :as :exec-size)
     (d/calculate [:exec-size :arg]
@@ -299,7 +296,6 @@
   (i/build-instruction
     exec-noop
     "`:exec-noop does not affect the stacks"
-    :tags #{:complex :base}
     ))
 
 
@@ -313,7 +309,7 @@
     3. the list `'(B C)`
 
     As a result, the top of the `:exec` stack will read: `'((A C (B C)) ...)`"
-    :tags #{:complex :base}
+
     (d/consume-top-of :exec :as :a)
     (d/consume-top-of :exec :as :b)
     (d/consume-top-of :exec :as :c)
@@ -328,7 +324,6 @@
     exec-when
     "`:exec-when` pops the top of the `:exec` and `:boolean` stacks. If the `:boolean` is `true`, it pushes the item back onto `:exec` (otherwise nothing is pushed)."
 
-    :tags #{:complex :base}
     (d/consume-top-of :exec :as :do-this)
     (d/consume-top-of :boolean :as :really?)
     (d/calculate [:do-this :really?] #(when %2 %1) :as :result)
@@ -341,7 +336,7 @@
   (i/build-instruction
     exec-do*while
     "`:exec-do*while` pops the top of the `:exec` stack. It builds and pushes a continuation to the `:exec` stack which is `'([item] :exec-while [item])` (_Note_ the instruction is `:exec-while` in the continuation form)."
-    :tags #{:complex :base}
+
     (d/consume-top-of :exec :as :do-this)
     (d/calculate [:do-this] #(list %1 :exec-while %1) :as :continuation)
     (d/return-item :continuation)
@@ -356,7 +351,7 @@
 
       - `true`: `'([item] :exec-while [item])`
       - `false`: `'()`"
-    :tags #{:complex :base}
+
     (d/consume-top-of :exec :as :do-this)
     (d/consume-top-of :boolean :as :again?)
     (d/calculate [:do-this :again?] #(if %2 (list %1 :exec-while %1) '()) :as :continuation)

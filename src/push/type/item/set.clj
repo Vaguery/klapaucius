@@ -29,7 +29,7 @@
   (i/build-instruction
     set-subset?
     "`:set-subset?` pops the top two `:set` values (call them `A` and `B`, respectively). Pushes `true` if `B` is a subset of `A`, `false` otherwise."
-    :tags #{:set :predicate}
+
     (d/consume-top-of :set :as :b)
     (d/consume-top-of :set :as :a)
     (d/calculate [:a :b]
@@ -42,7 +42,7 @@
   (i/build-instruction
     set-superset?
     "`:set-superset?` pops the top two `:float` values (call them `A` and `B`, respectively). Pushes `true` if `B` is a superset of `A`, `false` otherwise."
-    :tags #{:set :predicate}
+
     (d/consume-top-of :set :as :b)
     (d/consume-top-of :set :as :a)
     (d/calculate [:a :b]

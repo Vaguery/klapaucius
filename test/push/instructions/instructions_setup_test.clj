@@ -28,13 +28,8 @@
 
 (fact "make-instruction creates a new Instruction record with default values"
   (:token (make-instruction :foo)) => :foo
-  (:tags (make-instruction :foo)) => #{}
   (:needs (make-instruction :foo)) => {}
   (:transaction (make-instruction :foo)) => identity)
-
-
-(fact "make-instruction accepts a :tags argument"
-  (:tags (make-instruction :foo :tags #{:nasty :brutish})) => #{:brutish :nasty})
 
 
 (fact "make-instruction accepts a :needs argument"
@@ -58,18 +53,6 @@
     (build-instruction foobar
       (d/consume-top-of :foo :as :in)
       (d/push-onto :bar :in))) => :foobar)
-
-
-(fact "build-instruction can accept an optional #tags argument"
-  (:tags
-    (build-instruction foobar
-      (d/consume-top-of :foo :as :in)
-      (d/push-onto :bar :in))) => #{}
-  (:tags
-    (build-instruction foobar
-      :tags #{:foo :bar :baz!}
-      (d/consume-top-of :foo :as :in)
-      (d/push-onto :bar :in))) => #{:bar :baz! :foo})
 
 
 (fact "build-instruction creates a new Instruction with the right needs"

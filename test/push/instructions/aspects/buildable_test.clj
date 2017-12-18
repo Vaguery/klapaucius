@@ -72,7 +72,7 @@
 
 
 (fact "construct-instruction constructs an instruction with the correct pieces"
-  (keys foo-maker) => '(:token :docstring :tags :needs :products :transaction)
+  (keys foo-maker) => '(:token :docstring :needs :products :transaction)
 
   (:token foo-maker) => :foo-construct
   (:docstring foo-maker) => "`:foo-construct` constructs a new `:foo` item from its components, {:scalar 2, :image 1, :rgb 1}."
@@ -88,7 +88,7 @@
 
 
 (fact "construct-instruction constructs an instruction with the correct pieces"
-  (keys simple-maker) => '(:token :docstring :tags :needs :products :transaction)
+  (keys simple-maker) => '(:token :docstring :needs :products :transaction)
 
   (:token simple-maker) => :simple-construct
   (:docstring simple-maker) => "`:simple-construct` constructs a new `:simple` item from its components, {:something 1}."
@@ -160,7 +160,7 @@
 
 
 (fact "parts-instruction constructs an instruction with the correct pieces"
-  (keys foo-parts-test) => '(:token :docstring :tags :needs :products :transaction)
+  (keys foo-parts-test) => '(:token :docstring  :needs :products :transaction)
 
   (:token foo-parts-test) => :foo-parts
   (:docstring foo-parts-test) => "`:foo-parts` constructs a new code block from the component parts of the top `:foo` item (in the order '(:A :B :C :D) and pushes that onto the `:exec` stack."

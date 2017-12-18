@@ -29,7 +29,6 @@
       (str "`:" instruction-name "` places a copy of the top `" typename "` item at both the head and tail of the `:exec` stack (and places the `:exec` stack itself in a code block). If the resulting `:exec` stack would be oversized, the item is discarded and an `:error` is pushed without affecting the `:exec` stack."
       (when (= :code typename) " All items taken from :code are returned as QuotedCode.")
       )
-      :tags #{:combinator}
 
       `(consume-top-of ~typename :as :item)
       `(calculate [:item]
@@ -63,7 +62,6 @@
       (when (= :code typename) " All items taken from :code are returned as QuotedCode.")
       (when (= :ref typename) " The returned block of items is wrapped in `:push-quoterefs` and `:push-unquoterefs`.")
       )
-      :tags #{:combinator}
 
       `(consume-top-of :scalar :as :where)
       `(consume-stack ~typename :as :old-stack)
@@ -95,7 +93,6 @@
       (when (= :code typename) " All items taken from :code are returned as QuotedCode.")
       (when (= :ref typename) " The returned block of items is wrapped in `:push-quoterefs` and `:push-unquoterefs`.")
       )
-      :tags #{:combinator}
 
       `(consume-top-of :scalar :as :where)
       `(consume-stack ~typename :as :old-stack)
@@ -127,7 +124,6 @@
       (when (= :code typename) " All items taken from :code are returned as QuotedCode.")
       (when (= :ref typename) " The returned block of items is wrapped in `:push-quoterefs` and `:push-unquoterefs`.")
       )
-      :tags #{:combinator}
 
       `(consume-top-of ~typename :as :arg1)
       `(calculate [:arg1]
@@ -152,7 +148,6 @@
       (when (= :code typename) " All items taken from :code are returned as QuotedCode.")
       (when (= :ref typename) " The returned block of items is wrapped in `:push-quoterefs` and `:push-unquoterefs`.")
       )
-      :tags #{:combinator}
 
       `(consume-stack ~typename :as :old-stack)
       `(calculate [:old-stack]
@@ -174,7 +169,6 @@
       `build-instruction
       instruction-name
       (str "`:" instruction-name "` discards all items from the `" typename "` stack.")
-      :tags #{:combinator}
 
       `(delete-stack ~typename)
       ))))
@@ -192,7 +186,6 @@
       (str "`:" instruction-name "` pops the top `" typename "` item and places it at the tail of the `:exec` stack. If the result would be oversized, the item is discarded and an `:error` is pushed."
       (when (= :code typename) " All items taken from :code are returned as QuotedCode.")
       )
-      :tags #{:combinator}
 
       `(consume-top-of ~typename :as :item)
       `(calculate [:item]
@@ -227,7 +220,6 @@
       (when (= :code typename) " All items taken from :code are returned as QuotedCode.")
       (when (= :ref typename) " The returned block of items is wrapped in `:push-quoterefs` and `:push-unquoterefs`.")
       )
-      :tags #{:combinator}
 
       `(consume-top-of :scalar :as :where)
       `(consume-stack ~typename :as :old-stack)
@@ -255,7 +247,6 @@
       `build-instruction
       instruction-name
       (str "`:" instruction-name "` discards the top item from the `" typename "` stack.")
-      :tags #{:combinator}
 
       `(delete-top-of ~typename)
       ))))
@@ -274,7 +265,6 @@
       (when (= :code typename) " All items taken from :code are returned as QuotedCode.")
       (when (= :ref typename) " The returned block of items is wrapped in `:push-quoterefs` and `:push-unquoterefs`.")
       )
-      :tags #{:combinator}
 
       `(consume-top-of ~typename :as :arg1)
       `(calculate [:arg1]
@@ -306,7 +296,6 @@
         (when (= :code typename) " All items taken from :code are returned as QuotedCode.")
         (when (= :ref typename) " The returned block of items is wrapped in `:push-quoterefs` and `:push-unquoterefs`.")
         )
-      :tags #{:combinator}
 
       `(consume-top-of :scalar :as :which)
       `(consume-top-of ~typename :as :shoved-item)
@@ -344,7 +333,6 @@
       (when (= :code typename) " All items taken from :code are returned as QuotedCode.")
       (when (= :ref typename) " The returned block of items is wrapped in `:push-quoterefs` and `:push-unquoterefs`.")
       )
-      :tags #{:combinator}
 
       `(consume-top-of ~typename :as :arg1)
       `(calculate [:arg1]
@@ -372,7 +360,6 @@
       (when (= :code typename) " All items taken from :code are returned as QuotedCode.")
       (when (= :ref typename) " The returned block of items is wrapped in `:push-quoterefs` and `:push-unquoterefs`.")
       )
-      :tags #{:combinator}
 
       `(consume-top-of :scalar :as :which)
       `(consume-stack ~typename :as :oldstack)
@@ -410,7 +397,6 @@
       (when (= :code typename) " All items taken from :code are returned as QuotedCode.")
       (when (= :ref typename) " The returned block of items is wrapped in `:push-quoterefs` and `:push-unquoterefs`.")
       )
-      :tags #{:combinator}
 
       `(consume-top-of :scalar :as :which)
       `(consume-stack ~typename :as :oldstack)

@@ -43,7 +43,6 @@
 (fact "dup-instruction returns an Instruction with the correct stuff"
   (let [foo-dup (dup-instruction (make-type :foo))]
     (class foo-dup) => push.instructions.core.Instruction
-    (:tags foo-dup) => #{:combinator}
     (:needs foo-dup) => {:foo 1}
     (:token foo-dup) => :foo-dup
     (get-stack
@@ -95,7 +94,6 @@
 (fact "flush-instruction returns an Instruction with the correct stuff"
   (let [foo-flush (flush-instruction (make-type :foo))]
     (class foo-flush) => push.instructions.core.Instruction
-    (:tags foo-flush) => #{:combinator}
     (:needs foo-flush) => {}
     (:token foo-flush) => :foo-flush
     (get-stack
@@ -113,7 +111,6 @@
 (fact "pop-instruction returns an Instruction with the correct stuff"
   (let [foo-pop (pop-instruction (make-type :foo))]
     (class foo-pop) => push.instructions.core.Instruction
-    (:tags foo-pop) => #{:combinator}
     (:needs foo-pop) => {}
     (:token foo-pop) => :foo-pop
     (get-stack
@@ -131,7 +128,6 @@
 (fact "rotate-instruction returns an Instruction with the correct stuff"
   (let [foo-rotate (rotate-instruction (make-type :foo))]
     (class foo-rotate) => push.instructions.core.Instruction
-    (:tags foo-rotate) => #{:combinator}
     (:needs foo-rotate) => {:foo 3}
     (:token foo-rotate) => :foo-rotate
     (get-stack
@@ -187,7 +183,6 @@
 (fact "shove-instruction returns an Instruction with the correct stuff"
   (let [foo-shove (shove-instruction (make-type :foo))]
     (class foo-shove) => push.instructions.core.Instruction
-    (:tags foo-shove) => #{:combinator}
     (:needs foo-shove) => {:foo 1, :scalar 1}
     (:token foo-shove) => :foo-shove
     (get-stack
@@ -276,7 +271,6 @@
 (fact "swap-instruction returns an Instruction with the correct stuff"
   (let [foo-swap (swap-instruction (make-type :foo))]
     (class foo-swap) => push.instructions.core.Instruction
-    (:tags foo-swap) => #{:combinator}
     (:needs foo-swap) => {:foo 2}
     (:token foo-swap) => :foo-swap
     (get-stack
@@ -323,7 +317,6 @@
 (fact "yank-instruction returns an Instruction with the correct stuff"
   (let [foo-yank (yank-instruction (make-type :foo))]
     (class foo-yank) => push.instructions.core.Instruction
-    (:tags foo-yank) => #{:combinator}
     (:needs foo-yank) => {:scalar 1}
     (:token foo-yank) => :foo-yank
     (get-stack
@@ -423,7 +416,6 @@
 (fact "yankdup-instruction returns an Instruction with the correct stuff"
   (let [foo-yankdup (yankdup-instruction (make-type :foo))]
     (class foo-yankdup) => push.instructions.core.Instruction
-    (:tags foo-yankdup) => #{:combinator}
     (:needs foo-yankdup) => {:scalar 1}
     (:token foo-yankdup) => :foo-yankdup
     (get-stack

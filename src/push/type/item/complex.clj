@@ -11,7 +11,7 @@
   (i/build-instruction
     complex-add
     "`:complex-add` pops the top two `:complex` items and pushes their sum; if adding them would cause an arithmetic error (for example, if one is a `bigdec` and the other a `rational`) then an `:error` is the result"
-    :tags #{:complex :numeric}
+
     (d/consume-top-of :complex :as :arg2)
     (d/consume-top-of :complex :as :arg1)
     (d/calculate [:arg1 :arg2] #(complex/complex-sum %1 %2) :as :sum)
@@ -27,7 +27,7 @@
   (i/build-instruction
     complex-conjugate
     "`:complex-conjugate` pops the top `:complex` item and pushes its complex conjugate"
-    :tags #{:complex :numeric}
+
     (d/consume-top-of :complex :as :arg1)
     (d/calculate [:arg1] #(complex/conjugate %1) :as :cc)
     (d/return-item :cc)
@@ -39,7 +39,6 @@
   (i/build-instruction
     complex-divide
     "`:complex-divide` pops the top two `:complex` items and pushes their quotient; if dividing them would cause an arithmetic error (for example, if one is a `bigdec` and the other a `rational`, or division by zero is attempted) then an `:error` is the result"
-    :tags #{:complex :numeric}
 
     (d/consume-top-of :complex :as :denominator)
     (d/consume-top-of :complex :as :numerator)
@@ -61,7 +60,7 @@
   (i/build-instruction
     complex-infinite?
     "`:complex-infinite?` pops the top `:complex` value and pushes `true` if either component is ∞ or -∞."
-    :tags #{:arithmetic :base}
+
     (d/consume-top-of :complex :as :arg)
     (d/calculate [:arg] #(complex/complex-infinite? %1) :as :result)
     (d/return-item :result)
@@ -74,7 +73,7 @@
   (i/build-instruction
     complex-multiply
     "`:complex-multiply` pops the top two `:complex` values and pushes their product to `:complex`. If the result is or contains `NaN`, an `:error` is produced instead of the product. "
-    :tags #{:arithmetic :base :dangerous}
+
     (d/consume-top-of :complex :as :arg2)
     (d/consume-top-of :complex :as :arg1)
     (d/calculate [:arg1 :arg2] #(complex/complex-product %1 %2) :as :prelim)
@@ -91,7 +90,7 @@
   (i/build-instruction
     complex-norm
     "`:complex-norm` pops the top `:complex` value, calculates its norm, and pushes that result to `:scalar`."
-    :tags #{:arithmetic :base :dangerous}
+
     (d/consume-top-of :complex :as :arg)
     (d/calculate [:arg]
       #(let [r (:re %1) i (:im %1)]
@@ -106,7 +105,7 @@
   (i/build-instruction
     complex-reciprocal
     "`:complex-reciprocal` pops the top `:complex` value and pushes its reciprocal."
-    :tags #{:arithmetic :base :dangerous}
+
     (d/consume-top-of :complex :as :arg)
     (d/calculate [:arg]
         #(complex/complex-quotient (complex/complexify 1) %1) :as :prelim)
@@ -124,7 +123,7 @@
   (i/build-instruction
     complex-scale
     "`:complex-scale` pops the top `:complex` value and the top `:scalar`, and pushes their product to `:complex`."
-    :tags #{:arithmetic :base :dangerous}
+
     (d/consume-top-of :scalar :as :arg2)
     (d/consume-top-of :complex :as :arg1)
     (d/calculate [:arg1 :arg2]
@@ -139,7 +138,7 @@
   (i/build-instruction
     complex-shift
     "`:complex-shift` pops the top `:complex` value and the top `:scalar`, and pushes the result of adding the `:scalar` to each component of the `:complex` value."
-    :tags #{:arithmetic :base :dangerous}
+
     (d/consume-top-of :scalar :as :arg2)
     (d/consume-top-of :complex :as :arg1)
     (d/calculate [:arg1 :arg2]
@@ -154,7 +153,7 @@
   (i/build-instruction
     complex-subtract
     "`:complex-subtract` pops the top two `:complex` items and pushes their difference; if subtracting them would cause an arithmetic error (for example, if one is a `bigdec` and the other a `rational`) then an `:error` is the result"
-    :tags #{:complex :numeric}
+
     (d/consume-top-of :complex :as :arg2)
     (d/consume-top-of :complex :as :arg1)
     (d/calculate [:arg1 :arg2] #(complex/complex-diff %1 %2) :as :diff)
@@ -171,7 +170,7 @@
   (i/build-instruction
     complex-zero
     "`:complex-zero` pushes {re:0 im:0} onto `:complex`."
-    :tags #{:complex}
+
     (d/calculate [] (fn [] (complex/complexify 0)) :as :new)
     (d/return-item :new)
     ))
@@ -183,7 +182,7 @@
   (i/build-instruction
     scalar-complexify
     "`:scalar-complexify` pops the top `:scalar` value and pushes a new `:complex` item with 0 imaginary component."
-    :tags #{:complex}
+
     (d/consume-top-of :scalar :as :re)
     (d/calculate [:re] #(complex/complexify %1 0) :as :new)
     (d/return-item :new)

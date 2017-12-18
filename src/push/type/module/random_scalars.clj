@@ -11,7 +11,7 @@
   (i/build-instruction
     integer-uniform
     "`:integer-uniform` pops the top `:scalar` value, and pushes a uniform random integer (typecase from a uniform number on the range `[0.0, :arg)`). If the scalar is negative, a negative result is returned; if the argument is out of bounds (larger than Long/MAX_VALUE), an `:error` is pushed instead of a value."
-    :tags #{:numeric :random}
+
     (d/consume-top-of :scalar :as :arg)
     (d/calculate [:arg]
       #(< (n/abs %1) Long/MAX_VALUE) :as :valid)
@@ -27,7 +27,7 @@
   (i/build-instruction
     float-uniform
     "`:float-uniform` pops the top `:scalar` value, and pushes a random double uniformly sampled from the range [0,:f). If the float is negative, a negative result is returned."
-    :tags #{:numeric :random}
+
     (d/consume-top-of :scalar :as :arg)
     (d/calculate [:arg]
       #(< (n/abs %1) Double/MAX_VALUE) :as :valid)
@@ -43,7 +43,7 @@
   (i/build-instruction
     boolean-faircoin
     "`:boolean-faircoin` pushes a random `:boolean` value, with equal probability `true` or `false`."
-    :tags #{:logical :random}
+
     (d/calculate [] #(< (rand) 0.5) :as :result)
     (d/return-item :result)))
 

@@ -25,7 +25,7 @@
   (i/build-instruction
     ref-clear
     "`:ref-clear` pops the top `:ref` keyword and clears all items currently bound to that keyword in the Interpreter's binding table. The variable remains recognized, it simply has no bound values."
-    :tags #{:binding}
+
     (d/consume-top-of :ref :as :arg)
     (d/clear-binding :arg)
     ))
@@ -37,7 +37,7 @@
   (i/build-instruction
     ref-cyclevector
     "`:ref-cyclevector` pops the top `:ref` item and the top two `:scalar` items (call them `scale` and `raw-count`, respectively). The `scale` value is used to determine whether to convert `raw-count` into a :few, :some, :many or :lots value, and then the appropriate number of elements from the `:ref`'s current stack are made into a single vector (by cycling) and pushed to `:exec`. If the `:ref` has no bound values, an empty vector is pushed."
-    :tags #{:binding}
+
     (d/consume-top-of :ref :as :which)
     (d/save-binding-stack :which :as :contents)
     (d/consume-top-of :scalar :as :scale)
@@ -57,7 +57,7 @@
   (i/build-instruction
     ref-dump
     "`:ref-dump` pops the top `:ref` keyword and pushes the entire current contents of that binding's stack onto the `:exec` stack as a single block"
-    :tags #{:binding}
+
     (d/consume-top-of :ref :as :arg)
     (d/save-binding-stack :arg :as :newblock)
     (d/return-item :newblock)
@@ -69,7 +69,7 @@
   (i/build-instruction
     ref-dump-tagspace
     "`:ref-dump-tagspace` pops the top `:ref` keyword and looks up the entire current contents of that binding's stack; this is used to construct a `:tagspace`, using the integer position of each as the key scalars. If the `:ref` is empty, an empty `:tagspace` is returned; the binding contents remain in place."
-    :tags #{:binding}
+
     (d/consume-top-of :ref :as :ref)
     (d/save-binding-stack :ref :as :contents)
     (d/calculate [:contents]
@@ -83,7 +83,7 @@
   (i/build-instruction
     ref-exchange
     "`:ref-exchange` pops the top two `:ref` keywords; if they are references to the same binding, there is no effect; if either or both is an undefined `:ref`, it has an empty value stack created as needed"
-    :tags #{:binding}
+
     (d/consume-top-of :ref :as :arg1)
     (d/consume-top-of :ref :as :arg2)
     (d/save-binding-stack :arg1 :as :values1)
@@ -98,7 +98,7 @@
   (i/build-instruction
     ref-fillvector
     "`:ref-fillvector` pops the top `:ref` item and the top two `:scalar` items (call them `scale` and `raw-count`, respectively). The `scale` value is used to determine whether to convert `raw-count` into a :few, :some, :many or :lots value, and then the appropriate number of copies of the `:ref`'s current value are made into a single vector and pushed to `:exec`. If the `:ref` has no bound values, an empty vector is pushed."
-    :tags #{:binding}
+
     (d/consume-top-of :ref :as :which)
     (d/save-top-of-binding :which :as :item)
     (d/consume-top-of :scalar :as :scale)
@@ -119,7 +119,7 @@
   (i/build-instruction
     ref-forget
     "`:ref-forget` pops the top `:ref` keyword and clears the entire binding currently associated with it, key and all. NOTE: this is permitted to erase an `:input` binding."
-    :tags #{:binding}
+
     (d/consume-top-of :ref :as :arg)
     (d/forget-binding :arg)
     ))
@@ -130,7 +130,7 @@
   (i/build-instruction
     ref-fullquote
     "`:ref-fullquote` pops the top `:ref` keyword and pushes the entire current contents of that binding's stack onto the `:exec` stack as a quoted codeblock"
-    :tags #{:binding}
+
     (d/consume-top-of :ref :as :arg)
     (d/save-binding-stack :arg :as :newblock)
     (d/calculate [:newblock] #(qc/push-quote %1) :as :result)
@@ -143,7 +143,7 @@
   (i/build-instruction
     ref-known?
     "`:ref-known?` pops the top `:ref` keyword and `true` if it is one of the defined `:binding` keys"
-    :tags #{:binding}
+
     (d/consume-top-of :ref :as :arg)
     (d/save-bindings :as :known) ;; just the keys
     (d/calculate [:known :arg] #(boolean (some #{%2} %1)) :as :result)
@@ -156,7 +156,7 @@
   (i/build-instruction
     ref-lookup
     "`:ref-lookup` pops the top `:ref` keyword and pushes a copy of the top item on its stack onto the `:exec` stack"
-    :tags #{:binding}
+
     (d/consume-top-of :ref :as :arg)
     (d/save-top-of-binding :arg :as :value)
     (d/return-item :value)
@@ -168,7 +168,7 @@
   (i/build-instruction
     ref-new
     "`:ref-new` creates a new (randomly-named) `:ref` keyword and pushes it to that stack"
-    :tags #{:binding}
+
     (d/calculate [] #(keyword (gensym "ref!")) :as :newref)
     (d/push-onto :ref :newref)
     ))
@@ -179,7 +179,7 @@
   (i/build-instruction
     ref-peek
     "`:ref-peek` pops the top `:ref` keyword and pushes a copy of the top item on its stack onto the `:exec` stack; it then returns the `:ref` to that stack"
-    :tags #{:binding}
+
     (d/consume-top-of :ref :as :arg)
     (d/save-top-of-binding :arg :as :value)
     (d/push-onto :ref :arg)
@@ -192,7 +192,7 @@
   (i/build-instruction
     ref->vector
     "`:ref->vector` pops the top `:ref` keyword and copies its entire stack of contents into a new `:vector` item, which is pushed to `:exec`"
-    :tags #{:binding}
+
     (d/consume-top-of :ref :as :arg)
     (d/save-binding-stack :arg :as :contents)
     (d/calculate [:contents] vec :as :result)

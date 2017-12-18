@@ -14,7 +14,6 @@
       `build-instruction
       instruction-name
       (str "`:" instruction-name "` pushes a `:boolean`, `true` if the `" typename "` stack is empty, `false` otherwise.")
-      :tags #{:visible}
 
       `(count-of ~typename :as :depth)
       `(calculate [:depth] #(zero? %1) :as :check)
@@ -32,7 +31,6 @@
       `build-instruction
       instruction-name
       (str "`:" instruction-name "` pushes a `:scalar` which is the number of items in the `" typename "` stack.")
-      :tags #{:visible}
 
       `(count-of ~typename :as :depth)
       `(return-item :depth)

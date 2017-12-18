@@ -15,7 +15,6 @@
       `build-instruction
       instruction-name
       (str "`:" instruction-name "` pops the top `:ref` and the top `" typename "`, which is pushed to the indicated `:ref` in the `:bindings` registry")
-      :tags #{:storable}
 
       `(consume-top-of :ref :as :where)
       `(consume-top-of ~typename :as :what)
@@ -33,7 +32,6 @@
       `build-instruction
       instruction-name
       (str "`:" instruction-name "` pops the top `" typename "`, which is pushed to a new `:ref` created in the `:bindings` registry")
-      :tags #{:storable}
 
       `(consume-top-of ~typename :as :what)
       `(replace-binding :what)
@@ -50,7 +48,6 @@
       `build-instruction
       instruction-name
       (str "`:" instruction-name "` pops the top `:ref` and copies the entire `" typename "` stack into the indicated `:ref` in the `:bindings` registry, replacing the binding's current contents.")
-      :tags #{:storable}
 
       `(consume-top-of :ref :as :where)
       `(save-stack ~typename :as :all)
@@ -68,7 +65,6 @@
       `build-instruction
       instruction-name
       (str "`:" instruction-name "` copies the entire `" typename "` stack into a new `:ref` created in the `:bindings` registry. The stack contents are not consumed.")
-      :tags #{:storable}
 
       `(save-stack ~typename :as :all)
       `(replace-binding :all)

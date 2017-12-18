@@ -14,7 +14,6 @@
       instruction-name
       (str "`:" instruction-name "` pops the top two `" typename
         "` items and pushes `true` if they are equal, `false` otherwise.")
-      :tags #{:equatable}
 
       `(consume-top-of ~typename :as :arg1)
       `(consume-top-of ~typename :as :arg2)
@@ -34,7 +33,6 @@
       instruction-name
       (str "`:" instruction-name "` pops the top two `" typename
         "` items and pushes `false` if they are equal, `true` otherwise.")
-      :tags #{:equatable}
 
       `(consume-top-of ~typename :as :arg1)
       `(consume-top-of ~typename :as :arg2)

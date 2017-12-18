@@ -15,7 +15,7 @@
   (i/build-instruction
     boolean-2bittable
     "`:boolean-2bittable` pops the top `:scalar` item and pushes the result of applying `(exotics/scalar-to-truth-table i 2)` to :booleans. If the `:scalar` is not a finite positive number, an empty vector is pushed instead."
-    :tags #{:boolean :conversion}
+
     (d/consume-top-of :scalar :as :value)
     (d/calculate [:value] #(exotics/scalar-to-truth-table %1 2) :as :table)
     (d/return-item :table)))
@@ -25,7 +25,7 @@
   (i/build-instruction
     boolean-3bittable
     "`:boolean-3bittable` pops the top `:scalar` item and pushes the result of applying `(exotics/scalar-to-truth-table i 3)` to :booleans. If the `:scalar` is not a finite positive number, an empty vector is pushed instead."
-    :tags #{:boolean :conversion}
+
     (d/consume-top-of :scalar :as :value)
     (d/calculate [:value] #(exotics/scalar-to-truth-table %1 3) :as :table)
     (d/return-item :table)))
@@ -35,7 +35,7 @@
   (i/build-instruction
     boolean-arity2
     "`:boolean-arity2` pops the top `:scalar` item, creates a truth table on 2 inputs using `(exotics/scalar-to-truth-table i 2)`, pops the top two `:boolean` values and uses them to look up a `:boolean` result in the table. If the `:scalar` is infinite, `false` will be returned for all input bits."
-    :tags #{:boolean :conversion}
+
     (d/consume-top-of :scalar :as :value)
     (d/calculate [:value] #(exotics/scalar-to-truth-table %1 2) :as :table)
     (d/consume-top-of :boolean :as :q)
@@ -51,7 +51,7 @@
   (i/build-instruction
     boolean-arity3
     "`:boolean-arity3` pops the top `:scalar` item, creates a truth table on 3 inputs using `(exotics/scalar-to-truth-table i 3)`, pops the top 3 `:boolean` values and uses them to look up a `:boolean` result in the table. If the `:scalar` is infinite, `false` will be returned for all input bits."
-    :tags #{:boolean :conversion}
+
     (d/consume-top-of :scalar :as :value)
     (d/calculate [:value] #(exotics/scalar-to-truth-table %1 3) :as :table)
     (d/consume-top-of :boolean :as :r)
@@ -97,7 +97,7 @@
   (i/build-instruction
     scalar->boolean
     "`:scalar->boolean` pops the top `:scalar` item, and pushes `false` if it is zero, or `true` if it is any other value"
-    :tags #{:boolean :conversion :base}
+
     (d/consume-top-of :scalar :as :arg)
     (d/calculate [:arg] #(not (zero? %1)) :as :result)
     (d/return-item :result)))
@@ -108,7 +108,7 @@
   (i/build-instruction
     scalarsign->boolean
     "`:scalarsign->boolean` pops the top `:scalar` item, and pushes `true` if it positive, or `false` if it is zero or negative"
-    :tags #{:boolean :conversion :base}
+
     (d/consume-top-of :scalar :as :arg)
     (d/calculate [:arg] #(not (neg? %1)) :as :result)
     (d/return-item :result)

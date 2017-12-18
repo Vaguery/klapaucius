@@ -11,7 +11,7 @@
   (i/build-instruction
     snapshot-begin
     "`snapshot-begin` saves a snapshot of the interpreter with only its `:exec` stack emptied, and clears the current `:return` stack. As a result, the archived stacks have the old `:return` stack and an empty `:exec` stack, and the running stacks have the old `:exec` stack and an empty `:return` stack."
-    :tags #{:complex :base}
+
     (d/save-stack :exec :as :old-exec)
     (d/delete-stack :exec)
     (d/save-snapshot)
@@ -24,7 +24,7 @@
   (i/build-instruction
     snapshot-end
     "`snapshot-end` pops the top `:snapshot` item. The current stacks are all replaced with the archived ones, EXCEPT for `:print`, `:log`, `:unknown`, and `:error`. The current `:exec` stack's contents are pushed onto the retrieved `:exec` stack as a code block. The current `:return` stack's contents are then pushed onto `:exec` as a single code block. The `:bindings` and `:config` are also returned to their stored states."
-    :tags #{:complex :base}
+
     (d/save-stack :exec :as :new-exec)
     (d/consume-stack :return :as :results)
     (d/consume-top-of :snapshot :as :archive)
@@ -39,7 +39,7 @@
   (i/build-instruction
     snapshot-new
     "`snapshot-new` pops the top `:exec` item, then archives all the remaining current stacks (including the rest of the `:exec` stack) to a new :snapshot item, then empties the `:return` stack. In other words, it 'runs' only top item from the `:exec` stack, and the current `:bindings`."
-    :tags #{:complex :base}
+
     (d/consume-top-of :exec :as :run-this)
     (d/save-snapshot)
     (d/delete-stack :return)

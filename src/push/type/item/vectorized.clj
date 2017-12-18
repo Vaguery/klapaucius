@@ -39,7 +39,6 @@
       `push.instructions.core/build-instruction
       instruction-name
       (str "`" typename "-build` pops the top `:scalar` item, and d/calculates an index modulo the size of the `:" rootname "` stack. It takes the stack, down to that index, and pushes a new `:" typename "` vector out of those elements (top element last in the vector). Returns a code block containing the remaining items from the stack, then the vector. If there is an overflow error, the original consumed stack is returned to `:" rootname "`.")
-      :tags #{:vector}
 
       `(d/consume-top-of :scalar :as :where)
       `(d/consume-stack ~rootname :as :old-stack)
@@ -71,7 +70,6 @@
       `i/build-instruction
       instruction-name
       (str "`" typename "-butlast` pops the top `" typename "` item and pushes the same vector lacking its last item (or nothing, if it ends up empty).")
-      :tags #{:vector}
 
       `(d/consume-top-of ~typename :as :arg1)
       `(d/calculate [:arg1]
@@ -88,7 +86,6 @@
       `i/build-instruction
       instruction-name
       (str "`" typename "-byexample` pops the top `" typename "` item and takes an equal number of items from `" rootname "` to build a new vector of the same type. Both vectors are pushed back onto `" typename "`, newest on top. If there aren't enough items on `" rootname "`, the template vector is replaced.")
-      :tags #{:vector}
 
       `(d/consume-top-of ~typename :as :template)
       `(d/consume-stack ~rootname :as :pieces)
@@ -114,7 +111,6 @@
       `i/build-instruction
       instruction-name
       (str "`" typename "-concat` pops the top two `" typename "` items and pushes the the concatenation of the top one onto the second one.")
-      :tags #{:vector}
 
       `(d/consume-top-of ~typename :as :arg2)
       `(d/consume-top-of ~typename :as :arg1)
@@ -137,7 +133,6 @@
       `i/build-instruction
       instruction-name
       (str "`" typename "-conj` pops the top `" typename "` item and the top `" rootname "` item, and appends the latter to the former, pushing the result.")
-      :tags #{:vector}
 
       `(d/consume-top-of ~rootname :as :arg2)
       `(d/consume-top-of ~typename :as :arg1)
@@ -163,7 +158,6 @@
       `i/build-instruction
       instruction-name
       (str "`" typename "-contains?` pops the top `" typename "` item and the top `" rootname "` item, and pushes `true` to the `:boolean` stack if the latter is present in the former.")
-      :tags #{:vector}
 
       `(d/consume-top-of ~rootname :as :arg2)
       `(d/consume-top-of ~typename :as :arg1)
@@ -182,7 +176,6 @@
       `i/build-instruction
       instruction-name
       (str "`" typename "-cyclevector` saves a copy of the `" rootname "` stack and pops two `:scalar` items (call them `scale` and `raw-count`, respectively). The `scale` value is used to determine whether to convert `raw-count` into a :few, :some, :many or :lots value. Items from the `" rootname "` stack are included, cycling to fill if needed, and the result is pushed to `" typename"`. If the `" rootname "` stack is empty, an empty vector is the result.")
-      :tags #{:vector}
 
       `(d/save-stack ~rootname :as :stack)
       `(d/consume-top-of :scalar :as :scale)
@@ -204,7 +197,6 @@
       `i/build-instruction
       instruction-name
       (str "`" typename "-distinct` pops the top `" typename "` item, then pushes a new `" typename "` item containing only the first copy of each item in the original.")
-      :tags #{:vector}
 
       `(d/consume-top-of ~typename :as :arg)
       `(d/calculate [:arg]
@@ -222,7 +214,6 @@
       `i/build-instruction
       instruction-name
       (str "`" typename "-do*each` pops the top `" typename "` item and the top of the `:exec` stack, and pushes this continuation form to `:exec`: `([first vector] [exec item] [rest vector] " instruction-name " [exec item])`. If the vector is empty, it is simply consumed with no result.")
-      :tags #{:vector}
 
       `(d/consume-top-of ~typename :as :arg)
       `(d/consume-top-of :exec :as :actor)
@@ -247,7 +238,6 @@
       `i/build-instruction
       instruction-name
       (str "`" typename "-emptyitem?` pops the top `" typename "` item and pushes `true` to the `:boolean` stack if it's empty.")
-      :tags #{:vector}
 
       `(d/consume-top-of ~typename :as :arg1)
       `(d/calculate [:arg1]
@@ -265,7 +255,6 @@
       `i/build-instruction
       instruction-name
       (str "`" typename "-fillvector` pops the top `" rootname "` item and two `:scalar` items (call them `scale` and `raw-count`, respectively). The `scale` value is used to determine whether to convert `raw-count` into a :few, :some, :many or :lots value, and then the appropriate number of copies of the " rootname "` are made into a single `" typename "` and pushed there. If the expected size of the resulting item (length of vector times number of code points in item) exceeds the `max-collection-size`, an error is pushed instead.")
-      :tags #{:vector}
 
       `(d/consume-top-of ~rootname :as :item)
       `(d/consume-top-of :scalar :as :scale)
@@ -296,7 +285,6 @@
       `i/build-instruction
       instruction-name
       (str "`" typename "-first` pops the top `" typename "` item and pushes the first element to the `" rootname "` stack (or nothing, if it's empty).")
-      :tags #{:vector}
 
       `(d/consume-top-of ~typename :as :arg1)
       `(d/calculate [:arg1]
@@ -313,7 +301,6 @@
       `i/build-instruction
       instruction-name
       (str "`" typename "-generalize` pops the top `" typename "` item, and pushes it onto the `:vector` stack.")
-      :tags #{:vector}
 
       `(d/consume-top-of ~typename :as :arg)
       `(d/push-onto :vector :arg)
@@ -328,7 +315,6 @@
       `i/build-instruction
       instruction-name
       (str "`" typename "-generalizeall` puts the entire `" typename "` stack onto the `:vector` stack.")
-      :tags #{:vector}
 
       `(d/consume-stack ~typename :as :stack)
       `(d/consume-stack :vector :as :old-vectors)
@@ -346,7 +332,6 @@
       `i/build-instruction
       instruction-name
       (str "`" typename "-indexof` pops the top `" typename "` item and the top `" rootname "` item, and pushes a `:scalar` (integer) indicating the first appearance of the latter in the former (or -1 if it's not found).")
-      :tags #{:vector}
 
       `(d/consume-top-of ~rootname :as :arg2)
       `(d/consume-top-of ~typename :as :arg1)
@@ -364,7 +349,6 @@
       `i/build-instruction
       instruction-name
       (str "`" typename "-items` pops the top `" typename "` item, and pushes its contents onto `:exec` as a code block.")
-      :tags #{:vector}
 
       `(d/consume-top-of ~typename :as :arg)
       `(d/calculate [:arg]
@@ -381,7 +365,6 @@
       `i/build-instruction
       instruction-name
       (str "`" typename "-last` pops the top `" typename "` item and pushes the last element to the `" rootname "` stack (or nothing, if it's empty).")
-      :tags #{:vector}
 
       `(d/consume-top-of ~typename :as :arg1)
       `(d/calculate [:arg1]
@@ -398,7 +381,6 @@
       `i/build-instruction
       instruction-name
       (str "`" typename "-length` pops the top `" typename "` item and pushes its count to the `:scalar` stack.")
-      :tags #{:vector}
 
       `(d/consume-top-of ~typename :as :arg1)
       `(d/calculate [:arg1]
@@ -415,7 +397,6 @@
       `i/build-instruction
       instruction-name
       (str "`" typename "-new` pushes an empty vector to the stack.")
-      :tags #{:vector}
 
       `(d/calculate []
           (fn [] (vector)) :as :nuttin)
@@ -431,7 +412,6 @@
       `i/build-instruction
       instruction-name
       (str "`" typename "-nth` pops the top `" typename "` item and the the top `:scalar`. It converts the `:scalar` value into an index (modulo the vector's length) then pushes the indexed element to the `" rootname "` stack.")
-      :tags #{:vector}
 
       `(d/consume-top-of ~typename :as :arg1)
       `(d/consume-top-of :scalar :as :int)
@@ -451,7 +431,6 @@
       `i/build-instruction
       instruction-name
       (str "`" typename "-occurrencesof` pops the top `" typename "` item and the the top `" rootname "`. It pushes a `:scalar` (integer) indicating how many copies of the latter appear in the former.")
-      :tags #{:vector}
 
       `(d/consume-top-of ~typename :as :vec)
       `(d/consume-top-of ~rootname :as :item)
@@ -469,7 +448,6 @@
       `i/build-instruction
       instruction-name
       (str "`" typename "-pt-crossover` pops the top `" typename "` two items (call them `B` and `A` respectively) and the the top two `:scalar` values. It converts the `:scalar` values into indices (modulo each vector's length), then pushes two new vectors to the `" typename "` stack. The first contains the front of `A` and the back of `B`, and the other vice versa, using the two indices as cutpoints")
-      :tags #{:vector}
 
       `(d/consume-top-of ~typename :as :B)
       `(d/consume-top-of ~typename :as :A)
@@ -500,7 +478,6 @@
       `i/build-instruction
       instruction-name
       (str "`" typename "-portion` pops the top `" typename "` item and the the top two `:scalar` values (call these `A` and `B`). It pushes a new `" typename "` which only includes items between `A` and `B` (which are rounded and coerced to fall in range by truncation; see code).")
-      :tags #{:vector}
 
       `(d/consume-top-of ~typename :as :arg)
       `(d/consume-top-of :scalar :as :a)
@@ -523,7 +500,6 @@
       `i/build-instruction
       instruction-name
       (str "`" typename "-remove` pops the top `" typename "` item and the the top `" rootname "`. It pushes a new `" typename "` which has all occurrences of the `" rootname "` eliminated.")
-      :tags #{:vector}
 
       `(d/consume-top-of ~typename :as :arg1)
       `(d/consume-top-of ~rootname :as :purge)
@@ -541,7 +517,6 @@
       `i/build-instruction
       instruction-name
       (str "`" typename "-replace` pops the top `" typename "` item and the the top two `" rootname "` items (call these `A` and `B` respectively). It pushes a new `" typename "` which has all occurrences of `B` replaced with `A`.")
-      :tags #{:vector}
 
       `(d/consume-top-of ~typename :as :arg1)
       `(d/consume-top-of ~rootname :as :a)
@@ -560,7 +535,6 @@
       `i/build-instruction
       instruction-name
       (str "`" typename "-replacefirst` pops the top `" typename "` item and the the top two `" rootname "` items (call these `A` and `B` respectively). It pushes a new `" typename "` which has the first occurrence of `B` replaced with `A`.")
-      :tags #{:vector}
 
       `(d/consume-top-of ~typename :as :arg1)
       `(d/consume-top-of ~rootname :as :a)
@@ -579,7 +553,6 @@
       `i/build-instruction
       instruction-name
       (str "`" typename "-rest` pops the top `" typename "` item and pushes a vector containing all but the first element to the `" typename "` stack (or an empty vector, if it's empty; NOTE difference from `first` and others).")
-      :tags #{:vector}
 
       `(d/consume-top-of ~typename :as :arg1)
       `(d/calculate [:arg1]
@@ -596,7 +569,6 @@
       `i/build-instruction
       instruction-name
       (str "`" typename "-first` pops the top `" typename "` item and pushes the reversed vector to the `" typename "` stack.")
-      :tags #{:vector}
 
       `(d/consume-top-of ~typename :as :arg1)
       `(d/calculate [:arg1]
@@ -613,7 +585,6 @@
       `i/build-instruction
       instruction-name
       (str "`" typename "-set` pops the top `" typename "` item, the top `:scalar` and the the top `" rootname "` item. It pushes a new `" typename "` which has the indexed item (modulo length) replaced with the new element. If the `" typename "` is empty, it is returned but the other arguments are consumed.")
-      :tags #{:vector}
 
       `(d/consume-top-of ~typename :as :arg)
       `(d/consume-top-of ~rootname :as :subst)
@@ -636,7 +607,6 @@
       `i/build-instruction
       instruction-name
       (str "`" typename "-shatter` pops the top `" typename "` item and pushes each of its items in turn to the `" rootname "` stack (or nothing, if it's empty).")
-      :tags #{:vector}
 
       `(d/consume-top-of ~typename :as :arg1)
       `(d/consume-stack ~rootname :as :old-stack)
@@ -653,7 +623,6 @@
       `i/build-instruction
       instruction-name
       (str "`" typename "-sort` pops the top `" typename "` item and sorts the elements before returning it to the stack. NOTE: this depends on the intrinsic ability of `" rootname "` to be sorted by Clojure.")
-      :tags #{:vector}
 
       `(d/consume-top-of ~typename :as :arg1)
       `(d/calculate [:arg1] #(into [] (sort %1)) :as :sorted)
@@ -669,7 +638,6 @@
       `i/build-instruction
       instruction-name
       (str "`" typename "-order` pops the top `" typename "` item and produces a new `:scalar` item containing a contextual order over the items. For example, the `:scalars` vector `[9 3 -2.1 -2.1 9 0]` would produce the order vector `[3 2 0 0 3 1]`. NOTE: this depends on the intrinsic ability of `" rootname "` to be sorted by Clojure.")
-      :tags #{:vector}
 
       `(d/consume-top-of ~typename :as :arg1)
       `(d/calculate [:arg1] #(into [] (exotic/vector->order %1)) :as :order)
@@ -685,7 +653,6 @@
       `i/build-instruction
       instruction-name
       (str "`" typename "-resample` pops the top `" typename "` item and the top `:scalars` item. The `:scalars` vector is used as a sequence of indices to construct a new `" typename "` item, which is pushed.")
-      :tags #{:vector}
 
       `(d/consume-top-of ~typename :as :arg1)
       `(d/consume-top-of :scalars :as :arg2)
@@ -701,7 +668,6 @@
       `i/build-instruction
       instruction-name
       (str "`" typename "-permute` pops the top `" typename "` item and the top `:scalars` item. The `:scalars` vector is used as a sequence of indices to construct a new `" typename "` item by removing each indexed item in turn and appending it to a new vector, which is then pushed.")
-      :tags #{:vector}
 
       `(d/consume-top-of ~typename :as :arg1)
       `(d/consume-top-of :scalars :as :arg2)
@@ -716,7 +682,6 @@
       `i/build-instruction
       instruction-name
       (str "`" typename "-min` pops the top `" typename "` item and places the minimum-valued item in that vector onto `" rootname "`. NOTE: this depends on the intrinsic ability of `" rootname "` to be sorted by Clojure.")
-      :tags #{:vector}
 
       `(d/consume-top-of ~typename :as :arg1)
       `(d/calculate [:arg1] #(first (sort %1)) :as :smallest)
@@ -731,7 +696,6 @@
       `i/build-instruction
       instruction-name
       (str "`" typename "-max` pops the top `" typename "` item and places the largest-valued item in that vector onto `" rootname "`. NOTE: this depends on the intrinsic ability of `" rootname "` to be sorted by Clojure.")
-      :tags #{:vector}
 
       `(d/consume-top-of ~typename :as :arg1)
       `(d/calculate [:arg1] #(last (sort %1)) :as :biggest)
@@ -748,7 +712,6 @@
       `i/build-instruction
       instruction-name
       (str "`" typename "-take` pops the top `" typename "` item and the the top `:scalar`. It converts the `:scalar` value into an index (modulo one more than the vector's length) then pushes a new `" typename "` item containing only the items in the original from the start up to the indexed point.")
-      :tags #{:vector}
 
       `(d/consume-top-of ~typename :as :arg1)
       `(d/consume-top-of :scalar :as :int)
@@ -774,7 +737,6 @@
       `i/build-instruction
       instruction-name
       (str "`" typename "-vfilter` pops the top two `" typename "` items (call them `B` and `A`, respectively) pushes a new `" typename "` that only contains items in `A` that are also in `B`.")
-      :tags #{:vector}
 
       `(d/consume-top-of ~typename :as :filter)
       `(d/consume-top-of ~typename :as :arg)
@@ -797,7 +759,6 @@
       `i/build-instruction
       instruction-name
       (str "`" typename "-vremove` pops the top two `" typename "` items (call them `B` and `A`, respectively) pushes a new `" typename "` that only contains items in `A` that are NOT also in `B`.")
-      :tags #{:vector}
 
       `(d/consume-top-of ~typename :as :filter)
       `(d/consume-top-of ~typename :as :arg)
@@ -815,7 +776,6 @@
       `i/build-instruction
       instruction-name
       (str "`" typename "-vsplit` pops the top two `" typename "` items (call them `B` and `A`, respectively) pushes a code block to `:exec` containing two new `" typename "` items: The first only contains items in `A` that are also in `B`, and the second only contains items in `A` NOT in `B`.")
-      :tags #{:vector}
 
       `(d/consume-top-of ~typename :as :filter)
       `(d/consume-top-of ~typename :as :arg)

@@ -11,7 +11,7 @@
   (i/build-instruction
     vector-refilter
     "`:vector-refilter` pops the top `:vector` value, and sends it to the `:exec` stack"
-    :tags #{:conversion :vector}
+
     (d/consume-top-of :vector :as :arg)
     (d/return-item :arg)
     ))
@@ -21,7 +21,7 @@
   (i/build-instruction
     vector-refilterall
     "`:vector-refilterall` puts the entire `:vector` stack on top of the `:exec` stack"
-    :tags #{:conversion :vector}
+
     (d/consume-stack :vector :as :stack)
     (d/consume-stack :exec :as :old-exec)
     (d/calculate [:stack :old-exec]

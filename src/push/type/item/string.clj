@@ -39,7 +39,7 @@
       instruction-name
       (str "`:" instruction-name "` pops the top item from the `" stackname
            "` stack and converts it to a `:string` (using Clojure's `str` function)")
-      :tags #{:string :base :conversion}
+
       `(d/consume-top-of ~stackname :as :arg)
       '(d/calculate [:arg] str :as :printed)
       '(d/return-item :printed)
@@ -72,7 +72,7 @@
   (i/build-instruction
     string->scalar
     "`:string->scalar` pops the top `:string` item and attempts to convert it into a `:scalar` value. The rules (in order of precedence) are: (1) If the string is empty, there is no result (no `:scalar` is pushed). (2) If the string contains whitespace, then it is broken into individual space-delimited tokens, and each of those is processed as follows, in turn, until the _first_ successful token creates a `:scalar` value, using the Clojure EDN reader as its standard. If no token produces any readable numeric result, no result is pushed. Tokens that produce reader errors are ignored. The first successful numeric value is pushed."
-    :tags #{:string :base}
+
     (d/consume-top-of :string :as :arg)
     (d/calculate [:arg] #(s/split %1 #"\s+") :as :chunks)
     (d/calculate [:chunks] valid-numbers-only :as :numbers)
@@ -85,7 +85,7 @@
   (i/build-instruction
     string->scalars
     "`:string->scalar` pops the top `:string` item and attempts to convert it into a `:scalars` vector. The rules (in order of precedence) are: (1) If the string is empty, an empty vector is pushed to `:scalars`. (2) If the string contains whitespace and any other characters, then it is broken into individual space-delimited tokens, and each of those is processed using the Clojure EDN reader as its standard. If no token produces any readable numeric result, an empty vector is pushed. Tokens that produce reader errors are ignored and skipped. Each whitespace-delimited numeric item is returned, in order, as part of a single `:scalars` result."
-    :tags #{:string :base :vector}
+
     (d/consume-top-of :string :as :arg)
     (d/calculate [:arg] #(s/split %1 #"\s+") :as :chunks)
     (d/calculate [:chunks] valid-numbers-only :as :numbers)
@@ -102,7 +102,7 @@
     - when the string is empty: nil [nothing is pushed]
     - when there is 1 character: `'([head] [item])`
     - when there are more characters, say `tail` is the string lacking its first character, and `head` is the first character: `'([head] [item] [tail] :exec-string-iterate [item])`"
-    :tags #{:string :base}
+
     (d/consume-top-of :string :as :s)
     (d/consume-top-of :exec :as :fn)
     (d/calculate [:s] first :as :head)
@@ -127,7 +127,7 @@
   (i/build-instruction
     string-concat
     "`:string-concat` pops the top two `:string` items, and pushes the result of concatenating the top item at the end of the second item. If the result would be longer than :max-collection-size, it is discarded and an `:error` is pushed instead."
-    :tags #{:string :base}
+
     (d/consume-top-of :string :as :arg2)
     (d/consume-top-of :string :as :arg1)
     (d/calculate [:arg1 :arg2]
@@ -148,7 +148,7 @@
   (i/build-instruction
     string-conjchar
     "`:string-conjchar` pops the top `:string` and the top `:char`, and pushes a new `:string` with the `:char` added at the end"
-    :tags #{:string :base}
+
     (d/consume-top-of :char :as :c)
     (d/consume-top-of :string :as :s)
     (d/calculate [:s :c] #(s/join (list %1 (str %2))) :as :longer)
@@ -161,7 +161,7 @@
   (i/build-instruction
     string-contains?
     "`:string-contains?` pops two strings (call them `A` and `B`, respectively). It pushes `true` if `B` is a substring of `A`, or `false` otherwise"
-    :tags #{:string :base}
+
     (d/consume-top-of :string :as :host)
     (d/consume-top-of :string :as :target)
     (d/calculate [:host :target]
@@ -175,7 +175,7 @@
   (i/build-instruction
     string-containschar?
     "`:string-containschar?` pops the top `:string` and `:char` values, and pushes `true` if the string contains the character, `false` otherwise"
-    :tags #{:string :base}
+
     (d/consume-top-of :string :as :s)
     (d/consume-top-of :char :as :c)
     (d/calculate [:s :c] #(boolean (some #{%2} (vec %1))) :as :found?)
@@ -195,7 +195,7 @@
   (i/build-instruction
     string-first
     "`:string-first` pops the top `:string` value, and pushes its first `:char`"
-    :tags #{:string :base}
+
     (d/consume-top-of :string :as :arg1)
     (d/calculate [:arg1] first :as :c)
     (d/return-item :c)
@@ -207,7 +207,7 @@
   (i/build-instruction
     string-indexofchar
     "`:string-indexofchar` pops the top `:string` and the top `:char`, and pushes a `:scalar` which is the index of the first occurrence of `:char` in `:string`, or -1 if it's not found"
-    :tags #{:string :base}
+
     (d/consume-top-of :string :as :s)
     (d/consume-top-of :char :as :c)
     (d/calculate [:s :c] #(.indexOf %1 (long %2)) :as :where)
@@ -220,7 +220,7 @@
   (i/build-instruction
     string-last
     "`:string-last` pops the top `:string` item, and pushes its last `:char` (if it has one)"
-    :tags #{:string :base}
+
     (d/consume-top-of :string :as :arg1)
     (d/calculate [:arg1] last :as :c)
     (d/return-item :c)
@@ -232,7 +232,7 @@
   (i/build-instruction
     string-length
     "`:string-length` pops the top `:string` and pushes its length (counting unicode-aware characters) to the `:scalar` stack"
-    :tags #{:string :base}
+
     (d/consume-top-of :string :as :arg1)
     (d/calculate [:arg1] count :as :len)
     (d/return-item :len)
@@ -244,7 +244,7 @@
   (i/build-instruction
     string-nth
     "`:string-last` pops the top `:string` item and an index value from the `:scalar` stack, and pushes the indexed `:char` (if it has one); if the index is out of range, it is reduced to an integer value in range via `(mod (ceil index) (count string))`"
-    :tags #{:string :base}
+
     (d/consume-top-of :string :as :s)
     (d/consume-top-of :scalar :as :where)
     (d/calculate [:s :where]
@@ -259,7 +259,7 @@
   (i/build-instruction
     string-occurrencesofchar
     "`:string-occurrencesofchar` pops the top `:string` and `:char` values, and pushes to `:integer` the number of times the `:char` appears in the `:string`"
-    :tags #{:string :base}
+
     (d/consume-top-of :string :as :s)
     (d/consume-top-of :char :as :c)
     (d/calculate [:s :c] #(get (frequencies %1) %2 0) :as :count)
@@ -272,7 +272,7 @@
   (i/build-instruction
     string-removechar
     "`:string-removechar` pops the top `:string` and `:char` items, and pushes the string with _every_ occurrence of the `:char` removed from it"
-    :tags #{:string :base}
+
     (d/consume-top-of :string :as :s)
     (d/consume-top-of :char :as :c)
     (d/calculate [:s :c] #(s/join (remove #{%2} %1)) :as :gone)
@@ -285,7 +285,7 @@
   (i/build-instruction
     string-replace
     "`:string-replace` pops the top three `:string` values; call them `C`, `B` and `A`, respectively. It pushes the `:string` which results when `B` is replaced with `C` everywhere it occurs as a substring in `A`. The maximum :string the interpreter's `:max-collection-size`; if this is exceeded, the result is discarded and an `:error` is created."
-    :tags #{:string :base}
+
     (d/consume-top-of :string :as :s3)
     (d/consume-top-of :string :as :s2)
     (d/consume-top-of :string :as :s1)
@@ -305,7 +305,7 @@
   (i/build-instruction
     string-replacechar
     "`:string-replacechar` pops the top `:string` and two `:char` items, replacing every occurrence of the top `:char` with the second in the `:string`, and pushing the result"
-    :tags #{:string :base}
+
     (d/consume-top-of :string :as :s)
     (d/consume-top-of :char :as :c1)
     (d/consume-top-of :char :as :c2)
@@ -319,7 +319,7 @@
   (i/build-instruction
     string-replacefirst
     "`:string-replace` pops the top three `:string` values; call them `C`, `B` and `A`, respectively. It pushes the `:string` which results when `B` is replaced with `C` in the first place it occurs as a substring in `A`."
-    :tags #{:string :base}
+
     (d/consume-top-of :string :as :s3)
     (d/consume-top-of :string :as :s2)
     (d/consume-top-of :string :as :s1)
@@ -333,7 +333,7 @@
   (i/build-instruction
     string-replacefirstchar
     "`:string-replacefirstchar` pops the top `:string` and two `:char` items, replacing the first occurrence of the top `:char` (if any) with the second in the `:string`, and pushing the result"
-    :tags #{:string :base}
+
     (d/consume-top-of :string :as :s)
     (d/consume-top-of :char :as :c1)
     (d/consume-top-of :char :as :c2)
@@ -361,7 +361,7 @@
   (i/build-instruction
     string-setchar
     "`:string-setchar` pops the top `:string`, `:char` and `:scalar` values. It replaces the character at the indexed position in the `:string` with the popped `:char`, reducing it to be in range by `(mod index (count string))` if necessary."
-    :tags #{:string :base}
+
     (d/consume-top-of :string :as :s)
     (d/consume-top-of :char :as :c)
     (d/consume-top-of :scalar :as :where)
@@ -377,7 +377,7 @@
   (i/build-instruction
     string-shatter
     "`:string-shatter` pops the top `:string` item, and pushes all of its characters as individual strings onto the `:string` stack. The result of shattering the `:string` \"bar\" would be the `:string` stack starting with `'(\"b\" \"a\" \"r\"...)`"
-    :tags #{:string :base}
+
     (d/consume-top-of :string :as :s1)
     (d/consume-stack :string :as :old)
     (d/calculate [:s1] #(reverse (map str (seq %1))) :as :letters)
@@ -397,7 +397,7 @@
   (i/build-instruction
     string-splitonspaces
     "`:string-splitonspaces` pops the top `:string` item, and pushes all the sub-strings remaining when it is split on any run of any number of whitespace characters.  The result of shattering the `:string` \"b a r\" would be the `:string` stack starting with `'(\"b\" \"a\" \"r\"...)`"
-    :tags #{:string :base}
+
     (d/consume-top-of :string :as :s)
     (d/consume-stack :string :as :old)
     (d/calculate [:s] #(s/split %1 #"\s+") :as :words)
@@ -417,7 +417,7 @@
   (i/build-instruction
     string-substring
     "`:string-substring` pops the top `:string` item, and two `:scalar` values (call them `A` and `B`). The values of `A` and `B` are _cropped_ into a suitable range for the string (truncated to lying within `[0,(count string)-1]`; _note_ not modulo the length!), and then a substring is extracted and pushed which falls between the lower and the higher of the two values."
-    :tags #{:string :base}
+
     (d/consume-top-of :string :as :s)
     (d/consume-top-of :scalar :as :a)
     (d/consume-top-of :scalar :as :b)
@@ -436,7 +436,7 @@
   (i/build-instruction
     string-take
     "`:string-take` pops the top `:string` and `:scalar` items, and pushes the string resulting when the string is truncated to the length indicated; if the `:scalar` is outside the range permitted, it is brought into range using `(mod index (count string))`"
-    :tags #{:string :base}
+
     (d/consume-top-of :string :as :s1)
     (d/consume-top-of :scalar :as :where)
     (d/calculate [:s1 :where]

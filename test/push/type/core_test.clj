@@ -76,7 +76,6 @@
 (def foo-barbaz
   (instr/build-instruction
     foo-barbaz
-    :tags #{:foo :double-ba*}
     (d/consume-top-of :foo :as :arg1)))
 
 

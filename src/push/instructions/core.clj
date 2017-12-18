@@ -124,7 +124,7 @@
           )))))
 
 
-(defrecord Instruction [token docstring tags needs products transaction])
+(defrecord Instruction [token docstring needs products transaction])
 
 
 (defn make-instruction
@@ -132,14 +132,12 @@
   [token & {
     :keys [docstring tags needs products transaction]
     :or { docstring (str "`" token "` needs a docstring!")
-          tags #{}
           needs {}
           products {}
           transaction (fn [interpreter] interpreter) }}]
   (with-meta (->Instruction
                 token
                 docstring
-                tags
                 needs
                 products
                 transaction) {:doc docstring}
@@ -152,7 +150,6 @@
   must appear before DSL steps."
   [instruction & args]
   (let [new-kwd (keyword (name instruction))
-        tags    (util/extract-keyword-argument :tags args)
         docs    (util/extract-docstring args)
         steps   (util/extract-splat-argument args)]
     `(make-instruction
@@ -160,7 +157,6 @@
       :docstring ~(or docs (str "`" new-kwd "` needs a docstring!"))
       ;; TODO: can't seem to pass in `nil` here ^^^^^ and
       ;;       get a default string from `make-instruction`
-      :tags ~(or tags #{})
       :needs ~(total-needs steps)
       :products ~(total-products steps)
       :transaction (def-function-from-dsl ~@steps))))
@@ -179,7 +175,6 @@
       'push.instructions.core/build-instruction
       instruction-name
       docstring
-      :tags #{:arithmetic :base}
       `(consume-top-of ~stackname :as :arg1)
       `(calculate [:arg1] #(~operation %1) :as :result)
       `(return-item :result)
@@ -196,7 +191,7 @@
       'push.instructions.core/build-instruction
       instruction-name
       docstring
-      :tags #{:arithmetic :base}
+
       `(consume-top-of ~stackname :as :arg2)
       `(consume-top-of ~stackname :as :arg1)
       `(calculate [:arg1 :arg2] #(~operation %1 %2) :as :result)
@@ -214,7 +209,7 @@
       'push.instructions.core/build-instruction
       instruction-name
       docstring
-      :tags #{:arithmetic :base}
+
       `(consume-top-of ~stackname :as :arg1)
       `(calculate [:arg1] #(~operation %1) :as :result)
       `(return-item :result)
@@ -230,6 +225,6 @@
       'push.instructions.core/build-instruction
       instruction-name
       (str "`:" instruction-name "` pops the top `" stackname "` item and pushes it to `:code`")
-      :tags #{:complex :base :conversion}
+
       `(consume-top-of ~stackname :as :arg)
       `(push-onto :code :arg)))))

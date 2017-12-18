@@ -18,7 +18,6 @@
       `build-instruction
       instruction-name
       (str "`:" instruction-name "` pops the top `" typename "` item and pushes it to the `:return` stack.")
-      :tags #{:io}
 
       `(consume-top-of ~typename :as :arg1)
       `(push-onto :return :arg1)
@@ -37,7 +36,6 @@
       `build-instruction
       instruction-name
       (str "`:" instruction-name "` creates a new `" typename "-pop` token shoves it to the _bottom_ of the `:return` stack.")
-      :tags #{:io}
 
       `(consume-stack :return :as :old-stack)
       `(calculate [:old-stack]

@@ -22,7 +22,6 @@
   (i/build-instruction
     code-append
     "`code-append` concatenates the top :code item to the end of the second :code item. If either argument isn't a list, it's made into one first. If the result would be larger than :max-collection-size points, it is discarded and an `:error` is pushed instead"
-    :tags #{:complex :base}
 
     (d/consume-top-of :code :as :arg2)
     (d/consume-top-of :code :as :arg1)
@@ -38,7 +37,6 @@
   (i/build-instruction
     code-append!
     "`code-append!` returns the code block `(:code-append :code-do*)`"
-    :tags #{:complex :base}
 
     (d/calculate [] #(list :code-append :code-do*) :as :result)
     (d/return-item :result)
@@ -58,7 +56,6 @@
   (i/build-instruction
     code-cons
     "`:code-cons` pops the top two `:code` items. If the first one is a list, it conjoins the second item to that; if it's not a list, it makes it one, then conjoins."
-    :tags #{:complex :base}
 
     (d/consume-top-of :code :as :item2)
     (d/consume-top-of :code :as :item1)
@@ -73,7 +70,6 @@
   (i/build-instruction
     code-cons!
     "`code-cons!` returns the code block `(:code-cons :code-do*)`"
-    :tags #{:complex :base}
 
     (d/calculate [] #(list :code-cons :code-do*) :as :result)
     (d/return-item :result)
@@ -92,7 +88,6 @@
   (i/build-instruction
     code-container!
     "`code-container!` returns the code block `(:code-container :code-do*)`"
-    :tags #{:complex :base}
 
     (d/calculate [] #(list :code-container :code-do*) :as :result)
     (d/return-item :result)
@@ -104,7 +99,6 @@
   (i/build-instruction
     code-contains?
     "`:code-contains?` pops the top two items from the `:code` stack, and returns `true` if the second one is contained (as any subtree) in the first, or if they are identical."
-    :tags #{:complex :base}
 
     (d/consume-top-of :code :as :arg2)
     (d/consume-top-of :code :as :arg1)
@@ -118,7 +112,6 @@
   (i/build-instruction
     code-do
     "`:code-do` pops the top `:code` item, and returns a continuation `'([quoted top code item] [unquoted top code item] :code-pop)`"
-    :tags #{:complex :base}
 
     (d/consume-top-of :code :as :do-this)
     (d/calculate [:do-this]
@@ -132,7 +125,6 @@
   (i/build-instruction
     code-do*
     "`:code-do*` pops the top `:code` item, and returns it (unquoted)"
-    :tags #{:complex :base}
 
     (d/consume-top-of :code :as :do-this)
     (d/return-item :do-this)
@@ -149,7 +141,6 @@
       - `[s]` zero or negative?: `'([s] :code-quote [code])`
 
     This continuation is pushed to the `:exec` stack."
-    :tags #{:complex :base}
 
     (d/consume-top-of :code :as :do-this)
     (d/consume-top-of :scalar :as :counter)
@@ -174,7 +165,7 @@
       - (`end` - `start`) ≤ 1: `'((dec [start]) [code])`
 
     This continuation is pushed to the `:exec` stack."
-    :tags #{:complex :base}
+
     (d/consume-top-of :code :as :do-this)
     (d/consume-top-of :scalar :as :end)
     (d/consume-top-of :scalar :as :start)
@@ -202,7 +193,7 @@
       - `counter` > 0: `'([code] ((dec [counter]) :code-quote [code] :code-do*times))`
 
     This continuation is pushed to the `:exec` stack."
-    :tags #{:complex :base}
+
     (d/consume-top-of :code :as :do-this)
     (d/consume-top-of :scalar :as :count)
     (d/calculate [:count] #((complement pos?) %1) :as :done?)
@@ -221,7 +212,7 @@
   (i/build-instruction
     code-drop
     "`:code-drop` pops the top `:code` and `:scalar` items. It wraps the `:code` item in a list if it isn't one, and forces the scalar into an index range. It then returns the result of `(drop index code)`."
-    :tags #{:complex :base}
+
     (d/consume-top-of :code :as :c)
     (d/consume-top-of :scalar :as :i)
     (d/calculate [:c] #(if (seq? %1) %1 (list %1)) :as :list)
@@ -237,7 +228,6 @@
   (i/build-instruction
     code-drop!
     "`code-drop!` returns the code block `(:code-drop :code-do*)`"
-    :tags #{:complex :base}
 
     (d/calculate [] #(list :code-drop :code-do*) :as :result)
     (d/return-item :result)
@@ -248,7 +238,7 @@
   (i/build-instruction
     code-extract
     "`:code-extract` pops the top `:code` and `:scalar` stacks. It counts the number of code points (that is, lists and items in lists, not other collections) in the `:code` item, then forces the `:scalar` to a suitable index range. It then returns the indexed component of the `:code`, using a depth-first traversal."
-    :tags #{:complex :base}
+
     (d/consume-top-of :code :as :c)
     (d/consume-top-of :scalar :as :i)
     (d/calculate [:c] #(u/count-code-points %1) :as :size)
@@ -264,7 +254,6 @@
   (i/build-instruction
     code-extract!
     "`code-extract!` returns the code block `(:code-extract :code-do*)`"
-    :tags #{:complex :base}
 
     (d/calculate [] #(list :code-extract :code-do*) :as :result)
     (d/return-item :result)
@@ -283,7 +272,6 @@
   (i/build-instruction
     code-first!
     "`code-first!` returns the code block `(:code-first :code-do*)`"
-    :tags #{:complex :base}
 
     (d/calculate [] #(list :code-first :code-do*) :as :result)
     (d/return-item :result)
@@ -295,7 +283,7 @@
   (i/build-instruction
     code-if
     "`:code-if` pops two items from the `:code` stack and one from the `:boolean` stack. If the `:boolean` is `true`, it returns the first `:code` item (quoted); if false, it returns the second `:code` item."
-    :tags #{:complex :base}
+
     (d/consume-top-of :code :as :arg2)
     (d/consume-top-of :code :as :arg1)
     (d/consume-top-of :boolean :as :which)
@@ -310,7 +298,6 @@
   (i/build-instruction
     code-insert
     "`:code-insert` pops the top two `:code` items (call them `A` and `B` respectively), and the top `:scalar`. It counts the number of code points in `B` (that is, lists and items in lists, not other collections), then forces the `:scalar` to a suitable index range. It then pushes the result when the indexed node of `B` is replaced with `A`."
-    :tags #{:complex :base}
 
     (d/consume-top-of :code :as :a)
     (d/consume-top-of :code :as :b)
@@ -327,7 +314,6 @@
   (i/build-instruction
     code-insert!
     "`code-insert!` returns the code block `(:code-insert :code-do*)`"
-    :tags #{:complex :base}
 
     (d/calculate [] #(list :code-insert :code-do*) :as :result)
     (d/return-item :result)
@@ -338,7 +324,6 @@
   (i/build-instruction
     code-length
     "`:code-length` pops the top `:code` item, and if it is a collection (including a :vector, :set, :tagspace or other thing) it counts the number of items in its root and returns that value, or 1 if it is not a collection."
-    :tags #{:complex :base}
 
     (d/consume-top-of :code :as :arg)
     (d/calculate [:arg] #(if (coll? %1) (count %1) 1) :as :len)
@@ -351,7 +336,6 @@
   (i/build-instruction
     code-list
     "`:code-list` pops the top two items from the `:code` stack, returning a quoted codeblock containing the two elements."
-    :tags #{:complex :base}
 
     (d/consume-top-of :code :as :arg2)
     (d/consume-top-of :code :as :arg1)
@@ -365,7 +349,6 @@
   (i/build-instruction
     code-list!
     "`code-list!` returns the code block `(:code-list :code-do*)`"
-    :tags #{:complex :base}
 
     (d/calculate [] #(list :code-list :code-do*) :as :result)
     (d/return-item :result)
@@ -376,7 +359,7 @@
   (i/build-instruction
     code-map
     "`:code-map` pops the top items of the `:code` and `:exec` stacks (call them \"C\" and \"E\", respectively), and pushes a continuation to `:exec`. If C is a list of 2 or more elements, `'(:code-quote () (:code-quote (first C) E) :code-cons (:code-quote (rest C) :code-reduce E))`; if a list of 1 item, `'(:code-quote () (:code-quote (first C) E) :code-cons)`; if an empty list, no continuation results; if not a list, `'(:code-quote () (:code-quote C E) :code-cons)`."
-    :tags #{:complex :base}
+
     (d/consume-top-of :code :as :item)
     (d/consume-top-of :exec :as :fn)
     (d/calculate [:item] #(if (seq? %1) %1 (list %1)) :as :collection)
@@ -400,7 +383,7 @@
   (i/build-instruction
     code-reduce
     "`:code-reduce` pops the top items of the `:code` and `:exec` stacks (call them \"C\" and \"E\", respectively), and pushes a continuation to `:exec`. If C is a list of 2 or more elements, `'((:code-quote (first C) E) :code-cons (:code-quote (rest C) :code-reduce E ))`; if a list of 1 item, `'((:code-quote (first C) E) :code-cons)`; if an empty list, no continuation results; if not a list, `'((:code-quote C E) :code-cons)`."
-    :tags #{:complex :base}
+
     (d/consume-top-of :code :as :item)
     (d/consume-top-of :exec :as :fn)
     (d/calculate [:item] #(if (seq? %1) %1 (list %1)) :as :collection)
@@ -423,7 +406,6 @@
   (i/build-instruction
     code-member?
     "`:code-member?` pops two items from the `:code` stack; call them `A` (the top one) and `B` (the second one). First, if `A` is not a code block, it is wrapped in a list. The result of `true` is pushed to the `:boolean` stack if `B` is a member of this modified `A`, or `false` if not."
-    :tags #{:complex :predicate :base}
 
     (d/consume-top-of :code :as :arg1)
     (d/consume-top-of :code :as :arg2)
@@ -438,7 +420,6 @@
   (i/build-instruction
     code-noop
     "`:code-noop` has no effect on the interpreter beyond incrementing the counter"
-    :tags #{:complex :base}
     ))
 
 
@@ -447,7 +428,6 @@
   (i/build-instruction
     code-nth
     "`:code-nth` pops the top `:code` and `:scalar` items. It wraps the `:code` item in a list if it isn't one, and forces the scalar into an index range by taking `(mod scalar (count code)`. It then returns the indexed item of the (listified) `:code` item."
-    :tags #{:complex :base}
 
     (d/consume-top-of :code :as :c)
     (d/consume-top-of :scalar :as :i)
@@ -464,7 +444,6 @@
   (i/build-instruction
     code-nth!
     "`code-nth!` returns the code block `(:code-nth :code-do*)`"
-    :tags #{:complex :base}
 
     (d/calculate [] #(list :code-nth :code-do*) :as :result)
     (d/return-item :result)
@@ -483,7 +462,6 @@
   (i/build-instruction
     code-points
     "`:code-points` pops the top item from the `:code` stack, and treats it as a tree of seqs and non-seq items. If it is an empty list, or any literal (including a vector, map, set or other collection type), the result is 1; if it is a list containing items, they are also counted, including any contents of sub-lists, and so on. _Note_ the difference from `:code-size`, which counts contents of all collections (including :set and :vector elements), not just (code) lists."
-    :tags #{:complex :base}
 
     (d/consume-top-of :code :as :arg1)
     (d/calculate [:arg1] #(u/count-code-points %1) :as :size)
@@ -496,7 +474,6 @@
   (i/build-instruction
     code-position
     "`:code-position` pops the top two `:code` items (call them `A` and `B`, respectively). It pushes the index of the first occurrence of `A` in `B`, or -1 if it is not found."
-    :tags #{:complex :base}
 
     (d/consume-top-of :code :as :arg2)
     (d/consume-top-of :code :as :arg1)
@@ -511,7 +488,6 @@
   (i/build-instruction
     code-quote
     "`:code-quote` pops the top item from the `:exec` stack and converts it to QuotedCode"
-    :tags #{:complex :base}
 
     (d/consume-top-of :exec :as :arg)
     (d/calculate [:arg] #(q! %1) :as :result)
@@ -533,7 +509,6 @@
   (i/build-instruction
     code-rest!
     "`code-rest!` returns the code block `(:code-rest :code-do*)`"
-    :tags #{:complex :base}
 
     (d/calculate [] #(list :code-rest :code-do*) :as :result)
     (d/return-item :result)
@@ -544,7 +519,6 @@
   (i/build-instruction
     code-size
     "`:code-size` pops the top item from the `:code` stack, and totals the number of items it contains anywhere, in any nested Collection of any type. The root of the item counts as 1, and every element (including sub-Collections) nested inside that add 1 more. Items in lists, vectors, sets, and maps are counted. Maps are counted as a collection of key-value pairs, each key and value are an item in a pair, and if they themselves are nested items those are traversed as well. (_Note_ that this differs from `:code-points` by counting the contents of all collections, as opposed to lists only.) Includes items in :set, :vector, :tagspace and other Record types."
-    :tags #{:complex :base}
 
     (d/consume-top-of :code :as :arg1)
     (d/calculate [:arg1] #(u/count-collection-points %1) :as :size)
@@ -557,7 +531,6 @@
   (i/build-instruction
     code-subst
     "`:code-subst` pops the top three `:code` items (call them `A` `B` and `C`, respectively). It replaces all occurrences of `B` in `C` (in a depth-first traversal) with `A`."
-    :tags #{:complex :base}
 
     (d/consume-top-of :code :as :arg3)
     (d/consume-top-of :code :as :arg2)
@@ -572,7 +545,6 @@
   (i/build-instruction
     code-subst!
     "`code-subst!` returns the code block `(:code-subst :code-do*)`"
-    :tags #{:complex :base}
 
     (d/calculate [] #(list :code-subst :code-do*) :as :result)
     (d/return-item :result)
@@ -592,7 +564,6 @@
   (i/build-instruction
     code-wrap!
     "`code-wrap!` returns the code block `(:code-wrap :code-do*)`"
-    :tags #{:complex :base}
 
     (d/calculate [] #(list :code-wrap :code-do*) :as :result)
     (d/return-item :result)
@@ -603,7 +574,6 @@
   (i/build-instruction
     code-return
     "`:code-return` pops the top `:code` item and pushes it (quoted) on the :return stack"
-    :tags #{:complex :base}
 
     (d/consume-top-of :code :as :arg)
     (d/calculate [:arg] #(q! %1) :as :form)

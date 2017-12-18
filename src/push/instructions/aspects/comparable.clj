@@ -14,7 +14,6 @@
       `build-instruction
       instruction-name
       (str "`:" instruction-name "` pops the top two `" typename "` items and pushes `true` if the top item is less than the second, `false` otherwise.")
-      :tags #{:comparison}
 
       `(consume-top-of ~typename :as :arg2)
       `(consume-top-of ~typename :as :arg1)
@@ -33,7 +32,6 @@
       `build-instruction
       instruction-name
       (str "`:" instruction-name "` pops the top two `" typename "` items and pushes `true` if the top item is less than or equal to the second, `false` otherwise.")
-      :tags #{:comparison}
 
       `(consume-top-of ~typename :as :arg2)
       `(consume-top-of ~typename :as :arg1)
@@ -53,7 +51,6 @@
       instruction-name
       (str "`:" instruction-name "` pops the top two `" typename
         "` items and pushes `true` if the top item is greater than or equal to the second, `false` otherwise.")
-      :tags #{:comparison}
 
       `(consume-top-of ~typename :as :arg2)
       `(consume-top-of ~typename :as :arg1)
@@ -73,7 +70,6 @@
       instruction-name
       (str "`:" instruction-name "` pops the top two `" typename
         "` items and pushes `true` if the top item is greater than the second, `false` otherwise.")
-      :tags #{:comparison}
 
       `(consume-top-of ~typename :as :arg2)
       `(consume-top-of ~typename :as :arg1)
@@ -92,7 +88,6 @@
       `build-instruction
       instruction-name
       (str "`:" instruction-name "` pops the top two `" typename "` items and pushes the _smaller_ of the two.")
-      :tags #{:comparison}
 
       `(consume-top-of ~typename :as :arg2)
       `(consume-top-of ~typename :as :arg1)
@@ -111,7 +106,6 @@
       `build-instruction
       instruction-name
       (str "`:" instruction-name "` pops the top two `" typename "` items and pushes the _larger_ of the two.")
-      :tags #{:comparison}
 
       `(consume-top-of ~typename :as :arg2)
       `(consume-top-of ~typename :as :arg1)

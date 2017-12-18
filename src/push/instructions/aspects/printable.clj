@@ -14,7 +14,6 @@
       `build-instruction
       instruction-name
       (str "`:" instruction-name "` pops the top `" typename "` item and pushes a string (made via `pr-str`) to the `:print` stack.")
-      :tags #{:io}
 
       `(consume-top-of ~typename :as :arg)
       `(print-item :arg)

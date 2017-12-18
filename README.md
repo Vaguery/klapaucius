@@ -89,7 +89,7 @@ user=> (push/run
   #_=>   runner
   #_=>   [1 :burden :scalar-add]
   #_=>   1000)
-#push.interpreter.core.Interpreter{:program [1 :burden :scalar-add], :types ({:name :numeric-scaling, :attributes #{:numeric}, :instructions {:scalar-few #push.instructions.core.Instruction{:token :scalar-few, :docstring "`:scalar-few` pops the top `:scalar` value, and calculates `(mod 10 x)`.", :tags #{:numeric}, :needs {:scalar 1}, :products {:scalar 1}...
+#push.interpreter.core.Interpreter{:program [1 :burden :scalar-add], :types ({:name :numeric-scaling, :attributes #{:numeric}, :instructions {:scalar-few #push.instructions.core.Instruction{:token :scalar-few, :docstring "`:scalar-few` pops the top `:scalar` value, and calculates `(mod 10 x)`.",  :needs {:scalar 1}, :products {:scalar 1}...
 
 ;; (push/run INTERPRETER) returns the ENTIRE interpreter state after running the program, including all the instruction definitions, stack contents, logs and more!
 

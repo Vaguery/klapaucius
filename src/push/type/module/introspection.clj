@@ -13,7 +13,7 @@
   (i/build-instruction
     push-bindingcount
     "`:push-bindingcount` pushes the number of registered bindings to `:scalar`"
-    :tags #{:binding :introspection}
+
     (d/save-bindings :as :known)
     (d/calculate [:known] #(count (keys %)) :as :count)
     (d/return-item :count)
@@ -25,7 +25,7 @@
   (i/build-instruction
     push-bindings
     "`:push-bindings` returns a quoted list (in sorted order) containing all the registered :bindings keywords"
-    :tags #{:binding :introspection}
+
     (d/save-bindings :as :known)
     (d/calculate [:known] #(qc/push-quote (u/list! (sort %1))) :as :listed)
     (d/return-item :listed)
@@ -37,7 +37,7 @@
   (i/build-instruction
     push-bindingset
     "`:push-bindingset` pushes a set containing all the registered :bindings keywords to the :set stack"
-    :tags #{:set :binding :introspection}
+
     (d/save-bindings :as :known)
     (d/calculate [:known] set :as :bindingset)
     (d/return-item :bindingset)
@@ -49,7 +49,7 @@
   (i/build-instruction
     push-counter
     "`:push-counter` pushes the current interpreter counter value to the `:scalar` stack"
-    :tags #{:introspection}
+
     (d/save-counter :as :count)
     (d/return-item :count)
     ))
@@ -60,7 +60,7 @@
   (i/build-instruction
     push-instructionset
     "`:push-instructionset` pushes a set containing all the registered :instruction keywords to the :set stack"
-    :tags #{:set :introspection}
+
     (d/save-instructions :as :dictionary)
     (d/return-item :dictionary)
     ))
@@ -71,7 +71,7 @@
   (i/build-instruction
     push-nthref
     "`:push-nthref` takes an `:scalar`, maps that value onto the number of `:bindings` it knows, and pushes the indexed key to `:ref` (after sorting the list of keywords)"
-    :tags #{:binding :introspection}
+
     (d/consume-top-of :scalar :as :i)
     (d/save-bindings :as :known) ;; just the keys
     (d/calculate [:known :i]
@@ -86,7 +86,7 @@
   (i/build-instruction
     push-refcycler
     "`:push-refcycler` pushes a code block to `:exec` that contains `(:push-bindings :code-cycler)`"
-    :tags #{:binding :generator :introspection}
+
     (d/calculate [] #(list :push-bindings :code-cycler) :as :result)
     (d/return-item :result)
     ))

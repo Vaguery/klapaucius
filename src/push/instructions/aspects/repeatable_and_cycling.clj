@@ -77,7 +77,6 @@
       `build-instruction
       instruction-name
       (str "`:" instruction-name "` pops the top `" typename "` item. If it is a non-empty collection, it pushes a new `:generator` that will return a list containing the first item and the remaining ones until there are none.")
-      :tags #{:generator :cycling}
 
       `(consume-top-of ~typename :as :arg)
       `(save-max-collection-size :as :limit)
@@ -101,7 +100,6 @@
       `build-instruction
       instruction-name
       (str "`:" instruction-name "` pops the top `" typename "` item and pushes a new `:generator` that will return a list containing an item and the contents rotated head->tail.")
-      :tags #{:generator :cycling}
 
       `(consume-top-of ~typename :as :arg)
       `(calculate [:arg]
@@ -122,7 +120,6 @@
       `build-instruction
       instruction-name
       (str "`:" instruction-name "` pops the top `" typename "` item and pushes a new `:generator` that will return a random element (sampled uniformly) from the collection.")
-      :tags #{:generator :random}
 
       `(consume-top-of ~typename :as :arg)
       `(calculate [:arg]
@@ -148,7 +145,6 @@
       `build-instruction
       instruction-name
       (str "`:" instruction-name "` pops the top `" typename "` item and pushes a new `:generator` that will return that item every time it's called.")
-      :tags #{:generator :repeatable}
 
       `(consume-top-of ~typename :as :arg)
       `(calculate [:arg]
@@ -167,7 +163,6 @@
       `build-instruction
       instruction-name
       (str "`:" instruction-name "` copies the entire `" typename "` stack into a new `:generator` that will return the entire stack (as a list pushed to the `:exec` stack) every time it's called.")
-      :tags #{:generator :repeatable}
 
       `(save-stack ~typename :as :all)
       `(save-max-collection-size :as :limit)
@@ -189,7 +184,6 @@
       `build-instruction
       instruction-name
       (str "`:" instruction-name "` copies the `" typename "` stack into a new _cycler_ `:generator` instance, if the stack is not empty.")
-      :tags #{:generator :cycling}
 
       `(save-stack ~typename :as :all)
       `(calculate [:all]
