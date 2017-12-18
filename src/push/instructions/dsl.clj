@@ -369,6 +369,32 @@
       ))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
+(defn append-onto
+  "?"
+  [interpreter stackname kwd]
+  (let [old-stack   (stack/get-stack interpreter stackname)
+        new-item    (sc/scratch-read interpreter kwd)
+        too-big?    (oversized-stack? interpreter old-stack new-item)
+        counter     (:counter interpreter)
+        instruction (:current-item interpreter)
+        new-stack   (if (or (nil? new-item) too-big?)
+                        old-stack
+                        (util/list! (concat old-stack (list new-item))))]
+      (if too-big?
+        (oops/throw-stack-oversize-exception instruction stackname)
+        (stack/set-stack interpreter stackname new-stack)
+        )))
+
+
+(dire/with-handler! #'append-onto
+  "?"
+  #(re-find #"tried to push an oversized item to" (.getMessage %))
+  (fn
+    [e interpreter stackname kwd & {:keys [as at]}]
+      (add-error-message! interpreter (.getMessage e))
+      ))
+
+;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn push-these-onto
   "?"

@@ -333,6 +333,58 @@
     :scalar) => '((4 5 6) 1 2 3)
     )
 
+
+;; `append-onto [stackname local]`
+
+(fact "`append-onto` places the indicated scratch item onto the END of the named stack"
+  (push/get-stack
+    (append-onto
+      (scratch-replace afew {:foo 99})
+      :scalar :foo)
+    :scalar) => '(1 2 3 99)
+    )
+
+(fact "`append-onto` creates a new empty stack if needed"
+  (push/get-stack
+    (append-onto
+      (scratch-replace afew {:foo 99})
+      :grault :foo)
+    :grault) => '(99)
+    )
+
+
+(fact "`append-onto` doesn't raise a fuss if the scratch variable isn't set"
+  (push/get-stack
+    (append-onto afew :scalar :foo)
+    :scalar) => '(1 2 3)
+    )
+
+
+(fact "`append-onto` doesn't raise a fuss if the scratch variable is a list"
+  (push/get-stack
+    (append-onto
+      (scratch-replace afew {:foo '(4 5 6)})
+      :scalar :foo)
+    :scalar) => '(1 2 3 (4 5 6))
+    )
+
+(fact "append-onto balks when the items are oversized"
+  (let [skimpy (push/interpreter :config {:max-collection-size 15}
+                                 :stacks {:foo '(1 [2 (3 4) {5 6} 7] 8)} )
+        foostack (push/get-stack skimpy :foo)]
+
+    (push/get-stack
+      (append-onto
+        (scratch-replace skimpy {:bar skimpy}) :foo :bar)
+      :error) => '({:item " tried to push an oversized item to :foo", :step 0})
+
+    (push/get-stack
+      (append-onto
+        (scratch-replace skimpy {:bar skimpy}) :foo :bar)
+      :foo) => '(1 [2 (3 4) {5 6} 7] 8)
+      ))
+
+
 ;; `save-stack [stackname :as local]`
 
 (fact "`save-stack` puts the entire named stack into a scratch variable (without deleting it)"

@@ -15,6 +15,7 @@
   (let [cmd (first step)
         resolved (resolve cmd)]
     (condp = resolved
+      #'append-onto {}
       #'bind-item {}
       #'calculate {}
       #'clear-binding {}
@@ -66,6 +67,7 @@
   (let [cmd (first step)
         resolved (resolve cmd)]
     (condp = resolved
+      #'append-onto {}
       #'bind-item {}
       #'calculate {}
       #'clear-binding {}
