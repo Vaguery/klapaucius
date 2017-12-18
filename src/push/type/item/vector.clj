@@ -22,11 +22,9 @@
     vector-refilterall
     "`:vector-refilterall` puts the entire `:vector` stack on top of the `:exec` stack"
 
-    (d/consume-stack :vector :as :stack)
-    (d/consume-stack :exec :as :old-exec)
-    (d/calculate [:stack :old-exec]
-      #(u/list! (concat %1 %2)) :as :new-exec)
-    (d/replace-stack :exec :new-exec)
+    (d/consume-stack :vector :as :old-stack)
+    (d/calculate [:old-stack] #(u/list! (reverse %1)) :as :result)
+    (d/return-item :result)
     ))
 
 
