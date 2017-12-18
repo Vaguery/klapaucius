@@ -22,5 +22,10 @@
   [args]
   (let [stringless (if (string? (first args)) (rest args) args)]
     (if (some keyword? stringless)
-      (into '() (butlast (first (split-with (complement keyword?) (reverse stringless)))))
-      stringless)))
+      (into '()
+        (butlast
+          (first
+            (split-with (complement keyword?) (reverse stringless))
+            )))
+      stringless
+      )))
