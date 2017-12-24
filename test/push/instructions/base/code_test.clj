@@ -210,28 +210,30 @@
     ?new-stacks                ?instruction             ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo :bar)
-     :scalar  '(2 9)}         :code-do*count     {:exec '(
-                                                      (2 0 :code-quote :foo :code-do*range))
+     :scalar  '(2 9)}         :code-do*count     {:exec (list
+                                                      (list 2 0 (qc/push-quote :foo) :code-do*range))
                                                    :scalar '(9)
                                                    :code '(:bar)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo :bar)
-     :scalar  '(-2 -9)}         :code-do*count     {:exec '((-2 :code-quote :foo))
+     :scalar  '(-2 -9)}         :code-do*count     {:exec (list
+                                                (list -2 (qc/push-quote :foo)))
                                                    :scalar '(-9)
                                                    :code '(:bar)}
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo :bar)
-     :scalar  '(0 -9)}          :code-do*count     {:exec '((0 :code-quote :foo))
+     :scalar  '(0 -9)}          :code-do*count     {:exec (list
+                                                     (list 0 (qc/push-quote :foo)))
                                                    :scalar '(-9)
                                                    :code '(:bar)}
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo :bar)
-     :scalar  '(0.3 11/4)}      :code-do*count     {:exec '((0.3 0 :code-quote :foo :code-do*range))
+     :scalar  '(0.3 11/4)}      :code-do*count     {:exec (list (list 0.3 0 (qc/push-quote :foo) :code-do*range))
                                                    :scalar '(11/4)
                                                    :code '(:bar)}
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo :bar)
-     :scalar  '(-11/4)}      :code-do*count     {:exec '((-11/4 :code-quote :foo))
+     :scalar  '(-11/4)}      :code-do*count     {:exec (list (list -11/4 (qc/push-quote :foo)))
                                                    :scalar '()
                                                    :code '(:bar)}
     ; ; ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -256,19 +258,19 @@
     ?new-stacks                ?instruction             ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo :bar)
-     :scalar  '(2 9)}         :code-do*range     {:exec '((9 :foo
-                                                    (8 2 :code-quote :foo :code-do*range)))
+     :scalar  '(2 9)}         :code-do*range     {:exec (list (list 9 :foo
+                                                    (list 8 2 (qc/push-quote :foo) :code-do*range)))
                                                    :scalar '()
                                                    :code '(:bar)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo :bar)
-     :scalar  '(-2 -9)}         :code-do*range     {:exec '((-9 :foo
-                                                    (-8 -2 :code-quote :foo :code-do*range)))
+     :scalar  '(-2 -9)}         :code-do*range     {:exec (list (list -9 :foo
+                                                    (list -8 -2 (qc/push-quote :foo) :code-do*range)))
                                                    :scalar '()
                                                    :code '(:bar)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo :bar)
-     :scalar  '(-2917.5M -9.3e32M)}  :code-do*range     {:exec '((-9.3E+32M :foo (-929999999999999999999999999999999M -2917.5M :code-quote :foo :code-do*range)))
+     :scalar  '(-2917.5M -9.3e32M)}  :code-do*range     {:exec (list (list -9.3E+32M :foo (list -929999999999999999999999999999999M -2917.5M (qc/push-quote :foo) :code-do*range)))
                                                    :scalar '()
                                                    :code '(:bar)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -328,7 +330,7 @@
     ?new-stacks                ?instruction             ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo :bar)
-     :scalar   '(2 9)}         :code-do*times     {:exec '((:foo (1 :code-quote :foo :code-do*times)))
+     :scalar   '(2 9)}         :code-do*times     {:exec (list (list :foo (list 1 (qc/push-quote :foo) :code-do*times)))
                                                    :scalar  '(9)
                                                    :code '(:bar)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -338,25 +340,25 @@
                                                    :code '(:bar)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo :bar)
-     :scalar   '(1 -9)}        :code-do*times     {:exec '((:foo (0 :code-quote :foo :code-do*times)))
+     :scalar   '(1 -9)}        :code-do*times     {:exec (list (list :foo (list 0 (qc/push-quote :foo) :code-do*times)))
                                                    :scalar  '(-9)
                                                    :code '(:bar)}
 
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo :bar)
-     :scalar   '(7.8 -9)}       :code-do*times     {:exec '((:foo (6.8 :code-quote :foo :code-do*times)))
+     :scalar   '(7.8 -9)}       :code-do*times     {:exec (list (list :foo (list 6.8 (qc/push-quote :foo) :code-do*times)))
                                                    :scalar  '(-9)
                                                    :code '(:bar)}
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo :bar)
-     :scalar   '(77631M -9)}       :code-do*times     {:exec '((:foo (77630M :code-quote :foo :code-do*times)))
+     :scalar   '(77631M -9)}       :code-do*times     {:exec (list (list :foo (list 77630M (qc/push-quote :foo) :code-do*times)))
                                                    :scalar  '(-9)
                                                    :code '(:bar)}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code     '(:foo :bar)
-     :scalar   '(0.125 -9)}       :code-do*times     {:exec '((:foo (-0.875 :code-quote :foo :code-do*times)))
+     :scalar   '(0.125 -9)}       :code-do*times     {:exec (list (list :foo (list -0.875 (qc/push-quote :foo) :code-do*times)))
                                                    :scalar  '(-9)
                                                    :code '(:bar)}
 
@@ -724,37 +726,39 @@
     ?new-stacks              ?instruction             ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code  '((1 2 3) :bar)
-     :exec  '(:foo)}          :code-map     {:exec '((:code-quote ()
-                                                    (:code-quote 1 :foo)
-                                                    :code-cons
-                                                    (:code-quote (2 3)
-                                                      :code-reduce :foo)))}
+     :exec  '(:foo)}          :code-map  {:exec (list (list (qc/push-quote '())
+                                                (list (qc/push-quote 1) :foo)
+                                                :code-cons
+                                                (list (qc/push-quote '(2 3))
+                                                :code-reduce :foo)))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code  '((1) :bar)
-     :exec  '(:foo)}          :code-map     {:exec '((:code-quote ()
-                                                    (:code-quote 1 :foo)
-                                                    :code-cons))}
+     :exec  '(:foo)}          :code-map  {:exec (list (list (qc/push-quote '())
+                                                (list (qc/push-quote 1) :foo)
+                                                :code-cons))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code  '(() :bar)
-     :exec  '(:foo)}          :code-map     {:exec '()}
+     :exec  '(:foo)}          :code-map  {:exec '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code  '(88 :bar)
-     :exec  '(:foo)}          :code-map     {:exec '((:code-quote ()
-                                                    (:code-quote 88 :foo)
-                                                    :code-cons))}
+     :exec  '(:foo)}          :code-map  {:exec (list (list (qc/push-quote '())
+                                                (list (qc/push-quote 88) :foo)
+                                                :code-cons))}
     )
+
+
 
 (tabular
   (fact "code-map produces an error when the result is oversized"
     (check-instruction-here-using-this
-      teeny
+      (push.core/interpreter :config {:max-collection-size 12})
       ?new-stacks ?instruction) => (contains ?expected))
 
     ?new-stacks        ?instruction       ?expected
     {:code  '(1 2)
      :exec  '(:foo)}
                        :code-map       {:code '(2)
-                                        :exec '((:code-quote () (:code-quote 1 :foo) :code-cons))}
+                                        :exec (list (list (qc/push-quote '()) (list (qc/push-quote 1) :foo) :code-cons))}
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      {:code  '([1 2] 10)
       :exec  '(:foo)}
@@ -775,21 +779,21 @@
     ?new-stacks                ?instruction             ?expected
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code  '((1 2 3) :bar)
-     :exec  '(:foo)}          :code-reduce     {:exec '(((:code-quote 1 :foo)
-                                                  :code-cons
-                                                  (:code-quote (2 3)
-                                                    :code-reduce :foo)))}
+     :exec  '(:foo)}     :code-reduce     {:exec (list (list (list (q! 1) :foo)
+                                          :code-cons
+                                          (list (q! '(2 3))
+                                          :code-reduce :foo)))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code  '((1) :bar)
-     :exec  '(:foo)}          :code-reduce     {:exec '(((:code-quote 1 :foo)
-                                                  :code-cons))}
+     :exec  '(:foo)}     :code-reduce     {:exec (list (list (list (q! 1) :foo)
+                                          :code-cons))}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code  '(() :bar)
-     :exec  '(:foo)}          :code-reduce     {:exec '()}
+     :exec  '(:foo)}     :code-reduce     {:exec '()}
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     {:code  '(88 :bar)
-     :exec  '(:foo)}          :code-reduce     {:exec '(((:code-quote 88 :foo)
-                                                  :code-cons))}
+     :exec  '(:foo)}     :code-reduce     {:exec (list (list (list (q! 88) :foo)
+                                          :code-cons))}
     )
 
 
@@ -802,8 +806,8 @@
     ?new-stacks        ?instruction       ?expected
     {:code  '(1 2)
      :exec  '(:foo)}
-                       :code-reduce       {:code '(2)
-                                           :exec '(((:code-quote 1 :foo) :code-cons))}
+                       :code-reduce   {:code '(2)
+                              :exec (list (list (list (q! 1) :foo) :code-cons))}
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      {:code  '([1 2 3 4 5] 6)
       :exec  '(:foo)}

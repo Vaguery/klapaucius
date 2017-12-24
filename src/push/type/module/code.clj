@@ -135,10 +135,10 @@
 (def code-do*count
   (i/build-instruction
     code-do*count
-    "`:code-do*count` pops the top item of `:code` and the top `:scalar`. It constructs a continuation depending on whether the `:scalar` is positive:
+    "`:code-do*count` pops the top item of `:code` and the top `:scalar`. It constructs a continuation, depending on whether the `:scalar` is positive:
 
-      - `[s]` positive?: `'([s] 0 :code-quote [code] :code-do*range)`
-      - `[s]` zero or negative?: `'([s] :code-quote [code])`
+      - `[s]` positive?: `'([s] 0 [quoted code] :code-do*range)`
+      - `[s]` zero or negative?: `'([s] [quoted code])`
 
     This continuation is pushed to the `:exec` stack."
 
@@ -148,8 +148,8 @@
     (d/calculate
       [:do-this :counter :go?]
       #(if %3
-        (list %2 0 :code-quote %1 :code-do*range)
-        (list %2 :code-quote %1)) :as :continuation)
+        (list %2 0 (q! %1) :code-do*range)
+        (list %2 (q! %1))) :as :continuation)
     (d/return-item :continuation)
     ))
 
@@ -160,9 +160,9 @@
     code-do*range
     "`:code-do*range` pops the top item of `:code` and the top two `:scalar` values (call them `end` and `start`, respectively, with `end` being the top `:scalar` item). It constructs a continuation depending on the relation between the `end` and `start` values:
 
-      - `end` > `(inc start)`: `'([start] [code] ((inc [start]) [end] :code-quote [code] :code-do*Range))`
-      - `end` < `(dec start)`: `'([start] [code] ((dec [start]) [end] :code-quote [code] :code-do*Range))`
-      - (`end` - `start`) ≤ 1: `'((dec [start]) [code])`
+      - `end` > `(inc start)`: `'([start] [code] ((inc [start]) [end] [quoted code] :code-do*Range))`
+      - `end` < `(dec start)`: `'([start] [code] ((dec [start]) [end] [quoted code] :code-do*Range))`
+      - (`end` - `start`) ≤ 1: `'((dec [start]) [unquoted code])`
 
     This continuation is pushed to the `:exec` stack."
 
@@ -178,7 +178,7 @@
         (nil? %5) nil
         %5 (list %4 %1)
         :else
-          (list %2 %1 (list %4 %3 :code-quote %1 :code-do*range))) :as :continuation)
+          (list %2 %1 (list %4 %3 (q! %1) :code-do*range))) :as :continuation)
     (d/return-item :continuation)
     ))
 
@@ -190,7 +190,7 @@
     "`:code-do*times` pops the top item of `:code` and the top `:scalar` value (call it `counter`). It constructs a continuation depending on whether `counter` is positive, zero or negative:
 
       - `counter` ≤ 0: `[code]` (the popped `:code` item)
-      - `counter` > 0: `'([code] ((dec [counter]) :code-quote [code] :code-do*times))`
+      - `counter` > 0: `'([unquoted code] ((dec [counter]) [quoted code] :code-do*times))`
 
     This continuation is pushed to the `:exec` stack."
 
@@ -202,7 +202,7 @@
       [:do-this :count :next :done?]
       #(if %4
            %1
-           (list %1 (list %3 :code-quote %1 :code-do*times))) :as :continuation)
+           (list %1 (list %3 (q! %1) :code-do*times))) :as :continuation)
     (d/return-item :continuation)
     ))
 
@@ -358,7 +358,7 @@
 (def code-map
   (i/build-instruction
     code-map
-    "`:code-map` pops the top items of the `:code` and `:exec` stacks (call them \"C\" and \"E\", respectively), and pushes a continuation to `:exec`. If C is a list of 2 or more elements, `'(:code-quote () (:code-quote (first C) E) :code-cons (:code-quote (rest C) :code-reduce E))`; if a list of 1 item, `'(:code-quote () (:code-quote (first C) E) :code-cons)`; if an empty list, no continuation results; if not a list, `'(:code-quote () (:code-quote C E) :code-cons)`."
+    "`:code-map` pops the top items of the `:code` and `:exec` stacks (call them \"C\" and \"E\", respectively), and pushes a continuation to `:exec`. If C is a list of 2 or more elements, `'([quoted '()] ([quoted (first C)] E) :code-cons ([quoted (rest C)] :code-reduce E))`; if a list of 1 item, `'([quoted '()] ([quoted (first C)] E) :code-cons)`; if an empty list, no continuation results; if not a list, `'([quoted '()] ([quoted C] E) :code-cons)`."
 
     (d/consume-top-of :code :as :item)
     (d/consume-top-of :exec :as :fn)
@@ -367,12 +367,12 @@
       #(cond  (empty? %1)
                 nil
               (= 1 (count %1))
-                (list :code-quote '()
-                      (list :code-quote (first %1) %2) :code-cons)
+                (list (q! '())
+                      (list (q! (first %1)) %2) :code-cons)
               :else
-                (list :code-quote '()
-                      (list :code-quote (first %1) %2) :code-cons
-                      (list :code-quote (rest %1) :code-reduce %2)))
+                (list (q! '())
+                      (list (q! (first %1)) %2) :code-cons
+                      (list (q! (rest %1)) :code-reduce %2)))
       :as :results)
     (d/return-item :results)
     ))
@@ -382,7 +382,7 @@
 (def code-reduce
   (i/build-instruction
     code-reduce
-    "`:code-reduce` pops the top items of the `:code` and `:exec` stacks (call them \"C\" and \"E\", respectively), and pushes a continuation to `:exec`. If C is a list of 2 or more elements, `'((:code-quote (first C) E) :code-cons (:code-quote (rest C) :code-reduce E ))`; if a list of 1 item, `'((:code-quote (first C) E) :code-cons)`; if an empty list, no continuation results; if not a list, `'((:code-quote C E) :code-cons)`."
+    "`:code-reduce` pops the top items of the `:code` and `:exec` stacks (call them \"C\" and \"E\", respectively), and pushes a continuation to `:exec`. If C is a list of 2 or more elements, `'(([quoted (first C)] E) :code-cons ([quoted (rest C)] :code-reduce E ))`; if a list of 1 item, `'(([quoted (first C)] E) :code-cons)`; if an empty list, no continuation results; if not a list, `'(([quoted C] E) :code-cons)`."
 
     (d/consume-top-of :code :as :item)
     (d/consume-top-of :exec :as :fn)
@@ -392,10 +392,10 @@
         cond  (empty? %1)
                 nil
               (= 1 (count %1))
-                (list (list :code-quote (first %1) %2) :code-cons)
+                (list (list (q! (first %1)) %2) :code-cons)
               :else
-                (list (list :code-quote (first %1) %2) :code-cons
-                      (list :code-quote (rest %1) :code-reduce %2)))
+                (list (list (q! (first %1)) %2) :code-cons
+                      (list (q! (rest %1)) :code-reduce %2)))
       :as :results)
     (d/return-item :results)
     ))
