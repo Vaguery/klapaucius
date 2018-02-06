@@ -21,17 +21,17 @@ This is however _only a Push interpreter_. It does not "do genetic programming";
 
 ## Requirements
 
-The project is written in Clojure 1.8, and depends heavily on [Midje](https://github.com/marick/Midje/) for testing.
+The project is written in Clojure 1.9.1, and depends heavily on [Midje](https://github.com/marick/Midje/) for testing.
 
 ## Using the library
 
 ### Project status
 
-Initial feature implementation is almost done. The interpreter handles 100% of the Clojush Push dialect, plus nearly a dozen additional types and hundreds of additional instructions.
+Initial feature implementation is nearly done. The interpreter handles 100% of the Clojush Push dialect (as of 2015), plus nearly a dozen additional types and hundreds of additional instructions.
 
 Versioning is currently arbitrary and very low-valued, but _will become_ semantic after the initial features set is done. At the moment, basic functionality and usability are still my main concern, and I am adding types and large-scale features that are almost always "breaking" with every incremental release. As a result, the version will remain `0.1.X` for the near future, with `SNAPSHOT` releases capturing bug fixes, refactorings, documentation updates and general prep for "real" initial release.
 
-Thus: `klapaucius "0.1.25"` includes a fully working interpreter, but is undergoing rapid expansion. While the current version is rigorously tested,  **substantial deep architectural changes** will be made leading up the 0.2 release. If you're going to work on it, please contact me during this great leap forward, and submit pull requests for small amounts of work in numerous git branches!
+Thus: `klapaucius "0.1.28-SNAPSHOT"` includes a fully working interpreter, but is undergoing rapid expansion. While the current version is rigorously tested,  **substantial deep architectural changes** will be made leading up the 0.2 release. If you're going to work on it, please contact me during this great leap forward, and submit pull requests for small amounts of work in numerous git branches!
 
 ## Support
 
@@ -43,13 +43,13 @@ Using `leiningen`, add the following dependency to your `project.clj`
 
 ```clojure
 (defproject my-new-project "0.0.1-SNAPSHOT"
-  :dependencies [[org.clojure/clojure "1.8.0"]
-                 [klapaucius "0.1.25"]
+  :dependencies [[org.clojure/clojure "1.9.1"]
+                 [klapaucius "0.1.XX"]
                  ;; ... your other dependencies here ...
                  ]
   :profiles {:dev
-              {:dependencies [[midje "1.8.3"]]}})
-                            ;; ^^^^^ you should run the tests
+              {:dependencies [[midje "1.9.1"]]}})
+                            ;; ^^^^^ you need to be able to run the tests!
 ```
 
 ## Usage

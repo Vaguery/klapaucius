@@ -1,4 +1,4 @@
-(defproject klapaucius "0.1.27"
+(defproject klapaucius "0.1.28-SNAPSHOT"
   :description "Push language interpreter"
   :url "https://github.com/Vaguery/klapaucius"
   :dependencies [[org.clojure/clojure            "1.9.0"]
@@ -8,17 +8,14 @@
                  [dire                           "0.5.4"]
                  [criterium                      "0.4.4"]
                  ]
-  :deploy-repositories [["releases" :clojars]
-                        ["snapshots" :clojars]
-                        ]
-  :profiles {:dev {:dependencies [[midje "1.9.0"]]
+  :deploy-repositories [["releases"
+                          :clojars
+                          {:url #"https://clojars.org/klapaucius" :creds :gpg}]
+                        ["snapshots"
+                          :clojars
+                          {:url #"https://clojars.org/klapaucius" :creds :gpg}]
+                          ]
+  :profiles {:dev {:dependencies [[midje "1.9.1"]]
                    :plugins      [[lein-midje "3.2.1"]
                                   [lein-ancient "0.6.15"]
-                                  ]}}
-  :hiera  {:path "target/ns-hierarchy.png"
-           :vertical false
-           :show-external true
-           :cluster-depth 2
-           :trim-ns-prefix true
-           :ignore-ns #{}}
-           )
+                                  ]}})
