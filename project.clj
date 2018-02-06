@@ -1,4 +1,8 @@
 (defproject klapaucius "0.1.28-SNAPSHOT"
+  :license {:name "MIT License"
+            :url "https://opensource.org/licenses/MIT"
+            :year 2015
+            :key "mit"}
   :description "Push language interpreter"
   :url "https://github.com/Vaguery/klapaucius"
   :dependencies [[org.clojure/clojure            "1.9.0"]
