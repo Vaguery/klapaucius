@@ -21,5 +21,4 @@
                           ]
   :profiles {:dev {:dependencies [[midje "1.9.1"]]
                    :plugins      [[lein-midje "3.2.1"]
-                                  [lein-ancient "0.6.15"]
                                   ]}})

@@ -11,6 +11,8 @@
 
 ## Project website
 
+[![Clojars Project](https://img.shields.io/clojars/v/klapaucius.svg)](https://clojars.org/klapaucius)
+
 Docs are getting finished up now at [the project website](http://vaguery.github.io/klapaucius).
 
 ## About
