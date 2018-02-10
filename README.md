@@ -21,7 +21,7 @@ This is however _only a Push interpreter_. It does not "do genetic programming";
 
 ## Requirements
 
-The project is written in Clojure 1.9.1, and depends heavily on [Midje](https://github.com/marick/Midje/) for testing.
+The project is written in Clojure 1.9.0, and depends heavily on [Midje](https://github.com/marick/Midje/) for testing.
 
 ## Using the library
 

@@ -1,4 +1,4 @@
-(defproject klapaucius "0.1.28-SNAPSHOT"
+(defproject klapaucius "0.1.29"
   :license {:name "MIT License"
             :url "https://opensource.org/licenses/MIT"
             :year 2015
